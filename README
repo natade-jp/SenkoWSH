@@ -1,11 +1,12 @@
 【ライブラリ名】
 SenkoLib
 
+
 【作者・連絡先】
 natade / https://twitter.com/natadea
 
-【概要・ポリシー】
 
+【概要・ポリシー】
 Java と似た操作感を目指している ECMAScript ライブラリです。
 
 ブラウザ上で動く JavaScript、Windows 上で動く JScript の両方で動くことを目指します。
@@ -15,12 +16,31 @@ Java と似た操作感を目指している ECMAScript ライブラリです。
 JavaScript は、HTML5アプリがこれからの主流になるためと考えられるからです。
 また、JScriptに関しては、業務上Windows上でマクロを作ることを想定しているからです。
 
+
 【文字コードについて】
 JScript用動作の場合は、utf-16le（BOM付き, UTF-16, LittleEndian, CRLF）とします。
 HTML5用動作の場合は、utf-8（BOM付き※, UTF-8, LF）とします。
 Windows環境の場合は「toHTML5.wsf」「toJScript.wsf」のJScriptで切り替えが可能です。
 スクリプトで自動で文字コード変換を行う都合上、BOM付きを推奨しています。
 これは、日本語が少ししか含まれていないutf-8を、WSHが判断できないためです。
+
+
+【フォルダ構成】
+SenkoLib
+　SenkoLibを構成するJavaScirptライブラリがおいてあります。
+　1つのJavaScriptライブラリには1つのクラスのような記述があります。
+　移植性を上げるため、単体でロードするだけで動作するような設計をします。
+　もし他のクラスに依存する場合は、コメントに説明文を書く必要があります。
+　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
+　各クラスのテスト用プログラム、サンプルプログラムは、
+　sample内にフォルダを作成して入れます。
+sample
+　SenkoLib内部に入っている各クラスの使用方法が入っています。
+　テストプログラムのようにメソッドが正しく動作するような形でいれます。
+　「index.html」「main.wsf」は、依存ライブラリ追加以外に変更しないでください。
+　「main.js」を変更してサンプルプログラムを作ります。
+　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
+
 
 【ライセンスについて】
 ライセンスは NYSL Version 0.9982 とします。
