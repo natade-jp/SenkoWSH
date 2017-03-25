@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>sample</title>
+<meta charset="utf-8">
+<script type="text/javascript" src="../../SenkoLib/String.js" charset="utf-8"></script>
+<style type="text/css">  
+
+body, div, p {
+	margin: 0px;
+	padding:0px;
+	font-size:		xx-small;
+}
+
+textarea {
+	width:			100%;
+	height:			100px;
+	font-family: 	monospace;
+}
+
+</style>
+
+<script type="text/javascript">
+
+function setSelectedByName(name, value) {
+	var target = document.getElementsByName(name);
+	for(var i = 0; i < target.length; i++){
+		if(target[i].value === value) {
+			target[i].checked = true;
+			break;
+		}
+	}
+}
+
+function setSelectedOptionById(id, value) {
+	var target = document.getElementById(id).getElementsByTagName("option");
+	for(var i = 0; i < target.length; i++){
+		if(target[i].value === value) {
+			target[i].selected = true;
+			break;
+		}
+	}
+}
+
+function getSelectedNameById(name) {
+	var radiobutton = document.getElementsByName(name);
+	for(var i = 0; i < radiobutton.length; i++){
+		if(radiobutton[i].checked) {
+			return(radiobutton[i].value);
+		}
+	}
+}
+
+function getValueById(id) {
+	return(document.getElementById(id).value);
+}
+
+function setValueById(id, text) {
+	document.getElementById(id).value = text;
+}
+
+function getInnerTextByID(id) {
+	return(document.getElementById(id).innerText);
+}
+
+function setInnerTextByID(id, text) {
+	document.getElementById(id).innerText = text;
+}
+
+function setDisplayById(id, type) {
+	document.getElementById(id).style.display = type;
+}
+
+function setDisplayByClass(classname, type) {
+	element = document.getElementsByTagName("*");
+	for(var i = 0; i < element.length; i++){
+		if(element[i].className === classname) {
+			element[i].style.display = type;
+		}
+	}
+}
+
+function getElementByClass(classname, func) {
+	element = document.getElementsByTagName("*");
+	for(var i = 0; i < element.length; i++){
+		if(element[i].className === classname) {
+			func(element[i]);
+		}
+	}
+}
+
+function focusInput(e) {
+	var obj;
+	if(window.event) {
+		obj = window.event.srcElement;
+	}
+	else if(e) {
+		obj = e.currentTarget;
+	}
+	obj.style.backgroundColor = "#FFD";
+	obj.style.border = "1px solid #FC0";
+}
+
+function blurInput(e) {
+	var obj;
+	if(window.event) {
+		obj = window.event.srcElement;
+	}
+	else if(e) {
+		obj = e.currentTarget;
+	}
+	obj.style.backgroundColor = "white";
+	obj.style.border = "1px solid #AAA";
+}
+
+function setFocusStyle() {
+	var tagname = new Array("input", "textarea", "select");
+	for(i = 0; i < tagname.length; i++) {
+		element = document.getElementsByTagName(tagname[i]);
+		for(j = 0; j < element.length; j++) {
+			if((element[j].type === "button")||(element[j].type === "radio")||(element[j].type === "submit")) {
+				continue;
+			}
+			element[j].onfocus = focusInput;
+			element[j].onblur  = blurInput;
+		}
+	}
+}
+
+function getElement(e) {
+	if(window.event) {
+		e = window.event;
+	}
+	var b = null;
+	if(e.srcElement) {
+		b = e.srcElement;
+	}
+	else if(e.currentTarget) {
+		b = e.currentTarget;
+	}
+	return(b);
+}
+
+function onLoad() {
+	setFocusStyle();
+	buff = "";
+}
+
+
+function redraw() {
+	x = document.getElementById("inputarea").value;
+	if(x !== buff) {
+		buff = x;
+		document.getElementById("outputarea1").value = x.removeComment();
+		document.getElementById("outputarea2").value = x.toFullWidth().toKatakana();
+		document.getElementById("outputarea3").value = x.toFullWidth().toHiragana();
+		document.getElementById("outputarea4").value = x.toKatakana().toHalfWidth();
+		document.getElementById("outputarea5").value = x.toFullWidthKana().toHalfWidthAsciiCode();
+	}
+}
+
+</script>
+</head>
+<body onload="onLoad();setInterval('redraw()' ,500);">
+
+<div>
+<p>入力欄</p>
+<textarea id = "inputarea"></textarea>
+</div>
+
+<div>
+<p>コメントの除去</p>
+<textarea id = "outputarea1" disabled></textarea>
+</div>
+
+<div>
+<p>全角カタカナ</p>
+<textarea id = "outputarea2" disabled></textarea>
+</div>
+
+<div>
+<p>全角ひらがな</p>
+<textarea id = "outputarea3" disabled></textarea>
+</div>
+
+<div>
+<p>半角カタカナ</p>
+<textarea id = "outputarea4" disabled></textarea>
+</div>
+
+<div>
+<p>日本語は全角、英数字記号は半角</p>
+<textarea id = "outputarea5" disabled></textarea>
+</div>
+
+</body>
+</html>

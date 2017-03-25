@@ -1,0 +1,35 @@
+【ライブラリ名】
+SenkoLib
+
+【作者・連絡先】
+natade / https://twitter.com/natadea
+
+【概要・ポリシー】
+
+Java と似た操作感を目指している ECMAScript ライブラリです。
+
+ブラウザ上で動く JavaScript、Windows 上で動く JScript の両方で動くことを目指します。
+ただし、画像関連の操作については、IE, Edge, Chrome, Firefox などで動かすことを目指します。
+単調なプログラム、部品に使用することを想定するため、機能を発展する予定はいまはありません。
+
+JavaScript は、HTML5アプリがこれからの主流になるためと考えられるからです。
+また、JScriptに関しては、業務上Windows上でマクロを作ることを想定しているからです。
+
+【文字コードについて】
+JScript用動作の場合は、utf-16le（BOM付き, UTF-16, LittleEndian, CRLF）とします。
+HTML5用動作の場合は、utf-8（BOM付き※, UTF-8, LF）とします。
+Windows環境の場合は「toHTML5.wsf」「toJScript.wsf」のJScriptで切り替えが可能です。
+スクリプトで自動で文字コード変換を行う都合上、BOM付きを推奨しています。
+これは、日本語が少ししか含まれていないutf-8を、WSHが判断できないためです。
+
+【ライセンスについて】
+ライセンスは NYSL Version 0.9982 とします。
+この理由は、プログラマーにとって誰でも自由に使えるのが便利だと考えたからです。
+
+比較的自由とされる MITライセンスなどの場合でも、
+コンパイル後に表記を入れる必要があったりします。
+簡単なJScriptマクロを組むだけの場合で、
+このような制限があると面倒になってしまうと考えております。
+
+NYSL Version 0.9982
+http://www.kmonos.net/nysl/
