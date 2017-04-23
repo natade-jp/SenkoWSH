@@ -27,7 +27,7 @@ var ArrayList = function() {
 			this.element[i] = arguments[0].element[i];
 		}
 	}
-}
+};
 
 ArrayList.prototype.each = function(func) {
 	var out = true;
