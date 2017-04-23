@@ -1,3 +1,5 @@
+﻿/* global Random */
+
 ﻿/**
  * BigInteger.js
  * 

@@ -1,3 +1,5 @@
+﻿/* global WScript */
+
 ﻿/**
  * Dialog.js
  *

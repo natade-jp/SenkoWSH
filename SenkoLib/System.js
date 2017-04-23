@@ -1,3 +1,5 @@
+﻿/* global WSH, WScript */
+
 ﻿/**
  * System.js
  * 

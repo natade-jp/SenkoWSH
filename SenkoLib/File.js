@@ -1,3 +1,5 @@
+﻿/* global WScript */
+
 ﻿/**
  * File.js
  * 
