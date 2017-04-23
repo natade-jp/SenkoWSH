@@ -7,14 +7,12 @@ natade / https://twitter.com/natadea
 
 
 【概要・ポリシー】
-Java と似た操作感を目指している ECMAScript ライブラリです。
+ECMAScript ライブラリです。
 
-ブラウザ上で動く JavaScript、Windows 上で動く JScript の両方で動くことを目指します。
-ただし、画像関連の操作については、IE, Edge, Chrome, Firefox などで動かすことを目指します。
-単調なプログラム、部品に使用することを想定するため、機能を発展する予定はいまはありません。
-
-JavaScript は、HTML5アプリがこれからの主流になるためと考えられるからです。
-また、JScriptに関しては、業務上Windows上でマクロを作ることを想定しているからです。
+・Java に似た機能があれば、操作感はJavaに極力似せる
+・業務アプリ向けの操作は JavaScript、Windows 上で動く JScript の両方で動くことを目指す
+・画像関連の操作は、IE, Edge, Chrome, Firefox などで動かすことを目指す
+・読みやすさと速度をうまくバランスをとったコードにする
 
 
 【文字コードについて】
