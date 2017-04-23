@@ -43,6 +43,24 @@
 	color = Color.newColorNormalizedRGB(color).getNormalizedRGB();
 	System.out.println([color.r, color.g, color.b]);
 	
+	System.out.println("JavaのColorっぽく色を取り出せます");
+	color = Color.newColorRGB(50, 100, 150);
+	System.out.println([color.getRed(), color.getGreen(), color.getBlue()]);
+	
+	System.out.println("16進数の設定");
+	color = Color.newColorRGB(0x4080B0);
+	System.out.println(color);
+	
+	System.out.println("明るめと暗め");
+	color = Color.newColorRGB(50, 100, 150).brighter();
+	System.out.println(color);
+	color = Color.newColorRGB(50, 100, 150).darker();
+	System.out.println(color);
+	
+	System.out.println("色名の指定");
+	System.out.println(Color.RED);
+	
+	
 	System.stop();
 }
 

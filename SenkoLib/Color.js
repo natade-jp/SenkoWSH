@@ -40,6 +40,16 @@ Color._flact = function(x) {
 	return(x - Math.floor(x));
 };
 
+Color._hex = function(x) {
+	var x = Math.round(x * 255.0).toString(16);
+	if(x.length === 1) {
+		return "0" + x;
+	}
+	else {
+		return x;
+	}
+};
+
 Color.prototype._setRGB = function(r, g, b, a) {
 	this.r = r;
 	this.g = g;
@@ -283,28 +293,36 @@ Color.newColorRGB = function() {
 	var g = 0.0;
 	var b = 0.0;
 	var a = 255.0;
-	if(arguments.length === 1) {
-		if(arguments[0].r) r = arguments[0].r;
-		if(arguments[0].g) g = arguments[0].g;
-		if(arguments[0].b) b = arguments[0].b;
-		if(arguments[0].a) a = arguments[0].a;
-		if (arguments[0].length >= 3) {
+	if(arguments.length >= 3) {
+		r = arguments[0];
+		g = arguments[1];
+		b = arguments[2];
+		if (arguments.length >= 4) {
+			a = arguments[3];
+		}
+	}
+	else if(arguments.length >= 1) {
+		if(typeof arguments[0] === "number") {
+			r = (arguments[0] >> 16) & 0xff;
+			g = (arguments[0] >> 8) & 0xff;
+			b =  arguments[0] & 0xff;
+			if(arguments[1]) {
+				a = (arguments[0] >> 24) & 0xff;
+			}
+		}
+		else if(typeof arguments[0].length === "undefined") {
+			if(arguments[0].r) r = arguments[0].r;
+			if(arguments[0].g) g = arguments[0].g;
+			if(arguments[0].b) b = arguments[0].b;
+			if(arguments[0].a) a = arguments[0].a;
+		}
+		else if (arguments[0].length >= 3) {
 			r = arguments[0][0];
 			g = arguments[0][1];
 			b = arguments[0][2];
-		}
-		if (arguments[0].length >= 4) {
-			a = arguments[0][3];
-		}
-	}
-	else {
-		if(arguments.length >= 3) {
-			r = arguments[0];
-			g = arguments[1];
-			b = arguments[2];
-		}
-		if (arguments.length >= 4) {
-			a = arguments[3];
+			if (arguments[0].length >= 4) {
+				a = arguments[0][3];
+			}
 		}
 	}
 	var color = new Color();
@@ -326,6 +344,19 @@ Color.prototype.getRGB = function() {
 		b : Math.round(this.b * 255.0),
 		a : Math.round(this.a * 255.0)
 	};
+};
+
+Color.prototype.getRGB24 = function() {
+	return(	(Math.round(255.0 * this.r) << 16) |
+			(Math.round(255.0 * this.g) << 8 ) |
+			(Math.round(255.0 * this.b)      ));
+};
+
+Color.prototype.getRGB32 = function() {
+	return( (Math.round(255.0 * this.a) << 24) |
+			(Math.round(255.0 * this.r) << 16) |
+			(Math.round(255.0 * this.g) << 8 ) |
+			(Math.round(255.0 * this.b)      ));
 };
 
 Color.newColorNormalizedHSV = function() {
@@ -501,3 +532,121 @@ Color.prototype.getHLS = function() {
 	color.a = Math.round(color.a * 255.0);
 	return color;
 };
+
+Color.prototype.getRed = function() {
+	return Math.round(this.r * 255.0);
+};
+
+Color.prototype.getGreen = function() {
+	return Math.round(this.g * 255.0);
+};
+
+Color.prototype.getBlue = function() {
+	return Math.round(this.b * 255.0);
+};
+
+Color.prototype.getAlpha = function() {
+	return Math.round(this.b * 255.0);
+};
+
+Color.prototype.brighter = function() {
+	var FACTOR = 1.0 / 0.7;
+	var color = new Color();
+	color.r = Math.min( this.r * FACTOR, 1.0);
+	color.g = Math.min( this.g * FACTOR, 1.0);
+	color.b = Math.min( this.b * FACTOR, 1.0);
+	color.a = this.a;
+	return color;
+};
+
+Color.prototype.darker = function() {
+	var FACTOR = 0.7;
+	var color = new Color();
+	color.r = Math.max( this.r * FACTOR, 0.0);
+	color.g = Math.max( this.g * FACTOR, 0.0);
+	color.b = Math.max( this.b * FACTOR, 0.0);
+	color.a = this.a;
+	return color;
+};
+
+Color.prototype.getCSSHex = function() {
+	if(this.a === 1.0) {
+		return "#" +
+			Color._hex(this.r) + 
+			Color._hex(this.g) +
+			Color._hex(this.b);
+	}
+	else {
+		return "#" +
+			Color._hex(this.a) + 
+			Color._hex(this.r) + 
+			Color._hex(this.g) +
+			Color._hex(this.b);
+	}
+};
+
+Color.prototype.getCSS255 = function() {
+	if(this.a === 1.0) {
+		return "rgb(" +
+		Math.round(this.r * 255) + "," +
+		Math.round(this.g * 255) + "," +
+		Math.round(this.b * 255) + ")";
+	}
+	else {
+		return "rgba(" +
+		Math.round(this.r * 255) + "," +
+		Math.round(this.g * 255) + "," +
+		Math.round(this.b * 255) + "," +
+		this.a + ")";
+	}
+};
+
+Color.prototype.getCSSPercent = function() {
+	if(this.a === 1.0) {
+		return "rgb(" +
+		Math.round(this.r * 100) + "%," +
+		Math.round(this.g * 100) + "%," +
+		Math.round(this.b * 100) + "%)";
+	}
+	else {
+		return "rgba(" +
+		Math.round(this.r * 100) + "%," +
+		Math.round(this.g * 100) + "%," +
+		Math.round(this.b * 100) + "%," +
+		Math.round(this.a * 100) + "%)";
+	}
+};
+
+Color.prototype.toString = function() {
+	return	"Color[" +
+			this.getCSSHex() + ", " +
+			this.getCSS255() + ", " +
+			this.getCSSPercent() + "]";
+};
+
+Color.white			= Color.newColorRGB(0xffffff);
+Color.lightGray		= Color.newColorRGB(0xd3d3d3);
+Color.gray			= Color.newColorRGB(0x808080);
+Color.darkGray		= Color.newColorRGB(0xa9a9a9);
+Color.black			= Color.newColorRGB(0x000000);
+Color.red			= Color.newColorRGB(0xff0000);
+Color.pink			= Color.newColorRGB(0xffc0cb);
+Color.orange		= Color.newColorRGB(0xffa500);
+Color.yellow		= Color.newColorRGB(0xffff00);
+Color.green			= Color.newColorRGB(0x008000);
+Color.magenta		= Color.newColorRGB(0xff00ff);
+Color.cyan			= Color.newColorRGB(0x00ffff);
+Color.blue			= Color.newColorRGB(0x0000ff);
+
+Color.WHITE			= Color.white;
+Color.LIGHT_GRAY	= Color.lightGray;
+Color.GRAY			= Color.gray;
+Color.DARK_GRAY		= Color.darkGray;
+Color.RED			= Color.red;
+Color.PINK			= Color.pink;
+Color.ORANGE		= Color.orange;
+Color.YELLOW		= Color.yellow;
+Color.GREEN			= Color.green;
+Color.MAGENTA		= Color.magenta;
+Color.CYAN			= Color.cyan;
+Color.BLUE			= Color.blue;
