@@ -1,3 +1,5 @@
+﻿/* global BigInteger */
+
 ﻿/**
  * BigDecimal.js
  * 
@@ -1045,7 +1047,7 @@ BigDecimal.prototype.doubleValue = function() {
 
 BigDecimal.prototype.pow = function(n, mc) {
 	if(Math.abs(n) > 999999999) {
-		throw "ArithmeticException ";
+		throw "ArithmeticException";
 	}
 	if(arguments.length === 1) {
 		mc = MathContext.UNLIMITED;
@@ -1054,10 +1056,10 @@ BigDecimal.prototype.pow = function(n, mc) {
 		throw "not MathContext";
 	}
 	if((mc.getPrecision() === 0) && (n < 0)) {
-		throw "ArithmeticException ";
+		throw "ArithmeticException";
 	}
 	if((mc.getPrecision() > 0) && (n > mc.getPrecision())) {
-		throw "ArithmeticException ";
+		throw "ArithmeticException";
 	}
 	var x, y;
 	x = this.clone();
