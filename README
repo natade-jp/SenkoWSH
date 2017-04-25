@@ -16,15 +16,23 @@ ECMAScript ライブラリです。
 
 
 【文字コードについて】
-JScript用動作の場合は、utf-16le（BOM付き, UTF-16, LittleEndian, CRLF）とします。
 HTML5用動作の場合は、utf-8（BOM付き※, UTF-8, LF）とします。
-Windows環境の場合は「toHTML5.wsf」「toJScript.wsf」のJScriptで切り替えが可能です。
-スクリプトで自動で文字コード変換を行う都合上、BOM付きを推奨しています。
+JScript用動作の場合は、utf-16le（BOM付き, UTF-16, LittleEndian, CRLF）とします。
+Windows上ではJScriptに切り替えられるように「toHTML5.wsf」「toJScript.wsf」で変更が行えます。
+スクリプトで自動で文字コード変換を行う都合上、BOM付きとします。
 これは、日本語が少ししか含まれていないutf-8を、WSHが判断できないためです。
+github にアップロード時は、HTML5用動作の基準でアップロードします。
 
 
 【フォルダ構成】
-SenkoLib
+./
+　READMEと、上述のHTML5⇔JScript変換用WSF置き場
+
+./docs
+　「GitHub Pages」の公開用サイト
+　index.html のリストの中に、サンプルへのリンクを張る予定
+
+./docs/SenkoLib
 　SenkoLibを構成するJavaScirptライブラリがおいてあります。
 　1つのJavaScriptライブラリには1つのクラスのような記述があります。
 　移植性を上げるため、単体でロードするだけで動作するような設計をします。
@@ -32,7 +40,8 @@ SenkoLib
 　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
 　各クラスのテスト用プログラム、サンプルプログラムは、
 　sample内にフォルダを作成して入れます。
-sample
+
+./docs/sample
 　SenkoLib内部に入っている各クラスの使用方法が入っています。
 　テストプログラムのようにメソッドが正しく動作するような形でいれます。
 　「index.html」「main.wsf」は、依存ライブラリ追加以外に変更しないでください。
@@ -41,7 +50,8 @@ sample
 
 
 【ライセンスについて】
-ライセンスは NYSL Version 0.9982 とします。
+各ファイルの最も上部にライセンスが
+書いていない場合は、 NYSL Version 0.9982 とします。
 この理由は、プログラマーにとって誰でも自由に使えるのが便利だと考えたからです。
 
 比較的自由とされる MITライセンスなどの場合でも、
