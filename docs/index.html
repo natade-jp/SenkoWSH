@@ -5,6 +5,33 @@
 <meta charset="utf-8">
 </head>
 <body>
-<p>SenkoLib</p>
+<h1>SenkoLib</h1>
+<h2>samples</h2>
+<ul id="samples">
+	<li>ArrayList</li>
+	<li>BigDecimal</li>
+	<li>BigInteger</li>
+	<li>Byte</li>
+	<li>Color</li>
+	<li>Dialog</li>
+	<li>File</li>
+	<li>HashMap</li>
+	<li>Random</li>
+	<li>String</li>
+	<li>String.format</li>
+	<li>StringMacros</li>
+	<li>System</li>
+</ul>
+<script type="text/javascript">
+var element = document.getElementById("samples");
+var i = 0;
+if(	element !== null) {
+	list = element.getElementsByTagName("li");
+	for(i = 0; i < list.length; i++) {
+		var title = list[i].innerText;
+		list[i].innerHTML = "<a href=\"./sample/" + title + "/index.html\">" + title + "</a>";
+	}
+}
+</script> 
 </body>
 </html>
