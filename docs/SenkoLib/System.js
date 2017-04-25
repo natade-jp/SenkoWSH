@@ -1,4 +1,4 @@
-﻿/* global WSH, WScript */
+﻿/* global WSH, WScript, main */
 
 ﻿/**
  * System.js
@@ -50,6 +50,10 @@ var System = {
 		},
 		
 		println: function(text) {
+			// HTMLで表示する場合
+			if((System.HtmlConsole) && (System.HtmlConsole.isShow()))  {
+				System.HtmlConsole.out(text);
+			}
 			// JScript 用
 			if(System.isJScript()) {
 				if(/cscript\.exe$/i.test(WSH.FullName)) {
@@ -202,14 +206,14 @@ var System = {
 		}
 	},
 	
-	getCurrentDirectory: function(filename) {
+	getCurrentDirectory: function() {
 		if(System.isJScript()) {
 			var shell = new ActiveXObject("WScript.Shell");
 			return(shell.CurrentDirectory);
 		}
 	},
 
-	getScriptDirectory: function(filename) {
+	getScriptDirectory: function() {
 		if(System.isJScript()) {
 			var x = WSH.ScriptFullName.match(/.*\\/)[0];
 			return(x.substring(0 ,x.length - 1));
@@ -221,6 +225,87 @@ var System = {
 			var shell = new ActiveXObject("WScript.Shell");
 			shell.CurrentDirectory = System.getScriptDirectory();
 		}
+	},
+	
+	setShowHtmlConsole: function(is_show_html_console) {
+		if(typeof is_show_html_console !== "boolean") {
+			throw "not boolean";
+		}
+		if(!document) {
+			return;
+		}
+		if(!System.HtmlConsole) {
+			var Console = function() {
+				this.htmlinit = false;
+				this.element = null;
+				this.isshow  = false;
+			};
+			Console.prototype._initHTML = function() {
+				if(this.htmlinit) {
+					return;
+				}
+				var body = document.getElementsByTagName("body").item(0);
+				if(!body) {
+					// まだHTMLが読み込まれていないと body が見つからない。
+					return null;
+				}
+				var element = this._getElement();
+				body.appendChild(element);
+			};
+			Console.prototype._getElement = function() {
+				if(this.element !== null) {
+					return this.element;
+				}
+				var element = document.createElement("div");
+				element.style.block = this.isshow ? "block" : "none";
+				element.style.backgroundColor = "black";
+				element.style.margin = "0px";
+				element.style.padding = "0.5em";
+				element.style.lineHeight = "0.5em";
+				element.style.color = "white";
+				element.style.fontFamily = "monospace";
+				element.style.whiteSpace = "pre";
+				this.element = element;
+			};
+			Console.prototype.isShow = function() {
+				return this.isshow;
+			};
+			Console.prototype.setShow = function(isshow) {
+				if(typeof isshow !== "boolean") {
+					throw "not boolean";
+				}
+				this._initHTML();
+				var element = this._getElement();
+				if(this.isshow !== isshow) {
+					this.isshow = isshow;
+					if(element) {
+						element.style.block = this.isshow ? "block" : "none";
+					}
+				}
+			};
+			Console.prototype.printf = function(text) {
+				this._initHTML();
+				var element = this._getElement();
+				if(element) {
+					var p = document.createElement("p");
+					p.innerText = "> " + text;
+					element.appendChild(p);
+				}
+			};
+			Console.prototype.out = function(text) {
+				if(typeof text === "undefined") {
+					this.printf(typeof text);
+				}
+				if(typeof text === null) {
+					this.printf("null");
+				}
+				else if(typeof text.toString === "function") {
+					this.printf(text.toString());
+				}
+			};
+			System.HtmlConsole = new Console();
+		}
+		System.HtmlConsole.setShow(is_show_html_console);
 	},
 	
 	startHtmlMain: function() {

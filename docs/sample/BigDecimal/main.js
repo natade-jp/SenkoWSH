@@ -1,3 +1,5 @@
+﻿/* global System, BigDecimal, MathContext */
+
 ﻿
 function testPlainStringAndEngineeringString(x) {
 	var decimal = new BigDecimal(x);
@@ -197,4 +199,5 @@ function main(args) {
 	System.stop();
 }
 
+System.setShowHtmlConsole(true);
 System.startHtmlMain();

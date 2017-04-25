@@ -65,4 +65,5 @@
 	System.stop();
 }
 
+System.setShowHtmlConsole(true);
 System.startHtmlMain();

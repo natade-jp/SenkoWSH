@@ -106,4 +106,5 @@
 
 }
 
+System.setShowHtmlConsole(true);
 System.startHtmlMain();
