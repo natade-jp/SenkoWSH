@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>sample</title>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<script type="text/javascript" src="../../SenkoLib/System.js" charset="utf-8"></script>
+<script type="text/javascript" src="../../SenkoLib/SComponent.js" charset="utf-8"></script>
+<script type="text/javascript" src="./main.js" charset="utf-8"></script>
+<link rel="stylesheet" type="text/css" href="../samples.css">
+<style type="text/css">
+html, body {
+	height:				100%;
+}
+#component_test {
+	display:			block;
+	width:				100%;
+	height:				50%;
+	background-color:	white;
+}
+</style>
+</head>
+<body>
+<div id="header">
+	<p id="message_chrome">Chrome -> Ctrl + Shift + J</p>
+	<p id="message_firefox">FireFox -> Ctrl + Shift + K</p>
+	<p id="message_ie">IE -> F12</p>
+</div>
+<div id="component_test">
+	<p id = "test1">AAA</p>
+	<p id = "test2">BBB</p>
+</div>
+<div id="result">
+	<div id="code"></div>
+	<div id="senko_console"></div>
+</div>
+<script type="text/javascript">
+	var element = document.getElementById("code");
+	element.innerText = main;
+	System.setShowHtmlConsole(true);
+	System.startHtmlMain();
+</script> 
+</body>
+</html>
