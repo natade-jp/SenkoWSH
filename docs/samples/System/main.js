@@ -1,3 +1,5 @@
+﻿/* global System */
+
 ﻿function main(args) {
 
 	System.out.println("System.out.printlnで1行出力します");
@@ -39,6 +41,3 @@
 	System.stop();
 
 }
-
-System.setShowHtmlConsole(true);
-System.startHtmlMain();

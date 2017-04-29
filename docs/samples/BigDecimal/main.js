@@ -198,6 +198,3 @@ function main(args) {
 
 	System.stop();
 }
-
-System.setShowHtmlConsole(true);
-System.startHtmlMain();

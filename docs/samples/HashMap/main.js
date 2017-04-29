@@ -1,3 +1,5 @@
+﻿/* global System */
+
 ﻿function main(args) {
 	var map, x;
 	
@@ -56,6 +58,3 @@
 	
 	System.stop();
 }
-
-System.setShowHtmlConsole(true);
-System.startHtmlMain();

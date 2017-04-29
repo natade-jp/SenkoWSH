@@ -1,3 +1,5 @@
+﻿/* global System */
+
 ﻿function main(args) {
 	var list, list2, compare;
 	
@@ -64,6 +66,3 @@
 	
 	System.stop();
 }
-
-System.setShowHtmlConsole(true);
-System.startHtmlMain();

@@ -45,14 +45,19 @@ var System = {
 			}
 			// JScript ではない場合、1行表示を試みる
 			else {
-				System.out.println(text);
+				System.out.println(text, true);
 			}
 		},
 		
-		println: function(text) {
+		println: function(text, isNotNewLine) {
 			// HTMLで表示する場合
 			if((System.HtmlConsole) && (System.HtmlConsole.isShow()))  {
-				System.HtmlConsole.out(text);
+				if(isNotNewLine) {
+					System.HtmlConsole.out(text, isNotNewLine);
+				}
+				else {
+					System.HtmlConsole.out(text, false);
+				}
 			}
 			// JScript 用
 			if(System.isJScript()) {
@@ -244,11 +249,17 @@ var System = {
 				if(this.htmlinit) {
 					return;
 				}
-				var body = document.getElementsByTagName("body").item(0);
+				var body;
+				body = document.getElementById("senko_console");
 				if(!body) {
-					// まだHTMLが読み込まれていないと body が見つからない。
-					return null;
+					body = document.getElementsByTagName("body").item(0);
+					if(!body) {
+						// まだHTMLが読み込まれていないと body が見つからない。
+						return null;
+					}
 				}
+				body.style.margin = "0px";
+				body.style.padding = "0px";
 				var element = this._getElement();
 				body.appendChild(element);
 			};
@@ -257,15 +268,15 @@ var System = {
 					return this.element;
 				}
 				var element = document.createElement("div");
-				element.style.block = this.isshow ? "block" : "none";
+				element.style.display = "block";
 				element.style.backgroundColor = "black";
 				element.style.margin = "0px";
 				element.style.padding = "0.5em";
-				element.style.lineHeight = "0.5em";
 				element.style.color = "white";
 				element.style.fontFamily = "monospace";
 				element.style.whiteSpace = "pre";
 				this.element = element;
+				return this.element;
 			};
 			Console.prototype.isShow = function() {
 				return this.isshow;
@@ -279,28 +290,71 @@ var System = {
 				if(this.isshow !== isshow) {
 					this.isshow = isshow;
 					if(element) {
-						element.style.block = this.isshow ? "block" : "none";
+						element.style.display = this.isshow ? "block" : "none";
 					}
 				}
 			};
-			Console.prototype.printf = function(text) {
+			Console.prototype.print = function(text) {
 				this._initHTML();
 				var element = this._getElement();
+				
 				if(element) {
-					var p = document.createElement("p");
-					p.innerText = "> " + text;
+					var p = element.lastElementChild;
+					
+					// 最終行に文字を追加する
+					if(!p) {
+						p = document.createElement("p");
+						p.innerText = "> ";
+						p.style.margin = "0.2em 0px 0.2em 0px";
+						p.style.padding = "0px";
+						element.appendChild(p);
+					}
+					
+					p.innerText = p.innerText + text;
+				}
+			};
+			Console.prototype.println = function(text) {
+				this._initHTML();
+				var element = this._getElement();
+				
+				if(element) {
+					var p = element.lastElementChild;
+					
+					// 最終行に文字を追加する
+					if(!p) {
+						p = document.createElement("p");
+						p.innerText = "> ";
+						p.style.margin = "0.2em 0px 0.2em 0px";
+						p.style.padding = "0px";
+						element.appendChild(p);
+					}
+					
+					p.innerText = p.innerText + text;
+					
+					// 次の行を作成する
+					p = document.createElement("p");
+					p.innerText = "> ";
+					p.style.margin = "0.2em 0px 0.2em 0px";
+					p.style.padding = "0px";
 					element.appendChild(p);
 				}
 			};
-			Console.prototype.out = function(text) {
+			Console.prototype.out = function(text, isNotNewLine) {
+				var printtext = null;
 				if(typeof text === "undefined") {
-					this.printf(typeof text);
+					printtext = typeof text;
 				}
-				if(typeof text === null) {
-					this.printf("null");
+				else if(typeof text === null) {
+					printtext = "null";
 				}
 				else if(typeof text.toString === "function") {
-					this.printf(text.toString());
+					printtext = text.toString();
+				}
+				if(isNotNewLine) {
+					this.print(printtext);
+				}
+				else {
+					this.println(printtext);
 				}
 			};
 			System.HtmlConsole = new Console();
