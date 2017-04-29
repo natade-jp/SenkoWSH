@@ -249,19 +249,26 @@ var System = {
 				if(this.htmlinit) {
 					return;
 				}
-				var body;
-				body = document.getElementById("senko_console");
-				if(!body) {
-					body = document.getElementsByTagName("body").item(0);
-					if(!body) {
+				var root;
+				root = document.getElementById("senko_console");
+				if(root) {
+					var child = root.lastChild;
+					while (child) {
+						root.removeChild(child);
+						child = root.lastChild;
+					}
+				}
+				else {
+					root = document.getElementsByTagName("body").item(0);
+					if(!root) {
 						// まだHTMLが読み込まれていないと body が見つからない。
 						return null;
 					}
 				}
-				body.style.margin = "0px";
-				body.style.padding = "0px";
+				root.style.margin = "0px";
+				root.style.padding = "0px";
 				var element = this._getElement();
-				body.appendChild(element);
+				root.appendChild(element);
 			};
 			Console.prototype._getElement = function() {
 				if(this.element !== null) {
