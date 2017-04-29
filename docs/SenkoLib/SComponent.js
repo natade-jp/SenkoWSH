@@ -18,6 +18,8 @@ var SComponent = function() {
 
 SComponent._id				= 0;
 SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
+SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
+SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
 SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 
@@ -28,10 +30,10 @@ var SComponentPutType = {
 };
 SComponent.prototype._initComponent = function() {
 	this.id				= "SComponent_" + (SComponent._id++).toString(16);
-	this.space_id		= "SComponent_" + (SComponent._id++).toString(16);
+	this.wallid			= "SComponent_" + (SComponent._id++).toString(16);
 	this.isshow			= false;
 	this.element		= null;
-	this.space			= null;
+	this.wall			= null;
 	
 	this.tool			= {
 		remove : function(id) {
@@ -43,33 +45,41 @@ SComponent.prototype._initComponent = function() {
 			}
 		},
 		AputB : function(node, component, type) {
+			if(!(component instanceof SComponent)) {
+				throw "IllegalArgumentException";
+			}
+			var insertNext = function(newNode, referenceNode) {
+				if(referenceNode.nextSibling) {
+					referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+				}
+				else {
+					referenceNode.parentNode.appendChild(newNode);
+				}
+			};
 			component.remove();
 			if(type === SComponentPutType.IN) {
-				component.getSpace().style.display = "inline-block";
+				type = SComponentPutType.NEWLINE;
+				if(node.lastChild !== null) {
+					component.getWall(type).style.display = "block";
+					node.appendChild(component.getWall());
+				}
 				component.getElement().style.display = "inline-block";
-				node.appendChild(component.getSpace());
 				node.appendChild(component.getElement());
 			}
 			else {
 				if(!node.parentNode) {
 					throw "not A.parentNode";
 				}
-				if(node.nextSibling) {
-					node.parentNode.insertBefore(component.getElement(), node.nextSibling);
-					node.parentNode.insertBefore(component.getSpace(), component.getElement());
-				}
-				else {
-					node.parentNode.appendChild(component.getSpace());
-					node.parentNode.appendChild(component.getElement());
-				}
-				if(type === SComponentPutType.LEFT) {
+				insertNext(component.getWall(type), node);
+				insertNext(component.getElement(), component.getWall(type));
+				if(type === SComponentPutType.RIGHT) {
 					node.style.display = "inline-block";
-					component.getSpace().style.display = "inline-block";
+					component.getWall(type).style.display = "inline-block";
 					component.getElement().style.display = "inline-block";
 				}
 				else if(type === SComponentPutType.NEWLINE) {
 					node.style.display = "inline-block";
-					component.getSpace().style.display = "block";
+					component.getWall(type).style.display = "block";
 					component.getElement().style.display = "inline-block";
 				}
 			}
@@ -97,20 +107,25 @@ SComponent.prototype.remove = function() {
 	this.tool.remove(this.space_id);
 };
 
-SComponent.prototype.getSpace = function() {
-	if(this.space !== null) {
-		return this.space;
+SComponent.prototype.getWall = function(type) {
+	if(this.wall) {
+		return this.wall;
 	}
-	var space = document.createElement("span");
-	space.setAttribute("id", this.space_id);
-	space.setAttribute("class", SComponent.CLASS_COMPONENT);
-	space.style.display = "inline-block";
-	this.space = space;
-	return space;
+	var wall = document.createElement("span");
+	wall.setAttribute("id", this.wallid);
+	if(type === SComponentPutType.RIGHT) {
+		wall.setAttribute("class", SComponent.CLASS_SPACE);
+	}
+	else if(type === SComponentPutType.NEWLINE) {
+		wall.setAttribute("class", SComponent.CLASS_NEWLINE);
+	}
+	wall.style.display = "inline-block";
+	this.wall = wall;
+	return wall;
 };
 
 SComponent.prototype.getElement = function() {
-	if(this.element !== null) {
+	if(this.element) {
 		return this.element;
 	}
 	var element = document.createElement("span");
@@ -125,11 +140,11 @@ SComponent.prototype.put = function(targetComponent, type) {
 	if(targetComponent === null) {
 		throw "IllegalArgumentException";
 	}
-	if(!targetComponent.getSpace || !targetComponent.getElement) {
+	if(!(targetComponent instanceof SComponent)) {
 		throw "IllegalArgumentException";
 	}
 	if(	(type !== SComponentPutType.IN) &&
-		(type !== SComponentPutType.LEFT) &&
+		(type !== SComponentPutType.RIGHT) &&
 		(type !== SComponentPutType.NEWLINE) ) {
 		throw "IllegalArgumentException";
 	}
@@ -150,10 +165,11 @@ SComponent.prototype.putMe = function(target, type) {
 	}
 	if(	(!!target_element) &&
 		(type !== SComponentPutType.IN) &&
-		(type !== SComponentPutType.LEFT) &&
+		(type !== SComponentPutType.RIGHT) &&
 		(type !== SComponentPutType.NEWLINE) ) {
 		throw "IllegalArgumentException";
 	}
+				console.log(this.getWall(type));
 	this.tool.AputB(target_element, this, type);
 	return;
 };
