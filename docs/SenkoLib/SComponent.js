@@ -231,7 +231,8 @@ SButton.prototype.setText = function(title) {
 	}
 };
 SComponent.prototype.getText = function() {
-	return this.getElement().getAttribute("value");
+	var text = this.getElement().getAttribute("value");
+	return (text === null) ? "" : text;
 };
 
 SButton.prototype.addOnClickFunction = function(func) {
