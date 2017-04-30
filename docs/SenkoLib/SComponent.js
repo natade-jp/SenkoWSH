@@ -13,10 +13,9 @@
  */
 
 var SComponent = function() {
-	this._initComponent();
 };
 
-SComponent._id				= 0;
+SComponent._counter			= 0;
 SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
 SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
 SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
@@ -28,12 +27,22 @@ var SComponentPutType = {
 	LEFT	: 1,
 	NEWLINE	: 2
 };
-SComponent.prototype._initComponent = function() {
-	this.id				= "SComponent_" + (SComponent._id++).toString(16);
-	this.wallid			= "SComponent_" + (SComponent._id++).toString(16);
+SComponent.prototype.setText = function(title) {
+	if(title) {
+		this.getElement().innerText = title;
+	}
+};
+SComponent.prototype.getText = function() {
+	return this.getElement().innerText;
+};
+SComponent.prototype._initComponent = function(elementtype, title) {
+	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
+	this.wallid			= "SComponent_" + (SComponent._counter++).toString(16);
 	this.isshow			= false;
-	this.element		= null;
-	this.wall			= null;
+	this._element		= null;
+	this._wall			= null;
+	this.elementtype	= elementtype;
+	this.setText(title);
 	
 	this.tool			= {
 		remove : function(id) {
@@ -43,6 +52,7 @@ SComponent.prototype._initComponent = function() {
 					element.parentNode.removeChild(element);
 				}
 			}
+			return element;
 		},
 		AputB : function(node, component, type) {
 			if(!(component instanceof SComponent)) {
@@ -58,6 +68,7 @@ SComponent.prototype._initComponent = function() {
 			};
 			component.remove();
 			if(type === SComponentPutType.IN) {
+				// 最後の行があるならば次の行へ
 				type = SComponentPutType.NEWLINE;
 				if(node.lastChild !== null) {
 					component.getWall(type).style.display = "block";
@@ -67,8 +78,8 @@ SComponent.prototype._initComponent = function() {
 				node.appendChild(component.getElement());
 			}
 			else {
-				if(!node.parentNode) {
-					throw "not A.parentNode";
+				if(node.parentNode === null) {
+					throw "not found element on the html";
 				}
 				insertNext(component.getWall(type), node);
 				insertNext(component.getElement(), component.getWall(type));
@@ -83,9 +94,6 @@ SComponent.prototype._initComponent = function() {
 					component.getElement().style.display = "inline-block";
 				}
 			}
-			component.getElement().innerText = "ok";
-			node.style.backgroundColor	= "red";
-			component.getElement().style.backgroundColor	= "blue";
 		}
 	};
 };
@@ -108,8 +116,9 @@ SComponent.prototype.remove = function() {
 };
 
 SComponent.prototype.getWall = function(type) {
-	if(this.wall) {
-		return this.wall;
+	// すでに作成済みならそれを返して、作っていないければ作る
+	if(this._wall) {
+		return this._wall;
 	}
 	var wall = document.createElement("span");
 	wall.setAttribute("id", this.wallid);
@@ -120,25 +129,29 @@ SComponent.prototype.getWall = function(type) {
 		wall.setAttribute("class", SComponent.CLASS_NEWLINE);
 	}
 	wall.style.display = "inline-block";
-	this.wall = wall;
+	this._wall = wall;
 	return wall;
 };
 
 SComponent.prototype.getElement = function() {
-	if(this.element) {
-		return this.element;
+	// すでに作成済みならそれを返して、作っていないければ作る
+	if(this._element) {
+		return this._element;
 	}
-	var element = document.createElement("span");
+	var element = document.createElement(this.elementtype);
 	element.setAttribute("id", this.id);
 	element.setAttribute("class", SComponent.CLASS_COMPONENT);
 	element.style.display = "inline-block";
-	this.element = element;
+	this._element = element;
 	return element;
 };
 
 SComponent.prototype.put = function(targetComponent, type) {
 	if(targetComponent === null) {
 		throw "IllegalArgumentException";
+	}
+	if(this === targetComponent) {
+		throw "it referenced me";
 	}
 	if(!(targetComponent instanceof SComponent)) {
 		throw "IllegalArgumentException";
@@ -157,19 +170,22 @@ SComponent.prototype.putMe = function(target, type) {
 	if(target === null) {
 		throw "IllegalArgumentException";
 	}
+	if(this === target) {
+		throw "it referenced me";
+	}
 	if((typeof target === "string")||(target instanceof String)) {
 		target_element = document.getElementById(target);
 	}
 	else if(target.getElement) {
 		target_element = target.getElement();
 	}
-	if(	(!!target_element) &&
-		(type !== SComponentPutType.IN) &&
-		(type !== SComponentPutType.RIGHT) &&
-		(type !== SComponentPutType.NEWLINE) ) {
+	if( (target_element === null) ||
+		(	(type !== SComponentPutType.IN) &&
+			(type !== SComponentPutType.RIGHT) &&
+			(type !== SComponentPutType.NEWLINE) )
+	) {
 		throw "IllegalArgumentException";
 	}
-				console.log(this.getWall(type));
 	this.tool.AputB(target_element, this, type);
 	return;
 };
@@ -177,16 +193,48 @@ SComponent.prototype.putMe = function(target, type) {
 SComponent.prototype.setShow = function(isshow) {
 	if(isshow) {
 		this.getElement().style.visibility	= "visible";
-		this.getSpace().style.visibility	= "visible";
+		this.getWall().style.visibility	= "visible";
 	}
 	else {
 		this.getElement().style.visibility	= "hidden";
-		this.getSpace().style.visibility	= "hidden";
+		this.getWall().style.visibility	= "hidden";
 	}
 	return;
 };
 
-var SPanel = function() {
+SComponent.prototype.toString = function() {
+	return this._elementtype + "(" + this.id + ")";
+};
+
+var SPanel = function(title) {
 	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "div", title);
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_PANEL);
 };
 SPanel.prototype = new SComponent();
+
+var SButton = function(title) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "input", title);
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_BUTTON);
+	element.setAttribute("type", "button");
+};
+SButton.prototype = new SComponent();
+
+SButton.prototype.setText = function(title) {
+	if(title) {
+		this.getElement().setAttribute("value", title);
+	}
+};
+SComponent.prototype.getText = function() {
+	return this.getElement().getAttribute("value");
+};
+
+SButton.prototype.addOnClickFunction = function(func) {
+	this.getElement().addEventListener("click", func, false);
+};
+
