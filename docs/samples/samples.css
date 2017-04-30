@@ -2,6 +2,7 @@ body {
 	margin:				0px;
 	padding:			0px;
 	background-color:	black;
+	font-family:		Consolas, Courier New, Courier, Monaco, monospace;
 }
 
 #header {
@@ -26,10 +27,10 @@ body {
 	position:			relative;
 	background-color:	black;
 	color:				white;
-	font-family:		monospace;
+	font-family:		Consolas, Courier New, Courier, Monaco, monospace;
 	white-space:		pre;
 	width:				50%;
-	font-size:			1.0em;
+	font-size:			0.8em;
 	line-height:		1.2em;
 	-moz-tab-size:		4;
 	tab-size:			4;

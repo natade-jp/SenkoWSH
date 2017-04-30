@@ -280,7 +280,7 @@ var System = {
 				element.style.margin = "0px";
 				element.style.padding = "0.5em";
 				element.style.color = "white";
-				element.style.fontFamily = "monospace";
+				element.style.fontFamily = "Consolas, Courier New, Courier, Monaco, monospace";
 				element.style.whiteSpace = "pre";
 				this.element = element;
 				return this.element;
