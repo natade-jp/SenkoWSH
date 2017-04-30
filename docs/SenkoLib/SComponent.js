@@ -98,6 +98,9 @@ SComponent.prototype.setEnabled = function(isenabled) {
 SComponent.prototype.isEnabled = function() {
 	return this._isBooleanAttribute("disabled");
 };
+SComponent.prototype.getId = function() {
+	return this.id;
+};
 SComponent.prototype._initComponent = function(elementtype, title) {
 	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
 	this.wallid			= "SComponent_" + (SComponent._counter++).toString(16);
@@ -252,15 +255,20 @@ SComponent.prototype.putMe = function(target, type) {
 	this.tool.AputB(target_element, this, type);
 	return;
 };
-
-SComponent.prototype.setShow = function(isshow) {
-	if(isshow) {
+SComponent.prototype.isVisible = function() {
+	if(this.getElement().style.visibility === null) {
+		return true;
+	}
+	return this.getElement().style.visibility !== "hidden";
+};
+SComponent.prototype.setVisible = function(isvisible) {
+	if(isvisible) {
 		this.getElement().style.visibility	= "visible";
-		this.getWall().style.visibility	= "visible";
+		this.getWall().style.visibility		= "visible";
 	}
 	else {
 		this.getElement().style.visibility	= "hidden";
-		this.getWall().style.visibility	= "hidden";
+		this.getWall().style.visibility		= "hidden";
 	}
 	return;
 };

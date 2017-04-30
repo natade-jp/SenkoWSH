@@ -1,7 +1,7 @@
 ﻿/* global System, SComponent, SFile */
 
 ﻿function main(args) {
-	var pushed = 50;
+	var pushed = 10;
 	
 	System.out.println("SComponent クラスのサンプル");
 	
@@ -38,7 +38,7 @@
 		
 		// 何回か押したら非表示にする
 		if(pushed === 0) {
-			obj4.setShow(false);
+			obj5.setVisible(false);
 		}
 	});
 	
