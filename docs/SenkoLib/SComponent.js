@@ -23,11 +23,17 @@ SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
 SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 SComponent.CLASS_FILE		= "SCOMPONENT_File";
+SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
 
 SComponent.putype = {
 	IN		: 0,
 	LEFT	: 1,
 	NEWLINE	: 2
+};
+SComponent.unittype = {
+	PX		: "px",
+	EM		: "em",
+	PERCENT	: "%"
 };
 SComponent.prototype.setText = function(title) {
 	if(!title) {
@@ -101,6 +107,12 @@ SComponent.prototype.isEnabled = function() {
 SComponent.prototype.getId = function() {
 	return this.id;
 };
+SComponent.prototype.getUnit = function() {
+	return this.unittype;
+};
+SComponent.prototype.setUnit = function(unittype) {
+	this.unittype = unittype;
+};
 SComponent.prototype._initComponent = function(elementtype, title) {
 	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
 	this.wallid			= "SComponent_" + (SComponent._counter++).toString(16);
@@ -108,9 +120,18 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 	this._element		= null;
 	this._wall			= null;
 	this.elementtype	= elementtype;
+	this.unit			= SComponent.unittype.EM;
 	this.setText(title);
 	
 	this.tool			= {
+		removeAttribute : function(id, attribute) {
+			var element = document.getElementById(id);
+			if(element) {
+				if(element.getAttribute(attribute) !== null) {
+					element.removeAttribute(attribute);
+				}
+			}
+		},
 		remove : function(id) {
 			var element = document.getElementById(id);
 			if(element) {
@@ -164,16 +185,40 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 	};
 };
 
-SComponent.prototype._setSize = function(width, height) {
-	width  = ~~Math.floor(width);
-	height = ~~Math.floor(height);
-	if(	(arguments.length !== 2) || 
-		((typeof width !== "number") || (typeof height !== "number")) ||
-		((width < 0) || (height < 0))) {
+SComponent.prototype.getWidth = function() {
+	var width = this.getElement().style.width;
+	if(width === null) {
+		return null;
+	}
+	width = width.match(/[\+\-]?\s*[0-9]*\.?[0-9]*/)[0];
+	return parseFloat(width);
+};
+SComponent.prototype.getHeight = function() {
+	var height = this.getElement().style.height;
+	if(height === null) {
+		return null;
+	}
+	height = height.match(/[\+\-]?\s*[0-9]*\.?[0-9]*/)[0];
+	return parseFloat(height);
+};
+SComponent.prototype.getSize = function() {
+	return { width : this.getWidth(), height : this.getHeight() };
+};
+SComponent.prototype.setWidth = function(width) {
+	if(typeof width !== "number") {
 		throw "IllegalArgumentException";
 	}
-	this.width	= width;
-	this.height	= height;
+	this.getElement().style.width = width.toString() + this.unit;
+};
+SComponent.prototype.setHeight = function(height) {
+	if(typeof height !== "number") {
+		throw "IllegalArgumentException";
+	}
+	this.getElement().style.height = height.toString() + this.unit;
+};
+SComponent.prototype.setSize = function(width, height) {
+	this.setWidth(width);
+	this.setHeight(height);
 };
 
 SComponent.prototype.remove = function() {
@@ -347,3 +392,41 @@ SFile.prototype.addOnClickFunction = function(func) {
 			func(event.target.files);
 		}, false );
 };
+
+var SCanvas = function() {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "canvas");
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_CANVAS);
+};
+SCanvas.prototype = new SComponent();
+SCanvas.prototype.getPixelSize = function() {
+	var w = this.getElement().getAttribute("width");
+	if(w === null) {
+		// canvas のデフォルトサイズを返す
+		return {width:300, height:150};
+	}
+	var h = this.getElement().getAttribute("height");
+	return {width:w, height:h};
+};
+SCanvas.prototype.setPixelSize = function(width, height) {
+	if(	(arguments.length !== 2) || 
+		((typeof width !== "number") || (typeof height !== "number")) ||
+		((width < 0) || (height < 0))) {
+		throw "IllegalArgumentException";
+	}
+	width  = ~~Math.floor(width);
+	height = ~~Math.floor(height);
+	this.getElement().setAttribute("width", width);
+	this.getElement().setAttribute("height", height);
+};
+SCanvas.prototype.getContext = function() {
+	if(this.context) {
+		return this.context;
+	}
+	this.context = this.getElement().getContext('2d');
+	return this.context;
+};
+
+

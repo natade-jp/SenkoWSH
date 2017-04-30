@@ -21,8 +21,14 @@
 	obj3 = new SLabel("SComponentPutType.NEWLINE");
 	obj2.put(obj3, SComponent.putype.NEWLINE);
 	
+	// obj3 のサイズを指定する
+	obj3.setUnit(SComponent.unittype.EM);
+	obj3.setSize(30, 2);
+	System.out.println("width " + obj3.getWidth() + obj3.getUnit());
+	System.out.println("height " + obj3.getHeight() + obj3.getUnit());
+	
 	// obj1 の内容を変更する
-	obj1.setText("aaaa");
+	obj1.setText("【" + obj1.getText() + "】");
 	
 	obj4 = new SButton("button1");
 	obj3.put(obj4, SComponent.putype.NEWLINE);
