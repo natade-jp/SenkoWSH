@@ -20,20 +20,83 @@ SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
 SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
 SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
 SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
+SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
+SComponent.CLASS_FILE		= "SCOMPONENT_File";
 
-var SComponentPutType = {
+SComponent.putype = {
 	IN		: 0,
 	LEFT	: 1,
 	NEWLINE	: 2
 };
 SComponent.prototype.setText = function(title) {
-	if(title) {
-		this.getElement().innerText = title;
+	if(!title) {
+		return;
+	}
+	var element = this.getElement();
+	if(element.tagName === "INPUT") {
+		element.setAttribute("value", title);
+	}
+	else {
+		element.innerText = title;
 	}
 };
 SComponent.prototype.getText = function() {
-	return this.getElement().innerText;
+	var element = this.getElement();
+	var title = null;
+	if(element.tagName === "INPUT") {
+		title = this.getElement().getAttribute("value");
+	}
+	else {
+		title = this.getElement().innerText;
+	}
+	return (title === null) ? "" : title;
+};
+SComponent.prototype._setBooleanAttribute = function(attribute, isset) {
+	if((	!(typeof attribute === "string") &&
+			!(attribute instanceof String)) ||
+			(typeof isset !== "boolean")) {
+		throw "IllegalArgumentException";
+	}
+	var element = this.getElement();
+	if(element.tagName !== "INPUT") {
+		throw "not input";
+	}
+	var checked = element.getAttribute(attribute);
+	if(checked === null) {
+		if(!isset) {
+			element.setAttribute(attribute, "true");
+		}
+	}
+	else {
+		if(isset) {
+			element.removeAttribute(attribute);
+		}
+	}
+};
+SComponent.prototype._isBooleanAttribute = function(attribute) {
+	if( !(typeof attribute === "string") &&
+		!(attribute instanceof String)) {
+		throw "IllegalArgumentException";
+	}
+	var element = this.getElement();
+	if(element.tagName !== "INPUT") {
+		throw "not input";
+	}
+	return (element.getAttribute(attribute) === null);
+};
+
+SComponent.prototype.setChecked = function(ischecked) {
+	this._setBooleanAttribute("checked", ischecked);
+};
+SComponent.prototype.isChecked = function() {
+	return this._isBooleanAttribute("checked");
+};
+SComponent.prototype.setEnabled = function(isenabled) {
+	this._setBooleanAttribute("disabled", isenabled);
+};
+SComponent.prototype.isEnabled = function() {
+	return this._isBooleanAttribute("disabled");
 };
 SComponent.prototype._initComponent = function(elementtype, title) {
 	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
@@ -67,9 +130,9 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 				}
 			};
 			component.remove();
-			if(type === SComponentPutType.IN) {
+			if(type === SComponent.putype.IN) {
 				// 最後の行があるならば次の行へ
-				type = SComponentPutType.NEWLINE;
+				type = SComponent.putype.NEWLINE;
 				if(node.lastChild !== null) {
 					component.getWall(type).style.display = "block";
 					node.appendChild(component.getWall());
@@ -83,12 +146,12 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 				}
 				insertNext(component.getWall(type), node);
 				insertNext(component.getElement(), component.getWall(type));
-				if(type === SComponentPutType.RIGHT) {
+				if(type === SComponent.putype.RIGHT) {
 					node.style.display = "inline-block";
 					component.getWall(type).style.display = "inline-block";
 					component.getElement().style.display = "inline-block";
 				}
-				else if(type === SComponentPutType.NEWLINE) {
+				else if(type === SComponent.putype.NEWLINE) {
 					node.style.display = "inline-block";
 					component.getWall(type).style.display = "block";
 					component.getElement().style.display = "inline-block";
@@ -122,10 +185,10 @@ SComponent.prototype.getWall = function(type) {
 	}
 	var wall = document.createElement("span");
 	wall.setAttribute("id", this.wallid);
-	if(type === SComponentPutType.RIGHT) {
+	if(type === SComponent.putype.RIGHT) {
 		wall.setAttribute("class", SComponent.CLASS_SPACE);
 	}
-	else if(type === SComponentPutType.NEWLINE) {
+	else if(type === SComponent.putype.NEWLINE) {
 		wall.setAttribute("class", SComponent.CLASS_NEWLINE);
 	}
 	wall.style.display = "inline-block";
@@ -156,9 +219,9 @@ SComponent.prototype.put = function(targetComponent, type) {
 	if(!(targetComponent instanceof SComponent)) {
 		throw "IllegalArgumentException";
 	}
-	if(	(type !== SComponentPutType.IN) &&
-		(type !== SComponentPutType.RIGHT) &&
-		(type !== SComponentPutType.NEWLINE) ) {
+	if(	(type !== SComponent.putype.IN) &&
+		(type !== SComponent.putype.RIGHT) &&
+		(type !== SComponent.putype.NEWLINE) ) {
 		throw "IllegalArgumentException";
 	}
 	this.tool.AputB(this.getElement(), targetComponent, type);
@@ -180,9 +243,9 @@ SComponent.prototype.putMe = function(target, type) {
 		target_element = target.getElement();
 	}
 	if( (target_element === null) ||
-		(	(type !== SComponentPutType.IN) &&
-			(type !== SComponentPutType.RIGHT) &&
-			(type !== SComponentPutType.NEWLINE) )
+		(	(type !== SComponent.putype.IN) &&
+			(type !== SComponent.putype.RIGHT) &&
+			(type !== SComponent.putype.NEWLINE) )
 	) {
 		throw "IllegalArgumentException";
 	}
@@ -215,6 +278,15 @@ var SPanel = function(title) {
 };
 SPanel.prototype = new SComponent();
 
+var SLabel = function(title) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "div", title);
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_LABEL);
+};
+SLabel.prototype = new SComponent();
+
 var SButton = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "input", title);
@@ -224,18 +296,46 @@ var SButton = function(title) {
 	element.setAttribute("type", "button");
 };
 SButton.prototype = new SComponent();
-
-SButton.prototype.setText = function(title) {
-	if(title) {
-		this.getElement().setAttribute("value", title);
-	}
-};
-SComponent.prototype.getText = function() {
-	var text = this.getElement().getAttribute("value");
-	return (text === null) ? "" : text;
-};
-
 SButton.prototype.addOnClickFunction = function(func) {
 	this.getElement().addEventListener("click", func, false);
 };
 
+var SFile = function(title) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "input", title);
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_FILE);
+	element.setAttribute("type", "file");
+};
+SFile.prototype = new SComponent();
+SFile.fileaccept = {
+	default	: "",
+	image	: "image/*",
+	audio	: "audio/*",
+	video 	: "video/*",
+	text 	: "text/*",
+	png 	: "image/png",
+	jpeg 	: "image/jpg",
+	gif 	: "image/gif"
+};
+SFile.prototype.getFileAccept = function() {
+	var accept = this.getElement().getAttribute("accept");
+	return (accept === null) ? "" : accept;
+};
+SFile.prototype.setFileAccept = function(filter) {
+	if(filter === SFile.fileaccept.default) {
+		if(this.getElement().getAttribute("accept") !== null) {
+			this.getElement().removeAttribute("accept");
+		}
+	}
+	else {
+		this.getElement().setAttribute("accept", filter);
+	}
+};
+SFile.prototype.addOnClickFunction = function(func) {
+	this.getElement().addEventListener("change",
+		function(event){
+			func(event.target.files);
+		}, false );
+};
