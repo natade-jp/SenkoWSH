@@ -120,8 +120,8 @@ SComponent.prototype._setBooleanAttribute = function(element, attribute, isset) 
 			(typeof isset !== "boolean")) {
 		throw "IllegalArgumentException";
 	}
-	if(element.tagName !== "INPUT") {
-		throw "not input";
+	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
+		throw "not support";
 	}
 	var checked = element.getAttribute(attribute);
 	if(checked === null) {
@@ -140,8 +140,8 @@ SComponent.prototype._isBooleanAttribute = function(element, attribute) {
 		!(attribute instanceof String)) {
 		throw "IllegalArgumentException";
 	}
-	if(element.tagName !== "INPUT") {
-		throw "not input";
+	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
+		throw "not support";
 	}
 	return (element.getAttribute(attribute) === null);
 };
@@ -160,21 +160,11 @@ SComponent.prototype.setEnabled = function(isenabled) {
 		this.addClass(SComponent.CLASS_DISABLED);
 	}
 	var element = this.getElement();
-	if(element.tagName === "SELECT") {
-		element.disabled = isenabled;
-	}
-	else {
-		this._setBooleanAttribute(element, "disabled", isenabled);
-	}
+	this._setBooleanAttribute(element, "disabled", isenabled);
 };
 SComponent.prototype.isEnabled = function() {
 	var element = this.getElement();
-	if(element.tagName === "SELECT") {
-		return !(element.disabled === false);
-	}
-	else {
-		return this._isBooleanAttribute(element, "disabled");
-	}
+	return this._isBooleanAttribute(element, "disabled");
 };
 SComponent.prototype.getId = function() {
 	return this.id;
