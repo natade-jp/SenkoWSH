@@ -54,6 +54,7 @@
 		}
 	});
 	
+	// File
 	filebutton1 = new SFileButton("file");
 	filebutton1.setFileAccept(SFileButton.fileaccept.image);
 	button2.put(filebutton1, SComponent.putype.NEWLINE);
@@ -63,5 +64,14 @@
 			System.out.println(file[i].name + " " + file[i].size + "byte");
 		}
 	});
+	
+	// Canvas
+	var canvas = new SCanvas();
+	canvas.setPixelSize(200, 20);
+	canvas.setUnit(SComponent.unittype.PX);
+	canvas.setSize(200, 20);
+	filebutton1.put(canvas, SComponent.putype.RIGHT);
+	canvas.getContext().fillText("canvas", 0, 20);
+	canvas.getContext().strokeText("canvas", 100, 20);
 	
 }
