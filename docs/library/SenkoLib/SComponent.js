@@ -18,6 +18,7 @@ var SComponent = function() {
 SComponent._counter			= 0;
 SComponent.CLASS_MOUSEOVER	= "SCOMPONENT_MouseOver";
 SComponent.CLASS_MOUSEDOWN	= "SCOMPONENT_MouseDown";
+SComponent.CLASS_DISABLED	= "SCOMPONENT_Disabled";
 SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
 SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
 SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
@@ -113,6 +114,12 @@ SComponent.prototype.isChecked = function() {
 	return this._isBooleanAttribute("checked");
 };
 SComponent.prototype.setEnabled = function(isenabled) {
+	if(isenabled) {
+		this.removeClass(SComponent.CLASS_DISABLED);
+	}
+	else {
+		this.addClass(SComponent.CLASS_DISABLED);
+	}
 	this._setBooleanAttribute("disabled", isenabled);
 };
 SComponent.prototype.isEnabled = function() {
