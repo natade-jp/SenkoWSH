@@ -73,13 +73,12 @@ SComponent.prototype.getText = function() {
 	}
 	return (title === null) ? "" : title;
 };
-SComponent.prototype._setBooleanAttribute = function(attribute, isset) {
+SComponent.prototype._setBooleanAttribute = function(element, attribute, isset) {
 	if((	!(typeof attribute === "string") &&
 			!(attribute instanceof String)) ||
 			(typeof isset !== "boolean")) {
 		throw "IllegalArgumentException";
 	}
-	var element = this.getElement();
 	if(element.tagName !== "INPUT") {
 		throw "not input";
 	}
@@ -95,12 +94,11 @@ SComponent.prototype._setBooleanAttribute = function(attribute, isset) {
 		}
 	}
 };
-SComponent.prototype._isBooleanAttribute = function(attribute) {
+SComponent.prototype._isBooleanAttribute = function(element, attribute) {
 	if( !(typeof attribute === "string") &&
 		!(attribute instanceof String)) {
 		throw "IllegalArgumentException";
 	}
-	var element = this.getElement();
 	if(element.tagName !== "INPUT") {
 		throw "not input";
 	}
@@ -108,10 +106,10 @@ SComponent.prototype._isBooleanAttribute = function(attribute) {
 };
 
 SComponent.prototype.setChecked = function(ischecked) {
-	this._setBooleanAttribute("checked", ischecked);
+	this._setBooleanAttribute(this.getElement(), "checked", ischecked);
 };
 SComponent.prototype.isChecked = function() {
-	return this._isBooleanAttribute("checked");
+	return this._isBooleanAttribute(this.getElement(), "checked");
 };
 SComponent.prototype.setEnabled = function(isenabled) {
 	if(isenabled) {
@@ -120,10 +118,10 @@ SComponent.prototype.setEnabled = function(isenabled) {
 	else {
 		this.addClass(SComponent.CLASS_DISABLED);
 	}
-	this._setBooleanAttribute("disabled", isenabled);
+	this._setBooleanAttribute(this.getElement(), "disabled", isenabled);
 };
 SComponent.prototype.isEnabled = function() {
-	return this._isBooleanAttribute("disabled");
+	return this._isBooleanAttribute(this.getElement(), "disabled");
 };
 SComponent.prototype.getId = function() {
 	return this.id;
@@ -417,12 +415,16 @@ SButton.prototype.addOnClickFunction = function(func) {
 var SFileButton = function(title) {
 	// CSS有効化のために、label 内に input(file) を入れる
 	this.super = SComponent.prototype;
-	this.super._initComponent.call(this, "input", title);
+	this.super._initComponent.call(this, "label", title);
 	var element   = this.super.getElement.call(this);
 	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_FILE);
-	element.setAttribute("type", "file");
-	this.file = element;
+		element.getAttribute("class") + " " + SComponent.CLASS_BUTTON + " " + SComponent.CLASS_FILE);
+	var file = document.createElement("input");
+	file.setAttribute("type", "file");
+	file.setAttribute("id", this.id + "_file");
+	file.style.display = "none";
+	this.file = file;
+	element.appendChild(file);
 };
 SFileButton.prototype = new SComponent();
 SFileButton.fileaccept = {
@@ -434,6 +436,18 @@ SFileButton.fileaccept = {
 	png 	: "image/png",
 	jpeg 	: "image/jpg",
 	gif 	: "image/gif"
+};
+SFileButton.prototype.setEnabled = function(isenabled) {
+	if(isenabled) {
+		this.removeClass(SComponent.CLASS_DISABLED);
+	}
+	else {
+		this.addClass(SComponent.CLASS_DISABLED);
+	}
+	this._setBooleanAttribute(this.file, "disabled", isenabled);
+};
+SFileButton.prototype.isEnabled = function() {
+	return this._isBooleanAttribute(this.file, "disabled");
 };
 SFileButton.prototype.getFileAccept = function() {
 	var accept = this.file.getAttribute("accept");
