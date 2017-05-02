@@ -7,11 +7,15 @@
 	
 	System.out.println("HTML での部品用のクラスです。");
 	
-	var label1, label2, label3;
-	
+	var panel;
 	// パネルを作って、指定した ID の要素内に入れる。
+	panel = new SPanel();
+	panel.putMe("component_test", SComponent.putype.IN);
+	
+	var label1, label2, label3;
+	// ラベルを作って、パネルの中に入れる。
 	label1 = new SLabel("SComponentPutType.IN");
-	label1.putMe("id_test_block", SComponent.putype.IN);
+	panel.put(label1, SComponent.putype.IN);
 	
 	// obj2 は、 obj1 の右に配置する
 	label2 = new SLabel("SComponentPutType.RIGHT");

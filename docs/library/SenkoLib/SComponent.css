@@ -6,12 +6,8 @@
 }
 
 .SCOMPONENT_Label {
-	border-style:		solid;
-	border-width:		1px;
-	border-color:		gray;
-	border-radius:		5px;
-	margin:				0.2em;
-	padding:			0.2em;
+	margin:				0.1em;
+	padding:			0.1em;
 }
 
 .SCOMPONENT_Newline {
@@ -21,6 +17,13 @@
 }
 
 .SCOMPONENT_Panel {
+	border-style:		solid;
+	border-width:		1px;
+	border-color:		gray;
+	border-radius:		5px;
+	margin:				0.2em;
+	padding:			0.8em;
+	background-color:	#ffffff;
 }
 
 .SCOMPONENT_Label {

@@ -428,9 +428,9 @@ SComponent.prototype.toString = function() {
 	return this._elementtype + "(" + this.id + ")";
 };
 
-var SPanel = function(title) {
+var SPanel = function() {
 	this.super = SComponent.prototype;
-	this.super._initComponent.call(this, "div", title);
+	this.super._initComponent.call(this, "div");
 	this.super.addClass.call(this,  SComponent.CLASS_PANEL);
 };
 SPanel.prototype = new SComponent();
