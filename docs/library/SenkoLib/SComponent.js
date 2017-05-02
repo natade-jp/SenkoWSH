@@ -1,4 +1,4 @@
-/* global System */
+/* global System, Text */
 
 ﻿/**
  * SComponent.js
@@ -16,6 +16,8 @@ var SComponent = function() {
 };
 
 SComponent._counter			= 0;
+SComponent.CLASS_MOUSEOVER	= "SCOMPONENT_MouseOver";
+SComponent.CLASS_MOUSEDOWN	= "SCOMPONENT_MouseDown";
 SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
 SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
 SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
@@ -44,7 +46,19 @@ SComponent.prototype.setText = function(title) {
 		element.setAttribute("value", title);
 	}
 	else {
-		element.innerText = title;
+		//element.innerText = title;
+		var childelement = element.firstChild;
+		if(!(childelement instanceof Text)) {
+			var text_node = document.createTextNode("");
+			if(childelement === null) {
+				element.appendChild(text_node);
+			}
+			else {
+				element.insertBefore(text_node, childelement);
+			}
+			childelement = text_node;
+		}
+		childelement.nodeValue = title;
 	}
 };
 SComponent.prototype.getText = function() {
@@ -113,6 +127,28 @@ SComponent.prototype.getUnit = function() {
 SComponent.prototype.setUnit = function(unittype) {
 	this.unittype = unittype;
 };
+SComponent.prototype.addClass = function(classname) {
+	var element = this.getElement();
+	var classdata = element.getAttribute("class");
+	if(classdata === null) {
+		element.setAttribute("class", classname);
+		return;
+	}
+	element.setAttribute("class", classdata + " " + classname);
+};
+SComponent.prototype.removeClass = function(classname) {
+	var element = this.getElement();
+	var classdata = element.getAttribute("class");
+	if(classdata === null) {
+		return;
+	}
+	var pattern = new RegExp( " *" + classname + " *" , "g");
+	if(!pattern.test(classdata)) {
+		return;
+	}
+	classdata = classdata.replace(pattern, "");
+	element.setAttribute("class", classdata);
+};
 SComponent.prototype._initComponent = function(elementtype, title) {
 	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
 	this.wallid			= "SComponent_" + (SComponent._counter++).toString(16);
@@ -121,7 +157,6 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 	this._wall			= null;
 	this.elementtype	= elementtype;
 	this.unit			= SComponent.unittype.EM;
-	this.setText(title);
 	
 	this.tool			= {
 		removeAttribute : function(id, attribute) {
@@ -156,9 +191,9 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 			component.remove();
 			if(type === SComponent.putype.IN) {
 				// 最後の行があるならば次の行へ
-				type = SComponent.putype.NEWLINE;
+				component.onAdded();
 				if(node.lastChild !== null) {
-					component.getWall(type).style.display = "block";
+					component.getWall(SComponent.putype.NEWLINE).style.display = "block";
 					node.appendChild(component.getWall());
 				}
 				component.getElement().style.display = "inline-block";
@@ -168,6 +203,7 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 				if(node.parentNode === null) {
 					throw "not found element on the html";
 				}
+				component.onAdded();
 				insertNext(component.getWall(type), node);
 				insertNext(component.getElement(), component.getWall(type));
 				if(type === SComponent.putype.RIGHT) {
@@ -183,6 +219,8 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 			}
 		}
 	};
+	
+	this.setText(title);
 };
 
 SComponent.prototype.getWidth = function() {
@@ -220,12 +258,12 @@ SComponent.prototype.setSize = function(width, height) {
 	this.setWidth(width);
 	this.setHeight(height);
 };
-
 SComponent.prototype.remove = function() {
 	this.tool.remove(this.id);
 	this.tool.remove(this.space_id);
 };
-
+SComponent.prototype.onAdded = function() {
+};
 SComponent.prototype.getWall = function(type) {
 	// すでに作成済みならそれを返して、作っていないければ作る
 	if(this._wall) {
@@ -254,6 +292,26 @@ SComponent.prototype.getElement = function() {
 	element.setAttribute("class", SComponent.CLASS_COMPONENT);
 	element.style.display = "inline-block";
 	this._element = element;
+	
+	var x = this;
+	var mouseoverfunc = function(){
+		x.addClass.call(x,SComponent.CLASS_MOUSEOVER);
+	};
+	var mouseoutfunc = function(){
+		x.removeClass.call(x,SComponent.CLASS_MOUSEOVER);
+		x.removeClass.call(x,SComponent.CLASS_MOUSEDOWN);
+	};
+	var mousedownfunc  = function(){
+		x.addClass.call(x,SComponent.CLASS_MOUSEDOWN);
+	};
+	var mouseupfunc  = function(){
+		x.removeClass.call(x,SComponent.CLASS_MOUSEDOWN);
+	};
+	
+	element.addEventListener("mouseover",mouseoverfunc	,false);
+	element.addEventListener("mouseout"	,mouseoutfunc	,false);
+	element.addEventListener("mousedown",mousedownfunc	,false);
+	element.addEventListener("mouseup"	,mouseupfunc	,false);
 	return element;
 };
 
@@ -325,18 +383,14 @@ SComponent.prototype.toString = function() {
 var SPanel = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div", title);
-	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_PANEL);
+	this.super.addClass.call(this,  SComponent.CLASS_PANEL);
 };
 SPanel.prototype = new SComponent();
 
 var SLabel = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div", title);
-	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_LABEL);
+	this.super.addClass.call(this,  SComponent.CLASS_LABEL);
 };
 SLabel.prototype = new SComponent();
 
@@ -353,16 +407,18 @@ SButton.prototype.addOnClickFunction = function(func) {
 	this.getElement().addEventListener("click", func, false);
 };
 
-var SFile = function(title) {
+var SFileButton = function(title) {
+	// CSS有効化のために、label 内に input(file) を入れる
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "input", title);
 	var element   = this.super.getElement.call(this);
 	element.setAttribute("class",
 		element.getAttribute("class") + " " + SComponent.CLASS_FILE);
 	element.setAttribute("type", "file");
+	this.file = element;
 };
-SFile.prototype = new SComponent();
-SFile.fileaccept = {
+SFileButton.prototype = new SComponent();
+SFileButton.fileaccept = {
 	default	: "",
 	image	: "image/*",
 	audio	: "audio/*",
@@ -372,22 +428,22 @@ SFile.fileaccept = {
 	jpeg 	: "image/jpg",
 	gif 	: "image/gif"
 };
-SFile.prototype.getFileAccept = function() {
-	var accept = this.getElement().getAttribute("accept");
+SFileButton.prototype.getFileAccept = function() {
+	var accept = this.file.getAttribute("accept");
 	return (accept === null) ? "" : accept;
 };
-SFile.prototype.setFileAccept = function(filter) {
-	if(filter === SFile.fileaccept.default) {
-		if(this.getElement().getAttribute("accept") !== null) {
-			this.getElement().removeAttribute("accept");
+SFileButton.prototype.setFileAccept = function(filter) {
+	if(filter === SFileButton.fileaccept.default) {
+		if(this.file.getAttribute("accept") !== null) {
+			this.file.removeAttribute("accept");
 		}
 	}
 	else {
-		this.getElement().setAttribute("accept", filter);
+		this.file.setAttribute("accept", filter);
 	}
 };
-SFile.prototype.addOnClickFunction = function(func) {
-	this.getElement().addEventListener("change",
+SFileButton.prototype.addOnClickFunction = function(func) {
+	this.file.addEventListener("change",
 		function(event){
 			func(event.target.files);
 		}, false );
@@ -396,9 +452,7 @@ SFile.prototype.addOnClickFunction = function(func) {
 var SCanvas = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "canvas");
-	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_CANVAS);
+	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
 };
 SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {

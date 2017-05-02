@@ -1,0 +1,49 @@
+
+.SCOMPONENT_Component {
+	font-family:	Consolas, Courier New, Courier, Monaco, monospace;
+	font-size:		1em;
+	font-weight:	normal;
+}
+
+.SCOMPONENT_Label {
+	border-style:		solid;
+	border-width:		1px;
+	border-color:		gray;
+	border-radius:		5px;
+	margin:				0.2em;
+	padding:			0.2em;
+}
+
+.SCOMPONENT_Newline {
+}
+
+.SCOMPONENT_Space {
+}
+
+.SCOMPONENT_Panel {
+}
+
+.SCOMPONENT_Label {
+}
+
+.SCOMPONENT_Button {
+	border-style:		none;
+	border-width:		1px;
+	border-radius:		0.2em;
+	border-color:		#eee;
+	background-color:	#ddd;
+	padding:			0.2em 1em 0em 1em;
+	box-shadow:			1px  1px 2px rgba(0, 0, 0, 0.3),
+						0px  1px 0px rgba(255,255,255,0.5) inset,
+						0px -1px 0px rgba(255,255,255,0.2) inset;
+	cursor:				pointer;
+}
+.SCOMPONENT_Button.SCOMPONENT_MouseOver {
+	background-color:	#eee;
+}
+.SCOMPONENT_Button.SCOMPONENT_MouseDown {
+	background-color:	#888;
+}
+
+.SCOMPONENT_Canvas {
+}

@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SFile */
+﻿/* global System, SComponent, SFile, SFileButton */
 
 ﻿function main(args) {
 	var pushed = 10;
@@ -48,8 +48,8 @@
 		}
 	});
 	
-	obj5 = new SFile("file");
-	obj5.setFileAccept(SFile.fileaccept.image);
+	obj5 = new SFileButton("file");
+	obj5.setFileAccept(SFileButton.fileaccept.image);
 	obj4.put(obj5, SComponent.putype.NEWLINE);
 	obj5.addOnClickFunction(function(file) {
 		var i = 0;
@@ -57,7 +57,5 @@
 			System.out.println(file[i].name + " " + file[i].size + "byte");
 		}
 	});
-	
-	
 	
 }
