@@ -556,14 +556,11 @@ var SCanvas = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "canvas");
 	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
+	this.setPixelSize(300, 150);	// canvas のデフォルト値を設定する
 };
 SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {
 	var w = this.getElement().getAttribute("width");
-	if(w === null) {
-		// canvas のデフォルトサイズを返す
-		return {width:300, height:150};
-	}
 	var h = this.getElement().getAttribute("height");
 	return {width:w, height:h};
 };
