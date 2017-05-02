@@ -24,6 +24,8 @@ SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
 SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
 SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
 SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
+SComponent.CLASS_SELECT		= "SCOMPONENT_Select";
+SComponent.CLASS_COMBOBOX	= "SCOMPONENT_ComboBox";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 SComponent.CLASS_FILE		= "SCOMPONENT_File";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
@@ -43,11 +45,34 @@ SComponent.prototype.setText = function(title) {
 		return;
 	}
 	var element = this.getElement();
+	// input 要素なら value を書き換える
 	if(element.tagName === "INPUT") {
 		element.setAttribute("value", title);
 	}
-	else {
-		//element.innerText = title;
+	// select 要素なら option を書き換える
+	else if(element.tagName === "SELECT") {
+		// 1つの文字列のみならば、配列化する
+		if	((typeof title === "string") &&
+			(title instanceof String)) {
+			title = [title];
+		}
+		// 内部の要素を全部消去する
+		var child = element.lastChild;
+		while (child) {
+			element.removeChild(child);
+			child = element.lastChild;
+		}
+		var i = 0;
+		// 追加していく
+		for(i = 0; i < title.length; i++) {
+			var option_node = document.createElement("option");
+			option_node.text = title[i];
+			option_node.value = title[i];
+			element.appendChild(option_node);
+		}
+	}
+	// label 要素なら最初の子要素を書き換える
+	else if(element.tagName === "LABEL") {
 		var childelement = element.firstChild;
 		if(!(childelement instanceof Text)) {
 			var text_node = document.createTextNode("");
@@ -61,15 +86,31 @@ SComponent.prototype.setText = function(title) {
 		}
 		childelement.nodeValue = title;
 	}
+	else {
+		element.textContent = title;
+	}
 };
 SComponent.prototype.getText = function() {
 	var element = this.getElement();
 	var title = null;
+	// input要素なら value を書き換える
 	if(element.tagName === "INPUT") {
 		title = this.getElement().getAttribute("value");
 	}
+	// select要素なら option を取得する
+	else if(element.tagName === "SELECT") {
+		var child = element.children;
+		var i = 0;
+		var output = [];
+		for(i = 0; i < child.length; i++) {
+			if(child[i].tagName === "OPTION") {
+				output[output.length] = child[i].text;
+			}
+		}
+		return output;
+	}
 	else {
-		title = this.getElement().innerText;
+		title = this.getElement().textContent.trim();
 	}
 	return (title === null) ? "" : title;
 };
@@ -85,7 +126,7 @@ SComponent.prototype._setBooleanAttribute = function(element, attribute, isset) 
 	var checked = element.getAttribute(attribute);
 	if(checked === null) {
 		if(!isset) {
-			element.setAttribute(attribute, "true");
+			element.setAttribute(attribute, attribute);
 		}
 	}
 	else {
@@ -118,10 +159,22 @@ SComponent.prototype.setEnabled = function(isenabled) {
 	else {
 		this.addClass(SComponent.CLASS_DISABLED);
 	}
-	this._setBooleanAttribute(this.getElement(), "disabled", isenabled);
+	var element = this.getElement();
+	if(element.tagName === "SELECT") {
+		element.disabled = isenabled;
+	}
+	else {
+		this._setBooleanAttribute(element, "disabled", isenabled);
+	}
 };
 SComponent.prototype.isEnabled = function() {
-	return this._isBooleanAttribute(this.getElement(), "disabled");
+	var element = this.getElement();
+	if(element.tagName === "SELECT") {
+		return !(element.disabled === false);
+	}
+	else {
+		return this._isBooleanAttribute(element, "disabled");
+	}
 };
 SComponent.prototype.getId = function() {
 	return this.id;
@@ -399,6 +452,45 @@ var SLabel = function(title) {
 };
 SLabel.prototype = new SComponent();
 
+var SComboBox = function(item) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "select", item);
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_SELECT + " " + SComponent.CLASS_COMBOBOX);
+};
+SComboBox.prototype = new SComponent();
+SComboBox.prototype.addListener = function(func) {
+	this.getElement().addEventListener("change", func, false);
+};
+SComboBox.prototype.setSelectedItem = function(text) {
+	var child = this.getElement().children;
+	var i = 0, j = 0;
+	for(i = 0; i < child.length; i++) {
+		if(child[i].tagName === "OPTION") {
+			if(child[i].value === text) {
+				this.getElement().selectedIndex = j;
+				break;
+			}
+			j++;
+		}
+	}
+};
+SComboBox.prototype.getSelectedItem = function() {
+	var child = this.getElement().children;
+	var selectindex = this.getElement().selectedIndex;
+	var i = 0, j = 0;
+	for(i = 0; i < child.length; i++) {
+		if(child[i].tagName === "OPTION") {
+			if(selectindex === j) {
+				return child[i].value;
+			}
+			j++;
+		}
+	}
+	return "";
+};
+
 var SButton = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "input", title);
@@ -408,7 +500,7 @@ var SButton = function(title) {
 	element.setAttribute("type", "button");
 };
 SButton.prototype = new SComponent();
-SButton.prototype.addOnClickFunction = function(func) {
+SButton.prototype.addListener = function(func) {
 	this.getElement().addEventListener("click", func, false);
 };
 
@@ -463,7 +555,7 @@ SFileButton.prototype.setFileAccept = function(filter) {
 		this.file.setAttribute("accept", filter);
 	}
 };
-SFileButton.prototype.addOnClickFunction = function(func) {
+SFileButton.prototype.addListener = function(func) {
 	this.file.addEventListener("change",
 		function(event){
 			func(event.target.files);

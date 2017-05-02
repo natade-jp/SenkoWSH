@@ -3,7 +3,6 @@
 	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
 	font-size:		1em;
 	font-weight:	normal;
-	-webkit-appearance:	none;
 }
 
 .SCOMPONENT_Label {
@@ -40,6 +39,7 @@
 						0px  1px 0px rgba(255,255,255,0.5) inset,
 						0px -1px 0px rgba(255,255,255,0.2) inset;
 	cursor:				pointer;
+	-webkit-appearance:	none;
 }
 .SCOMPONENT_Button.SCOMPONENT_MouseOver {
 	background-color:	#ffffff;

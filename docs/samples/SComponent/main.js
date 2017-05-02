@@ -39,7 +39,7 @@
 	button1.put(button2, SComponent.putype.RIGHT);
 	
 	// クリックすると内部の関数が呼ばれる
-	button1.addOnClickFunction(function () {
+	button1.addListener(function () {
 		pushed--;
 		System.out.println("pushed !");
 		button1.setText("残り " + pushed);
@@ -47,6 +47,7 @@
 		// 押すたびに有効化／無効化の変更
 		button2.setEnabled(!button2.isEnabled());
 		filebutton1.setEnabled(!filebutton1.isEnabled());
+		combobox.setEnabled(!combobox.isEnabled());
 		
 		// 何回か押したら非表示にする
 		if(pushed === 0) {
@@ -57,8 +58,8 @@
 	// File
 	filebutton1 = new SFileButton("file");
 	filebutton1.setFileAccept(SFileButton.fileaccept.image);
-	button2.put(filebutton1, SComponent.putype.NEWLINE);
-	filebutton1.addOnClickFunction(function(file) {
+	button2.put(filebutton1, SComponent.putype.RIGHT);
+	filebutton1.addListener(function(file) {
 		var i = 0;
 		for(;i < file.length; i++) {
 			System.out.println(file[i].name + " " + file[i].size + "byte");
@@ -73,5 +74,20 @@
 	filebutton1.put(canvas, SComponent.putype.RIGHT);
 	canvas.getContext().fillText("canvas", 0, 20);
 	canvas.getContext().strokeText("canvas", 100, 20);
+	
+	// ComboBox
+	// 配列で内部を初期化できる
+	var combobox = new SComboBox(["test1", "test2"]);
+	canvas.put(combobox, SComponent.putype.NEWLINE);
+	combobox.setWidth(12);
+	// getText は配列で取得ができる
+	var selectitem = combobox.getText();
+	System.out.println(selectitem[0]);
+	System.out.println(selectitem[1]);
+	// 2番目を選択する
+	combobox.setSelectedItem("test2");
+	combobox.addListener(function () {
+		System.out.println("選択中 " + combobox.getSelectedItem());
+	});
 	
 }
