@@ -127,10 +127,10 @@ SComponent.prototype.getId = function() {
 	return this.id;
 };
 SComponent.prototype.getUnit = function() {
-	return this.unittype;
+	return this.unit;
 };
 SComponent.prototype.setUnit = function(unittype) {
-	this.unittype = unittype;
+	this.unit = unittype;
 };
 SComponent.prototype.addClass = function(classname) {
 	var element = this.getElement();
