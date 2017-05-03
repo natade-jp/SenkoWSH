@@ -805,7 +805,7 @@ SImagePanel.prototype.setImage = function(data) {
 	else if((data instanceof Element) && (data.tagName === "CANVAS")){
 		// canvas -> URL(string)
 		try {
-			this.setImage(data.toDataURL());
+			this.setImage(data.toDataURL("image/png"));
 		} catch(e) {
 		}
 		try {
