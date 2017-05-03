@@ -761,4 +761,3 @@ SCanvas.prototype.drawImage = function(data, isresizecanvas, drawsize, drawcallb
 		throw "IllegalArgumentException";
 	}
 };
-
