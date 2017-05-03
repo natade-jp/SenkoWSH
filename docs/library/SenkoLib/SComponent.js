@@ -114,7 +114,7 @@ SComponent.prototype.setText = function(title) {
 	var element = this.getElement();
 	// input 要素なら value を書き換える
 	if(element.tagName === "INPUT") {
-		element.setAttribute("value", title);
+		element.value = title;
 	}
 	// select 要素なら option を書き換える
 	else if(element.tagName === "SELECT") {
@@ -154,7 +154,7 @@ SComponent.prototype.getText = function() {
 	var title = null;
 	// input要素なら value を書き換える
 	if(element.tagName === "INPUT") {
-		title = this.getElement().getAttribute("value");
+		title = this.value;
 	}
 	// select要素なら option を取得する
 	else if(element.tagName === "SELECT") {
