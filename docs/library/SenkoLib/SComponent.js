@@ -74,6 +74,14 @@ SComponent.prototype.getElementNode = function() {
 	}
 	return node;
 };
+SComponent.prototype.clearChildNodes = function() {
+	var element = this.getElement();
+	var child = element.lastChild;
+	while (child) {
+		element.removeChild(child);
+		child = element.lastChild;
+	}
+};
 SComponent.prototype.setLabelPosition = function(labelposition) {
 	// ラベルかどうか確認
 	var element = this.getElement();
@@ -85,15 +93,9 @@ SComponent.prototype.setLabelPosition = function(labelposition) {
 	if(textnode === null) {
 		textnode = document.createTextNode("");
 	}
-	var elementnode = this.getElementNode();
+	var elementnode = this.clearChildNodes();
 	// 中身を一旦消去する
-	{
-		var child = element.lastChild;
-		while (child) {
-			element.removeChild(child);
-			child = element.lastChild;
-		}
-	}
+	this.clearChildNode();
 	// 配置を設定する
 	if(labelposition === SComponent.LEFT) {
 		// ラベル内のテキストは左側
@@ -645,6 +647,7 @@ var SCanvas = function() {
 	this.super._initComponent.call(this, "canvas");
 	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
 	this.setPixelSize(300, 150);	// canvas のデフォルト値を設定する
+	this.context = null;
 };
 SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {
