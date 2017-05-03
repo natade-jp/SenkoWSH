@@ -1,4 +1,4 @@
-/* global System, Text */
+/* global System, Text, Blob, File */
 
 ﻿/**
  * SComponent.js
@@ -356,13 +356,13 @@ SComponent.prototype.getSize = function() {
 };
 SComponent.prototype.setWidth = function(width) {
 	if(typeof width !== "number") {
-		throw "IllegalArgumentException";
+		throw "IllegalArgumentException not number";
 	}
 	this.getElement().style.width = width.toString() + this.unit;
 };
 SComponent.prototype.setHeight = function(height) {
 	if(typeof height !== "number") {
-		throw "IllegalArgumentException";
+		throw "IllegalArgumentException not number";
 	}
 	this.getElement().style.height = height.toString() + this.unit;
 };
@@ -651,8 +651,8 @@ var SCanvas = function() {
 };
 SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {
-	var w = this.getElement().getAttribute("width");
-	var h = this.getElement().getAttribute("height");
+	var w = parseInt(this.getElement().getAttribute("width"));
+	var h = parseInt(this.getElement().getAttribute("height"));
 	return {width:w, height:h};
 };
 SCanvas.prototype.setPixelSize = function(width, height) {
@@ -673,5 +673,92 @@ SCanvas.prototype.getContext = function() {
 	this.context = this.getElement().getContext('2d');
 	return this.context;
 };
-
+SCanvas.drawtype = {
+	ORIGINAL					: 0,
+	ASPECT_RATIO				: 1,
+	FILL						: 2,
+	LETTER_BOX					: 3
+};
+SCanvas.prototype._drawImage = function(image, isresizecanvas, drawsize) {
+	var pixelsize = this.getPixelSize();
+	var dx = 0, dy = 0;
+	var width  = pixelsize.width;
+	var height = pixelsize.height;
+	if(SCanvas.drawtype.ORIGINAL === drawsize) {
+		width  = image.width;
+		height = image.height;
+	}
+	else if(SCanvas.drawtype.FILL === drawsize) {
+		width  = pixelsize.width;
+		height = pixelsize.height;
+		isresize = false;
+	}
+	else if(SCanvas.drawtype.FILL_ASPECT_RATIO === drawsize) {
+		width  = pixelsize.width;
+		height = pixelsize.height;
+		isresize = false;
+	}
+	else {
+		width  = image.width;
+		height = image.height;
+		if(SCanvas.drawtype.ASPECT_RATIO === drawsize) {
+			if(width > pixelsize.width) {
+				width  = pixelsize.width;
+				height = Math.floor(height * (width / image.width));
+			}
+			if(height > pixelsize.height) {
+				width = Math.floor(width * (height / image.height));
+			}
+		}
+		if(SCanvas.drawtype.LETTER_BOX === drawsize) {
+			width  = pixelsize.width;
+			height = Math.floor(height * (width / image.width));
+			if(height > pixelsize.height) {
+				width = Math.floor(width * (height / image.height));
+			}
+			dx = Math.floor((pixelsize.width - width) / 2);
+			dy = Math.floor((pixelsize.height - height) / 2);
+			isresizecanvas = false;
+		}
+	}
+	if(isresizecanvas) {
+		this.setUnit(SComponent.unittype.PX);
+		this.setSize(width, height);
+		this.setPixelSize(width, height);
+	}
+	this.getContext().fillStyle = "rgb(0, 0, 0)";
+	this.getContext().fillRect(0, 0,  pixelsize.width, pixelsize.height);
+	this.getContext().drawImage(
+		image,
+		0, 0, image.width, image.height,
+		dx, dy, width, height
+	);
+};
+SCanvas.prototype.drawImage = function(data, isresizecanvas, drawsize, drawcallback) {
+	if((data instanceof Image)) {
+		this._drawImage(data, isresizecanvas, drawsize);
+		if(typeof drawcallback === "function") {
+			drawcallback();
+		}
+	}
+	else if(typeof data === "string") {
+		var _this = this;
+		var image = new Image();
+		image.onload = function() {
+			_this.drawImage(image, isresizecanvas, drawsize, drawcallback);
+		};
+		image.src = data;
+	}
+	else if((data instanceof Blob) || (data instanceof File)) {
+		var _this = this;
+		var reader = new FileReader();
+		reader.onload = function() {
+			_this.drawImage(reader.result, isresizecanvas, drawsize, drawcallback);
+		};
+		reader.readAsDataURL(data);
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
+};
 

@@ -1,7 +1,5 @@
 ﻿/* global System, SComponent, SCanvas, SFile, SFileButton */
 
-
-
 function testFileLoad(panel) {
 	
 	panel.clearChildNodes();
@@ -18,18 +16,10 @@ function testFileLoad(panel) {
 	loadbutton.setFileAccept(SFileButton.fileaccept.image);
 	canvas.put(loadbutton, SComponent.putype.NEWLINE);
 	loadbutton.addListener(function(file) {
-		var image = new Image();
-		var reader = new FileReader();
-		
-		image.onload = function() {
-			canvas.setPixelSize(image.width, image.height);
-			canvas.setSize(image.width, image.height);
-			canvas.getContext().drawImage(image, 0, 0);
-		};
-		reader.onload = function(event) {
-			image.src = event.target.result;
-		};
-		reader.readAsDataURL(file[0]);
+		canvas.drawImage(file[0], true, SCanvas.drawtype.LETTER_BOX,
+		function() {
+			System.out.println("ロード完了");
+		});
 	});
 	
 };
