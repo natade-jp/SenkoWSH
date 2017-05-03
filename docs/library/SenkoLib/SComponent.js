@@ -23,6 +23,7 @@ SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
 SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
 SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
 SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
+SComponent.CLASS_IMAGEPANEL	= "SCOMPONENT_ImagePanel";
 SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
 SComponent.CLASS_SELECT		= "SCOMPONENT_Select";
 SComponent.CLASS_COMBOBOX	= "SCOMPONENT_ComboBox";
@@ -93,9 +94,9 @@ SComponent.prototype.setLabelPosition = function(labelposition) {
 	if(textnode === null) {
 		textnode = document.createTextNode("");
 	}
-	var elementnode = this.clearChildNodes();
+	var elementnode = this.getElementNode();
 	// 中身を一旦消去する
-	this.clearChildNode();
+	this.clearChildNodes();
 	// 配置を設定する
 	if(labelposition === SComponent.LEFT) {
 		// ラベル内のテキストは左側
@@ -300,7 +301,8 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 					referenceNode.parentNode.appendChild(newNode);
 				}
 			};
-			component.remove();
+			// 移動前に自分を消去
+			component.removeMe();
 			if(type === SComponent.putype.IN) {
 				// 最後の行があるならば次の行へ
 				component.onAdded();
@@ -370,7 +372,7 @@ SComponent.prototype.setSize = function(width, height) {
 	this.setWidth(width);
 	this.setHeight(height);
 };
-SComponent.prototype.remove = function() {
+SComponent.prototype.removeMe = function() {
 	this.tool.remove(this.id);
 	this.tool.remove(this.space_id);
 };
@@ -487,10 +489,15 @@ SComponent.prototype.setVisible = function(isvisible) {
 	}
 	return;
 };
-
 SComponent.prototype.toString = function() {
 	return this._elementtype + "(" + this.id + ")";
 };
+
+/**
+ * /////////////////////////////////////////////////////////
+ * 以下、SComponent から継承した部品群
+ * /////////////////////////////////////////////////////////
+ */
 
 var SPanel = function() {
 	this.super = SComponent.prototype;
@@ -509,9 +516,8 @@ SLabel.prototype = new SComponent();
 var SComboBox = function(item) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "select", item);
-	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_SELECT + " " + SComponent.CLASS_COMBOBOX);
+	this.super.addClass.call(this, SComponent.CLASS_SELECT);
+	this.super.addClass.call(this, SComponent.CLASS_COMBOBOX);
 };
 SComboBox.prototype = new SComponent();
 SComboBox.prototype.addListener = function(func) {
@@ -548,16 +554,13 @@ SComboBox.prototype.getSelectedItem = function() {
 var SCheckBox = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
-	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_CHECKBOX);
-	
+	this.super.addClass.call(this, SComponent.CLASS_CHECKBOX);
 	var checkbox = document.createElement("input");
 	checkbox.setAttribute("type", "checkbox");
 	checkbox.setAttribute("id", this.id + "_checkbox");
 	this.checkbox = checkbox;
+	var element   = this.super.getElement.call(this);
 	element.appendChild(checkbox);
-	
 	this.super.setLabelPosition.call(this, SComponent.labelposition.RIGHT);
 };
 SCheckBox.prototype = new SComponent();
@@ -574,9 +577,8 @@ SCheckBox.prototype.isChecked = function() {
 var SButton = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "input", title);
+	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
 	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_BUTTON);
 	element.setAttribute("type", "button");
 };
 SButton.prototype = new SComponent();
@@ -588,9 +590,9 @@ var SFileButton = function(title) {
 	// CSS有効化のために、label 内に input(file) を入れる
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
+	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
+	this.super.addClass.call(this, SComponent.CLASS_FILE);
 	var element   = this.super.getElement.call(this);
-	element.setAttribute("class",
-		element.getAttribute("class") + " " + SComponent.CLASS_BUTTON + " " + SComponent.CLASS_FILE);
 	var file = document.createElement("input");
 	file.setAttribute("type", "file");
 	file.setAttribute("id", this.id + "_file");
@@ -679,6 +681,11 @@ SCanvas.drawtype = {
 	FILL						: 2,
 	LETTER_BOX					: 3
 };
+SCanvas.prototype.clear = function() {
+	var pixelsize = this.getPixelSize();
+	this.getContext().clearRect(0, 0,  pixelsize.width, pixelsize.height);
+};
+
 SCanvas.prototype._drawImage = function(image, isresizecanvas, drawsize) {
 	var pixelsize = this.getPixelSize();
 	var dx = 0, dy = 0;
@@ -726,6 +733,7 @@ SCanvas.prototype._drawImage = function(image, isresizecanvas, drawsize) {
 		this.setSize(width, height);
 		this.setPixelSize(width, height);
 	}
+	this.clear();
 	this.getContext().fillStyle = "rgb(0, 0, 0)";
 	this.getContext().fillRect(0, 0,  pixelsize.width, pixelsize.height);
 	this.getContext().drawImage(
@@ -761,3 +769,24 @@ SCanvas.prototype.drawImage = function(data, isresizecanvas, drawsize, drawcallb
 		throw "IllegalArgumentException";
 	}
 };
+
+var SImagePanel = function() {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "div");
+	this.super.addClass.call(this,  SComponent.CLASS_IMAGEPANEL);
+    var image = document.createElement("img");
+	image.setAttribute("id", this.id + "_img");
+	this.image = image;
+	this.getElement.call(this).appendChild(this.image);
+};
+SImagePanel.prototype = new SComponent();
+SImagePanel.prototype.clear = function() {
+	this.clearChildNodes();
+};
+SImagePanel.prototype.setImage = function(data) {
+	
+	
+	
+};
+
+
