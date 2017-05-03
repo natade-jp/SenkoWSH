@@ -1,4 +1,4 @@
-/* global System, Text, Blob, File, Element */
+/* global System, Text, Blob, File, Element, ImageData */
 
 ﻿/**
  * SComponent.js
@@ -647,14 +647,13 @@ var SCanvas = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "canvas");
 	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
+	this.canvas = this.super.getElement.call(this);
 	this.setPixelSize(300, 150);	// canvas のデフォルト値を設定する
 	this.context = null;
 };
 SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {
-	var w = parseInt(this.getElement().getAttribute("width"));
-	var h = parseInt(this.getElement().getAttribute("height"));
-	return {width:w, height:h};
+	return {width: this.canvas.width, height: this.canvas.height};
 };
 SCanvas.prototype.setPixelSize = function(width, height) {
 	if(	(arguments.length !== 2) || 
@@ -664,14 +663,14 @@ SCanvas.prototype.setPixelSize = function(width, height) {
 	}
 	width  = ~~Math.floor(width);
 	height = ~~Math.floor(height);
-	this.getElement().setAttribute("width", width);
-	this.getElement().setAttribute("height", height);
+	this.canvas.width = width;
+	this.canvas.height = height;
 };
 SCanvas.prototype.getContext = function() {
 	if(this.context) {
 		return this.context;
 	}
-	this.context = this.getElement().getContext('2d');
+	this.context = this.canvas.getContext("2d");
 	return this.context;
 };
 SCanvas.drawtype = {
@@ -682,7 +681,12 @@ SCanvas.drawtype = {
 };
 SCanvas.prototype.clear = function() {
 	var pixelsize = this.getPixelSize();
-	this.getContext().clearRect(0, 0,  pixelsize.width, pixelsize.height);
+	this.canvas.clearRect(0, 0,  pixelsize.width, pixelsize.height);
+};
+
+SCanvas.prototype.createImageData = function() {
+	var pixelsize = this.getPixelSize();
+	return this.canvas.getImageData(0, 0, pixelsize.width, pixelsize.height);
 };
 
 SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
@@ -735,17 +739,27 @@ SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 		this.setPixelSize(width, height);
 	}
 	this.clear();
-	this.getContext().fillStyle = "rgb(0, 0, 0)";
-	this.getContext().fillRect(0, 0,  pixelsize.width, pixelsize.height);
-	this.getContext().drawImage(
-		image,
-		0, 0, image.width, image.height,
-		dx, dy, width, height
-	);
+	this.canvas.fillStyle = "rgb(0, 0, 0)";
+	this.canvas.fillRect(0, 0,  pixelsize.width, pixelsize.height);
+	
+	if(image instanceof Image) {
+		this.canvas.drawImage(
+			image,
+			0, 0, image.width, image.height,
+			dx, dy, width, height
+		);
+	}
+	else if(image instanceof ImageData) {
+		this.canvas.putImageData(
+			image,
+			0, 0,
+			dx, dy, width, height
+		);
+	}
 };
 SCanvas.prototype.setImage = function(data, isresizecanvas, drawsize, drawcallback) {
-	if((data instanceof Image)) {
-		// Image -> canvas
+	if((data instanceof Image) || (data instanceof ImageData)) {
+		// Image -> canvas, ImageData -> canvas
 		this._setImage(data, isresizecanvas, drawsize);
 		if(typeof drawcallback === "function") {
 			drawcallback();
