@@ -1,4 +1,4 @@
-/* global System, Text, Blob, File */
+/* global System, Text, Blob, File, Element */
 
 ﻿/**
  * SComponent.js
@@ -685,7 +685,7 @@ SCanvas.prototype.clear = function() {
 	this.getContext().clearRect(0, 0,  pixelsize.width, pixelsize.height);
 };
 
-SCanvas.prototype._drawImage = function(image, isresizecanvas, drawsize) {
+SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 	var pixelsize = this.getPixelSize();
 	var dx = 0, dy = 0;
 	var width  = pixelsize.width;
@@ -741,9 +741,10 @@ SCanvas.prototype._drawImage = function(image, isresizecanvas, drawsize) {
 		dx, dy, width, height
 	);
 };
-SCanvas.prototype.drawImage = function(data, isresizecanvas, drawsize, drawcallback) {
+SCanvas.prototype.setImage = function(data, isresizecanvas, drawsize, drawcallback) {
 	if((data instanceof Image)) {
-		this._drawImage(data, isresizecanvas, drawsize);
+		// Image -> canvas
+		this._setImage(data, isresizecanvas, drawsize);
 		if(typeof drawcallback === "function") {
 			drawcallback();
 		}
@@ -751,20 +752,26 @@ SCanvas.prototype.drawImage = function(data, isresizecanvas, drawsize, drawcallb
 	else if(typeof data === "string") {
 		var _this = this;
 		var image = new Image();
+		// URL(string) -> Image
 		image.onload = function() {
-			_this.drawImage(image, isresizecanvas, drawsize, drawcallback);
+			_this.setImage(image, isresizecanvas, drawsize, drawcallback);
 		};
 		image.src = data;
 	}
-//	else if()
-//	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
-//		element = this.getElementNode();
-//	}
+	else if(data instanceof SCanvas) {
+		// SCanvas -> canvas
+		_this.setImage(data.getElement(), isresizecanvas, drawsize, drawcallback);
+	}
+	else if((data instanceof Element) && (data.tagName === "CANVAS")){
+		// canvas -> URL(string)
+		_this.setImage(data.toDataURL(), isresizecanvas, drawsize, drawcallback);
+	}
 	else if((data instanceof Blob) || (data instanceof File)) {
 		var _this = this;
 		var reader = new FileReader();
+		// Blob, File -> URL(string)
 		reader.onload = function() {
-			_this.drawImage(reader.result, isresizecanvas, drawsize, drawcallback);
+			_this.setImage(reader.result, isresizecanvas, drawsize, drawcallback);
 		};
 		reader.readAsDataURL(data);
 	}
@@ -788,13 +795,36 @@ SImagePanel.prototype.clear = function() {
 };
 SImagePanel.prototype.setImage = function(data) {
 	if(typeof data === "string") {
+		// URL(string) -> IMG
 		this.image.src = data;
 	}
-	else if(data instanceof Canvas) {
-		this.image.src = data;
+	else if(data instanceof SCanvas) {
+		// SCanvas -> canvas
+		this.setImage(data.getElement());
 	}
-	
-	
+	else if((data instanceof Element) && (data.tagName === "CANVAS")){
+		// canvas -> URL(string)
+		try {
+			this.setImage(data.toDataURL());
+		} catch(e) {
+		}
+		try {
+			this.setImage(data.toDataURL("image/jpeg"));;
+		} catch(e) {
+		}
+	}
+	else if((data instanceof Blob) || (data instanceof File)) {
+		var _this = this;
+		var reader = new FileReader();
+		// Blob, File -> URL(string)
+		reader.onload = function() {
+			_this.setImage(reader.result);
+		};
+		reader.readAsDataURL(data);
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
 };
 
 

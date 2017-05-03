@@ -16,11 +16,21 @@ function testFileLoad(panel) {
 	loadbutton.setFileAccept(SFileButton.fileaccept.image);
 	canvas.put(loadbutton, SComponent.putype.NEWLINE);
 	loadbutton.addListener(function(file) {
-		canvas.drawImage(file[0], true, SCanvas.drawtype.LETTER_BOX,
+		canvas.setImage(file[0], true, SCanvas.drawtype.LETTER_BOX,
 		function() {
 			System.out.println("ロード完了");
 		});
 	});
+	
+	var savebutton = new SButton("IMG要素化");
+	loadbutton.put(savebutton, SComponent.putype.RIGHT);
+	savebutton.addListener(function() {
+		imagepanel.setImage(canvas);
+	});
+	
+	// SImagePanel
+	var imagepanel = new SImagePanel();
+	savebutton.put(imagepanel, SComponent.putype.NEWLINE);
 	
 };
 
