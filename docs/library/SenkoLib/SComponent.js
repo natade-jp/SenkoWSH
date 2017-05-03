@@ -683,12 +683,13 @@ SCanvas.prototype.clear = function() {
 	var pixelsize = this.getPixelSize();
 	this.canvas.clearRect(0, 0,  pixelsize.width, pixelsize.height);
 };
-
-SCanvas.prototype.createImageData = function() {
+SCanvas.prototype.getImageData = function() {
 	var pixelsize = this.getPixelSize();
 	return this.canvas.getImageData(0, 0, pixelsize.width, pixelsize.height);
 };
-
+SCanvas.prototype.setImageData = function(imagedata) {
+	this.canvas.putImageData(imagedata, 0, 0);
+};
 SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 	var pixelsize = this.getPixelSize();
 	var dx = 0, dy = 0;
