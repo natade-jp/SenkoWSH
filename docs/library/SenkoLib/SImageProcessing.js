@@ -23,6 +23,22 @@ var SIPColor = function(color) {
 SIPColor.prototype.clone = function() {
 	return new SIPColor(this.rgba);
 };
+SIPColor.prototype.addScalar = function(x) {
+	var color = this.clone();
+	color.rgba[0] += x;
+	color.rgba[1] += x;
+	color.rgba[2] += x;
+	color.rgba[3] += x;
+	return color;
+};
+SIPColor.prototype.addVector = function(v) {
+	var color = this.clone();
+	color.rgba[0] += v[0];
+	color.rgba[1] += v[1];
+	color.rgba[2] += v[2];
+	color.rgba[3] += v[3];
+	return color;
+};
 SIPColor.prototype.mulScalar = function(x) {
 	var color = this.clone();
 	color.rgba[0] *= x;
@@ -59,6 +75,22 @@ SIPColor.prototype.mulMatrix = function(m) {
 					this.rgba[3] * m[3][3];
 	return color;
 };
+SIPColor.prototype.max = function(c) {
+	var color = this.clone();
+	color.rgba[0] = Math.max(c.color[0], this.rgba[0]);
+	color.rgba[1] = Math.max(c.color[1], this.rgba[1]);
+	color.rgba[2] = Math.max(c.color[2], this.rgba[2]);
+	color.rgba[3] = Math.max(c.color[3], this.rgba[3]);
+	return color;
+};
+SIPColor.prototype.min = function(c) {
+	var color = this.clone();
+	color.rgba[0] = Math.min(c.color[0], this.rgba[0]);
+	color.rgba[1] = Math.min(c.color[1], this.rgba[1]);
+	color.rgba[2] = Math.min(c.color[2], this.rgba[2]);
+	color.rgba[3] = Math.min(c.color[3], this.rgba[3]);
+	return color;
+};
 
 /**
  * /////////////////////////////////////////////////////////
@@ -75,7 +107,7 @@ var SIPColorPickerContext = function(context) {
 	this.super		= SIPColorPicker.prototype;
 	this.context	= context;
 };
-Object.setPrototypeOf(SIPColorPickerContext.prototype, SIPColorPicker.prototype);
+SIPColorPickerContext.prototype = new SIPColorPicker();
 SIPColorPickerContext.prototype.getColor = function(x, y) {
 	var p = this.context.getImageData( x, y, 1, 1 ).data;
 	return new SIPColor([p[0], p[1], p[2], p[3]]);
@@ -86,7 +118,7 @@ var SIPColorPickerImageData = function(imagedata, width, height) {
 	this.width		= width;
 	this.height		= height;
 };
-Object.setPrototypeOf(SIPColorPickerImageData.prototype, SIPColorPicker.prototype);
+SIPColorPickerImageData.prototype = new SIPColorPicker();
 SIPColorPickerImageData.prototype.getColor = function(x, y) {
 	var p = (y * width + x) * 4;
 	[	this.imagedata[p],
@@ -94,6 +126,13 @@ SIPColorPickerImageData.prototype.getColor = function(x, y) {
 		this.imagedata[p + 2],
 		this.imagedata[p + 3]
 	];
+};
+var SIPColorPickerText = function() {
+	this.super		= SIPColorPicker.prototype;
+};
+SIPColorPickerText.prototype = new SIPColorPicker();
+SIPColorPickerText.prototype.getColor = function(x, y) {
+	console.log("" + x + "," + y);
 };
 
 /**
@@ -103,10 +142,13 @@ SIPColorPickerImageData.prototype.getColor = function(x, y) {
  * /////////////////////////////////////////////////////////
  */
 
-var SIPPixelSelecter = function(picker, width, height) {
+var SIPPixelSelecter = function() {
+};
+SIPPixelSelecter.prototype._init = function(picker, width, height) {
 	if(!(picker instanceof SIPColorPicker)) {
 		throw "IllegalArgumentException";
 	}
+	this.picker= picker;
 	this.width  = width;
 	this.height = height;
 };
@@ -120,10 +162,14 @@ SIPPixelSelecter.prototype.getColor = function(x, y) {
 		return new SIPColor(0, 0, 0, 0);
 	}
 };
-var SIPPixelSelecterFill = function(picker, width, height) {
-	SIPPixelSelecter.call(this, picker, width, height);
+var SIPPixelSelecterNormal = function(picker, width, height) {
+	SIPPixelSelecter.prototype._init.call(this, picker, width, height);
 };
-Object.setPrototypeOf(SIPPixelSelecterFill.prototype, SIPPixelSelecter.prototype);
+SIPPixelSelecterNormal.prototype = new SIPPixelSelecter();
+var SIPPixelSelecterFill = function(picker, width, height) {
+	SIPPixelSelecter.prototype._init.call(this, picker, width, height);
+};
+SIPPixelSelecterFill.prototype = new SIPPixelSelecter();
 SIPPixelSelecterFill.prototype.getColor = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
@@ -137,9 +183,9 @@ SIPPixelSelecterFill.prototype.getColor = function(x, y) {
 };
 
 var SIPPixelSelecterRepeat = function(picker, width, height) {
-	SIPPixelSelecter.call(this, picker, width, height);
+	SIPPixelSelecter.prototype._init.call(this, picker, width, height);
 };
-Object.setPrototypeOf(SIPPixelSelecterRepeat.prototype, SIPPixelSelecter.prototype);
+SIPPixelSelecterRepeat.prototype = new SIPPixelSelecter();
 SIPPixelSelecterRepeat.prototype.getColor = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
@@ -186,3 +232,6 @@ SImageProcessing.prototype.setUseBuffer = function(isusebuffer) {
 		}
 	}
 };
+
+var a = new SIPColorPickerText();
+var b = new SIPPixelSelecterRepeat(a, 320, 320);
