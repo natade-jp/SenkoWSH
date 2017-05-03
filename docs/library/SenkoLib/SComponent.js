@@ -242,16 +242,16 @@ SComponent.prototype.setUnit = function(unittype) {
 };
 SComponent.prototype.addClass = function(classname) {
 	var element = this.getElement();
-	var classdata = element.getAttribute("class");
+	var classdata = element.className;
 	if(classdata === null) {
-		element.setAttribute("class", classname);
+		element.className = classname;
 		return;
 	}
-	element.setAttribute("class", classdata + " " + classname);
+	element.className = classdata + " " + classname;
 };
 SComponent.prototype.removeClass = function(classname) {
 	var element = this.getElement();
-	var classdata = element.getAttribute("class");
+	var classdata = element.className;
 	if(classdata === null) {
 		return;
 	}
@@ -259,8 +259,7 @@ SComponent.prototype.removeClass = function(classname) {
 	if(!pattern.test(classdata)) {
 		return;
 	}
-	classdata = classdata.replace(pattern, "");
-	element.setAttribute("class", classdata);
+	element.className = classdata.replace(pattern, "");
 };
 SComponent.prototype._initComponent = function(elementtype, title) {
 	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
@@ -384,12 +383,12 @@ SComponent.prototype.getWall = function(type) {
 		return this._wall;
 	}
 	var wall = document.createElement("span");
-	wall.setAttribute("id", this.wallid);
+	wall.id = this.wallid;
 	if(type === SComponent.putype.RIGHT) {
-		wall.setAttribute("class", SComponent.CLASS_SPACE);
+		wall.className = SComponent.CLASS_SPACE;
 	}
 	else if(type === SComponent.putype.NEWLINE) {
-		wall.setAttribute("class", SComponent.CLASS_NEWLINE);
+		wall.className = SComponent.CLASS_NEWLINE;
 	}
 	wall.style.display = "inline-block";
 	this._wall = wall;
@@ -402,8 +401,8 @@ SComponent.prototype.getElement = function() {
 		return this._element;
 	}
 	var element = document.createElement(this.elementtype);
-	element.setAttribute("id", this.id);
-	element.setAttribute("class", SComponent.CLASS_COMPONENT);
+	element.id = this.id;
+	element.className = SComponent.CLASS_COMPONENT;
 	element.style.display = "inline-block";
 	this._element = element;
 	
@@ -557,7 +556,7 @@ var SCheckBox = function(title) {
 	this.super.addClass.call(this, SComponent.CLASS_CHECKBOX);
 	var checkbox = document.createElement("input");
 	checkbox.setAttribute("type", "checkbox");
-	checkbox.setAttribute("id", this.id + "_checkbox");
+	checkbox.id = this.id + "_checkbox";
 	this.checkbox = checkbox;
 	var element   = this.super.getElement.call(this);
 	element.appendChild(checkbox);
@@ -595,7 +594,7 @@ var SFileButton = function(title) {
 	var element   = this.super.getElement.call(this);
 	var file = document.createElement("input");
 	file.setAttribute("type", "file");
-	file.setAttribute("id", this.id + "_file");
+	file.id = this.id + "_file";
 	file.style.display = "none";
 	this.file = file;
 	element.appendChild(file);
@@ -757,6 +756,10 @@ SCanvas.prototype.drawImage = function(data, isresizecanvas, drawsize, drawcallb
 		};
 		image.src = data;
 	}
+//	else if()
+//	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
+//		element = this.getElementNode();
+//	}
 	else if((data instanceof Blob) || (data instanceof File)) {
 		var _this = this;
 		var reader = new FileReader();
@@ -775,7 +778,7 @@ var SImagePanel = function() {
 	this.super._initComponent.call(this, "div");
 	this.super.addClass.call(this,  SComponent.CLASS_IMAGEPANEL);
     var image = document.createElement("img");
-	image.setAttribute("id", this.id + "_img");
+	image.id = this.id + "_img";
 	this.image = image;
 	this.getElement.call(this).appendChild(this.image);
 };
@@ -784,7 +787,12 @@ SImagePanel.prototype.clear = function() {
 	this.clearChildNodes();
 };
 SImagePanel.prototype.setImage = function(data) {
-	
+	if(typeof data === "string") {
+		this.image.src = data;
+	}
+	else if(data instanceof Canvas) {
+		this.image.src = data;
+	}
 	
 	
 };
