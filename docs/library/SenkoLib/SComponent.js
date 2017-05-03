@@ -713,14 +713,16 @@ SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 				height = Math.floor(height * (width / image.width));
 			}
 			if(height > pixelsize.height) {
-				width = Math.floor(width * (height / image.height));
+				width  = Math.floor(width * (pixelsize.height / height));
+				height = pixelsize.height;
 			}
 		}
 		if(SCanvas.drawtype.LETTER_BOX === drawsize) {
 			width  = pixelsize.width;
 			height = Math.floor(height * (width / image.width));
 			if(height > pixelsize.height) {
-				width = Math.floor(width * (height / image.height));
+				width  = Math.floor(width * (pixelsize.height / height));
+				height = pixelsize.height;
 			}
 			dx = Math.floor((pixelsize.width - width) / 2);
 			dy = Math.floor((pixelsize.height - height) / 2);
@@ -784,7 +786,7 @@ var SImagePanel = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div");
 	this.super.addClass.call(this,  SComponent.CLASS_IMAGEPANEL);
-    var image = document.createElement("img");
+	var image = document.createElement("img");
 	image.id = this.id + "_img";
 	this.image = image;
 	this.getElement.call(this).appendChild(this.image);
