@@ -56,5 +56,16 @@
 	cursor:				auto;
 }
 
+.SCOMPONENT_CheckBox {
+	color:				black;
+	cursor:				pointer;
+}
+
+.SCOMPONENT_Disabled {
+	color:				gray;
+	cursor:				default;
+}
+	
+
 .SCOMPONENT_Canvas {
 }

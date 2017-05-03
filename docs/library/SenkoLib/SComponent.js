@@ -26,6 +26,7 @@ SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
 SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
 SComponent.CLASS_SELECT		= "SCOMPONENT_Select";
 SComponent.CLASS_COMBOBOX	= "SCOMPONENT_ComboBox";
+SComponent.CLASS_CHECKBOX	= "SCOMPONENT_CheckBox";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 SComponent.CLASS_FILE		= "SCOMPONENT_File";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
@@ -39,6 +40,72 @@ SComponent.unittype = {
 	PX		: "px",
 	EM		: "em",
 	PERCENT	: "%"
+};
+SComponent.labelposition = {
+	LEFT	: 0,
+	RIGHT	: 1
+};
+SComponent.prototype.getTextNode = function() {
+	var element = this.getElement();
+	// childNodes でテキストノードまで取得する
+	var childnodes = element.childNodes;
+	var textnode = null;
+	var i = 0;
+	for(i = 0; i < childnodes.length; i++) {
+		if(childnodes[i] instanceof Text) {
+			textnode = childnodes[i];
+			break;
+		}
+	}
+	// テキストノードがない場合は null をかえす
+	return textnode;
+};
+SComponent.prototype.getElementNode = function() {
+	var element = this.getElement();
+	// children でテキストノード意外を取得する
+	var childnodes = element.children;
+	var node = null;
+	var i = 0;
+	for(i = 0; i < childnodes.length; i++) {
+		if(!(childnodes[i] instanceof Text)) {
+			node = childnodes[i];
+			break;
+		}
+	}
+	return node;
+};
+SComponent.prototype.setLabelPosition = function(labelposition) {
+	// ラベルかどうか確認
+	var element = this.getElement();
+	if(element.tagName !== "LABEL") {
+		return;
+	}
+	// すでにあるテキストノードを調査する
+	var textnode = this.getTextNode();
+	if(textnode === null) {
+		textnode = document.createTextNode("");
+	}
+	var elementnode = this.getElementNode();
+	// 中身を一旦消去する
+	{
+		var child = element.lastChild;
+		while (child) {
+			element.removeChild(child);
+			child = element.lastChild;
+		}
+	}
+	// 配置を設定する
+	if(labelposition === SComponent.LEFT) {
+		// ラベル内のテキストは左側
+		element.appendChild(textnode);
+		element.appendChild(elementnode);
+	}
+	else {
+		// ラベルのテキストは右側
+		element.appendChild(elementnode);
+		element.appendChild(textnode);
+	}
+	return;
 };
 SComponent.prototype.setText = function(title) {
 	if(!title) {
@@ -71,23 +138,15 @@ SComponent.prototype.setText = function(title) {
 			element.appendChild(option_node);
 		}
 	}
-	// label 要素なら最初の子要素を書き換える
-	else if(element.tagName === "LABEL") {
-		var childelement = element.firstChild;
-		if(!(childelement instanceof Text)) {
-			var text_node = document.createTextNode("");
-			if(childelement === null) {
-				element.appendChild(text_node);
-			}
-			else {
-				element.insertBefore(text_node, childelement);
-			}
-			childelement = text_node;
-		}
-		childelement.nodeValue = title;
-	}
+	// そのほかは、中にあるテキストノードを編集する
 	else {
-		element.textContent = title;
+		var textnode = this.getTextNode();
+		// 見つからなかったら作成する
+		if(textnode === null) {
+			var textnode = document.createTextNode("");
+			element.appendChild(textnode);
+		}
+		textnode.nodeValue = title;
 	}
 };
 SComponent.prototype.getText = function() {
@@ -110,7 +169,8 @@ SComponent.prototype.getText = function() {
 		return output;
 	}
 	else {
-		title = this.getElement().textContent.trim();
+	// テキストノードを取得する
+		title = this.getTextNode().nodeValue.trim();
 	}
 	return (title === null) ? "" : title;
 };
@@ -146,12 +206,6 @@ SComponent.prototype._isBooleanAttribute = function(element, attribute) {
 	return (element.getAttribute(attribute) === null);
 };
 
-SComponent.prototype.setChecked = function(ischecked) {
-	this._setBooleanAttribute(this.getElement(), "checked", ischecked);
-};
-SComponent.prototype.isChecked = function() {
-	return this._isBooleanAttribute(this.getElement(), "checked");
-};
 SComponent.prototype.setEnabled = function(isenabled) {
 	if(isenabled) {
 		this.removeClass(SComponent.CLASS_DISABLED);
@@ -160,10 +214,18 @@ SComponent.prototype.setEnabled = function(isenabled) {
 		this.addClass(SComponent.CLASS_DISABLED);
 	}
 	var element = this.getElement();
+	// input要素ではないなら中の要素を使用する
+	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
+		element = this.getElementNode();
+	}
 	this._setBooleanAttribute(element, "disabled", isenabled);
 };
 SComponent.prototype.isEnabled = function() {
 	var element = this.getElement();
+	// input要素ではないなら中の要素を使用する
+	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
+		element = this.getElementNode();
+	}
 	return this._isBooleanAttribute(element, "disabled");
 };
 SComponent.prototype.getId = function() {
@@ -479,6 +541,32 @@ SComboBox.prototype.getSelectedItem = function() {
 		}
 	}
 	return "";
+};
+
+var SCheckBox = function(title) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "label", title);
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("class",
+		element.getAttribute("class") + " " + SComponent.CLASS_CHECKBOX);
+	
+	var checkbox = document.createElement("input");
+	checkbox.setAttribute("type", "checkbox");
+	checkbox.setAttribute("id", this.id + "_checkbox");
+	this.checkbox = checkbox;
+	element.appendChild(checkbox);
+	
+	this.super.setLabelPosition.call(this, SComponent.labelposition.RIGHT);
+};
+SCheckBox.prototype = new SComponent();
+SCheckBox.prototype.addListener = function(func) {
+	this.checkbox.addEventListener("change", func, false);
+};
+SCheckBox.prototype.setChecked = function(ischecked) {
+	this.checkbox.checked = ischecked;
+};
+SCheckBox.prototype.isChecked = function() {
+	return this.checkbox.checked;
 };
 
 var SButton = function(title) {

@@ -1,7 +1,6 @@
 ﻿/* global System, SComponent, SFile, SFileButton */
 
 ﻿function main(args) {
-	var pushed = 10;
 	
 	System.out.println("SComponent クラスのサンプル");
 	
@@ -34,33 +33,40 @@
 	// obj1 の内容を変更する
 	label1.setText("【" + label1.getText() + "】");
 	
-	var button1, button2;
-	var filebutton1;
-	
-	button1 = new SButton("button1");
+	var button1 = new SButton("10回押す");
 	label3.put(button1, SComponent.putype.NEWLINE);
-	button2 = new SButton("button2");
-	button1.put(button2, SComponent.putype.RIGHT);
-	
+	var pushed1 = 10;
 	// クリックすると内部の関数が呼ばれる
 	button1.addListener(function () {
-		pushed--;
-		System.out.println("pushed !");
-		button1.setText("残り " + pushed);
-		
-		// 押すたびに有効化／無効化の変更
-		button2.setEnabled(!button2.isEnabled());
-		filebutton1.setEnabled(!filebutton1.isEnabled());
-		combobox.setEnabled(!combobox.isEnabled());
-		
-		// 何回か押したら非表示にする
-		if(pushed === 0) {
-			filebutton1.setVisible(false);
+		if(pushed1 > 0) {
+			pushed1--;
 		}
+		if(pushed1 === 0) {
+			filebutton1.setVisible(false);
+			combobox.setVisible(false);
+			checkbox.setVisible(false);
+		}
+		button1.setText("残り " + pushed1);
 	});
 	
+	var button2 = new SButton("無効化");
+	button1.put(button2, SComponent.putype.RIGHT);
+	var pushed2 = 0;
+	button2.addListener(function () {
+		pushed2++;
+		button2.setText((pushed2 % 2 === 1) ? "有効化" : "無効化");
+		
+		// 押すたびに有効化／無効化の変更
+		button1.setEnabled(!button1.isEnabled());
+		filebutton1.setEnabled(!filebutton1.isEnabled());
+		combobox.setEnabled(!combobox.isEnabled());
+		checkbox.setEnabled(!checkbox.isEnabled());
+	});
+	
+	
+	
 	// File
-	filebutton1 = new SFileButton("file");
+	var filebutton1 = new SFileButton("file");
 	filebutton1.setFileAccept(SFileButton.fileaccept.image);
 	button2.put(filebutton1, SComponent.putype.RIGHT);
 	filebutton1.addListener(function(file) {
@@ -91,7 +97,14 @@
 	// 2番目を選択する
 	combobox.setSelectedItem("test2");
 	combobox.addListener(function () {
-		System.out.println("選択中 " + combobox.getSelectedItem());
+		System.out.println("ComboBox " + combobox.getSelectedItem());
 	});
+	
+	var checkbox = new SCheckBox("チェックボックス");
+	combobox.put(checkbox, SComponent.putype.NEWLINE);
+	checkbox.addListener(function () {
+		System.out.println("CheckBox " + checkbox.isChecked());
+	});
+	
 	
 }
