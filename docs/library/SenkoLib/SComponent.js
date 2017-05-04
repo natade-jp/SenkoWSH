@@ -648,8 +648,8 @@ var SCanvas = function() {
 	this.super._initComponent.call(this, "canvas");
 	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
 	this.canvas = this.super.getElement.call(this);
+	this.context = this.canvas.getContext("2d");
 	this.setPixelSize(300, 150);	// canvas のデフォルト値を設定する
-	this.context = null;
 };
 SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {
@@ -667,10 +667,6 @@ SCanvas.prototype.setPixelSize = function(width, height) {
 	this.canvas.height = height;
 };
 SCanvas.prototype.getContext = function() {
-	if(this.context) {
-		return this.context;
-	}
-	this.context = this.canvas.getContext("2d");
 	return this.context;
 };
 SCanvas.drawtype = {
@@ -680,18 +676,16 @@ SCanvas.drawtype = {
 	LETTER_BOX					: 3
 };
 SCanvas.prototype.clear = function() {
-	var pixelsize = this.getPixelSize();
-	this.canvas.clearRect(0, 0,  pixelsize.width, pixelsize.height);
+	this.context.clearRect(0, 0,  this.canvas.width, this.canvas.height);
 };
 SCanvas.prototype.getImageData = function() {
-	var pixelsize = this.getPixelSize();
-	return this.canvas.getImageData(0, 0, pixelsize.width, pixelsize.height);
+	return this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 };
 SCanvas.prototype.setImageData = function(imagedata) {
-	this.canvas.putImageData(imagedata, 0, 0);
+	this.context.putImageData(imagedata, 0, 0);
 };
 SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
-	var pixelsize = this.getPixelSize();
+	var pixelsize = this.canvas;
 	var dx = 0, dy = 0;
 	var width  = pixelsize.width;
 	var height = pixelsize.height;
@@ -740,18 +734,18 @@ SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 		this.setPixelSize(width, height);
 	}
 	this.clear();
-	this.canvas.fillStyle = "rgb(0, 0, 0)";
-	this.canvas.fillRect(0, 0,  pixelsize.width, pixelsize.height);
+	this.context.fillStyle = "rgb(0, 0, 0)";
+	this.context.fillRect(0, 0,  pixelsize.width, pixelsize.height);
 	
 	if(image instanceof Image) {
-		this.canvas.drawImage(
+		this.context.drawImage(
 			image,
 			0, 0, image.width, image.height,
 			dx, dy, width, height
 		);
 	}
 	else if(image instanceof ImageData) {
-		this.canvas.putImageData(
+		this.context.putImageData(
 			image,
 			0, 0,
 			dx, dy, width, height
