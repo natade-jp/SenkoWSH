@@ -142,8 +142,8 @@ SComponent.prototype.setText = function(title) {
 		// 追加していく
 		for(i = 0; i < title.length; i++) {
 			var option_node = document.createElement("option");
-			option_node.text = title[i];
-			option_node.value = title[i];
+			option_node.text = title[i].toString();
+			option_node.value = title[i].toString();
 			element.appendChild(option_node);
 		}
 	}
@@ -533,7 +533,7 @@ SComboBox.prototype.setSelectedItem = function(text) {
 	var i = 0, j = 0;
 	for(i = 0; i < child.length; i++) {
 		if(child[i].tagName === "OPTION") {
-			if(child[i].value === text) {
+			if(child[i].value === text.toString()) {
 				this.getElement().selectedIndex = j;
 				break;
 			}
