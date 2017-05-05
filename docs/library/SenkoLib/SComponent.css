@@ -69,3 +69,34 @@
 
 .SCOMPONENT_Canvas {
 }
+
+
+@media screen and (max-width: 480px) {
+
+	.SCOMPONENT_Newline {
+		height:				0px;
+		margin:				0.5em 0px 0.5em 0px;
+		padding:			1px 0px 1px 0px;
+		background-color:	rgba(0%, 0%, 0%, 0.08);
+		display:			block !important;
+	}
+	
+	.SCOMPONENT_Space {
+		height:				0.1em;
+		display:			block !important;
+	}
+	
+	.SCOMPONENT_File {
+		padding:			0em;
+	}
+	
+	.SCOMPONENT_Button, .SCOMPONENT_ComboBox, .SCOMPONENT_Label {
+		width:				100% !important;
+	}
+	.SCOMPONENT_Panel {
+		width:				92%;
+		margin:				2%;
+		padding:			2%;
+	}
+	
+}

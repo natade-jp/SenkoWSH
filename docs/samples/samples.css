@@ -38,11 +38,25 @@ body {
 }
 
 #code {
-	background-color:	#000080;
+	background-color:	#000030;
 	float:				left;
 }
 
 #senko_console {
 	background-color:	gray;
 	float:				right;
+}
+
+@media screen and (max-width: 480px) {
+
+	#header {
+		display:		none;
+	}
+	
+	#code, #senko_console {
+		font-size:			8pt;
+		width:				100%;
+		-moz-tab-size:		2;
+		tab-size:			2;
+	}
 }

@@ -599,6 +599,7 @@ var SFileButton = function(title) {
 	this.super.addClass.call(this, SComponent.CLASS_FILE);
 	var element   = this.super.getElement.call(this);
 	var file = document.createElement("input");
+	element.style.textAlign =  "center";  
 	file.setAttribute("type", "file");
 	file.id = this.id + "_file";
 	file.style.display = "none";
