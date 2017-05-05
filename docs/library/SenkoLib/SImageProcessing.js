@@ -34,6 +34,12 @@ SIPColor.prototype.add = function() {
 SIPColor.prototype.sub = function() {
 	return null;
 };
+SIPColor.prototype.addColor = function() {
+	return null;
+};
+SIPColor.prototype.subColor = function() {
+	return null;
+};
 SIPColor.prototype.mul = function() {
 	return null;
 };
@@ -46,25 +52,25 @@ SIPColor.prototype.max = function() {
 SIPColor.prototype.min = function() {
 	return null;
 };
-SIPColor.lerp = function(v0, v1, x) {
-	var delta = v1.sub(v0);
-	return v0.add(delta.mul(x));
+SIPColor.ipLerp = function(v0, v1, x) {
+	var delta = v1.subColor(v0);
+	return v0.addColor(delta.mul(x));
 };
-SIPColor.lerpCosine = function(v0, v1, x) {
-	return this.lerp(v0, v1,((1.0 - Math.cos(Math.PI * x)) * 0.5));
+SIPColor.ipCosine = function(v0, v1, x) {
+	return SIPColor.ipLerp(v0, v1,((1.0 - Math.cos(Math.PI * x)) * 0.5));
 };
-SIPColor.lerpHermitian2p3 = function(v0, v1, x) {
-	return this.lerp(v0, v1, (x * x * (3.0 - 2.0 * x)));
+SIPColor.ipHermite2p3 = function(v0, v1, x) {
+	return SIPColor.ipLerp(v0, v1, (x * x * (3.0 - 2.0 * x)));
 };
-SIPColor.lerpHermitian2p5 = function(v0, v1, x) {
-	return this.lerp(v0, v1, (x * x * x * (6.0 * x * x - 15.0 * x + 10.0)));
+SIPColor.ipHermite2p5 = function(v0, v1, x) {
+	return SIPColor.ipLerp(v0, v1, (x * x * x * (6.0 * x * x - 15.0 * x + 10.0)));
 };
-SIPColor.lerpHermitian4p = function(v0, v1, v2, v3, x) {
-	var P = v3.sub(v2).sub(v0.sub(v1));
-	var Q = v0.sub(v1).sub(P);
-	var R = v2.sub(v0);
+SIPColor.ipHermite4p = function(v0, v1, v2, v3, x) {
+	var P = v3.subColor(v2).subColor(v0.subColor(v1));
+	var Q = v0.subColor(v1).subColor(P);
+	var R = v2.subColor(v0);
 	var S = v1;
-	return  P.mul(x * x * x).add(Q.mul(x * x)).add(R.mul(x)).add(S);
+	return  P.mul(x * x * x).addColor(Q.mul(x * x)).addColor(R.mul(x)).addColor(S);
 };
 var SIPColorScalar = function(color) {
 	this.x = color;
@@ -89,6 +95,16 @@ SIPColorScalar.prototype.sub = function(x) {
 	color.x -= x;
 	return color;
 };
+SIPColorScalar.prototype.addColor = function(c) {
+	var color = this.clone();
+	color.x += c.x;
+	return color;
+};
+SIPColorScalar.prototype.subColor = function(c) {
+	var color = this.clone();
+	color.x -= c.x;
+	return color;
+};
 SIPColorScalar.prototype.mul = function(x) {
 	var color = this.clone();
 	color.x *= x;
@@ -108,6 +124,9 @@ SIPColorScalar.prototype.min = function(c) {
 	var color = this.clone();
 	color.x = Math.min(c.x, this.x);
 	return color;
+};
+SIPColorScalar.prototype.toString = function() {
+	return "color(" + this.x + ")";
 };
 var SIPColorRGBA = function(color) {
 	this.rgba = color;
@@ -132,6 +151,18 @@ SIPColorRGBA.prototype.sub = function(x) {
 	var color = this.clone();
 	color.rgba[0] -= x;	color.rgba[1] -= x;
 	color.rgba[2] -= x;	color.rgba[3] -= x;
+	return color;
+};
+SIPColorRGBA.prototype.addColor = function(c) {
+	var color = this.clone();
+	color.rgba[0] += c.rgba[0];	color.rgba[1] += c.rgba[1];
+	color.rgba[2] += c.rgba[2];	color.rgba[3] += c.rgba[3];
+	return color;
+};
+SIPColorRGBA.prototype.subColor = function(c) {
+	var color = this.clone();
+	color.rgba[0] -= c.rgba[0];	color.rgba[1] -= c.rgba[1];
+	color.rgba[2] -= c.rgba[2];	color.rgba[3] -= c.rgba[3];
 	return color;
 };
 SIPColorRGBA.prototype.addVector = function(v) {
@@ -206,6 +237,9 @@ SIPColorRGBA.prototype.min = function(c) {
 	color.rgba[3] = Math.min(c.color[3], this.rgba[3]);
 	return color;
 };
+SIPColorRGBA.prototype.toString = function() {
+	return "color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+};
 
 /**
  * /////////////////////////////////////////////////////////
@@ -219,56 +253,51 @@ SIPColorRGBA.prototype.min = function(c) {
  */
 var SIPPixelSelecter = function() {
 };
-SIPPixelSelecter.prototype._init = function(picker, width, height) {
-	this.setPicker(picker);
+SIPPixelSelecter.prototype._init = function(width, height) {
 	this.setSize(width, height);
-};
-SIPPixelSelecter.prototype.setPicker = function(picker) {
-	this.picker= picker;
 };
 SIPPixelSelecter.prototype.setSize = function(width, height) {
 	this.width  = width;
 	this.height = height;
 };
-SIPPixelSelecter.prototype.getColor = function(x, y) {
+SIPPixelSelecter.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
-		return this.picker.getColor(x, y);
+		return [x, y];
 	}
 	else {
 		return null;
 	}
 };
-var SIPPixelSelecterNormal = function(picker, width, height) {
-	SIPPixelSelecter.prototype._init.call(this, picker, width, height);
+var SIPPixelSelecterInside = function(width, height) {
+	SIPPixelSelecter.prototype._init.call(this, width, height);
 };
-SIPPixelSelecterNormal.prototype = new SIPPixelSelecter();
-var SIPPixelSelecterFill = function(picker, width, height) {
-	SIPPixelSelecter.prototype._init.call(this, picker, width, height);
+SIPPixelSelecterInside.prototype = new SIPPixelSelecter();
+var SIPPixelSelecterFill = function(width, height) {
+	SIPPixelSelecter.prototype._init.call(this, width, height);
 };
 SIPPixelSelecterFill.prototype = new SIPPixelSelecter();
-SIPPixelSelecterFill.prototype.getColor = function(x, y) {
+SIPPixelSelecterFill.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
-		return this.picker.getColor(x, y);
+		return [x, y];
 	}
 	// はみ出た場合は中にむりやり収める
-	x = ~~Math.floor(Math.min(Math.max(0, x), this.width));
-	y = ~~Math.floor(Math.min(Math.max(0, y), this.height));
-	return this.picker.getColor(x, y);
+	x = ~~Math.floor(Math.min(Math.max(0, x), this.width  - 1));
+	y = ~~Math.floor(Math.min(Math.max(0, y), this.height - 1));
+	return [x, y];
 };
-
-var SIPPixelSelecterRepeat = function(picker, width, height) {
-	SIPPixelSelecter.prototype._init.call(this, picker, width, height);
+var SIPPixelSelecterRepeat = function(width, height) {
+	SIPPixelSelecter.prototype._init.call(this, width, height);
 };
 SIPPixelSelecterRepeat.prototype = new SIPPixelSelecter();
-SIPPixelSelecterRepeat.prototype.getColor = function(x, y) {
+SIPPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
-		return this.picker.getColor(x, y);
+		return [x, y];
 	}
 	var x_times = Math.floor(x / this.width);
 	var y_times = Math.floor(y / this.height);
@@ -281,7 +310,7 @@ SIPPixelSelecterRepeat.prototype.getColor = function(x, y) {
 	if(y < 0) {
 		y += this.height;
 	}
-	return this.picker.getColor(x, y);
+	return [x, y];
 };
 
 /**
@@ -294,12 +323,69 @@ SIPPixelSelecterRepeat.prototype.getColor = function(x, y) {
 
 var SIPData = function() {
 };
+SIPData.selectertype = {
+	INSIDE : "INSIDE",
+	FILL   : "FILL",
+	REPEAT : "REPEAT"
+};
+SIPData.interpolationtype = {
+	NEAREST_NEIGHBOR	: "NEAREST_NEIGHBOR",
+	BILINEAR			: "BILINEAR",
+	COSINE				: "COSINE",
+	HERMITE4_3			: "HERMITE4_3",
+	HERMITE4_5			: "HERMITE4_5",
+	HERMITE16			: "HERMITE16"
+};
+SIPData.prototype._init = function() {
+	this.setSelecter(SIPData.selectertype.INSIDE);
+	this.setInterPolation(SIPData.interpolationtype.NEAREST_NEIGHBOR);
+};
+SIPData.prototype.setSelecter = function(_selectertype) {
+	this._selectertype = _selectertype;
+	if(_selectertype === SIPData.selectertype.INSIDE) {
+		this.selecter = new SIPPixelSelecterInside(this.width, this.height);
+	}
+	else if(_selectertype === SIPData.selectertype.FILL) {
+		this.selecter = new SIPPixelSelecterFill(this.width, this.height);
+	}
+	else if(_selectertype === SIPData.selectertype.REPEAT) {
+		this.selecter = new SIPPixelSelecterRepeat(this.width, this.height);
+	}
+};
+SIPData.prototype.setInterPolation = function(iptype) {
+	this.iptype	= iptype;
+	if(iptype === SIPData.interpolationtype.NEAREST_NEIGHBOR) {
+		this.ipfunc	= SIPColor.ipLerp;
+		this.ipn	= 1;
+	}
+	else if(iptype === SIPData.interpolationtype.BILINEAR) {
+		this.ipfunc = SIPColor.ipLerp;
+		this.ipn	= 2;
+	}
+	else if(iptype === SIPData.interpolationtype.COSINE) {
+		this.ipfunc = SIPColor.ipCosine;
+		this.ipn	= 2;
+	}
+	else if(iptype === SIPData.interpolationtype.HERMITE4_3) {
+		this.ipfunc = SIPColor.ipHermite2p3;
+		this.ipn	= 2;
+	}
+	else if(iptype === SIPData.interpolationtype.HERMITE4_5) {
+		this.ipfunc = SIPColor.ipHermite2p5;
+		this.ipn	= 2;
+	}
+	else if(iptype === SIPData.interpolationtype.HERMITE16) {
+		this.ipfunc = SIPColor.ipHermite4p;
+		this.ipn	= 4;
+	}
+};
 SIPData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		return;
 	}
 	this.width	= width;
 	this.height	= height;
+	this.selecter.setSize(width, height);
 	this.data	= new Uint8ClampedArray(this.width * this.height);
 };
 SIPData.prototype.clear = function() {
@@ -307,7 +393,7 @@ SIPData.prototype.clear = function() {
 		this.data.fill(0);
 	}
 };
-SIPData.prototype.getColor = function(x, y) {
+SIPData.prototype.getPixelInside = function(x, y) {
 	var p = (y * this.width + x) * 4;
 	return new SIPColorRGBA([
 		this.data[p],
@@ -316,22 +402,83 @@ SIPData.prototype.getColor = function(x, y) {
 		this.data[p + 3]
 	]);
 };
-SIPData.prototype.setColor = function(x, y, color) {
+SIPData.prototype.setPixelInside = function(x, y, color) {
 	var p = (y * this.width + x) * 4;
 	this.data[p]     = color.getColor()[0];
 	this.data[p + 1] = color.getColor()[1];
 	this.data[p + 2] = color.getColor()[2];
 	this.data[p + 3] = color.getColor()[3];
 };
+SIPData.prototype.getPixel = function(x, y) {
+	var p = this.selecter.getPixelPosition(x, y);
+	return this.getPixelInside(p[0], p[1]);
+};
+SIPData.prototype.setPixel = function(x, y, color) {
+	var p = this.selecter.getPixelPosition(x, y);
+	this.setPixelInside(p[0], p[1], color);
+};
+SIPData.prototype.getColor = function(x, y) {
+	var rx = Math.floor(x);
+	var ry = Math.floor(y);
+	if(	(this.ipn === 1) ||
+		((rx === x) && (ry === y))) {
+		return this.getPixel(rx, ry);
+	}
+	else if(this.ipn === 2) {
+		var nx = x - rx;
+		var ny = y - ry;
+		var c0, c1;
+		var n0, n1;
+		c0 = this.getPixel(rx    , ry    );
+		c1 = this.getPixel(rx + 1, ry    );
+		n0  = this.ipfunc(c0, c1 , nx);
+		c0 = this.getPixel(rx    , ry + 1);
+		c1 = this.getPixel(rx + 1, ry + 1);
+		n1  = this.ipfunc(c0, c1 , nx);
+		return this.ipfunc( n0, n1, ny );
+	}
+	else if(this.ipn === 4) {
+		var nx = x - rx;
+		var ny = y - ry;
+		var c0, c1, c2, c3;
+		var n0, n1, n2, n3;
+		c0 = this.getPixel(rx - 1, ry - 1);
+		c1 = this.getPixel(rx    , ry - 1);
+		c2 = this.getPixel(rx + 1, ry - 1);
+		c3 = this.getPixel(rx + 2, ry - 1);
+		n0 = this.ipfunc(c0, c1, c2, c3, nx);
+		c0 = this.getPixel(rx - 1, ry    );
+		c1 = this.getPixel(rx    , ry    );
+		c2 = this.getPixel(rx + 1, ry    );
+		c3 = this.getPixel(rx + 2, ry    );
+		n1 = this.ipfunc(c0, c1, c2, c3, nx);
+		c0 = this.getPixel(rx - 1, ry + 1);
+		c1 = this.getPixel(rx    , ry + 1);
+		c2 = this.getPixel(rx + 1, ry + 1);
+		c3 = this.getPixel(rx + 2, ry + 1);
+		n2 = this.ipfunc(c0, c1, c2, c3, nx);
+		c0 = this.getPixel(rx - 1, ry + 2);
+		c1 = this.getPixel(rx    , ry + 2);
+		c2 = this.getPixel(rx + 1, ry + 2);
+		c3 = this.getPixel(rx + 2, ry + 2);
+		n3 = this.ipfunc(c0, c1, c2, c3, nx);
+		return this.ipfunc( n0, n1, n2, n3, ny );
+	}
+	return null;
+};
+SIPData.prototype.setColor = function(x, y, color) {
+	this.setPixel(Math.floor(x), Math.floor(y), color);
+};
 SIPData.prototype.each = function(func) {
 	var x = 0, y = 0;
-	for(; y < height; y++) {
-		for(x = 0; x < width; x++) {
-			this.setColor(x, y, func(this.getColor(x, y)));
+	for(; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			this.setColor(x, y, func(x, y, this.getColor(x, y)));
 		}
 	}
 };
 var SIPDataRGBA = function() {
+	SIPData.prototype._init.call(this);
 };
 SIPDataRGBA.prototype = new SIPData();
 SIPDataRGBA.prototype.putDataScalar = function(imagedata, n) {
@@ -375,6 +522,7 @@ SIPDataRGBA.prototype.getImageData = function() {
 };
 
 var SIPDataScalar = function() {
+	SIPData.prototype._init.call(this);
 };
 SIPDataScalar.prototype = new SIPData();
 SIPDataScalar.prototype.setSize = function(width, height) {
@@ -383,13 +531,14 @@ SIPDataScalar.prototype.setSize = function(width, height) {
 	}
 	this.width	= width;
 	this.height	= height;
+	this.selecter.setSize(width, height);
 	this.data	= new Float32Array(this.width * this.height);
 };
-SIPDataScalar.prototype.getColor = function(x, y) {
+SIPDataScalar.prototype.getPixelInside = function(x, y) {
 	var p = y * this.width + x;
 	return new SIPColorScalar(this.data[p]);
 };
-SIPDataScalar.prototype.setColor = function(x, y, color) {
+SIPDataScalar.prototype.setPixelInside = function(x, y, color) {
 	var p = y * this.width + x;
 	this.data[p]     = color.getColor();
 };
@@ -435,29 +584,3 @@ SIPDataScalar.prototype.getImageData = function() {
 	return imagedata;
 };
 
-/**
- * /////////////////////////////////////////////////////////
- * 画像処理用クラス
- * /////////////////////////////////////////////////////////
- */
-
-SImageProcessing = function(context, width, height) {
-	this.context	= context;
-	this.width		= width;
-	this.height		= height;
-	this.imagedata	= null;
-};
-SImageProcessing.prototype.setEdgeMode = function(edgemode) {
-	this.edgemode = edgemode;
-};
-SImageProcessing.prototype.setUseBuffer = function(isusebuffer) {
-	if(isusebuffer === true) {
-		this.imagedata = this.context.getImageData(0, 0, width, height).data;
-	}
-	if(isusebuffer === false) {
-		if(this.imagedata !== null) {
-			this.context.putImageData(this.imagedata, 0, 0);
-			this.imagedata = null;
-		}
-	}
-};
