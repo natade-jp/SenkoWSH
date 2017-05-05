@@ -103,7 +103,6 @@ function testInterpolation(panel) {
 	gene.addListener(genefunc);
 	panel.put(gene, SComponent.putype.IN);
 	
-	
 	// Canvas
 	var inputcanvas = new SCanvas();
 	var outputcanvas = new SCanvas();
@@ -116,8 +115,8 @@ function testInterpolation(panel) {
 	
 	
 	var selectertype = [
-		SIPData.selectertype.FILL,
-		SIPData.selectertype.REPEAT
+		SIPData.selectertype.REPEAT,
+		SIPData.selectertype.FILL
 	];
 	var interpolationtype = [
 		SIPData.interpolationtype.NEAREST_NEIGHBOR,
@@ -125,7 +124,11 @@ function testInterpolation(panel) {
 		SIPData.interpolationtype.COSINE,
 		SIPData.interpolationtype.HERMITE4_3,
 		SIPData.interpolationtype.HERMITE4_5,
-		SIPData.interpolationtype.HERMITE16
+		SIPData.interpolationtype.HERMITE16,
+		SIPData.interpolationtype.BICUBIC,
+		SIPData.interpolationtype.BICUBIC_SOFT,
+		SIPData.interpolationtype.BICUBIC_NORMAL,
+		SIPData.interpolationtype.BICUBIC_SHARP
 	];
 	
 	var cb_selectertype = new SComboBox(selectertype);

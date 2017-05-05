@@ -25,6 +25,9 @@ SIPColor.prototype.getColor = function() {
 SIPColor.prototype.clone = function() {
 	return null;
 };
+SIPColor.prototype.zero = function() {
+	return null;
+};
 SIPColor.prototype.one = function() {
 	return null;
 };
@@ -72,6 +75,39 @@ SIPColor.ipHermite4p = function(v0, v1, v2, v3, x) {
 	var S = v1;
 	return  P.mul(x * x * x).addColor(Q.mul(x * x)).addColor(R.mul(x)).addColor(S);
 };
+SIPColor.funcInBicubic = function(d, a) {
+	if(d <= 1.0) {
+		return 1.0 - ((a + 3.0) * d * d) + ((a + 2.0) * d * d * d);
+	}
+	else {
+		return (-4.0 * a) + (8.0 * a * d) - (5.0 * a * d * d) + (a * d * d * d);
+	}
+};
+SIPColor.ipBicubic = function(va, nx, ny, a) {
+	var output = va[0][0].zero();
+	var x, y, y_weight, weight, sum = 0.0;
+	for(y = 0; y < 4; y++) {
+		y_weight = SIPColor.funcInBicubic(Math.abs(- ny + y - 1), a);
+		for(x = 0; x < 4; x++) {
+			weight  = SIPColor.funcInBicubic(Math.abs(- nx + x - 1), a);
+			weight *= y_weight;
+			sum    += weight;
+			output = output.addColor(va[y][x].mul(weight));
+		}
+	}
+	output = output.mul(1.0 / sum);
+	return output;
+};
+SIPColor.ipBicubicSoft = function(va, nx, ny) {
+	return SIPColor.ipBicubic(va, nx, ny, -0.5);
+};
+SIPColor.ipBicubicNormal = function(va, nx, ny) {
+	return SIPColor.ipBicubic(va, nx, ny, -1.0);
+};
+SIPColor.ipBicubicSharp = function(va, nx, ny) {
+	return SIPColor.ipBicubic(va, nx, ny, -1.2);
+};
+
 var SIPColorScalar = function(color) {
 	this.x = color;
 };
@@ -81,6 +117,9 @@ SIPColorScalar.prototype.getColor = function() {
 };
 SIPColorScalar.prototype.clone = function() {
 	return new SIPColorScalar(this.x);
+};
+SIPColorScalar.prototype.zero = function() {
+	return new SIPColorScalar(0.0);
 };
 SIPColorScalar.prototype.one = function() {
 	return new SIPColorScalar(1.0);
@@ -137,6 +176,9 @@ SIPColorRGBA.prototype.getColor = function() {
 };
 SIPColorRGBA.prototype.clone = function() {
 	return new SIPColorRGBA(this.rgba);
+};
+SIPColorRGBA.prototype.zero = function() {
+	return new SIPColorRGBA([0.0, 0.0, 0.0, 0.0]);
 };
 SIPColorRGBA.prototype.one = function() {
 	return new SIPColorRGBA([1.0, 1.0, 1.0, 1.0]);
@@ -334,8 +376,13 @@ SIPData.interpolationtype = {
 	COSINE				: "COSINE",
 	HERMITE4_3			: "HERMITE4_3",
 	HERMITE4_5			: "HERMITE4_5",
-	HERMITE16			: "HERMITE16"
+	HERMITE16			: "HERMITE16",
+	BICUBIC				: "BICUBIC",
+	BICUBIC_SOFT		: "BICUBIC_SOFT",
+	BICUBIC_NORMAL		: "BICUBIC_NORMAL",
+	BICUBIC_SHARP		: "BICUBIC_SHARP"
 };
+
 SIPData.prototype._init = function() {
 	this.setSelecter(SIPData.selectertype.INSIDE);
 	this.setInterPolation(SIPData.interpolationtype.NEAREST_NEIGHBOR);
@@ -377,6 +424,22 @@ SIPData.prototype.setInterPolation = function(iptype) {
 	else if(iptype === SIPData.interpolationtype.HERMITE16) {
 		this.ipfunc = SIPColor.ipHermite4p;
 		this.ipn	= 4;
+	}
+	else if(iptype === SIPData.interpolationtype.BICUBIC) {
+		this.ipfunc = SIPColor.ipBicubicSoft;
+		this.ipn	= 16;
+	}
+	else if(iptype === SIPData.interpolationtype.BICUBIC_SOFT) {
+		this.ipfunc = SIPColor.ipBicubicSoft;
+		this.ipn	= 16;
+	}
+	else if(iptype === SIPData.interpolationtype.BICUBIC_NORMAL) {
+		this.ipfunc = SIPColor.ipBicubicNormal;
+		this.ipn	= 16;
+	}
+	else if(iptype === SIPData.interpolationtype.BICUBIC_SHARP) {
+		this.ipfunc = SIPColor.ipBicubicSharp;
+		this.ipn	= 16;
 	}
 };
 SIPData.prototype.setSize = function(width, height) {
@@ -463,6 +526,20 @@ SIPData.prototype.getColor = function(x, y) {
 		c3 = this.getPixel(rx + 2, ry + 2);
 		n3 = this.ipfunc(c0, c1, c2, c3, nx);
 		return this.ipfunc( n0, n1, n2, n3, ny );
+	}
+	else if(this.ipn === 16) {
+		var nx = x - rx;
+		var ny = y - ry;
+		var ix, iy;
+		var cdata = [];
+		for(iy = -1; iy < 3; iy++) {
+			var cx = [];
+			for(ix = -1; ix < 3; ix++) {
+				cx[cx.length] = this.getPixel(rx + ix, ry + iy);
+			}
+			cdata[cdata.length] = cx;
+		}
+		return this.ipfunc( cdata, nx, ny );
 	}
 	return null;
 };
@@ -583,4 +660,3 @@ SIPDataScalar.prototype.getImageData = function() {
 	}
 	return imagedata;
 };
-
