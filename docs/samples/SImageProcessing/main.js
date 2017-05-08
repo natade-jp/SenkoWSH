@@ -53,8 +53,7 @@ function testWritePixel(panel) {
 	var button1 = new SButton("RGBA でピクセルに書き込み");
 	canvas.put(button1, SComponent.putype.NEWLINE);
 	button1.addListener(function() {
-		var data = new SIPDataRGBA();
-		data.putImageData(canvas.getImageData());
+		var data = new SIPDataRGBA(canvas.getImageData());
 		var i = 0;
 		for(i = 0; i < 100; i++) {
 			var x = Math.floor(Math.random() * data.width);
@@ -68,8 +67,7 @@ function testWritePixel(panel) {
 	var button2 = new SButton("Scaler でピクセルに書き込み");
 	button1.put(button2, SComponent.putype.RIGHT);
 	button2.addListener(function() {
-		var data = new SIPDataScalar();
-		data.putImageData(canvas.getImageData());
+		var data = new SIPDataScalar(canvas.getImageData());
 		var i = 0;
 		for(i = 0; i < 100; i++) {
 			var x = Math.floor(Math.random() * data.width);
@@ -143,12 +141,10 @@ function testInterpolation(panel) {
 	var button = new SButton("拡大");
 	cb_interpolationtype.put(button, SComponent.putype.NEWLINE);
 	button.addListener(function() {
-		var srcdata = new SIPDataScalar();
-		srcdata.putImageData(inputcanvas.getImageData());
+		var srcdata = new SIPDataScalar(inputcanvas.getImageData());
 		srcdata.setSelecter(cb_selectertype.getSelectedItem());
 		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
-		var dstdata = new SIPDataScalar();
-		dstdata.setSize(dstWidth, dstHeight);
+		var dstdata = new SIPDataScalar(dstWidth, dstHeight);
 		dstdata.drawSIPData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.setImageData(dstdata.getImageData());
 	});
@@ -215,10 +211,8 @@ function testBlending(panel) {
 	var button = new SButton("blend");
 	cb_brendtype.put(button, SComponent.putype.RIGHT);
 	button.addListener(function() {
-		var src1 = new SIPDataRGBA();
-		src1.putImageData(canvas_src1.getImageData());
-		var src2 = new SIPDataRGBA();
-		src2.putImageData(canvas_src2.getImageData());
+		var src1 = new SIPDataRGBA(canvas_src1.getImageData());
+		var src2 = new SIPDataRGBA(canvas_src2.getImageData());
 		src1.setBlendType(cb_brendtype.getSelectedItem());
 		src1.drawSIPData(src2, 0, 0);
 		canvas_dst.setImageData(src1.getImageData());

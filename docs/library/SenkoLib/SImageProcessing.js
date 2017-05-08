@@ -420,6 +420,138 @@ SIPPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
 	return [x, y];
 };
 
+/*
+ * /////////////////////////////////////////////////////////
+ * フィルタ用クラス
+ * /////////////////////////////////////////////////////////
+ */
+var SIPMatrix = function(matrix) {
+	this.height = matrix.length;
+	this.width  = matrix[0].length;
+	this.matrix = [];
+	var i;
+	for(i = 0; i < matrix.length; i++) {
+		this.matrix[i] = matrix[i].slice();
+	}
+};
+SIPMatrix.prototype.clone = function() {
+	return new SIPMatrix(this.matrix);
+};
+SIPMatrix.prototype.rotateEdge = function(val) {
+	if(this.width === this.height) {
+		throw "not square";
+	}
+	if(this.width > 3) {
+		throw "not support";
+	}
+	var m = this.clone();
+	var x = [], y = [], i;
+	if(m.width === 2) {
+		x[0] = m.matrix[0][0];
+		x[1] = m.matrix[0][1];
+		x[2] = m.matrix[1][1];
+		x[3] = m.matrix[1][0];
+	}
+	else {
+		x[0] = m.matrix[0][0];
+		x[1] = m.matrix[0][1];
+		x[2] = m.matrix[0][2];
+		x[3] = m.matrix[1][2];
+		x[4] = m.matrix[2][2];
+		x[5] = m.matrix[2][1];
+		x[6] = m.matrix[2][0];
+		x[7] = m.matrix[1][0];
+	}
+	for(i = 0;i < x.length; i++) {
+		y[i] = x[(i + val) % x.length];
+	}
+	if(m.width === 2) {
+		m.matrix[0][0] = y[0];
+		m.matrix[0][1] = y[1];
+		m.matrix[1][1] = y[2];
+		m.matrix[1][0] = y[3];
+	}
+	else {
+		m.matrix[0][0] = y[0];
+		m.matrix[0][1] = y[1];
+		m.matrix[0][2] = y[2];
+		m.matrix[1][2] = y[3];
+		m.matrix[2][2] = y[4];
+		m.matrix[2][1] = y[5];
+		m.matrix[2][0] = y[6];
+		m.matrix[1][0] = y[7];
+	}
+	return m;
+};
+SIPMatrix.prototype.mul = function(val) {
+	var m = this.clone();
+	var x, y;
+	for(y = 0; y < m.height; y++) {
+		for(x = 0; x < m.width; x++) {
+			m.matrix[y][x] *= val;
+		}
+	}
+	return m;
+};
+SIPMatrix.prototype.sum = function() {
+	var sum = 0;
+	var x, y;
+	for(y = 0; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			sum += this.matrix[y][x];
+		}
+	}
+	return sum;
+};
+SIPMatrix.prototype.normalize = function() {
+	return this.clone().mul(1.0 / this.sum());
+};
+SIPMatrix.prototype.addCenter = function(val) {
+	var m = this.clone();
+	m.matrix[m.height >> 1][m.width >> 1] += val;
+	return m;
+};
+SIPMatrix.makeLaplacianFilter = function() {
+	return new SIPMatrix([
+		[ 0.0, -1.0, 0.0],
+		[-1.0,  4.0,-1.0],
+		[ 0.0, -1.0, 0.0]
+	]);
+};
+SIPMatrix.makeBlur = function(width, height) {
+	var m = [];
+	var data = 1.0 / width * height;
+	var x, y;
+	for(y = 0; y < height; y++) {
+		m[y] = [];
+		for(x = 0; x < width; x++) {
+			m[y][x] = data;
+		}
+	}
+	return new SIPMatrix(m);
+};
+SIPMatrix.makeGaussianFilter = function(width, height, sd) {
+	if(!sd) {
+		sd = 1.0;
+	}
+	var m = [];
+	var i, x, y;
+	var v = [];
+	var n = Math.max(width, height);
+	var s = - Math.floor(n / 2);
+	for(i = 0; i < n; i++, s++) {
+		v[i] = Math.exp( - s / ((sd * sd) * 2.0) );
+	}
+	for(y = 0; y < height; y++) {
+		m[y] = [];
+		for(x = 0; x < width; x++) {
+			m[y][x] = v[x] * v[y];
+		}
+	}
+	return new SIPMatrix(m).normalize();
+};
+
+
 /**
  * /////////////////////////////////////////////////////////
  * 画像データクラス
@@ -546,7 +678,7 @@ SIPData.prototype.setSize = function(width, height) {
 	this.width	= width;
 	this.height	= height;
 	this.selecter.setSize(width, height);
-	this.data	= new Uint8ClampedArray(this.width * this.height);
+	this.data	= new Uint8ClampedArray(this.width * this.height * 4);
 };
 SIPData.prototype.clear = function() {
 	if(this.data) {
@@ -731,9 +863,21 @@ SIPData.prototype.each = function(func) {
 };
 var SIPDataRGBA = function() {
 	SIPData.prototype._init.call(this);
+	if(arguments.length === 1) {
+		var image = arguments[0];
+		this.putImageData(image);
+	}
+	else if(arguments.length === 2) {
+		var width  = arguments[0];
+		var height = arguments[1];
+		this.setSize(width, height);
+	}
 };
 SIPDataRGBA.prototype = new SIPData();
 SIPDataRGBA.prototype.putDataScalar = function(imagedata, n) {
+	if(!(imagedata instanceof SIPDataScalar)) {
+		throw "IllegalArgumentException";
+	}
 	this.setSize(imagedata.width, imagedata.height);
 	if(!n) {
 		n = 0;
@@ -757,11 +901,17 @@ SIPDataRGBA.prototype.putDataScalarA = function(imagedata) {
 	this.putDataScalar(imagedata, 3);
 };
 SIPDataRGBA.prototype.putImageData = function(imagedata) {
-	this.width	= imagedata.width;
-	this.height	= imagedata.height;
-	this.setSize(imagedata.width, imagedata.height);
-	this.data   = new Uint8ClampedArray(imagedata.data);
-	this.data.set(imagedata.data);
+	if(	(imagedata instanceof ImageData) ||
+		(imagedata instanceof SIPDataRGBA)) {
+		this.setSize(imagedata.width, imagedata.height);
+		this.data.set(imagedata.data);
+	}
+	else if(imagedata instanceof SIPDataScalar) {
+		this.putImageData(imagedata.getImageData());
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
 };
 SIPDataRGBA.prototype.getImageData = function() {
 	var canvas, context;
@@ -776,6 +926,15 @@ SIPDataRGBA.prototype.getImageData = function() {
 
 var SIPDataScalar = function() {
 	SIPData.prototype._init.call(this);
+	if(arguments.length === 1) {
+		var image = arguments[0];
+		this.putImageData(image);
+	}
+	else if(arguments.length === 2) {
+		var width  = arguments[0];
+		var height = arguments[1];
+		this.setSize(width, height);
+	}
 };
 SIPDataScalar.prototype = new SIPData();
 SIPDataScalar.prototype.setSize = function(width, height) {
@@ -796,14 +955,24 @@ SIPDataScalar.prototype.setPixelInside = function(x, y, color) {
 	this.data[p]     = color.getColor();
 };
 SIPDataScalar.prototype.putImageData = function(imagedata, n) {
-	this.setSize(imagedata.width, imagedata.height);
-	if(!n) {
-		n = 0;
+	if(	(imagedata instanceof ImageData) ||
+		(imagedata instanceof SIPDataRGBA)) {
+		this.setSize(imagedata.width, imagedata.height);
+		if(!n) {
+			n = 0;
+		}
+		var p = 0, i = 0;
+		for(; i < this.data.length; i++) {
+			this.data[i] = imagedata.data[p + n];
+			p += 4;
+		}
 	}
-	var p = 0, i = 0;
-	for(; i < this.data.length; i++) {
-		this.data[i] = imagedata.data[p + n];
-		p += 4;
+	else if(imagedata instanceof SIPDataScalar) {
+		this.setSize(imagedata.width, imagedata.height);
+		this.data.set(imagedata.data);
+	}
+	else {
+		throw "IllegalArgumentException";
 	}
 };
 SIPDataScalar.prototype.putImageDataR = function(imagedata) {
