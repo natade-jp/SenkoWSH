@@ -572,17 +572,22 @@ SIPData.prototype.setPixelInside = function(x, y, color) {
 };
 SIPData.prototype.getPixel = function(x, y) {
 	var p = this.selecter.getPixelPosition(x, y);
-	return this.getPixelInside(p[0], p[1]);
+	if(p) {
+		return this.getPixelInside(p[0], p[1]);
+	}
+	return null;
 };
 SIPData.prototype.setPixel = function(x, y, color) {
 	var p = this.selecter.getPixelPosition(x, y);
-	if(this._blendtype === SIPData.brendtype.NONE) {
-		this.setPixelInside(p[0], p[1], color);
-	}
-	else {
-		var a = this.getPixelInside(p[0], p[1]);
-		color = this.blendfunc(this.getPixelInside(p[0], p[1]), color);
-		this.setPixelInside(p[0], p[1], color);
+	if(p) {
+		if(this._blendtype === SIPData.brendtype.NONE) {
+			this.setPixelInside(p[0], p[1], color);
+		}
+		else {
+			var mycolor = this.getPixelInside(p[0], p[1]);
+			var newcolor = this.blendfunc(mycolor, color);
+			this.setPixelInside(p[0], p[1], newcolor);
+		}
 	}
 };
 SIPData.prototype.getColor = function(x, y) {
@@ -651,6 +656,56 @@ SIPData.prototype.getColor = function(x, y) {
 SIPData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
+SIPData.prototype.drawImageData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+	if(!(image instanceof SIPData)) {
+		throw "IllegalArgumentException";
+	}
+	if(arguments.length === 3) {
+		dx = sx;
+		dy = sy;
+		dw = image.width;
+		dh = image.height;
+		sx = 0;
+		sy = 0;
+		sw = image.width;
+		sh = image.height;
+	}
+	else if(arguments.length === 5) {
+		dx = sx;
+		dy = sy;
+		dw = sw;
+		dh = sh;
+		sx = 0;
+		sy = 0;
+		sw = image.width;
+		sh = image.height;
+	}
+	else if(arguments.length === 9) {
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
+	var delta_w = sw / dw;
+	var delta_h = sh / dh;
+	var src_x, src_y;
+	var dst_x, dst_y;
+	
+	src_y = sy;
+	for(dst_y = dy; dst_y < (dy + dw); dst_y++) {
+		src_x = sx;
+		for(dst_x = dx; dst_x < (dx + dh); dst_x++) {
+			var color = image.getColor(src_x, src_y);
+			if(color) {
+				this.setColor(dst_x, dst_y, color);
+			}
+			src_x += delta_w;
+		}
+		src_y += delta_h;
+	}
+};
+
+
+
 SIPData.prototype.each = function(func) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {

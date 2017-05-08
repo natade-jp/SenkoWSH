@@ -148,19 +148,8 @@ function testInterpolation(panel) {
 		srcdata.setSelecter(cb_selectertype.getSelectedItem());
 		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
 		var dstdata = new SIPDataScalar();
-		dstdata.putImageData(outputcanvas.getImageData());
-		var x = 0, y = 0;
-		var src_x = 0, src_y = 0;
-		var delta_x = srcWidth / dstWidth;
-		var delta_y = srcHeight / dstHeight;
-		for(y = 0; y < dstHeight; y++) {
-			src_x = 0;
-			for(x = 0; x < dstWidth; x++) {
-				dstdata.setColor(x, y, srcdata.getColor(src_x, src_y));
-				src_x += delta_x;
-			}
-			src_y += delta_y;
-		}
+		dstdata.setSize(dstWidth, dstHeight);
+		dstdata.drawImageData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.setImageData(dstdata.getImageData());
 	});
 	
@@ -182,8 +171,8 @@ function testBlending(panel) {
 	panel.getElement().style.backgroundImage = "url(./image_ichimatsu.png)";
 	panel.getElement().style.backgroundSize = "16px";
 	
-	var canvasWidth  = 256;
-	var canvasHeight = 256;
+	var canvasWidth  = 128;
+	var canvasHeight = 128;
 	
 	// Canvas
 	var canvas_src1	= new SCanvas();
@@ -231,11 +220,7 @@ function testBlending(panel) {
 		var src2 = new SIPDataRGBA();
 		src2.putImageData(canvas_src2.getImageData());
 		src1.setBlendType(cb_brendtype.getSelectedItem());
-		var color;
-		src1.each(function(x, y) {
-			color = src2.getPixelInside(x, y);
-			return color;
-		});
+		src1.drawImageData(src2, 0, 0);
 		canvas_dst.setImageData(src1.getImageData());
 	});
 	
@@ -285,7 +270,7 @@ function testBlending(panel) {
 	var testpanel = new SPanel();
 	mainpanel.put(testpanel, SComponent.putype.NEWLINE);
 	
-	combobox.setSelectedItem(combobox_type[3]);
-	testBlending(testpanel);
+	combobox.setSelectedItem(combobox_type[2]);
+	testInterpolation(testpanel);
 }
 
