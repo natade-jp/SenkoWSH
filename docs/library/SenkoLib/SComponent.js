@@ -809,23 +809,26 @@ SImagePanel.prototype = new SComponent();
 SImagePanel.prototype.clear = function() {
 	this.clearChildNodes();
 };
-SImagePanel.prototype.setImage = function(data) {
+SImagePanel.prototype.setImage = function(data, drawcallback) {
 	if(typeof data === "string") {
 		// URL(string) -> IMG
+		this.image.onload = function() {
+			drawcallback();
+		};
 		this.image.src = data;
 	}
 	else if(data instanceof SCanvas) {
 		// SCanvas -> canvas
-		this.setImage(data.getElement());
+		this.setImage(data.getElement(), drawcallback);
 	}
 	else if((data instanceof Element) && (data.tagName === "CANVAS")){
 		// canvas -> URL(string)
 		try {
-			this.setImage(data.toDataURL("image/png"));
+			this.setImage(data.toDataURL("image/png"), drawcallback);
 		} catch(e) {
 		}
 		try {
-			this.setImage(data.toDataURL("image/jpeg"));;
+			this.setImage(data.toDataURL("image/jpeg"), drawcallback);;
 		} catch(e) {
 		}
 	}
@@ -834,7 +837,7 @@ SImagePanel.prototype.setImage = function(data) {
 		var reader = new FileReader();
 		// Blob, File -> URL(string)
 		reader.onload = function() {
-			_this.setImage(reader.result);
+			_this.setImage(reader.result, drawcallback);
 		};
 		reader.readAsDataURL(data);
 	}

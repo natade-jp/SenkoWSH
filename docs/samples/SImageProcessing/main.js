@@ -25,7 +25,10 @@ function testFileLoad(panel) {
 	var savebutton = new SButton("IMG要素化");
 	loadbutton.put(savebutton, SComponent.putype.RIGHT);
 	savebutton.addListener(function() {
-		imagepanel.setImage(canvas);
+		imagepanel.setImage(canvas,
+		function() {
+			System.out.println("描写完了");
+		});
 	});
 	
 	// SImagePanel
