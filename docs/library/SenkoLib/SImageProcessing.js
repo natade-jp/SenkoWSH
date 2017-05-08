@@ -656,7 +656,7 @@ SIPData.prototype.getColor = function(x, y) {
 SIPData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
-SIPData.prototype.drawImageData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+SIPData.prototype.drawSIPData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 	if(!(image instanceof SIPData)) {
 		throw "IllegalArgumentException";
 	}

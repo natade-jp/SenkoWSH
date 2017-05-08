@@ -149,7 +149,7 @@ function testInterpolation(panel) {
 		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
 		var dstdata = new SIPDataScalar();
 		dstdata.setSize(dstWidth, dstHeight);
-		dstdata.drawImageData(srcdata, 0, 0, dstWidth, dstHeight);
+		dstdata.drawSIPData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.setImageData(dstdata.getImageData());
 	});
 	
@@ -220,7 +220,7 @@ function testBlending(panel) {
 		var src2 = new SIPDataRGBA();
 		src2.putImageData(canvas_src2.getImageData());
 		src1.setBlendType(cb_brendtype.getSelectedItem());
-		src1.drawImageData(src2, 0, 0);
+		src1.drawSIPData(src2, 0, 0);
 		canvas_dst.setImageData(src1.getImageData());
 	});
 	
