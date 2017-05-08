@@ -43,6 +43,9 @@ SIPColor.prototype.addColor = function() {
 SIPColor.prototype.subColor = function() {
 	return null;
 };
+SIPColor.prototype.mulColor = function() {
+	return null;
+};
 SIPColor.prototype.mul = function() {
 	return null;
 };
@@ -53,6 +56,12 @@ SIPColor.prototype.max = function() {
 	return null;
 };
 SIPColor.prototype.min = function() {
+	return null;
+};
+SIPColor.prototype.getBlendAlpha = function() {
+	return null;
+};
+SIPColor.prototype.setBlendAlpha = function() {
 	return null;
 };
 SIPColor.ipLerp = function(v0, v1, x) {
@@ -107,6 +116,36 @@ SIPColor.ipBicubicNormal = function(va, nx, ny) {
 SIPColor.ipBicubicSharp = function(va, nx, ny) {
 	return SIPColor.ipBicubic(va, nx, ny, -1.2);
 };
+SIPColor.brendNone = function(x, y) {
+	return y;
+};
+SIPColor.brendAlpha = function(x, y) {
+	var x_alpha = x.getBlendAlpha();
+	var y_alpha = y.getBlendAlpha();
+	x = SIPColor.ipLerp(x, y, y_alpha);
+	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
+};
+SIPColor.brendAdd = function(x, y) {
+	var x_alpha = x.getBlendAlpha();
+	var y_alpha = y.getBlendAlpha();
+	x = x.addColor(y.mul(y_alpha));
+	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
+};
+SIPColor.brendSub = function(x, y) {
+	var alpha = x.getBlendAlpha();
+	x = x.subColor(y.mul(y.getBlendAlpha()));
+	return x.setBlendAlpha(alpha);
+};
+SIPColor.brendRevSub = function(x, y) {
+	var alpha = y.getBlendAlpha();
+	y = y.subColor(x.mul(x.getBlendAlpha()));
+	return y.setBlendAlpha(alpha);
+};
+SIPColor.brendMul = function(x, y) {
+	var alpha = x.getBlendAlpha();
+	x = x.mulColor(y.mul(y.getBlendAlpha()));
+	return x.setBlendAlpha(alpha);
+};
 
 var SIPColorScalar = function(color) {
 	this.x = color;
@@ -144,6 +183,11 @@ SIPColorScalar.prototype.subColor = function(c) {
 	color.x -= c.x;
 	return color;
 };
+SIPColorScalar.prototype.mulColor = function(c) {
+	var color = this.clone();
+	color.x *= c.x;
+	return color;
+};
 SIPColorScalar.prototype.mul = function(x) {
 	var color = this.clone();
 	color.x *= x;
@@ -164,10 +208,17 @@ SIPColorScalar.prototype.min = function(c) {
 	color.x = Math.min(c.x, this.x);
 	return color;
 };
+SIPColorScalar.prototype.getBlendAlpha = function() {
+	return 1.0;
+};
+SIPColorScalar.prototype.setBlendAlpha = function() {
+	return this.clone();
+};
 SIPColorScalar.prototype.toString = function() {
 	return "color(" + this.x + ")";
 };
 var SIPColorRGBA = function(color) {
+//	this.rgba = [color[0], color[1], color[2], color[3]];
 	this.rgba = color;
 };
 SIPColorRGBA.prototype = new SIPColor();
@@ -205,6 +256,12 @@ SIPColorRGBA.prototype.subColor = function(c) {
 	var color = this.clone();
 	color.rgba[0] -= c.rgba[0];	color.rgba[1] -= c.rgba[1];
 	color.rgba[2] -= c.rgba[2];	color.rgba[3] -= c.rgba[3];
+	return color;
+};
+SIPColorRGBA.prototype.mulColor = function(c) {
+	var color = this.clone();
+	color.rgba[0] *= c.rgba[0];	color.rgba[1] *= c.rgba[1];
+	color.rgba[2] *= c.rgba[2];	color.rgba[3] *= c.rgba[3];
 	return color;
 };
 SIPColorRGBA.prototype.addVector = function(v) {
@@ -279,8 +336,16 @@ SIPColorRGBA.prototype.min = function(c) {
 	color.rgba[3] = Math.min(c.color[3], this.rgba[3]);
 	return color;
 };
+SIPColorRGBA.prototype.getBlendAlpha = function() {
+	return this.rgba[3] / 255.0;
+};
+SIPColorRGBA.prototype.setBlendAlpha = function(x) {
+	var color = this.clone();
+	color.rgba[3] = x * 255.0;
+	return color;
+};
 SIPColorRGBA.prototype.toString = function() {
-	return "color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
+	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
 };
 
 /**
@@ -383,9 +448,19 @@ SIPData.interpolationtype = {
 	BICUBIC_SHARP		: "BICUBIC_SHARP"
 };
 
+SIPData.brendtype = {
+	NONE				: "NONE",
+	ALPHA				: "ALPHA",
+	ADD					: "ADD",
+	SUB					: "SUB",
+	REVSUB				: "REVSUB",
+	MUL					: "MUL"
+};
+
 SIPData.prototype._init = function() {
 	this.setSelecter(SIPData.selectertype.INSIDE);
 	this.setInterPolation(SIPData.interpolationtype.NEAREST_NEIGHBOR);
+	this.setBlendType(SIPData.brendtype.NONE);
 };
 SIPData.prototype.setSelecter = function(_selectertype) {
 	this._selectertype = _selectertype;
@@ -442,8 +517,30 @@ SIPData.prototype.setInterPolation = function(iptype) {
 		this.ipn	= 16;
 	}
 };
+SIPData.prototype.setBlendType = function(_blendtype) {
+	this._blendtype = _blendtype;
+	if(_blendtype === SIPData.brendtype.NONE) {
+		this.blendfunc = SIPColor.brendNone;
+	}
+	else if(_blendtype === SIPData.brendtype.ALPHA) {
+		this.blendfunc = SIPColor.brendAlpha;
+	}
+	else if(_blendtype === SIPData.brendtype.ADD) {
+		this.blendfunc = SIPColor.brendAdd;
+	}
+	else if(_blendtype === SIPData.brendtype.SUB) {
+		this.blendfunc = SIPColor.brendSub;
+	}
+	else if(_blendtype === SIPData.brendtype.REVSUB) {
+		this.blendfunc = SIPColor.brendRevSub;
+	}
+	else if(_blendtype === SIPData.brendtype.MUL) {
+		this.blendfunc = SIPColor.brendMul;
+	}
+};
 SIPData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
+		this.selecter.setSize(width, height);
 		return;
 	}
 	this.width	= width;
@@ -458,12 +555,13 @@ SIPData.prototype.clear = function() {
 };
 SIPData.prototype.getPixelInside = function(x, y) {
 	var p = (y * this.width + x) * 4;
-	return new SIPColorRGBA([
+	var c = new SIPColorRGBA([
 		this.data[p],
 		this.data[p + 1],
 		this.data[p + 2],
 		this.data[p + 3]
 	]);
+	return c;
 };
 SIPData.prototype.setPixelInside = function(x, y, color) {
 	var p = (y * this.width + x) * 4;
@@ -478,7 +576,14 @@ SIPData.prototype.getPixel = function(x, y) {
 };
 SIPData.prototype.setPixel = function(x, y, color) {
 	var p = this.selecter.getPixelPosition(x, y);
-	this.setPixelInside(p[0], p[1], color);
+	if(this._blendtype === SIPData.brendtype.NONE) {
+		this.setPixelInside(p[0], p[1], color);
+	}
+	else {
+		var a = this.getPixelInside(p[0], p[1]);
+		color = this.blendfunc(this.getPixelInside(p[0], p[1]), color);
+		this.setPixelInside(p[0], p[1], color);
+	}
 };
 SIPData.prototype.getColor = function(x, y) {
 	var rx = Math.floor(x);
@@ -550,7 +655,8 @@ SIPData.prototype.each = function(func) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
-			this.setColor(x, y, func(x, y, this.getColor(x, y)));
+			var newcolor = func(x, y, this.getColor(x, y));
+			this.setColor(x, y, newcolor);
 		}
 	}
 };
@@ -584,6 +690,7 @@ SIPDataRGBA.prototype.putDataScalarA = function(imagedata) {
 SIPDataRGBA.prototype.putImageData = function(imagedata) {
 	this.width	= imagedata.width;
 	this.height	= imagedata.height;
+	this.setSize(imagedata.width, imagedata.height);
 	this.data   = new Uint8ClampedArray(imagedata.data);
 	this.data.set(imagedata.data);
 };
@@ -660,3 +767,5 @@ SIPDataScalar.prototype.getImageData = function() {
 	}
 	return imagedata;
 };
+
+

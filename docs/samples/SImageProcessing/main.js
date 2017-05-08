@@ -173,7 +173,77 @@ function testInterpolation(panel) {
 	outputcanvas.getContext().fillRect(0, 0, size.width, size.height);
 	
 };
+
+
+function testBlending(panel) {
 	
+	panel.clearChildNodes();
+	
+	panel.getElement().style.backgroundImage = "url(./image_ichimatsu.png)";
+	panel.getElement().style.backgroundSize = "16px";
+	
+	var canvasWidth  = 256;
+	var canvasHeight = 256;
+	
+	// Canvas
+	var canvas_src1	= new SCanvas();
+	var canvas_src2	= new SCanvas();
+	var canvas_dst	= new SCanvas();
+	
+	canvas_src1.setPixelSize(canvasWidth, canvasHeight);
+	canvas_src1.setUnit(SComponent.unittype.PX);
+	canvas_src1.setSize(canvasWidth, canvasHeight);
+	canvas_src1.setImage("./image_x.png", false, SCanvas.drawtype.FILL);
+	canvas_src2.setPixelSize(canvasWidth, canvasHeight);
+	canvas_src2.setUnit(SComponent.unittype.PX);
+	canvas_src2.setSize(canvasWidth, canvasHeight);
+	canvas_src2.setImage("./image_y.png", false, SCanvas.drawtype.FILL);
+	canvas_dst.setPixelSize(canvasWidth, canvasHeight);
+	canvas_dst.setUnit(SComponent.unittype.PX);
+	canvas_dst.setSize(canvasWidth, canvasHeight);
+	
+	var label1 = new SLabel("ベース画像");
+	panel.put(label1, SComponent.putype.IN);
+	label1.put(canvas_src1, SComponent.putype.RIGHT);
+	
+	var label2 = new SLabel("上書き画像");
+	canvas_src1.put(label2, SComponent.putype.NEWLINE);
+	label2.put(canvas_src2, SComponent.putype.RIGHT);
+	
+	var brendtype = [
+		SIPData.brendtype.NONE,
+		SIPData.brendtype.ALPHA,
+		SIPData.brendtype.ADD,
+		SIPData.brendtype.SUB,
+		SIPData.brendtype.REVSUB,
+		SIPData.brendtype.MUL
+	];
+	
+	var cb_brendtype = new SComboBox(brendtype);
+	cb_brendtype.setWidth(16);
+	canvas_src2.put(cb_brendtype, SComponent.putype.NEWLINE);
+	
+	var button = new SButton("blend");
+	cb_brendtype.put(button, SComponent.putype.RIGHT);
+	button.addListener(function() {
+		var src1 = new SIPDataRGBA();
+		src1.putImageData(canvas_src1.getImageData());
+		var src2 = new SIPDataRGBA();
+		src2.putImageData(canvas_src2.getImageData());
+		src1.setBlendType(cb_brendtype.getSelectedItem());
+		var color;
+		src1.each(function(x, y) {
+			color = src2.getPixelInside(x, y);
+			return color;
+		});
+		canvas_dst.setImageData(src1.getImageData());
+	});
+	
+	var label3 = new SLabel("結果画像");
+	button.put(label3, SComponent.putype.NEWLINE);
+	label3.put(canvas_dst, SComponent.putype.RIGHT);
+	
+};
 
 ﻿function main(args) {
 	
@@ -187,7 +257,7 @@ function testInterpolation(panel) {
 	mainpanel.put(label, SComponent.putype.IN);
 	
 	var combobox_type = [
-		"画像ファイルの読み込み", "データの読み書き", "画像補間"
+		"画像ファイルの読み込み", "データの読み書き", "画像補間", "ブレンド"
 	];
 	var combobox = new SComboBox(combobox_type);
 	combobox.setWidth(20);
@@ -195,6 +265,9 @@ function testInterpolation(panel) {
 	
 	combobox.addListener(function () {
 		var item = combobox.getSelectedItem();
+		
+		testpanel.getElement().style.backgroundImage = "none";
+		
 		if(item === combobox_type[0]) {
 			testFileLoad(testpanel);
 		}
@@ -204,12 +277,15 @@ function testInterpolation(panel) {
 		else if(item === combobox_type[2]) {
 			testInterpolation(testpanel);
 		}
+		else if(item === combobox_type[3]) {
+			testBlending(testpanel);
+		}
 	});
 	
 	var testpanel = new SPanel();
 	mainpanel.put(testpanel, SComponent.putype.NEWLINE);
 	
-	combobox.setSelectedItem(combobox_type[2]);
-	testInterpolation(testpanel);
+	combobox.setSelectedItem(combobox_type[3]);
+	testBlending(testpanel);
 }
 

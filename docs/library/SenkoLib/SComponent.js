@@ -741,8 +741,6 @@ SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 		this.setPixelSize(width, height);
 	}
 	this.clear();
-	this.context.fillStyle = "rgb(0, 0, 0)";
-	this.context.fillRect(0, 0,  pixelsize.width, pixelsize.height);
 	
 	if(image instanceof Image) {
 		this.context.drawImage(
