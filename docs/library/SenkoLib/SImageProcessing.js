@@ -553,6 +553,9 @@ SIPData.prototype.clear = function() {
 		this.data.fill(0);
 	}
 };
+
+// PixelInside 系のメソッドは、x, y が整数かつ画像の範囲内を保証している場合に使用可能
+
 SIPData.prototype.getPixelInside = function(x, y) {
 	var p = (y * this.width + x) * 4;
 	var c = new SIPColorRGBA([
@@ -570,6 +573,9 @@ SIPData.prototype.setPixelInside = function(x, y, color) {
 	this.data[p + 2] = color.getColor()[2];
 	this.data[p + 3] = color.getColor()[3];
 };
+
+// Pixel 系のメソッドは、x, y が整数かつ画像の範囲内を保証していない場合に使用可能
+
 SIPData.prototype.getPixel = function(x, y) {
 	var p = this.selecter.getPixelPosition(x, y);
 	if(p) {
@@ -590,6 +596,9 @@ SIPData.prototype.setPixel = function(x, y, color) {
 		}
 	}
 };
+
+// Color 系のメソッドは、x, y が実数かつ画像の範囲内を保証していない場合に使用可能
+
 SIPData.prototype.getColor = function(x, y) {
 	var rx = Math.floor(x);
 	var ry = Math.floor(y);
@@ -656,6 +665,11 @@ SIPData.prototype.getColor = function(x, y) {
 SIPData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
+
+// drawImage と同じ使用方法で SIPData をドローする
+// RGBA データの上には、RGBA のみ書き込み可能
+// スカラーデータの上には、スカラーのみ書き込み可能
+
 SIPData.prototype.drawSIPData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 	if(!(image instanceof SIPData)) {
 		throw "IllegalArgumentException";
@@ -704,7 +718,7 @@ SIPData.prototype.drawSIPData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) 
 	}
 };
 
-
+// 全画素に指定した関数の操作を行う
 
 SIPData.prototype.each = function(func) {
 	var x = 0, y = 0;
