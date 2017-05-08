@@ -757,7 +757,16 @@ SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 		);
 	}
 };
-SCanvas.prototype.setImage = function(data, isresizecanvas, drawsize, drawcallback) {
+SCanvas.prototype.setImage = function(data, drawcallback, drawsize, isresizecanvas) {
+	if(!drawcallback) {
+		drawcallback = null;
+	}
+	if(!drawsize) {
+		drawsize = SCanvas.drawtype.LETTER_BOX;
+	}
+	if(!isresizecanvas) {
+		isresizecanvas = false;
+	}
 	if((data instanceof Image) || (data instanceof ImageData)) {
 		// Image -> canvas, ImageData -> canvas
 		this._setImage(data, isresizecanvas, drawsize);

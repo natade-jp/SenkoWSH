@@ -16,7 +16,7 @@ function testFileLoad(panel) {
 	loadbutton.setFileAccept(SFileButton.fileaccept.image);
 	canvas.put(loadbutton, SComponent.putype.NEWLINE);
 	loadbutton.addListener(function(file) {
-		canvas.setImage(file[0], true, SCanvas.drawtype.LETTER_BOX,
+		canvas.setImage(file[0],
 		function() {
 			System.out.println("ロード完了");
 		});
@@ -181,11 +181,11 @@ function testBlending(panel) {
 	canvas_src1.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src1.setUnit(SComponent.unittype.PX);
 	canvas_src1.setSize(canvasWidth, canvasHeight);
-	canvas_src1.setImage("./image_x.png", false, SCanvas.drawtype.FILL);
+	canvas_src1.setImage("./image_x.png");
 	canvas_src2.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src2.setUnit(SComponent.unittype.PX);
 	canvas_src2.setSize(canvasWidth, canvasHeight);
-	canvas_src2.setImage("./image_y.png", false, SCanvas.drawtype.FILL);
+	canvas_src2.setImage("./image_y.png");
 	canvas_dst.setPixelSize(canvasWidth, canvasHeight);
 	canvas_dst.setUnit(SComponent.unittype.PX);
 	canvas_dst.setSize(canvasWidth, canvasHeight);
@@ -267,7 +267,7 @@ function testBlending(panel) {
 	var testpanel = new SPanel();
 	mainpanel.put(testpanel, SComponent.putype.NEWLINE);
 	
-	combobox.setSelectedItem(combobox_type[2]);
-	testInterpolation(testpanel);
+	combobox.setSelectedItem(combobox_type[3]);
+	testBlending(testpanel);
 }
 
