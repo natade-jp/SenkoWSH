@@ -40,7 +40,7 @@ SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
 
 SComponent.putype = {
 	IN		: 0,
-	LEFT	: 1,
+	RIGHT	: 1,
 	NEWLINE	: 2
 };
 SComponent.unittype = {
