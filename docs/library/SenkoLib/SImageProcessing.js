@@ -143,7 +143,7 @@ SIPColor.brendRevSub = function(x, y) {
 };
 SIPColor.brendMul = function(x, y) {
 	var alpha = x.getBlendAlpha();
-	x = x.mulColor(y.mul(y.getBlendAlpha()));
+	x = x.mulColor(y.mul(y.getBlendAlpha()).div(255.0));
 	return x.setBlendAlpha(alpha);
 };
 
