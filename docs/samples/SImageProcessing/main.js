@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIPData */
+﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIPData, SIPMatrix */
 
 function testFileLoad(panel) {
 	
@@ -227,6 +227,92 @@ function testBlending(panel) {
 	
 };
 
+
+function testConvolution(panel) {
+	
+	panel.clearChildNodes();
+	
+	panel.getElement().style.backgroundImage = "url(./image_ichimatsu.png)";
+	panel.getElement().style.backgroundSize = "16px";
+	
+	var canvasWidth  = 320;
+	var canvasHeight = 240;
+	
+	// Canvas
+	var canvas_src	= new SCanvas();
+	var canvas_dst	= new SCanvas();
+	
+	canvas_src.setPixelSize(canvasWidth, canvasHeight);
+	canvas_src.setUnit(SComponent.unittype.PX);
+	canvas_src.setSize(canvasWidth, canvasHeight);
+	canvas_dst.setPixelSize(canvasWidth, canvasHeight);
+	canvas_dst.setUnit(SComponent.unittype.PX);
+	canvas_dst.setSize(canvasWidth, canvasHeight);
+	
+	//-------------------------
+	
+	var label1 = new SLabel("使用画像");
+	panel.put(label1, SComponent.putype.IN);
+	var picturetype = [
+		"./image_test1.jpg",
+		"./image_test2.png"
+	];
+	var cb_picturetype = new SComboBox(picturetype);
+	cb_picturetype.setWidth(32);
+	label1.put(cb_picturetype, SComponent.putype.RIGHT);
+	cb_picturetype.addListener(function () {
+		canvas_src.setImage(cb_picturetype.getSelectedItem());
+	});
+	canvas_src.setImage(picturetype[0]);
+	
+	//-------------------------
+	
+	var label2 = new SLabel("入力画像");
+	cb_picturetype.put(label2, SComponent.putype.NEWLINE);
+	label2.put(canvas_src, SComponent.putype.RIGHT);
+	
+	//-------------------------
+	
+	var label3 = new SLabel("フィルタの種類");
+	canvas_src.put(label3, SComponent.putype.NEWLINE);
+	var filtertype = [
+		"ぼかす",
+		"高画質化"
+	];
+	var cb_filtertype = new SComboBox(filtertype);
+	cb_filtertype.setWidth(32);
+	label3.put(cb_filtertype, SComponent.putype.RIGHT);
+	
+	//-------------------------
+	
+	var button = new SButton("実行");
+	cb_filtertype.put(button, SComponent.putype.RIGHT);
+	button.addListener(function() {
+		var src = new SIPDataRGBA(canvas_src.getImageData());
+		src.setSelecter(SIPData.selectertype.FILL);
+		var m;
+		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
+			m = SIPMatrix.makeBlur(5, 1);
+			src.convolution(m);
+			m = SIPMatrix.makeBlur(1, 5);
+			src.convolution(m);
+		}
+		else {
+			m = SIPMatrix.makeSharpenFilter(0.5);
+			src.convolution(m);
+		}
+		canvas_dst.setImageData(src.getImageData());
+	});
+	
+	//-------------------------
+	
+	var label3 = new SLabel("結果画像");
+	button.put(label3, SComponent.putype.NEWLINE);
+	label3.put(canvas_dst, SComponent.putype.RIGHT);
+	
+};
+
+
 ﻿function main(args) {
 	
 	System.out.println("SImageProcessing クラスのサンプル");
@@ -239,7 +325,11 @@ function testBlending(panel) {
 	mainpanel.put(label, SComponent.putype.IN);
 	
 	var combobox_type = [
-		"画像ファイルの読み込み", "データの読み書き", "画像補間", "ブレンド"
+		"画像ファイルの読み込み",
+		"データの読み書き",
+		"画像補間",
+		"ブレンド",
+		"たたみこみ"
 	];
 	var combobox = new SComboBox(combobox_type);
 	combobox.setWidth(20);
@@ -262,12 +352,15 @@ function testBlending(panel) {
 		else if(item === combobox_type[3]) {
 			testBlending(testpanel);
 		}
+		else if(item === combobox_type[4]) {
+			testConvolution(testpanel);
+		}
 	});
 	
 	var testpanel = new SPanel();
 	mainpanel.put(testpanel, SComponent.putype.NEWLINE);
 	
-	combobox.setSelectedItem(combobox_type[3]);
-	testBlending(testpanel);
+	combobox.setSelectedItem(combobox_type[4]);
+	testConvolution(testpanel);
 }
 

@@ -218,8 +218,8 @@ SIPColorS.prototype.toString = function() {
 	return "color(" + this.x + ")";
 };
 var SIPColorRGBA = function(color) {
-//	this.rgba = [color[0], color[1], color[2], color[3]];
-	this.rgba = color;
+	// ディープコピー
+	this.rgba = [color[0], color[1], color[2], color[3]];
 };
 SIPColorRGBA.prototype = new SIPColor();
 SIPColorRGBA.prototype.getColor = function() {
@@ -362,6 +362,13 @@ var SIPPixelSelecter = function() {
 };
 SIPPixelSelecter.prototype._init = function(width, height) {
 	this.setSize(width, height);
+};
+SIPPixelSelecter.prototype.clone = function() {
+	var func = this.getPixelPosition;
+	var x = new SIPPixelSelecter();
+	x._init(this.width, this.height);
+	x.getPixelPosition = func;
+	return x;
 };
 SIPPixelSelecter.prototype.setSize = function(width, height) {
 	this.width  = width;
@@ -523,12 +530,12 @@ SIPMatrix.makeSharpenFilter = function(power) {
 };
 SIPMatrix.makeBlur = function(width, height) {
 	var m = [];
-	var data = 1.0 / width * height;
+	var value = 1.0 / (width * height);
 	var x, y;
 	for(y = 0; y < height; y++) {
 		m[y] = [];
 		for(x = 0; x < width; x++) {
-			m[y][x] = data;
+			m[y][x] = value;
 		}
 	}
 	return new SIPMatrix(m);
@@ -596,6 +603,15 @@ SIPData.prototype._init = function() {
 	this.setSelecter(SIPData.selectertype.INSIDE);
 	this.setInterPolation(SIPData.interpolationtype.NEAREST_NEIGHBOR);
 	this.setBlendType(SIPData.brendtype.NONE);
+};
+SIPData.prototype.clone = function() {
+	var x = new SIPData();
+	x.setSelecter(this.getSelecter());
+	x.setInterPolation(this.getInterPolation());
+	x.setBlendType(this.getBlendType());
+	x.setSize(this.width, this.height);
+	x.data.set(this.data);
+	return x;
 };
 SIPData.prototype.setSelecter = function(_selectertype) {
 	this._selectertype = _selectertype;
@@ -701,6 +717,28 @@ SIPData.prototype.clear = function() {
 SIPData.prototype.convolution = function(matrix) {
 	if(!(matrix instanceof SIPMatrix)) {
 		throw "IllegalArgumentException";
+	}
+	var x, y, fx, fy, mx, my;
+	var fx_offset	= - (matrix.width  >> 1);
+	var fy_offset	= - (matrix.height >> 1);
+	var m			= matrix.matrix;
+	var zero_color  = this.getPixelInside(0, 0).zero();
+	var bufferimage = this.clone();
+	for(y = 0; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			var newcolor = zero_color;
+			fy = y + fy_offset;
+			for(my = 0; my < matrix.height; my++, fy++) {
+				fx = x + fx_offset;
+				for(mx = 0; mx < matrix.width; mx++, fx++) {
+					var color = bufferimage.getPixel(fx, fy);
+					if(color) {
+						newcolor = newcolor.addColor(color.mul(m[my][mx]));
+					}
+				}
+			}
+			this.setPixelInside(x, y, newcolor);
+		}
 	}
 };
 
@@ -874,8 +912,8 @@ SIPData.prototype.each = function(func) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
-			var newcolor = func(x, y, this.getColor(x, y));
-			this.setColor(x, y, newcolor);
+			var newcolor = func(x, y, this.getPixelInside(x, y));
+			this.setPixelInside(x, y, newcolor);
 		}
 	}
 };
