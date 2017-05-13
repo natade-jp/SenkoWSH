@@ -438,48 +438,47 @@ SIPMatrix.prototype.clone = function() {
 	return new SIPMatrix(this.matrix);
 };
 SIPMatrix.prototype.rotateEdge = function(val) {
-	if(this.width === this.height) {
-		throw "not square";
-	}
-	if(this.width > 3) {
-		throw "not support";
-	}
+	// 周囲の値を時計回りに回転させます。
 	var m = this.clone();
-	var x = [], y = [], i;
-	if(m.width === 2) {
-		x[0] = m.matrix[0][0];
-		x[1] = m.matrix[0][1];
-		x[2] = m.matrix[1][1];
-		x[3] = m.matrix[1][0];
-	}
-	else {
-		x[0] = m.matrix[0][0];
-		x[1] = m.matrix[0][1];
-		x[2] = m.matrix[0][2];
-		x[3] = m.matrix[1][2];
-		x[4] = m.matrix[2][2];
-		x[5] = m.matrix[2][1];
-		x[6] = m.matrix[2][0];
-		x[7] = m.matrix[1][0];
+	
+	var x = [], y = [], i, j;
+	{
+		// 上側
+		for(i = 0;i < this.width - 1; i++) {
+			x.push(m.matrix[0][i]);
+		}
+		// 右側
+		for(i = 0;i < this.height - 1; i++) {
+			x.push(m.matrix[i][this.width - 1]);
+		}
+		// 下側
+		for(i = this.width - 1;i > 0; i--) {
+			x.push(m.matrix[this.height - 1][i]);
+		}
+		// 左側
+		for(i = this.height - 1;i > 0; i--) {
+			x.push(m.matrix[i][0]);
+		}
 	}
 	for(i = 0;i < x.length; i++) {
-		y[i] = x[(i + val) % x.length];
+		// かならず正とする
+		y[i] = x[((i + val) % x.length + x.length) % x.length];
 	}
-	if(m.width === 2) {
-		m.matrix[0][0] = y[0];
-		m.matrix[0][1] = y[1];
-		m.matrix[1][1] = y[2];
-		m.matrix[1][0] = y[3];
-	}
-	else {
-		m.matrix[0][0] = y[0];
-		m.matrix[0][1] = y[1];
-		m.matrix[0][2] = y[2];
-		m.matrix[1][2] = y[3];
-		m.matrix[2][2] = y[4];
-		m.matrix[2][1] = y[5];
-		m.matrix[2][0] = y[6];
-		m.matrix[1][0] = y[7];
+	{
+		// 上側
+		m.matrix[0] = y.slice(0, this.width);
+		// 右側
+		for(i = 0;i < this.height; i++) {
+			m.matrix[i][this.width - 1] = y[this.width + i];
+		}
+		// 下側
+		m.matrix[this.height - 1] = y.slice(
+			this.width + this.height - 2,
+			this.width + this.height - 2 + this.width ).reverse();
+		// 左側
+		for(i = this.height - 1, j = 0;i > 0; i--, j++) {
+			m.matrix[i][0] = y[this.width + this.height + this.width - 3 + j];
+		}
 	}
 	return m;
 };
@@ -517,6 +516,10 @@ SIPMatrix.makeLaplacianFilter = function() {
 		[-1.0,  4.0,-1.0],
 		[ 0.0, -1.0, 0.0]
 	]);
+};
+SIPMatrix.makeSharpenFilter = function(power) {
+	var m = SIPMatrix.makeLaplacianFilter();
+	return m.mul(power).addCenter(1.0);
 };
 SIPMatrix.makeBlur = function(width, height) {
 	var m = [];
@@ -606,6 +609,9 @@ SIPData.prototype.setSelecter = function(_selectertype) {
 		this.selecter = new SIPPixelSelecterRepeat(this.width, this.height);
 	}
 };
+SIPData.prototype.getSelecter = function() {
+	return this._selectertype;
+};
 SIPData.prototype.setInterPolation = function(iptype) {
 	this.iptype	= iptype;
 	if(iptype === SIPData.interpolationtype.NEAREST_NEIGHBOR) {
@@ -649,6 +655,9 @@ SIPData.prototype.setInterPolation = function(iptype) {
 		this.ipn	= 16;
 	}
 };
+SIPData.prototype.getInterPolation = function() {
+	return this.iptype;
+};
 SIPData.prototype.setBlendType = function(_blendtype) {
 	this._blendtype = _blendtype;
 	if(_blendtype === SIPData.brendtype.NONE) {
@@ -670,6 +679,9 @@ SIPData.prototype.setBlendType = function(_blendtype) {
 		this.blendfunc = SIPColor.brendMul;
 	}
 };
+SIPData.prototype.getBlendType = function() {
+	return this._blendtype;
+};
 SIPData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		this.selecter.setSize(width, height);
@@ -683,6 +695,12 @@ SIPData.prototype.setSize = function(width, height) {
 SIPData.prototype.clear = function() {
 	if(this.data) {
 		this.data.fill(0);
+	}
+};
+
+SIPData.prototype.convolution = function(matrix) {
+	if(!(matrix instanceof SIPMatrix)) {
+		throw "IllegalArgumentException";
 	}
 };
 
@@ -1005,5 +1023,3 @@ SIPDataS.prototype.getImageData = function() {
 	}
 	return imagedata;
 };
-
-
