@@ -70,12 +70,12 @@ function testWritePixel(panel) {
 	var button2 = new SButton("Scaler でピクセルに書き込み");
 	button1.put(button2, SComponent.putype.RIGHT);
 	button2.addListener(function() {
-		var data = new SIPDataScalar(canvas.getImageData());
+		var data = new SIPDataS(canvas.getImageData());
 		var i = 0;
 		for(i = 0; i < 100; i++) {
 			var x = Math.floor(Math.random() * data.width);
 			var y = Math.floor(Math.random() * data.height);
-			data.setPixelInside(x, y, new SIPColorScalar(255));
+			data.setPixelInside(x, y, new SIPColorS(255));
 		}
 		canvas.setImageData(data.getImageData());
 	});
@@ -94,10 +94,10 @@ function testInterpolation(panel) {
 	// Button
 	var gene = new SButton("画像作成");
 	var genefunc = function() {
-		var data = new SIPDataScalar();
+		var data = new SIPDataS();
 		data.putImageData(inputcanvas.getImageData());
 		data.each(function() {
-			return new SIPColorScalar(Math.random() * 256);
+			return new SIPColorS(Math.random() * 256);
 		});
 		inputcanvas.setImageData(data.getImageData());
 	};
@@ -144,10 +144,10 @@ function testInterpolation(panel) {
 	var button = new SButton("拡大");
 	cb_interpolationtype.put(button, SComponent.putype.NEWLINE);
 	button.addListener(function() {
-		var srcdata = new SIPDataScalar(inputcanvas.getImageData());
+		var srcdata = new SIPDataS(inputcanvas.getImageData());
 		srcdata.setSelecter(cb_selectertype.getSelectedItem());
 		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
-		var dstdata = new SIPDataScalar(dstWidth, dstHeight);
+		var dstdata = new SIPDataS(dstWidth, dstHeight);
 		dstdata.drawSIPData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.setImageData(dstdata.getImageData());
 	});

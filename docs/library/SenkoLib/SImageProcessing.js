@@ -147,74 +147,74 @@ SIPColor.brendMul = function(x, y) {
 	return x.setBlendAlpha(alpha);
 };
 
-var SIPColorScalar = function(color) {
+var SIPColorS = function(color) {
 	this.x = color;
 };
-SIPColorScalar.prototype = new SIPColor();
-SIPColorScalar.prototype.getColor = function() {
+SIPColorS.prototype = new SIPColor();
+SIPColorS.prototype.getColor = function() {
 	return this.x;
 };
-SIPColorScalar.prototype.clone = function() {
-	return new SIPColorScalar(this.x);
+SIPColorS.prototype.clone = function() {
+	return new SIPColorS(this.x);
 };
-SIPColorScalar.prototype.zero = function() {
-	return new SIPColorScalar(0.0);
+SIPColorS.prototype.zero = function() {
+	return new SIPColorS(0.0);
 };
-SIPColorScalar.prototype.one = function() {
-	return new SIPColorScalar(1.0);
+SIPColorS.prototype.one = function() {
+	return new SIPColorS(1.0);
 };
-SIPColorScalar.prototype.add = function(x) {
+SIPColorS.prototype.add = function(x) {
 	var color = this.clone();
 	color.x += x;
 	return color;
 };
-SIPColorScalar.prototype.sub = function(x) {
+SIPColorS.prototype.sub = function(x) {
 	var color = this.clone();
 	color.x -= x;
 	return color;
 };
-SIPColorScalar.prototype.addColor = function(c) {
+SIPColorS.prototype.addColor = function(c) {
 	var color = this.clone();
 	color.x += c.x;
 	return color;
 };
-SIPColorScalar.prototype.subColor = function(c) {
+SIPColorS.prototype.subColor = function(c) {
 	var color = this.clone();
 	color.x -= c.x;
 	return color;
 };
-SIPColorScalar.prototype.mulColor = function(c) {
+SIPColorS.prototype.mulColor = function(c) {
 	var color = this.clone();
 	color.x *= c.x;
 	return color;
 };
-SIPColorScalar.prototype.mul = function(x) {
+SIPColorS.prototype.mul = function(x) {
 	var color = this.clone();
 	color.x *= x;
 	return color;
 };
-SIPColorScalar.prototype.div = function(x) {
+SIPColorS.prototype.div = function(x) {
 	var color = this.clone();
 	color.x /= x;
 	return color;
 };
-SIPColorScalar.prototype.max = function(c) {
+SIPColorS.prototype.max = function(c) {
 	var color = this.clone();
 	color.x = Math.max(c.x, this.x);
 	return color;
 };
-SIPColorScalar.prototype.min = function(c) {
+SIPColorS.prototype.min = function(c) {
 	var color = this.clone();
 	color.x = Math.min(c.x, this.x);
 	return color;
 };
-SIPColorScalar.prototype.getBlendAlpha = function() {
+SIPColorS.prototype.getBlendAlpha = function() {
 	return 1.0;
 };
-SIPColorScalar.prototype.setBlendAlpha = function() {
+SIPColorS.prototype.setBlendAlpha = function() {
 	return this.clone();
 };
-SIPColorScalar.prototype.toString = function() {
+SIPColorS.prototype.toString = function() {
 	return "color(" + this.x + ")";
 };
 var SIPColorRGBA = function(color) {
@@ -556,7 +556,7 @@ SIPMatrix.makeGaussianFilter = function(width, height, sd) {
  * /////////////////////////////////////////////////////////
  * 画像データクラス
  * SIPDataRGBA   32bit整数 0xRRGGBBAA で管理
- * SIPDataScalar 32bit浮動小数点で管理
+ * SIPDataS 32bit浮動小数点で管理
  * /////////////////////////////////////////////////////////
  */
 
@@ -874,8 +874,8 @@ var SIPDataRGBA = function() {
 	}
 };
 SIPDataRGBA.prototype = new SIPData();
-SIPDataRGBA.prototype.putDataScalar = function(imagedata, n) {
-	if(!(imagedata instanceof SIPDataScalar)) {
+SIPDataRGBA.prototype.putDataS = function(imagedata, n) {
+	if(!(imagedata instanceof SIPDataS)) {
 		throw "IllegalArgumentException";
 	}
 	this.setSize(imagedata.width, imagedata.height);
@@ -888,17 +888,17 @@ SIPDataRGBA.prototype.putDataScalar = function(imagedata, n) {
 		p += 4;
 	}
 };
-SIPDataRGBA.prototype.putDataScalarR = function(imagedata) {
-	this.putDataScalar(imagedata, 0);
+SIPDataRGBA.prototype.putDataSToR = function(imagedata) {
+	this.putDataS(imagedata, 0);
 };
-SIPDataRGBA.prototype.putDataScalarG = function(imagedata) {
-	this.putDataScalar(imagedata, 1);
+SIPDataRGBA.prototype.putDataSToG = function(imagedata) {
+	this.putDataS(imagedata, 1);
 };
-SIPDataRGBA.prototype.putDataScalarB = function(imagedata) {
-	this.putDataScalar(imagedata, 2);
+SIPDataRGBA.prototype.putDataSToB = function(imagedata) {
+	this.putDataS(imagedata, 2);
 };
-SIPDataRGBA.prototype.putDataScalarA = function(imagedata) {
-	this.putDataScalar(imagedata, 3);
+SIPDataRGBA.prototype.putDataSToA = function(imagedata) {
+	this.putDataS(imagedata, 3);
 };
 SIPDataRGBA.prototype.putImageData = function(imagedata) {
 	if(	(imagedata instanceof ImageData) ||
@@ -906,7 +906,7 @@ SIPDataRGBA.prototype.putImageData = function(imagedata) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
-	else if(imagedata instanceof SIPDataScalar) {
+	else if(imagedata instanceof SIPDataS) {
 		this.putImageData(imagedata.getImageData());
 	}
 	else {
@@ -924,7 +924,7 @@ SIPDataRGBA.prototype.getImageData = function() {
 	return imagedata;
 };
 
-var SIPDataScalar = function() {
+var SIPDataS = function() {
 	SIPData.prototype._init.call(this);
 	if(arguments.length === 1) {
 		var image = arguments[0];
@@ -936,8 +936,8 @@ var SIPDataScalar = function() {
 		this.setSize(width, height);
 	}
 };
-SIPDataScalar.prototype = new SIPData();
-SIPDataScalar.prototype.setSize = function(width, height) {
+SIPDataS.prototype = new SIPData();
+SIPDataS.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		return;
 	}
@@ -946,15 +946,15 @@ SIPDataScalar.prototype.setSize = function(width, height) {
 	this.selecter.setSize(width, height);
 	this.data	= new Float32Array(this.width * this.height);
 };
-SIPDataScalar.prototype.getPixelInside = function(x, y) {
+SIPDataS.prototype.getPixelInside = function(x, y) {
 	var p = y * this.width + x;
-	return new SIPColorScalar(this.data[p]);
+	return new SIPColorS(this.data[p]);
 };
-SIPDataScalar.prototype.setPixelInside = function(x, y, color) {
+SIPDataS.prototype.setPixelInside = function(x, y, color) {
 	var p = y * this.width + x;
 	this.data[p]     = color.getColor();
 };
-SIPDataScalar.prototype.putImageData = function(imagedata, n) {
+SIPDataS.prototype.putImageData = function(imagedata, n) {
 	if(	(imagedata instanceof ImageData) ||
 		(imagedata instanceof SIPDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
@@ -967,7 +967,7 @@ SIPDataScalar.prototype.putImageData = function(imagedata, n) {
 			p += 4;
 		}
 	}
-	else if(imagedata instanceof SIPDataScalar) {
+	else if(imagedata instanceof SIPDataS) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
@@ -975,19 +975,19 @@ SIPDataScalar.prototype.putImageData = function(imagedata, n) {
 		throw "IllegalArgumentException";
 	}
 };
-SIPDataScalar.prototype.putImageDataR = function(imagedata) {
+SIPDataS.prototype.putImageDataR = function(imagedata) {
 	this.putImageData(imagedata, 0);
 };
-SIPDataScalar.prototype.putImageDataG = function(imagedata) {
+SIPDataS.prototype.putImageDataG = function(imagedata) {
 	this.putImageData(imagedata, 1);
 };
-SIPDataScalar.prototype.putImageDataB = function(imagedata) {
+SIPDataS.prototype.putImageDataB = function(imagedata) {
 	this.putImageData(imagedata, 2);
 };
-SIPDataScalar.prototype.putImageDataA = function(imagedata) {
+SIPDataS.prototype.putImageDataA = function(imagedata) {
 	this.putImageData(imagedata, 3);
 };
-SIPDataScalar.prototype.getImageData = function() {
+SIPDataS.prototype.getImageData = function() {
 	var canvas, context;
 	canvas = document.createElement("canvas");
 	canvas.width  = this.width;
