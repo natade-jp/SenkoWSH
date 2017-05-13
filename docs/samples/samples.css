@@ -47,14 +47,18 @@ body {
 	float:				right;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-device-width : 700px)  { 
+	
+	body {
+		font-size:		3em;
+	}
 
 	#header {
 		display:		none;
 	}
 	
 	#code, #senko_console {
-		font-size:			8pt;
+		font-size:			0.5em;
 		width:				100%;
 		-moz-tab-size:		2;
 		tab-size:			2;

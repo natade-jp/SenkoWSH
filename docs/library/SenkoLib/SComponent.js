@@ -34,6 +34,7 @@ SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
 SComponent.CLASS_SELECT		= "SCOMPONENT_Select";
 SComponent.CLASS_COMBOBOX	= "SCOMPONENT_ComboBox";
 SComponent.CLASS_CHECKBOX	= "SCOMPONENT_CheckBox";
+SComponent.CLASS_CHECKBOX_IMAGE	= "SCOMPONENT_CheckBoxImage";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 SComponent.CLASS_FILE		= "SCOMPONENT_File";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
@@ -563,10 +564,18 @@ var SCheckBox = function(title) {
 	var checkbox = document.createElement("input");
 	checkbox.setAttribute("type", "checkbox");
 	checkbox.id = this.id + "_checkbox";
+	checkbox.className = SComponent.CLASS_CHECKBOX_IMAGE;
 	this.checkbox = checkbox;
 	var element   = this.super.getElement.call(this);
 	element.appendChild(checkbox);
 	this.super.setLabelPosition.call(this, SComponent.labelposition.RIGHT);
+};
+SCheckBox.prototype.setHeight = function(height) {
+	if(typeof height !== "number") {
+		throw "IllegalArgumentException not number";
+	}
+	this.getElement().style.height = height.toString() + this.unit;
+	this.checkbox.style.height = height.toString() + this.unit;
 };
 SCheckBox.prototype = new SComponent();
 SCheckBox.prototype.addListener = function(func) {

@@ -65,13 +65,13 @@
 	color:				gray;
 	cursor:				default;
 }
-	
+
 
 .SCOMPONENT_Canvas {
 }
 
 
-@media screen and (max-width: 640px) {
+@media screen and (max-device-width : 700px)  { 
 
 	.SCOMPONENT_Newline {
 		height:				0px;
@@ -88,6 +88,16 @@
 	
 	.SCOMPONENT_File {
 		padding:			0em;
+	}
+	
+	.SCOMPONENT_Canvas, SCOMPONENT_ImagePanel {
+		width:				100% !important;
+		height:				initial !important;
+	}
+	
+	.SCOMPONENT_CheckBoxImage {
+		width:				3em;
+		height:				3em;
 	}
 	
 	.SCOMPONENT_Button, .SCOMPONENT_ComboBox, .SCOMPONENT_Label {
