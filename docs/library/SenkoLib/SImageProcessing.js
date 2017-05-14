@@ -610,14 +610,17 @@ SIPData.prototype._init = function() {
 	this.setBlendType(SIPData.brendtype.NONE);
 	this.globalAlpha = 1.0;
 };
-SIPData.prototype.clone = function() {
-	var x = new SIPData();
+SIPData.prototype._copyData = function(x) {
 	x.setSelecter(this.getSelecter());
 	x.setInterPolation(this.getInterPolation());
 	x.setBlendType(this.getBlendType());
 	x.setSize(this.width, this.height);
 	x.data.set(this.data);
 	x.globalAlpha = this.globalAlpha;
+};
+SIPData.prototype.clone = function() {
+	var x = new SIPData();
+	this._copyData(x);
 	return x;
 };
 SIPData.prototype.setSelecter = function(_selectertype) {
@@ -857,6 +860,9 @@ SIPData.prototype.getColor = function(x, y) {
 	}
 	return null;
 };
+SIPData.prototype.getColorUV = function(u, v) {
+	return this.getColor(u * this.width, v * this.height);
+};
 SIPData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
@@ -937,6 +943,11 @@ var SIPDataRGBA = function() {
 	}
 };
 SIPDataRGBA.prototype = new SIPData();
+SIPDataRGBA.prototype.clone = function() {
+	var x = new SIPDataRGBA(this.width, this.height);
+	this._copyData(x);
+	return x;
+};
 SIPDataRGBA.prototype.putDataS = function(imagedata, n) {
 	if(!(imagedata instanceof SIPDataS)) {
 		throw "IllegalArgumentException";
@@ -989,16 +1000,15 @@ SIPDataRGBA.prototype.getImageData = function() {
 SIPDataRGBA.prototype.grayscale = function() {
 	this.each(function(x, y, color) {
 		var luminance = 
-			  0.298912 * color.rgba[0]
-			+ 0.586611 * color.rgba[1]
-			+ 0.114478 * color.rgba[2];
+			  0.2126 * color.rgba[0]
+			+ 0.7152 * color.rgba[1]
+			+ 0.0722 * color.rgba[2];
 		luminance = ~~luminance;
 		return new SIPColorRGBA(
 			[luminance, luminance, luminance, color.rgba[3]]
 		);
 	});
 };
-
 var SIPDataS = function() {
 	SIPData.prototype._init.call(this);
 	if(arguments.length === 1) {
@@ -1012,6 +1022,11 @@ var SIPDataS = function() {
 	}
 };
 SIPDataS.prototype = new SIPData();
+SIPDataS.prototype.clone = function() {
+	var x = new SIPDataS(this.width, this.height);
+	this._copyData(x);
+	return x;
+};
 SIPDataS.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		return;
@@ -1079,4 +1094,67 @@ SIPDataS.prototype.getImageData = function() {
 		p += 4;
 	}
 	return imagedata;
+};
+
+
+var SIPVector = function(x, y, z) {
+	this.x = x;
+	this.y = y;
+	this.z = z;
+};
+SIPVector.prototype.cross = function(tgt) {
+	return new SIPVector(
+		this.y * tgt.z - this.z * tgt.y,
+		this.z * tgt.x - this.x * tgt.z,
+		this.x * tgt.y - this.y * tgt.x
+	);
+};
+SIPVector.prototype.getDirection = function(tgt) {
+	return new SIPVector(
+		tgt.x - this.x,
+		tgt.y - this.y,
+		tgt.z - this.z
+	);
+};
+SIPVector.prototype.normalize = function() {
+	var b = this.x * this.x + this.y * this.y + this.z * this.z;
+	b = Math.sqrt(1.0 / b);
+	return new SIPVector(
+		this.x * b,
+		this.y * b,
+		this.z * b
+	);
+};
+SIPVector.prototype.getNormalMapColor = function() {
+	return new SIPColorRGBA([
+		Math.round((1.0 + this.x) * 127.5),
+		Math.round((1.0 - this.y) * 127.5),
+		Math.round((1.0 + this.z) * 127.5),
+		255
+	]);
+};
+SIPColorRGBA.prototype.getNormalVector = function() {
+	return new SIPVector(
+		  (this.rgba[0] / 128.0) - 1.0,
+		- (this.rgba[1] / 128.0) + 1.0,
+		  (this.rgba[2] / 128.0) - 1.0
+	);
+};
+
+SIPDataS.prototype.getNormalMap = function() {
+	var output = new SIPDataRGBA(this.width, this.height);
+	var x, y;
+	for(y = 0; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			var x1 = new SIPVector(x    , y, this.getPixel(x    , y).getColor());
+			var x2 = new SIPVector(x + 1, y, this.getPixel(x + 1, y).getColor());
+			var x3 = x1.getDirection(x2);
+			var y1 = new SIPVector(x, y    , this.getPixel(x, y    ).getColor());
+			var y2 = new SIPVector(x, y + 1, this.getPixel(x, y + 1).getColor());
+			var y3 = y1.getDirection(y2);
+			var n  = x3.cross(y3).normalize();
+			output.setPixelInside(x, y, n.getNormalMapColor());
+		}
+	}
+	return output;
 };

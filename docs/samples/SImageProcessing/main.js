@@ -234,7 +234,7 @@ function testBlending(panel) {
 };
 
 
-function testConvolution(panel) {
+function testEtc(panel) {
 	
 	panel.clearChildNodes();
 	
@@ -258,7 +258,8 @@ function testConvolution(panel) {
 	panel.put(label1, SComponent.putype.IN);
 	var picturetype = [
 		"./img/image_test1.jpg",
-		"./img/image_test2.png"
+		"./img/image_test2.png",
+		"./img/image_wg.png"
 	];
 	var cb_picturetype = new SComboBox(picturetype);
 	cb_picturetype.setWidth(32);
@@ -276,11 +277,13 @@ function testConvolution(panel) {
 	
 	//-------------------------
 	
-	var label3 = new SLabel("フィルタの種類");
+	var label3 = new SLabel("処理の種類");
 	canvas_src.put(label3, SComponent.putype.NEWLINE);
 	var filtertype = [
-		"ぼかす",
-		"高画質化"
+		"ソフト",
+		"シャープ",
+		"グレースケール",
+		"ノーマルマップ"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -292,19 +295,33 @@ function testConvolution(panel) {
 	cb_filtertype.put(button, SComponent.putype.RIGHT);
 	button.addListener(function() {
 		var src = new SIPDataRGBA(canvas_src.getImageData());
-		src.setSelecter(SIPData.selectertype.FILL);
 		var m;
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
+			src.setSelecter(SIPData.selectertype.FILL);
 			m = SIPMatrix.makeBlur(5, 1);
 			src.convolution(m);
 			m = SIPMatrix.makeBlur(1, 5);
 			src.convolution(m);
+			canvas_dst.setImageData(src.getImageData());
 		}
-		else {
+		else if(cb_filtertype.getSelectedItem() === filtertype[1]) {
+			src.setSelecter(SIPData.selectertype.FILL);
 			m = SIPMatrix.makeSharpenFilter(0.5);
 			src.convolution(m);
+			canvas_dst.setImageData(src.getImageData());
 		}
-		canvas_dst.setImageData(src.getImageData());
+		else if(cb_filtertype.getSelectedItem() === filtertype[2]) {
+			src.grayscale();
+			canvas_dst.setImageData(src.getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
+			src.grayscale();
+			var height = new SIPDataS(src);
+			m = SIPMatrix.makeBlur(3, 3);
+			height.setSelecter(SIPData.selectertype.REPEAT);
+			height.convolution(m);
+			canvas_dst.setImageData(height.getNormalMap().getImageData());
+		}
 	});
 	
 	//-------------------------
@@ -332,7 +349,7 @@ function testConvolution(panel) {
 		"データの読み書き",
 		"画像補間",
 		"ブレンド",
-		"たたみこみ"
+		"そのほかいろいろ"
 	];
 	var combobox = new SComboBox(combobox_type);
 	combobox.setWidth(20);
@@ -354,7 +371,7 @@ function testConvolution(panel) {
 			testBlending(testpanel);
 		}
 		else if(item === combobox_type[4]) {
-			testConvolution(testpanel);
+			testEtc(testpanel);
 		}
 	});
 	
@@ -362,6 +379,6 @@ function testConvolution(panel) {
 	mainpanel.put(testpanel, SComponent.putype.NEWLINE);
 	
 	combobox.setSelectedItem(combobox_type[4]);
-	testConvolution(testpanel);
+	testEtc(testpanel);
 }
 
