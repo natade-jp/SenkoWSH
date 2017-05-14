@@ -167,9 +167,6 @@ function testBlending(panel) {
 	
 	panel.clearChildNodes();
 	
-	panel.getElement().style.backgroundImage = "url(./image_ichimatsu.png)";
-	panel.getElement().style.backgroundSize = "16px";
-	
 	var canvasWidth  = 128;
 	var canvasHeight = 128;
 	
@@ -181,11 +178,11 @@ function testBlending(panel) {
 	canvas_src1.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src1.setUnit(SComponent.unittype.PX);
 	canvas_src1.setSize(canvasWidth, canvasHeight);
-	canvas_src1.setImage("./image_x.png");
+	canvas_src1.setImage("./img/image_x.png");
 	canvas_src2.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src2.setUnit(SComponent.unittype.PX);
 	canvas_src2.setSize(canvasWidth, canvasHeight);
-	canvas_src2.setImage("./image_y.png");
+	canvas_src2.setImage("./img/image_y.png");
 	canvas_dst.setPixelSize(canvasWidth, canvasHeight);
 	canvas_dst.setUnit(SComponent.unittype.PX);
 	canvas_dst.setSize(canvasWidth, canvasHeight);
@@ -206,17 +203,26 @@ function testBlending(panel) {
 		SIPData.brendtype.REVSUB,
 		SIPData.brendtype.MUL
 	];
-	
 	var cb_brendtype = new SComboBox(brendtype);
-	cb_brendtype.setWidth(16);
+	cb_brendtype.setWidth(8);
 	canvas_src2.put(cb_brendtype, SComponent.putype.NEWLINE);
 	
+	var globalalpha = [
+		"1.0",
+		"0.8",
+		"0.5"
+	];
+	var cb_globalalpha = new SComboBox(globalalpha);
+	cb_globalalpha.setWidth(8);
+	cb_brendtype.put(cb_globalalpha, SComponent.putype.RIGHT);
+	
 	var button = new SButton("blend");
-	cb_brendtype.put(button, SComponent.putype.RIGHT);
+	cb_globalalpha.put(button, SComponent.putype.RIGHT);
 	button.addListener(function() {
 		var src1 = new SIPDataRGBA(canvas_src1.getImageData());
 		var src2 = new SIPDataRGBA(canvas_src2.getImageData());
 		src1.setBlendType(cb_brendtype.getSelectedItem());
+		src1.globalAlpha = parseFloat(cb_globalalpha.getSelectedItem());
 		src1.drawSIPData(src2, 0, 0);
 		canvas_dst.setImageData(src1.getImageData());
 	});
@@ -231,9 +237,6 @@ function testBlending(panel) {
 function testConvolution(panel) {
 	
 	panel.clearChildNodes();
-	
-	panel.getElement().style.backgroundImage = "url(./image_ichimatsu.png)";
-	panel.getElement().style.backgroundSize = "16px";
 	
 	var canvasWidth  = 320;
 	var canvasHeight = 240;
@@ -254,8 +257,8 @@ function testConvolution(panel) {
 	var label1 = new SLabel("使用画像");
 	panel.put(label1, SComponent.putype.IN);
 	var picturetype = [
-		"./image_test1.jpg",
-		"./image_test2.png"
+		"./img/image_test1.jpg",
+		"./img/image_test2.png"
 	];
 	var cb_picturetype = new SComboBox(picturetype);
 	cb_picturetype.setWidth(32);
@@ -337,8 +340,6 @@ function testConvolution(panel) {
 	
 	combobox.addListener(function () {
 		var item = combobox.getSelectedItem();
-		
-		testpanel.getElement().style.backgroundImage = "none";
 		
 		if(item === combobox_type[0]) {
 			testFileLoad(testpanel);

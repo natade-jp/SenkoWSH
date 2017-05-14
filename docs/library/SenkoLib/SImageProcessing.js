@@ -116,35 +116,38 @@ SIPColor.ipBicubicNormal = function(va, nx, ny) {
 SIPColor.ipBicubicSharp = function(va, nx, ny) {
 	return SIPColor.ipBicubic(va, nx, ny, -1.2);
 };
-SIPColor.brendNone = function(x, y) {
+SIPColor.brendNone = function(x, y, alpha) {
 	return y;
 };
-SIPColor.brendAlpha = function(x, y) {
+SIPColor.brendAlpha = function(x, y, alpha) {
 	var x_alpha = x.getBlendAlpha();
-	var y_alpha = y.getBlendAlpha();
+	var y_alpha = y.getBlendAlpha() * alpha;
 	x = SIPColor.ipLerp(x, y, y_alpha);
 	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
 };
-SIPColor.brendAdd = function(x, y) {
+SIPColor.brendAdd = function(x, y, alpha) {
 	var x_alpha = x.getBlendAlpha();
-	var y_alpha = y.getBlendAlpha();
+	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.addColor(y.mul(y_alpha));
 	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
 };
-SIPColor.brendSub = function(x, y) {
-	var alpha = x.getBlendAlpha();
-	x = x.subColor(y.mul(y.getBlendAlpha()));
-	return x.setBlendAlpha(alpha);
+SIPColor.brendSub = function(x, y, alpha) {
+	var new_alpha = x.getBlendAlpha();
+	var y_alpha = y.getBlendAlpha() * alpha;
+	x = x.subColor(y.mul(y_alpha));
+	return x.setBlendAlpha(new_alpha);
 };
-SIPColor.brendRevSub = function(x, y) {
-	var alpha = y.getBlendAlpha();
-	y = y.subColor(x.mul(x.getBlendAlpha()));
-	return y.setBlendAlpha(alpha);
+SIPColor.brendRevSub = function(x, y, alpha) {
+	var new_alpha = y.getBlendAlpha();
+	var x_alpha = x.getBlendAlpha() * alpha;
+	y = y.subColor(x.mul(x_alpha));
+	return y.setBlendAlpha(new_alpha);
 };
-SIPColor.brendMul = function(x, y) {
-	var alpha = x.getBlendAlpha();
-	x = x.mulColor(y.mul(y.getBlendAlpha()).div(255.0));
-	return x.setBlendAlpha(alpha);
+SIPColor.brendMul = function(x, y, alpha) {
+	var new_alpha = x.getBlendAlpha();
+	var y_alpha = y.getBlendAlpha() * alpha;
+	x = x.mulColor(y.mul(y_alpha).div(255.0));
+	return x.setBlendAlpha(new_alpha);
 };
 
 var SIPColorS = function(color) {
@@ -603,6 +606,7 @@ SIPData.prototype._init = function() {
 	this.setSelecter(SIPData.selectertype.INSIDE);
 	this.setInterPolation(SIPData.interpolationtype.NEAREST_NEIGHBOR);
 	this.setBlendType(SIPData.brendtype.NONE);
+	this.globalAlpha = 1.0;
 };
 SIPData.prototype.clone = function() {
 	var x = new SIPData();
@@ -611,6 +615,7 @@ SIPData.prototype.clone = function() {
 	x.setBlendType(this.getBlendType());
 	x.setSize(this.width, this.height);
 	x.data.set(this.data);
+	x.globalAlpha = this.globalAlpha;
 	return x;
 };
 SIPData.prototype.setSelecter = function(_selectertype) {
@@ -779,7 +784,7 @@ SIPData.prototype.setPixel = function(x, y, color) {
 		}
 		else {
 			var mycolor = this.getPixelInside(p[0], p[1]);
-			var newcolor = this.blendfunc(mycolor, color);
+			var newcolor = this.blendfunc(mycolor, color, this.globalAlpha);
 			this.setPixelInside(p[0], p[1], newcolor);
 		}
 	}
@@ -978,6 +983,18 @@ SIPDataRGBA.prototype.getImageData = function() {
 	var imagedata = context.getImageData(0, 0, canvas.width, canvas.height);
 	imagedata.data.set(this.data);
 	return imagedata;
+};
+SIPDataRGBA.prototype.grayscale = function() {
+	this.each(function(x, y, color) {
+		var luminance = 
+			  0.298912 * color.rgba[0]
+			+ 0.586611 * color.rgba[1]
+			+ 0.114478 * color.rgba[2];
+		luminance = ~~luminance;
+		return new SIPColorRGBA(
+			[luminance, luminance, luminance, color.rgba[3]]
+		);
+	});
 };
 
 var SIPDataS = function() {
