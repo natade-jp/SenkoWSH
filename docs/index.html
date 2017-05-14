@@ -2,33 +2,139 @@
 <html>
 <head>
 <title>SenkoLib</title>
-<meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
+<style type="text/css">
+html, body {
+	height:			100%;
+	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
+}
+h2	{
+	margin-top:		0em;
+	margin-bottom:	0em;
+	padding-top:	0em;
+	padding-bottom:	0em;
+}
+div {
+	margin:			0em;
+	padding:		0em;
+	padding-top:	1em;
+	padding-bottom:	1em;
+}
+#samples p {
+	margin-bottom:	1em;
+	padding:		0em;
+}
+#samples dl {
+	font-size:		1em;
+	margin-left:	1em;
+	margin-top:		0px;
+	margin-bottom:	0px;
+	padding-top:	0.2em;
+	padding-bottom:	0.2em;
+}
+#samples dl:nth-child(2n+1) {
+	background: #F0F0F0;
+}
+#samples dt {
+	width:			10em;
+	float:			left;
+}
+#samples dd {
+	margin-left:	1em;
+}
+</style>
 </head>
 <body>
 <h1>SenkoLib</h1>
-<h2>samples</h2>
-<ul id="samples">
-	<li>ArrayList</li>
-	<li>BigDecimal</li>
-	<li>BigInteger</li>
-	<li>Byte</li>
-	<li>Color</li>
-	<li>Dialog</li>
-	<li>HashMap</li>
-	<li>Random</li>
-	<li>SComponent</li>
-	<li>SImageProcessing</li>
-	<li>String</li>
-	<li>String.format</li>
-	<li>StringMacros</li>
-	<li>System</li>
-</ul>
+<p>JScript / HTML5 / node.js 用のライブラリです。Java風の操作感を目指します。
+ライブラリ自体は<a href="http://www.kmonos.net/nysl/">NYSL</a>/<a href="https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license">MIT</a>のデュアルライセンスとします。</p>
+
+<div id="samples">
+<h2>Samples</h2>
+<p>SenkoLib を使用した際のサンプルコードです。</p>
+<dl>
+	<dt>ArrayList</dt>
+	<dd>コレクション</dd>
+</dl>
+<dl>
+	<dt>BigDecimal</dt>
+	<dd>多倍長浮動小数</dd>
+</dl>
+<dl>
+	<dt>BigInteger</dt>
+	<dd>多倍長整数</dd>
+</dl>
+<dl>
+	<dt>Byte</dt>
+	<dd>型変換</dd>
+</dl>
+<dl>
+	<dt>Color</dt>
+	<dd>色空間変換</dd>
+</dl>
+<dl>
+	<dt>Dialog</dt>
+	<dd>ダイアログ</dd>
+</dl>
+<dl>
+	<dt>File</dt>
+	<dd>JScript用ファイルライブラリ</dd>
+</dl>
+<dl>
+	<dt>HashMap</dt>
+	<dd>ハッシュマップ</dd>
+</dl>
+<dl>
+	<dt>Random</dt>
+	<dd>乱数</dd>
+</dl>
+<dl>
+	<dt>SComponent</dt>
+	<dd>HTML5用GUIライブラリ</dd>
+</dl>
+<dl>
+	<dt>SImageProcessing</dt>
+	<dd>HTML5用画像処理ライブラリ</dd>
+</dl>
+<dl>
+	<dt>String</dt>
+	<dd>文字列の拡張</dd>
+</dl>
+<dl>
+	<dt>String.format</dt>
+	<dd>sprintf</dd>
+</dl>
+<dl>
+	<dt>StringMacros</dt>
+	<dd>いくつかのマクロ</dd>
+</dl>
+<dl>
+	<dt>System</dt>
+	<dd>標準出力など</dd>
+</dl>
+</div>
+
+<div id="applications">
+<h2>Applications</h2>
+<p>SenkoLib を使用したHTML5アプリケーションです。</p>
+
+</div>
+
+<div id="author">
+<h2>Author</h2>
+<p>natade
+	<a href="https://natadea.wordpress.com/">blog</a>,
+	<a href="https://twitter.com/natadea">twitter</a>,
+	<a href="https://github.com/natade-jp">github</a></p>
+
+</div>
+
+
 <script type="text/javascript">
 var element = document.getElementById("samples");
 var i = 0;
 if(	element !== null) {
-	list = element.getElementsByTagName("li");
+	list = element.getElementsByTagName("dt");
 	for(i = 0; i < list.length; i++) {
 		var title = list[i].innerText;
 		list[i].innerHTML = "<a href=\"./samples/" + title + "/index.html\">" + title + "</a>";

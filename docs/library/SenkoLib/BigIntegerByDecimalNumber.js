@@ -7,6 +7,11 @@
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  *
+ * LICENSE:
+ *  NYSL Version 0.9982 / The MIT License の Multi-licensing
+ *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
+ *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+ *
  * HISTORY:
  *  2014/05/10 - v0.01 - natade - 	first release
  *							四則演算の実装済み

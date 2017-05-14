@@ -47,7 +47,6 @@ github にアップロード時は、HTML5用動作の基準でアップロー�
 　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
 　各クラスのテスト用プログラム、サンプルプログラムは、
 　sample内にフォルダを作成して入れます。
-　SenkoLibのライセンスは、但し書きがないかぎり、NYSLとします。
 
 ./docs/samples
 　SenkoLib内部に入っている各クラスの使用方法が入っています。
@@ -55,17 +54,17 @@ github にアップロード時は、HTML5用動作の基準でアップロー�
 　「index.html」「main.wsf」は、依存ライブラリ追加以外に変更しないでください。
 　「main.js」を変更してサンプルプログラムを作ります。
 　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
-　サンプルのライセンスは、但し書きがないかぎり、NYSLとします。
+　サンプルのライセンスは、但し書きがないかぎり、NYSL Version 0.9982 とします。
 
 ./docs/applications
 　SenkoLibを用いた、より実践的なアプリケーションを作成します。
-　アプリケーションのライセンスは、MITライセンスとします。
+　アプリケーションのライセンスは、The MIT Licenseとします。
 
 
-【ライセンスについて】
-各ファイルの最も上部にライセンスが
-書いていない場合は、 NYSL Version 0.9982 とします。
-この理由は、プログラマーにとって誰でも自由に使えるのが便利だと考えたからです。
+【SenkoLib ライセンスについて】
+各ファイルの最も上部にライセンスが書いていない場合は、
+NYSL Version 0.9982 / The MIT License のデュアルライセンスとします。
+NYSLがある理由は、プログラマーにとって誰でも自由に使えるのが便利だと考えたからです。
 
 比較的自由とされる MITライセンスなどの場合でも、
 コンパイル後に表記を入れる必要があったりします。
@@ -74,3 +73,6 @@ github にアップロード時は、HTML5用動作の基準でアップロー�
 
 NYSL Version 0.9982
 http://www.kmonos.net/nysl/
+
+The MIT License
+https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
