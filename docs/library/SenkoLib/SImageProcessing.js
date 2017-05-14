@@ -555,7 +555,7 @@ SIPMatrix.makeGaussianFilter = function(width, height, sd) {
 	var n = Math.max(width, height);
 	var s = - Math.floor(n / 2);
 	for(i = 0; i < n; i++, s++) {
-		v[i] = Math.exp( - s / ((sd * sd) * 2.0) );
+		v[i] = Math.exp( - (s * s) / ((sd * sd) * 2.0) );
 	}
 	for(y = 0; y < height; y++) {
 		m[y] = [];
@@ -1140,7 +1140,6 @@ SIPColorRGBA.prototype.getNormalVector = function() {
 		  (this.rgba[2] / 128.0) - 1.0
 	);
 };
-
 SIPDataS.prototype.getNormalMap = function() {
 	var output = new SIPDataRGBA(this.width, this.height);
 	var x, y;

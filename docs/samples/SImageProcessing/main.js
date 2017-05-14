@@ -283,7 +283,8 @@ function testEtc(panel) {
 		"ソフト",
 		"シャープ",
 		"グレースケール",
-		"ノーマルマップ"
+		"ノーマルマップ",
+		"ガウシアンフィルタ"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -298,9 +299,9 @@ function testEtc(panel) {
 		var m;
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
 			src.setSelecter(SIPData.selectertype.FILL);
-			m = SIPMatrix.makeBlur(5, 1);
+			m = SIPMatrix.makeBlur(7, 1);
 			src.convolution(m);
-			m = SIPMatrix.makeBlur(1, 5);
+			m = SIPMatrix.makeBlur(1, 7);
 			src.convolution(m);
 			canvas_dst.setImageData(src.getImageData());
 		}
@@ -317,10 +318,16 @@ function testEtc(panel) {
 		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
 			src.grayscale();
 			var height = new SIPDataS(src);
-			m = SIPMatrix.makeBlur(3, 3);
+			m = SIPMatrix.makeGaussianFilter(5, 5);
 			height.setSelecter(SIPData.selectertype.REPEAT);
 			height.convolution(m);
 			canvas_dst.setImageData(height.getNormalMap().getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[4]) {
+			src.setSelecter(SIPData.selectertype.FILL);
+			m = SIPMatrix.makeGaussianFilter(5, 5);
+			src.convolution(m);
+			canvas_dst.setImageData(src.getImageData());
 		}
 	});
 	
