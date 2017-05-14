@@ -570,15 +570,14 @@ var SCheckBox = function(title) {
 	element.appendChild(checkbox);
 	this.super.setLabelPosition.call(this, SComponent.labelposition.RIGHT);
 };
-SCheckBox.prototype.setHeight = function(height) {
-	if(typeof height !== "number") {
+SCheckBox.prototype = new SComponent();
+SCheckBox.prototype.setCheckBoxImageSize = function(size) {
+	if(typeof size !== "number") {
 		throw "IllegalArgumentException not number";
 	}
-	this.getElement().style.height = height.toString() + this.unit;
-	this.checkbox.style.height = height.toString() + this.unit;
-	this.checkbox.style.width  = height.toString() + this.unit;
+	this.checkbox.style.height = size.toString() + this.unit;
+	this.checkbox.style.width  = size.toString() + this.unit;
 };
-SCheckBox.prototype = new SComponent();
 SCheckBox.prototype.addListener = function(func) {
 	this.checkbox.addEventListener("change", func, false);
 };
