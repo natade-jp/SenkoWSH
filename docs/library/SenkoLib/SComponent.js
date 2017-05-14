@@ -576,6 +576,7 @@ SCheckBox.prototype.setHeight = function(height) {
 	}
 	this.getElement().style.height = height.toString() + this.unit;
 	this.checkbox.style.height = height.toString() + this.unit;
+	this.checkbox.style.width  = height.toString() + this.unit;
 };
 SCheckBox.prototype = new SComponent();
 SCheckBox.prototype.addListener = function(func) {
