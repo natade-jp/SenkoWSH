@@ -167,12 +167,6 @@ SIColor.brendMul = function(x, y, alpha) {
 	return x.setBlendAlpha(new_alpha);
 };
 
-/**
- * 輝度モード用のクラスです。
- * 1色しか扱えませんが、実数が扱える特徴を持っています。
- * @param {number} color 輝度値
- * @returns {SIColorY}
- */
 var SIColorY = function(color) {
 	this.y = color;
 };
@@ -240,12 +234,6 @@ SIColorY.prototype.setBlendAlpha = function() {
 SIColorY.prototype.toString = function() {
 	return "color(" + this.y + ")";
 };
-
-/**
- * RGBA
- * @param {object} color 4つのRGBAのNumberが入った配列
- * @returns {SIColorRGBA}
- */
 var SIColorRGBA = function(color) {
 	// ディープコピー
 	this.rgba = [color[0], color[1], color[2], color[3]];
@@ -440,139 +428,6 @@ SIPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
 	return [x, y];
 };
 
-/*
- * /////////////////////////////////////////////////////////
- * フィルタ用クラス
- * /////////////////////////////////////////////////////////
- */
-var SIMatrix = function(matrix) {
-	this.height = matrix.length;
-	this.width  = matrix[0].length;
-	this.matrix = [];
-	var i;
-	for(i = 0; i < matrix.length; i++) {
-		this.matrix[i] = matrix[i].slice();
-	}
-};
-SIMatrix.prototype.clone = function() {
-	return new SIMatrix(this.matrix);
-};
-SIMatrix.prototype.rotateEdge = function(val) {
-	// 周囲の値を時計回りに回転させます。
-	var m = this.clone();
-	
-	var x = [], y = [], i, j;
-	{
-		// 上側
-		for(i = 0;i < this.width - 1; i++) {
-			x.push(m.matrix[0][i]);
-		}
-		// 右側
-		for(i = 0;i < this.height - 1; i++) {
-			x.push(m.matrix[i][this.width - 1]);
-		}
-		// 下側
-		for(i = this.width - 1;i > 0; i--) {
-			x.push(m.matrix[this.height - 1][i]);
-		}
-		// 左側
-		for(i = this.height - 1;i > 0; i--) {
-			x.push(m.matrix[i][0]);
-		}
-	}
-	for(i = 0;i < x.length; i++) {
-		// かならず正とする
-		y[i] = x[((i + val) % x.length + x.length) % x.length];
-	}
-	{
-		// 上側
-		m.matrix[0] = y.slice(0, this.width);
-		// 右側
-		for(i = 0;i < this.height; i++) {
-			m.matrix[i][this.width - 1] = y[this.width + i];
-		}
-		// 下側
-		m.matrix[this.height - 1] = y.slice(
-			this.width + this.height - 2,
-			this.width + this.height - 2 + this.width ).reverse();
-		// 左側
-		for(i = this.height - 1, j = 0;i > 0; i--, j++) {
-			m.matrix[i][0] = y[this.width + this.height + this.width - 3 + j];
-		}
-	}
-	return m;
-};
-SIMatrix.prototype.mul = function(val) {
-	var m = this.clone();
-	var x, y;
-	for(y = 0; y < m.height; y++) {
-		for(x = 0; x < m.width; x++) {
-			m.matrix[y][x] *= val;
-		}
-	}
-	return m;
-};
-SIMatrix.prototype.sum = function() {
-	var sum = 0;
-	var x, y;
-	for(y = 0; y < this.height; y++) {
-		for(x = 0; x < this.width; x++) {
-			sum += this.matrix[y][x];
-		}
-	}
-	return sum;
-};
-SIMatrix.prototype.normalize = function() {
-	return this.clone().mul(1.0 / this.sum());
-};
-SIMatrix.prototype.addCenter = function(val) {
-	var m = this.clone();
-	m.matrix[m.height >> 1][m.width >> 1] += val;
-	return m;
-};
-SIMatrix.makeLaplacianFilter = function() {
-	return new SIMatrix([
-		[ 0.0, -1.0, 0.0],
-		[-1.0,  4.0,-1.0],
-		[ 0.0, -1.0, 0.0]
-	]);
-};
-SIMatrix.makeSharpenFilter = function(power) {
-	var m = SIMatrix.makeLaplacianFilter();
-	return m.mul(power).addCenter(1.0);
-};
-SIMatrix.makeBlur = function(width, height) {
-	var m = [];
-	var value = 1.0 / (width * height);
-	var x, y;
-	for(y = 0; y < height; y++) {
-		m[y] = [];
-		for(x = 0; x < width; x++) {
-			m[y][x] = value;
-		}
-	}
-	return new SIMatrix(m);
-};
-SIMatrix.makeGaussianFilter = function(width, height, sd) {
-	if(!sd) {
-		sd = 1.0;
-	}
-	var m = [];
-	var i, x, y;
-	var v = [];
-	var n = Math.max(width, height);
-	var s = - Math.floor(n / 2);
-	for(i = 0; i < n; i++, s++) {
-		v[i] = Math.exp( - (s * s) / ((sd * sd) * 2.0) );
-	}
-	for(y = 0; y < height; y++) {
-		m[y] = [];
-		for(x = 0; x < width; x++) {
-			m[y][x] = v[x] * v[y];
-		}
-	}
-	return new SIMatrix(m).normalize();
-};
 
 
 /**
@@ -631,6 +486,12 @@ SIData.prototype.clone = function() {
 	this._copyData(x);
 	return x;
 };
+
+/**
+ * 画面外の色を選択する方法を選ぶ
+ * @param {SIData.selectertype} _selectertype
+ * @returns {undefined}
+ */
 SIData.prototype.setSelecter = function(_selectertype) {
 	this._selectertype = _selectertype;
 	if(_selectertype === SIData.selectertype.INSIDE) {
@@ -643,9 +504,20 @@ SIData.prototype.setSelecter = function(_selectertype) {
 		this.selecter = new SIPixelSelecterRepeat(this.width, this.height);
 	}
 };
+
+/**
+ * 画面外の色を選択する方法を取得する
+ * @returns {SIData.selectertype}
+ */
 SIData.prototype.getSelecter = function() {
 	return this._selectertype;
 };
+
+/**
+ * 実数で色を選択した場合に、どのように色を補完するか選択する
+ * @param {SIData.interpolationtype} iptype
+ * @returns {undefined}
+ */
 SIData.prototype.setInterPolation = function(iptype) {
 	this.iptype	= iptype;
 	if(iptype === SIData.interpolationtype.NEAREST_NEIGHBOR) {
@@ -689,9 +561,20 @@ SIData.prototype.setInterPolation = function(iptype) {
 		this.ipn	= 16;
 	}
 };
+
+/**
+ * 実数で色を選択した場合に、どのように色を補完するか取得する
+ * @returns {SIData.interpolationtype}
+ */
 SIData.prototype.getInterPolation = function() {
 	return this.iptype;
 };
+
+/**
+ * このデータへ書き込む際に、書き込み値をどのようなブレンドで反映させるか設定する
+ * @param {SIData.brendtype} _blendtype
+ * @returns {undefined}
+ */
 SIData.prototype.setBlendType = function(_blendtype) {
 	this._blendtype = _blendtype;
 	if(_blendtype === SIData.brendtype.NONE) {
@@ -713,9 +596,22 @@ SIData.prototype.setBlendType = function(_blendtype) {
 		this.blendfunc = SIColor.brendMul;
 	}
 };
+
+/**
+ * このデータへ書き込む際に、書き込み値をどのようなブレンドで反映させるか取得する
+ * @returns {SIData.brendtype}
+ */
 SIData.prototype.getBlendType = function() {
 	return this._blendtype;
 };
+
+/**
+ * データのサイズを変更します。ただし、変更後が中身が初期化されます。
+ * 以前と同一の画像の場合は初期化されません。
+ * @param {type} width
+ * @param {type} height
+ * @returns {undefined}
+ */
 SIData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		this.selecter.setSize(width, height);
@@ -726,90 +622,25 @@ SIData.prototype.setSize = function(width, height) {
 	this.selecter.setSize(width, height);
 	this.data	= new Uint8ClampedArray(this.width * this.height * 4);
 };
+
+/**
+ * 中身をクリアします。
+ * @returns {undefined}
+ */
 SIData.prototype.clear = function() {
 	if(this.data) {
 		this.data.fill(0);
 	}
 };
 
-SIData.prototype.convolution = function(matrix) {
-	if(!(matrix instanceof SIMatrix)) {
-		throw "IllegalArgumentException";
-	}
-	var x, y, fx, fy, mx, my;
-	var fx_offset	= - (matrix.width  >> 1);
-	var fy_offset	= - (matrix.height >> 1);
-	var m			= matrix.matrix;
-	var zero_color  = this.getPixelInside(0, 0).zero();
-	var bufferimage = this.clone();
-	for(y = 0; y < this.height; y++) {
-		for(x = 0; x < this.width; x++) {
-			var newcolor = zero_color;
-			fy = y + fy_offset;
-			for(my = 0; my < matrix.height; my++, fy++) {
-				fx = x + fx_offset;
-				for(mx = 0; mx < matrix.width; mx++, fx++) {
-					var color = bufferimage.getPixel(fx, fy);
-					if(color) {
-						newcolor = newcolor.addColor(color.mul(m[my][mx]));
-					}
-				}
-			}
-			this.setPixelInside(x, y, newcolor);
-		}
-	}
-};
 
-SIData.prototype.convolutionBilateral = function(matrix, p) {
-	if(!(matrix instanceof SIMatrix)) {
-		throw "IllegalArgumentException";
-	}
-	if(!p) {
-		p = 1.0;
-	}
-	var x, y, fx, fy, mx, my;
-	var fx_offset	= - (matrix.width  >> 1);
-	var fy_offset	= - (matrix.height >> 1);
-	var m			= matrix.matrix;
-	var zero_color  = this.getPixelInside(0, 0).zero();
-	var bufferimage = this.clone();
-	var rate = - (1.001 - p) * 3.0; // -3.003 ～ -0.003 大きいほど強度高い
-	var exptable = [];
-	for(x = 0; x < 256 * 3; x++) {
-		exptable[x] = Math.exp(x * x * rate);
-	}
-	for(y = 0; y < this.height; y++) {
-		for(x = 0; x < this.width; x++) {
-			var thiscolor = bufferimage.getPixel(x, y);
-			var thisalpha = thiscolor.getBlendAlpha();
-			var sumcolor  = zero_color;
-			var newcolor  = zero_color;
-			m2 = [];
-			fy = y + fy_offset;
-			for(my = 0; my < matrix.height; my++, fy++) {
-				fx = x + fx_offset;
-				m2[my] = [];
-				for(mx = 0; mx < matrix.width; mx++, fx++) {
-					var tgtcolor = bufferimage.getPixel(fx, fy);
-					if(!tgtcolor) {
-						continue;
-					}
-					var delta = tgtcolor.subColor(thiscolor);
-					delta     = delta.mulColor(delta);
-					newfilter = exptable[Math.floor(delta.normManhattan())] * m[my][mx];
-					newcolor = newcolor.addColor(tgtcolor.mul(newfilter));
-					sumcolor = sumcolor.addColor(newfilter);
-				}
-			}
-			newcolor = newcolor.divColor(sumcolor).setBlendAlpha(thisalpha);
-			this.setPixelInside(x, y, newcolor);
-		}
-	}
-};
-
-
-// PixelInside 系のメソッドは、x, y が整数かつ画像の範囲内を保証している場合に使用可能
-
+/**
+ * x と y の座標にある色を取得する。
+ * x, y が整数かつ画像の範囲内を保証している場合に使用可能
+ * @param {number} x
+ * @param {number} y
+ * @returns {SIColorRGBA}
+ */
 SIData.prototype.getPixelInside = function(x, y) {
 	var p = (y * this.width + x) * 4;
 	var c = new SIColorRGBA([
@@ -820,6 +651,15 @@ SIData.prototype.getPixelInside = function(x, y) {
 	]);
 	return c;
 };
+
+/**
+ * x と y の座標にある色を設定する。
+ * x, y が整数かつ画像の範囲内を保証している場合に使用可能
+ * @param {type} x
+ * @param {type} y
+ * @param {type} color
+ * @returns {undefined}
+ */
 SIData.prototype.setPixelInside = function(x, y, color) {
 	var p = (y * this.width + x) * 4;
 	this.data[p]     = color.getColor()[0];
@@ -828,8 +668,13 @@ SIData.prototype.setPixelInside = function(x, y, color) {
 	this.data[p + 3] = color.getColor()[3];
 };
 
-// Pixel 系のメソッドは、x, y が整数かつ画像の範囲内を保証していない場合に使用可能
-
+/**
+ * x と y の座標にある色を取得する。
+ * x, y が整数かつ画像の範囲内を保証していない場合に使用可能
+ * @param {type} x
+ * @param {type} y
+ * @returns {SIColor}
+ */
 SIData.prototype.getPixel = function(x, y) {
 	var p = this.selecter.getPixelPosition(x, y);
 	if(p) {
@@ -837,6 +682,15 @@ SIData.prototype.getPixel = function(x, y) {
 	}
 	return null;
 };
+
+/**
+ * x と y の座標にある色を設定する。
+ * x, y が整数かつ画像の範囲内を保証していない場合に使用可能
+ * @param {type} x
+ * @param {type} y
+ * @param {type} color
+ * @returns {undefined}
+ */
 SIData.prototype.setPixel = function(x, y, color) {
 	var p = this.selecter.getPixelPosition(x, y);
 	if(p) {
@@ -851,8 +705,13 @@ SIData.prototype.setPixel = function(x, y, color) {
 	}
 };
 
-// Color 系のメソッドは、x, y が実数かつ画像の範囲内を保証していない場合に使用可能
-
+/**
+ * x と y の座標にある色を取得する。
+ * x, y が実数かつ画像の範囲内を保証していない場合でも使用可能
+ * @param {type} x
+ * @param {type} y
+ * @returns {SIColor}
+ */
 SIData.prototype.getColor = function(x, y) {
 	var rx = Math.floor(x);
 	var ry = Math.floor(y);
@@ -916,17 +775,45 @@ SIData.prototype.getColor = function(x, y) {
 	}
 	return null;
 };
+
+/**
+ * 座標系は、0-1を使用して、テクスチャとみたてて色を取得します。
+ * @param {type} u
+ * @param {type} v
+ * @returns {SIColor}
+ */
 SIData.prototype.getColorUV = function(u, v) {
 	return this.getColor(u * this.width, v * this.height);
 };
+
+/**
+ * x と y の座標にある色を設定する。
+ * x, y が実数かつ画像の範囲内を保証していない場合でも使用可能
+ * @param {type} x
+ * @param {type} y
+ * @param {type} color
+ * @returns {undefined}
+ */
 SIData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
 
-// drawImage と同じ使用方法で SIData をドローする
-// RGBA データの上には、RGBA のみ書き込み可能
-// スカラーデータの上には、スカラーのみ書き込み可能
 
+/**
+ * Canvas型の drawImage と同じ使用方法で SIData をドローする
+ * SIDataRGBA データの上には、SIDataRGBA のみ書き込み可能
+ * SIDataY    データの上には、SIDataY    のみ書き込み可能
+ * @param {SIData} image
+ * @param {number} sx
+ * @param {number} sy
+ * @param {number} sw
+ * @param {number} sh
+ * @param {number} dx
+ * @param {number} dy
+ * @param {number} dw
+ * @param {number} dh
+ * @returns {undefined}
+ */
 SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 	if(!(image instanceof SIData)) {
 		throw "IllegalArgumentException";
@@ -975,8 +862,11 @@ SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 	}
 };
 
-// 全画素に指定した関数の操作を行う
-
+/**
+ * 全画素に指定した関数の操作を行う
+ * @param {type} func func(x, y, newcolor) 実行したいコールバック関数。
+ * @returns {undefined}
+ */
 SIData.prototype.each = function(func) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
@@ -986,12 +876,6 @@ SIData.prototype.each = function(func) {
 		}
 	}
 };
-
-/**
- * RGBAの色を扱う画像データクラス
- * 1ピクセルはRGBAの4色を持ち、それぞれは unsigned char となります。
- * @returns {SIDataRGBA}
- */
 var SIDataRGBA = function() {
 	SIData.prototype._init.call(this);
 	if(arguments.length === 1) {
@@ -1010,7 +894,7 @@ SIDataRGBA.prototype.clone = function() {
 	this._copyData(x);
 	return x;
 };
-SIDataRGBA.prototype.putDataS = function(imagedata, n) {
+SIDataRGBA.prototype.putDataY = function(imagedata, n) {
 	if(!(imagedata instanceof SIDataY)) {
 		throw "IllegalArgumentException";
 	}
@@ -1024,16 +908,16 @@ SIDataRGBA.prototype.putDataS = function(imagedata, n) {
 		p += 4;
 	}
 };
-SIDataRGBA.prototype.putDataSToR = function(imagedata) {
+SIDataRGBA.prototype.putDataYToR = function(imagedata) {
 	this.putDataS(imagedata, 0);
 };
-SIDataRGBA.prototype.putDataSToG = function(imagedata) {
+SIDataRGBA.prototype.putDataYToG = function(imagedata) {
 	this.putDataS(imagedata, 1);
 };
-SIDataRGBA.prototype.putDataSToB = function(imagedata) {
+SIDataRGBA.prototype.putDataYToB = function(imagedata) {
 	this.putDataS(imagedata, 2);
 };
-SIDataRGBA.prototype.putDataSToA = function(imagedata) {
+SIDataRGBA.prototype.putDataYToA = function(imagedata) {
 	this.putDataS(imagedata, 3);
 };
 SIDataRGBA.prototype.putImageData = function(imagedata) {
@@ -1071,13 +955,6 @@ SIDataRGBA.prototype.grayscale = function() {
 		);
 	});
 };
-
-/**
- * 1色を扱う画像データクラス
- * 輝度値や高さ情報などを入れて使用します。
- * 1ピクセルの1色は実数となります。
- * @returns {SIDataY}
- */
 var SIDataY = function() {
 	SIData.prototype._init.call(this);
 	if(arguments.length === 1) {
