@@ -167,73 +167,85 @@ SIColor.brendMul = function(x, y, alpha) {
 	return x.setBlendAlpha(new_alpha);
 };
 
-var SIColorS = function(color) {
-	this.x = color;
+/**
+ * 輝度モード用のクラスです。
+ * 1色しか扱えませんが、実数が扱える特徴を持っています。
+ * @param {number} color 輝度値
+ * @returns {SIColorY}
+ */
+var SIColorY = function(color) {
+	this.y = color;
 };
-SIColorS.prototype = new SIColor();
-SIColorS.prototype.getColor = function() {
-	return this.x;
+SIColorY.prototype = new SIColor();
+SIColorY.prototype.getColor = function() {
+	return this.y;
 };
-SIColorS.prototype.clone = function() {
-	return new SIColorS(this.x);
+SIColorY.prototype.clone = function() {
+	return new SIColorY(this.y);
 };
-SIColorS.prototype.zero = function() {
-	return new SIColorS(0.0);
+SIColorY.prototype.zero = function() {
+	return new SIColorY(0.0);
 };
-SIColorS.prototype.one = function() {
-	return new SIColorS(1.0);
+SIColorY.prototype.one = function() {
+	return new SIColorY(1.0);
 };
-SIColorS.prototype.add = function(x) {
-	return new SIColorS(this.x + x);
+SIColorY.prototype.add = function(x) {
+	return new SIColorY(this.y + x);
 };
-SIColorS.prototype.sub = function(x) {
-	return new SIColorS(this.x - x);
+SIColorY.prototype.sub = function(x) {
+	return new SIColorY(this.y - x);
 };
-SIColorS.prototype.mul = function(x) {
-	return new SIColorS(this.x * x);
+SIColorY.prototype.mul = function(x) {
+	return new SIColorY(this.y * x);
 };
-SIColorS.prototype.div = function(x) {
-	return new SIColorS(this.x / x);
+SIColorY.prototype.div = function(x) {
+	return new SIColorY(this.y / x);
 };
-SIColorS.prototype.exp = function() {
-	return new SIColorS(Math.exp(this.x));
+SIColorY.prototype.exp = function() {
+	return new SIColorY(Math.exp(this.y));
 };
-SIColorS.prototype.log = function() {
-	return new SIColorS(Math.log(this.x));
+SIColorY.prototype.log = function() {
+	return new SIColorY(Math.log(this.y));
 };
-SIColorS.prototype.addColor = function(c) {
-	return new SIColorS(this.x + c.x);
+SIColorY.prototype.addColor = function(c) {
+	return new SIColorY(this.y + c.y);
 };
-SIColorS.prototype.subColor = function(c) {
-	return new SIColorS(this.x - c.x);
+SIColorY.prototype.subColor = function(c) {
+	return new SIColorY(this.y - c.y);
 };
-SIColorS.prototype.mulColor = function(c) {
-	return new SIColorS(this.x * c.x);
+SIColorY.prototype.mulColor = function(c) {
+	return new SIColorY(this.y * c.y);
 };
-SIColorS.prototype.divColor = function(c) {
-	return new SIColorS(this.x / c.x);
+SIColorY.prototype.divColor = function(c) {
+	return new SIColorY(this.y / c.y);
 };
-SIColorS.prototype.maxColor = function(c) {
-	return new SIColorS(Math.max(c.x, this.x));
+SIColorY.prototype.maxColor = function(c) {
+	return new SIColorY(Math.max(c.y, this.y));
 };
-SIColorS.prototype.minColor = function(c) {
-	return new SIColorS(Math.min(c.x, this.x));
+SIColorY.prototype.minColor = function(c) {
+	return new SIColorY(Math.min(c.y, this.y));
 };
-SIColorS.prototype.normManhattan = function() {
-	return Math.abs(this.x);
+SIColorY.prototype.normManhattan = function() {
+	return Math.abs(this.y);
 };
-SIColorS.prototype.normEugrid = function() {
-	return Math.abs(this.x);
+SIColorY.prototype.normEugrid = function() {
+	return Math.abs(this.y);
 };
-SIColorS.prototype.getBlendAlpha = function() {
+SIColorY.prototype.getBlendAlpha = function() {
 	return 1.0;
 };
-SIColorS.prototype.setBlendAlpha = function() {
+SIColorY.prototype.setBlendAlpha = function() {
 	return this;
 };
-SIColorS.prototype.toString = function() {
-	return "color(" + this.x + ")";
+SIColorY.prototype.toString = function() {
+	return "color(" + this.y + ")";
 };
+
+/**
+ * RGBA
+ * @param {object} color 4つのRGBAのNumberが入った配列
+ * @returns {SIColorRGBA}
+ */
 var SIColorRGBA = function(color) {
 	// ディープコピー
 	this.rgba = [color[0], color[1], color[2], color[3]];
@@ -311,10 +323,10 @@ SIColorRGBA.prototype.minColor = function(c) {
 		Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
 		Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
 };
-SIColorS.prototype.normManhattan = function() {
+SIColorRGBA.prototype.normManhattan = function() {
 	return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
 };
-SIColorS.prototype.normEugrid = function() {
+SIColorRGBA.prototype.normEugrid = function() {
 	return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
 };
 SIColorRGBA.prototype.getBlendAlpha = function() {
@@ -567,7 +579,7 @@ SIMatrix.makeGaussianFilter = function(width, height, sd) {
  * /////////////////////////////////////////////////////////
  * 画像データクラス
  * SIDataRGBA   32bit整数 0xRRGGBBAA で管理
- * SIDataS 32bit浮動小数点で管理
+ * SIDataY 32bit浮動小数点で管理
  * /////////////////////////////////////////////////////////
  */
 
@@ -974,6 +986,12 @@ SIData.prototype.each = function(func) {
 		}
 	}
 };
+
+/**
+ * RGBAの色を扱う画像データクラス
+ * 1ピクセルはRGBAの4色を持ち、それぞれは unsigned char となります。
+ * @returns {SIDataRGBA}
+ */
 var SIDataRGBA = function() {
 	SIData.prototype._init.call(this);
 	if(arguments.length === 1) {
@@ -993,7 +1011,7 @@ SIDataRGBA.prototype.clone = function() {
 	return x;
 };
 SIDataRGBA.prototype.putDataS = function(imagedata, n) {
-	if(!(imagedata instanceof SIDataS)) {
+	if(!(imagedata instanceof SIDataY)) {
 		throw "IllegalArgumentException";
 	}
 	this.setSize(imagedata.width, imagedata.height);
@@ -1024,7 +1042,7 @@ SIDataRGBA.prototype.putImageData = function(imagedata) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
-	else if(imagedata instanceof SIDataS) {
+	else if(imagedata instanceof SIDataY) {
 		this.putImageData(imagedata.getImageData());
 	}
 	else {
@@ -1053,7 +1071,14 @@ SIDataRGBA.prototype.grayscale = function() {
 		);
 	});
 };
-var SIDataS = function() {
+
+/**
+ * 1色を扱う画像データクラス
+ * 輝度値や高さ情報などを入れて使用します。
+ * 1ピクセルの1色は実数となります。
+ * @returns {SIDataY}
+ */
+var SIDataY = function() {
 	SIData.prototype._init.call(this);
 	if(arguments.length === 1) {
 		var image = arguments[0];
@@ -1065,13 +1090,13 @@ var SIDataS = function() {
 		this.setSize(width, height);
 	}
 };
-SIDataS.prototype = new SIData();
-SIDataS.prototype.clone = function() {
-	var x = new SIDataS(this.width, this.height);
+SIDataY.prototype = new SIData();
+SIDataY.prototype.clone = function() {
+	var x = new SIDataY(this.width, this.height);
 	this._copyData(x);
 	return x;
 };
-SIDataS.prototype.setSize = function(width, height) {
+SIDataY.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		return;
 	}
@@ -1080,15 +1105,15 @@ SIDataS.prototype.setSize = function(width, height) {
 	this.selecter.setSize(width, height);
 	this.data	= new Float32Array(this.width * this.height);
 };
-SIDataS.prototype.getPixelInside = function(x, y) {
+SIDataY.prototype.getPixelInside = function(x, y) {
 	var p = y * this.width + x;
-	return new SIColorS(this.data[p]);
+	return new SIColorY(this.data[p]);
 };
-SIDataS.prototype.setPixelInside = function(x, y, color) {
+SIDataY.prototype.setPixelInside = function(x, y, color) {
 	var p = y * this.width + x;
 	this.data[p]     = color.getColor();
 };
-SIDataS.prototype.putImageData = function(imagedata, n) {
+SIDataY.prototype.putImageData = function(imagedata, n) {
 	if(	(imagedata instanceof ImageData) ||
 		(imagedata instanceof SIDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
@@ -1101,7 +1126,7 @@ SIDataS.prototype.putImageData = function(imagedata, n) {
 			p += 4;
 		}
 	}
-	else if(imagedata instanceof SIDataS) {
+	else if(imagedata instanceof SIDataY) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
@@ -1109,19 +1134,19 @@ SIDataS.prototype.putImageData = function(imagedata, n) {
 		throw "IllegalArgumentException";
 	}
 };
-SIDataS.prototype.putImageDataR = function(imagedata) {
+SIDataY.prototype.putImageDataR = function(imagedata) {
 	this.putImageData(imagedata, 0);
 };
-SIDataS.prototype.putImageDataG = function(imagedata) {
+SIDataY.prototype.putImageDataG = function(imagedata) {
 	this.putImageData(imagedata, 1);
 };
-SIDataS.prototype.putImageDataB = function(imagedata) {
+SIDataY.prototype.putImageDataB = function(imagedata) {
 	this.putImageData(imagedata, 2);
 };
-SIDataS.prototype.putImageDataA = function(imagedata) {
+SIDataY.prototype.putImageDataA = function(imagedata) {
 	this.putImageData(imagedata, 3);
 };
-SIDataS.prototype.getImageData = function() {
+SIDataY.prototype.getImageData = function() {
 	var canvas, context;
 	canvas = document.createElement("canvas");
 	canvas.width  = this.width;
@@ -1184,7 +1209,7 @@ SIColorRGBA.prototype.getNormalVector = function() {
 		  (this.rgba[2] / 128.0) - 1.0
 	);
 };
-SIDataS.prototype.getNormalMap = function() {
+SIDataY.prototype.getNormalMap = function() {
 	var output = new SIDataRGBA(this.width, this.height);
 	var x, y;
 	for(y = 0; y < this.height; y++) {

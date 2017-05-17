@@ -67,15 +67,15 @@ function testWritePixel(panel) {
 	});
 	
 	// ボタン2
-	var button2 = new SButton("Scaler でピクセルに書き込み");
+	var button2 = new SButton("輝度値 でピクセルに書き込み");
 	button1.put(button2, SComponent.putype.RIGHT);
 	button2.addListener(function() {
-		var data = new SIDataS(canvas.getImageData());
+		var data = new SIDataY(canvas.getImageData());
 		var i = 0;
 		for(i = 0; i < 100; i++) {
 			var x = Math.floor(Math.random() * data.width);
 			var y = Math.floor(Math.random() * data.height);
-			data.setPixelInside(x, y, new SIColorS(255));
+			data.setPixelInside(x, y, new SIColorY(255));
 		}
 		canvas.setImageData(data.getImageData());
 	});
@@ -94,10 +94,10 @@ function testInterpolation(panel) {
 	// Button
 	var gene = new SButton("画像作成");
 	var genefunc = function() {
-		var data = new SIDataS();
+		var data = new SIDataY();
 		data.putImageData(inputcanvas.getImageData());
 		data.each(function() {
-			return new SIColorS(Math.random() * 256);
+			return new SIColorY(Math.random() * 256);
 		});
 		inputcanvas.setImageData(data.getImageData());
 	};
@@ -144,10 +144,10 @@ function testInterpolation(panel) {
 	var button = new SButton("拡大");
 	cb_interpolationtype.put(button, SComponent.putype.NEWLINE);
 	button.addListener(function() {
-		var srcdata = new SIDataS(inputcanvas.getImageData());
+		var srcdata = new SIDataY(inputcanvas.getImageData());
 		srcdata.setSelecter(cb_selectertype.getSelectedItem());
 		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
-		var dstdata = new SIDataS(dstWidth, dstHeight);
+		var dstdata = new SIDataY(dstWidth, dstHeight);
 		dstdata.drawSIData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.setImageData(dstdata.getImageData());
 	});
@@ -317,7 +317,7 @@ function testEtc(panel) {
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
 			src.grayscale();
-			var height = new SIDataS(src);
+			var height = new SIDataY(src);
 			m = SIMatrix.makeGaussianFilter(5, 5);
 			height.setSelecter(SIData.selectertype.REPEAT);
 			height.convolution(m);
