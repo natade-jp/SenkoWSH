@@ -19,89 +19,89 @@
  * 色クラス
  * /////////////////////////////////////////////////////////
  */
-var SIPColor = function() {
+var SIColor = function() {
 };
-SIPColor.prototype.getColor = function() {
+SIColor.prototype.getColor = function() {
 	return null;
 };
-SIPColor.prototype.clone = function() {
+SIColor.prototype.clone = function() {
 	return null;
 };
-SIPColor.prototype.zero = function() {
+SIColor.prototype.zero = function() {
 	return null;
 };
-SIPColor.prototype.one = function() {
+SIColor.prototype.one = function() {
 	return null;
 };
-SIPColor.prototype.add = function() {
+SIColor.prototype.add = function() {
 	return null;
 };
-SIPColor.prototype.sub = function() {
+SIColor.prototype.sub = function() {
 	return null;
 };
-SIPColor.prototype.mul = function() {
+SIColor.prototype.mul = function() {
 	return null;
 };
-SIPColor.prototype.div = function() {
+SIColor.prototype.div = function() {
 	return null;
 };
-SIPColor.prototype.exp = function() {
+SIColor.prototype.exp = function() {
 	return null;
 };
-SIPColor.prototype.log = function() {
+SIColor.prototype.log = function() {
 	return null;
 };
-SIPColor.prototype.addColor = function() {
+SIColor.prototype.addColor = function() {
 	return null;
 };
-SIPColor.prototype.subColor = function() {
+SIColor.prototype.subColor = function() {
 	return null;
 };
-SIPColor.prototype.mulColor = function() {
+SIColor.prototype.mulColor = function() {
 	return null;
 };
-SIPColor.prototype.divColor = function() {
+SIColor.prototype.divColor = function() {
 	return null;
 };
-SIPColor.prototype.maxColor = function() {
+SIColor.prototype.maxColor = function() {
 	return null;
 };
-SIPColor.prototype.minColor = function() {
+SIColor.prototype.minColor = function() {
 	return null;
 };
-SIPColor.prototype.normManhattan = function() {
+SIColor.prototype.normManhattan = function() {
 	return null;
 };
-SIPColor.prototype.normEugrid = function() {
+SIColor.prototype.normEugrid = function() {
 	return null;
 };
-SIPColor.prototype.getBlendAlpha = function() {
+SIColor.prototype.getBlendAlpha = function() {
 	return null;
 };
-SIPColor.prototype.setBlendAlpha = function() {
+SIColor.prototype.setBlendAlpha = function() {
 	return null;
 };
-SIPColor.ipLerp = function(v0, v1, x) {
+SIColor.ipLerp = function(v0, v1, x) {
 	var delta = v1.subColor(v0);
 	return v0.addColor(delta.mul(x));
 };
-SIPColor.ipCosine = function(v0, v1, x) {
-	return SIPColor.ipLerp(v0, v1,((1.0 - Math.cos(Math.PI * x)) * 0.5));
+SIColor.ipCosine = function(v0, v1, x) {
+	return SIColor.ipLerp(v0, v1,((1.0 - Math.cos(Math.PI * x)) * 0.5));
 };
-SIPColor.ipHermite2p3 = function(v0, v1, x) {
-	return SIPColor.ipLerp(v0, v1, (x * x * (3.0 - 2.0 * x)));
+SIColor.ipHermite2p3 = function(v0, v1, x) {
+	return SIColor.ipLerp(v0, v1, (x * x * (3.0 - 2.0 * x)));
 };
-SIPColor.ipHermite2p5 = function(v0, v1, x) {
-	return SIPColor.ipLerp(v0, v1, (x * x * x * (6.0 * x * x - 15.0 * x + 10.0)));
+SIColor.ipHermite2p5 = function(v0, v1, x) {
+	return SIColor.ipLerp(v0, v1, (x * x * x * (6.0 * x * x - 15.0 * x + 10.0)));
 };
-SIPColor.ipHermite4p = function(v0, v1, v2, v3, x) {
+SIColor.ipHermite4p = function(v0, v1, v2, v3, x) {
 	var P = v3.subColor(v2).subColor(v0.subColor(v1));
 	var Q = v0.subColor(v1).subColor(P);
 	var R = v2.subColor(v0);
 	var S = v1;
 	return  P.mul(x * x * x).addColor(Q.mul(x * x)).addColor(R.mul(x)).addColor(S);
 };
-SIPColor.funcInBicubic = function(d, a) {
+SIColor.funcInBicubic = function(d, a) {
 	if(d <= 1.0) {
 		return 1.0 - ((a + 3.0) * d * d) + ((a + 2.0) * d * d * d);
 	}
@@ -109,13 +109,13 @@ SIPColor.funcInBicubic = function(d, a) {
 		return (-4.0 * a) + (8.0 * a * d) - (5.0 * a * d * d) + (a * d * d * d);
 	}
 };
-SIPColor.ipBicubic = function(va, nx, ny, a) {
+SIColor.ipBicubic = function(va, nx, ny, a) {
 	var output = va[0][0].zero();
 	var x, y, y_weight, weight, sum = 0.0;
 	for(y = 0; y < 4; y++) {
-		y_weight = SIPColor.funcInBicubic(Math.abs(- ny + y - 1), a);
+		y_weight = SIColor.funcInBicubic(Math.abs(- ny + y - 1), a);
 		for(x = 0; x < 4; x++) {
-			weight  = SIPColor.funcInBicubic(Math.abs(- nx + x - 1), a);
+			weight  = SIColor.funcInBicubic(Math.abs(- nx + x - 1), a);
 			weight *= y_weight;
 			sum    += weight;
 			output = output.addColor(va[y][x].mul(weight));
@@ -124,212 +124,212 @@ SIPColor.ipBicubic = function(va, nx, ny, a) {
 	output = output.mul(1.0 / sum);
 	return output;
 };
-SIPColor.ipBicubicSoft = function(va, nx, ny) {
-	return SIPColor.ipBicubic(va, nx, ny, -0.5);
+SIColor.ipBicubicSoft = function(va, nx, ny) {
+	return SIColor.ipBicubic(va, nx, ny, -0.5);
 };
-SIPColor.ipBicubicNormal = function(va, nx, ny) {
-	return SIPColor.ipBicubic(va, nx, ny, -1.0);
+SIColor.ipBicubicNormal = function(va, nx, ny) {
+	return SIColor.ipBicubic(va, nx, ny, -1.0);
 };
-SIPColor.ipBicubicSharp = function(va, nx, ny) {
-	return SIPColor.ipBicubic(va, nx, ny, -1.2);
+SIColor.ipBicubicSharp = function(va, nx, ny) {
+	return SIColor.ipBicubic(va, nx, ny, -1.2);
 };
-SIPColor.brendNone = function(x, y, alpha) {
+SIColor.brendNone = function(x, y, alpha) {
 	return y;
 };
-SIPColor.brendAlpha = function(x, y, alpha) {
+SIColor.brendAlpha = function(x, y, alpha) {
 	var x_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
-	x = SIPColor.ipLerp(x, y, y_alpha);
+	x = SIColor.ipLerp(x, y, y_alpha);
 	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
 };
-SIPColor.brendAdd = function(x, y, alpha) {
+SIColor.brendAdd = function(x, y, alpha) {
 	var x_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.addColor(y.mul(y_alpha));
 	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
 };
-SIPColor.brendSub = function(x, y, alpha) {
+SIColor.brendSub = function(x, y, alpha) {
 	var new_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.subColor(y.mul(y_alpha));
 	return x.setBlendAlpha(new_alpha);
 };
-SIPColor.brendRevSub = function(x, y, alpha) {
+SIColor.brendRevSub = function(x, y, alpha) {
 	var new_alpha = y.getBlendAlpha();
 	var x_alpha = x.getBlendAlpha() * alpha;
 	y = y.subColor(x.mul(x_alpha));
 	return y.setBlendAlpha(new_alpha);
 };
-SIPColor.brendMul = function(x, y, alpha) {
+SIColor.brendMul = function(x, y, alpha) {
 	var new_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.mulColor(y.mul(y_alpha).div(255.0));
 	return x.setBlendAlpha(new_alpha);
 };
 
-var SIPColorS = function(color) {
+var SIColorS = function(color) {
 	this.x = color;
 };
-SIPColorS.prototype = new SIPColor();
-SIPColorS.prototype.getColor = function() {
+SIColorS.prototype = new SIColor();
+SIColorS.prototype.getColor = function() {
 	return this.x;
 };
-SIPColorS.prototype.clone = function() {
-	return new SIPColorS(this.x);
+SIColorS.prototype.clone = function() {
+	return new SIColorS(this.x);
 };
-SIPColorS.prototype.zero = function() {
-	return new SIPColorS(0.0);
+SIColorS.prototype.zero = function() {
+	return new SIColorS(0.0);
 };
-SIPColorS.prototype.one = function() {
-	return new SIPColorS(1.0);
+SIColorS.prototype.one = function() {
+	return new SIColorS(1.0);
 };
-SIPColorS.prototype.add = function(x) {
-	return new SIPColorS(this.x + x);
+SIColorS.prototype.add = function(x) {
+	return new SIColorS(this.x + x);
 };
-SIPColorS.prototype.sub = function(x) {
-	return new SIPColorS(this.x - x);
+SIColorS.prototype.sub = function(x) {
+	return new SIColorS(this.x - x);
 };
-SIPColorS.prototype.mul = function(x) {
-	return new SIPColorS(this.x * x);
+SIColorS.prototype.mul = function(x) {
+	return new SIColorS(this.x * x);
 };
-SIPColorS.prototype.div = function(x) {
-	return new SIPColorS(this.x / x);
+SIColorS.prototype.div = function(x) {
+	return new SIColorS(this.x / x);
 };
-SIPColorS.prototype.exp = function() {
-	return new SIPColorS(Math.exp(this.x));
+SIColorS.prototype.exp = function() {
+	return new SIColorS(Math.exp(this.x));
 };
-SIPColorS.prototype.log = function() {
-	return new SIPColorS(Math.log(this.x));
+SIColorS.prototype.log = function() {
+	return new SIColorS(Math.log(this.x));
 };
-SIPColorS.prototype.addColor = function(c) {
-	return new SIPColorS(this.x + c.x);
+SIColorS.prototype.addColor = function(c) {
+	return new SIColorS(this.x + c.x);
 };
-SIPColorS.prototype.subColor = function(c) {
-	return new SIPColorS(this.x - c.x);
+SIColorS.prototype.subColor = function(c) {
+	return new SIColorS(this.x - c.x);
 };
-SIPColorS.prototype.mulColor = function(c) {
-	return new SIPColorS(this.x * c.x);
+SIColorS.prototype.mulColor = function(c) {
+	return new SIColorS(this.x * c.x);
 };
-SIPColorS.prototype.divColor = function(c) {
-	return new SIPColorS(this.x / c.x);
+SIColorS.prototype.divColor = function(c) {
+	return new SIColorS(this.x / c.x);
 };
-SIPColorS.prototype.maxColor = function(c) {
-	return new SIPColorS(Math.max(c.x, this.x));
+SIColorS.prototype.maxColor = function(c) {
+	return new SIColorS(Math.max(c.x, this.x));
 };
-SIPColorS.prototype.minColor = function(c) {
-	return new SIPColorS(Math.min(c.x, this.x));
+SIColorS.prototype.minColor = function(c) {
+	return new SIColorS(Math.min(c.x, this.x));
 };
-SIPColorS.prototype.normManhattan = function() {
+SIColorS.prototype.normManhattan = function() {
 	return Math.abs(this.x);
 };
-SIPColorS.prototype.normEugrid = function() {
+SIColorS.prototype.normEugrid = function() {
 	return Math.abs(this.x);
 };
-SIPColorS.prototype.getBlendAlpha = function() {
+SIColorS.prototype.getBlendAlpha = function() {
 	return 1.0;
 };
-SIPColorS.prototype.setBlendAlpha = function() {
+SIColorS.prototype.setBlendAlpha = function() {
 	return this;
 };
-SIPColorS.prototype.toString = function() {
+SIColorS.prototype.toString = function() {
 	return "color(" + this.x + ")";
 };
-var SIPColorRGBA = function(color) {
+var SIColorRGBA = function(color) {
 	// ディープコピー
 	this.rgba = [color[0], color[1], color[2], color[3]];
 };
-SIPColorRGBA.prototype = new SIPColor();
-SIPColorRGBA.prototype.getColor = function() {
+SIColorRGBA.prototype = new SIColor();
+SIColorRGBA.prototype.getColor = function() {
 	return this.rgba;
 };
-SIPColorRGBA.prototype.clone = function() {
-	return new SIPColorRGBA(this.rgba);
+SIColorRGBA.prototype.clone = function() {
+	return new SIColorRGBA(this.rgba);
 };
-SIPColorRGBA.prototype.zero = function() {
-	return new SIPColorRGBA([0.0, 0.0, 0.0, 0.0]);
+SIColorRGBA.prototype.zero = function() {
+	return new SIColorRGBA([0.0, 0.0, 0.0, 0.0]);
 };
-SIPColorRGBA.prototype.one = function() {
-	return new SIPColorRGBA([1.0, 1.0, 1.0, 1.0]);
+SIColorRGBA.prototype.one = function() {
+	return new SIColorRGBA([1.0, 1.0, 1.0, 1.0]);
 };
-SIPColorRGBA.prototype.add = function(x) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.add = function(x) {
+	return new SIColorRGBA([
 		this.rgba[0] + x,	this.rgba[1] + x,
 		this.rgba[2] + x,	this.rgba[3] + x ]);
 };
-SIPColorRGBA.prototype.sub = function(x) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.sub = function(x) {
+	return new SIColorRGBA([
 		this.rgba[0] - x,	this.rgba[1] - x,
 		this.rgba[2] - x,	this.rgba[3] - x ]);
 };
-SIPColorRGBA.prototype.mul = function(x) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.mul = function(x) {
+	return new SIColorRGBA([
 		this.rgba[0] * x,	this.rgba[1] * x,
 		this.rgba[2] * x,	this.rgba[3] * x ]);
 };
-SIPColorRGBA.prototype.div = function(x) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.div = function(x) {
+	return new SIColorRGBA([
 		this.rgba[0] / x,	this.rgba[1] / x,
 		this.rgba[2] / x,	this.rgba[3] / x ]);
 };
-SIPColorRGBA.prototype.exp = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.exp = function(c) {
+	return new SIColorRGBA([
 		Math.exp(this.rgba[0]),	Math.exp(this.rgba[1]),
 		Math.exp(this.rgba[2]),	Math.exp(this.rgba[3]) ]);
 };
-SIPColorRGBA.prototype.log = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.log = function(c) {
+	return new SIColorRGBA([
 		Math.log(this.rgba[0]),	Math.log(this.rgba[1]),
 		Math.log(this.rgba[2]),	Math.log(this.rgba[3]) ]);
 };
-SIPColorRGBA.prototype.addColor = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.addColor = function(c) {
+	return new SIColorRGBA([
 		this.rgba[0] + c.rgba[0],	this.rgba[1] + c.rgba[1],
 		this.rgba[2] + c.rgba[2],	this.rgba[3] + c.rgba[3] ]);
 };
-SIPColorRGBA.prototype.subColor = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.subColor = function(c) {
+	return new SIColorRGBA([
 		this.rgba[0] - c.rgba[0],	this.rgba[1] - c.rgba[1],
 		this.rgba[2] - c.rgba[2],	this.rgba[3] - c.rgba[3] ]);
 };
-SIPColorRGBA.prototype.mulColor = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.mulColor = function(c) {
+	return new SIColorRGBA([
 		this.rgba[0] * c.rgba[0],	this.rgba[1] * c.rgba[1],
 		this.rgba[2] * c.rgba[2],	this.rgba[3] * c.rgba[3] ]);
 };
-SIPColorRGBA.prototype.divColor = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.divColor = function(c) {
+	return new SIColorRGBA([
 		this.rgba[0] / c.rgba[0],	this.rgba[1] / c.rgba[1],
 		this.rgba[2] / c.rgba[2],	this.rgba[3] / c.rgba[3] ]);
 };
-SIPColorRGBA.prototype.maxColor = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.maxColor = function(c) {
+	return new SIColorRGBA([
 		Math.max(c.rgba[0], this.rgba[0]),Math.max(c.rgba[1], this.rgba[1]),
 		Math.max(c.rgba[2], this.rgba[2]),Math.max(c.rgba[3], this.rgba[3])]);
 };
-SIPColorRGBA.prototype.minColor = function(c) {
-	return new SIPColorRGBA([
+SIColorRGBA.prototype.minColor = function(c) {
+	return new SIColorRGBA([
 		Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
 		Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
 };
-SIPColorS.prototype.normManhattan = function() {
+SIColorS.prototype.normManhattan = function() {
 	return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
 };
-SIPColorS.prototype.normEugrid = function() {
+SIColorS.prototype.normEugrid = function() {
 	return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
 };
-SIPColorRGBA.prototype.getBlendAlpha = function() {
+SIColorRGBA.prototype.getBlendAlpha = function() {
 	return this.rgba[3] / 255.0;
 };
-SIPColorRGBA.prototype.setBlendAlpha = function(x) {
+SIColorRGBA.prototype.setBlendAlpha = function(x) {
 	var color = this.clone();
 	color.rgba[3] = x * 255.0;
 	return color;
 };
-SIPColorRGBA.prototype.toString = function() {
+SIColorRGBA.prototype.toString = function() {
 	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
 };
-SIPColorRGBA.prototype.mulMatrix = function(m) {
-	var color = new SIPColorRGBA();
+SIColorRGBA.prototype.mulMatrix = function(m) {
+	var color = new SIColorRGBA();
 	color.rgba[0] =	this.rgba[0] * m[0][0] +
 					this.rgba[1] * m[0][1] +
 					this.rgba[2] * m[0][2] +
@@ -354,28 +354,28 @@ SIPColorRGBA.prototype.mulMatrix = function(m) {
  * 指定した部分の色を取得するクラス
  * xとyは中に納まらなくてもよいが、離散値を使用すること
  * 
- * SIPPixelSelecterNormal はみでた色は null
- * SIPPixelSelecterFill   はみでた色は最も近い位置の色にする
- * SIPPixelSelecterRepeat はみでた色は反対側の方向から取得する
+ * SIPixelSelecterNormal はみでた色は null
+ * SIPixelSelecterFill   はみでた色は最も近い位置の色にする
+ * SIPixelSelecterRepeat はみでた色は反対側の方向から取得する
  * /////////////////////////////////////////////////////////
  */
-var SIPPixelSelecter = function() {
+var SIPixelSelecter = function() {
 };
-SIPPixelSelecter.prototype._init = function(width, height) {
+SIPixelSelecter.prototype._init = function(width, height) {
 	this.setSize(width, height);
 };
-SIPPixelSelecter.prototype.clone = function() {
+SIPixelSelecter.prototype.clone = function() {
 	var func = this.getPixelPosition;
-	var x = new SIPPixelSelecter();
+	var x = new SIPixelSelecter();
 	x._init(this.width, this.height);
 	x.getPixelPosition = func;
 	return x;
 };
-SIPPixelSelecter.prototype.setSize = function(width, height) {
+SIPixelSelecter.prototype.setSize = function(width, height) {
 	this.width  = width;
 	this.height = height;
 };
-SIPPixelSelecter.prototype.getPixelPosition = function(x, y) {
+SIPixelSelecter.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -385,15 +385,15 @@ SIPPixelSelecter.prototype.getPixelPosition = function(x, y) {
 		return null;
 	}
 };
-var SIPPixelSelecterInside = function(width, height) {
-	SIPPixelSelecter.prototype._init.call(this, width, height);
+var SIPixelSelecterInside = function(width, height) {
+	SIPixelSelecter.prototype._init.call(this, width, height);
 };
-SIPPixelSelecterInside.prototype = new SIPPixelSelecter();
-var SIPPixelSelecterFill = function(width, height) {
-	SIPPixelSelecter.prototype._init.call(this, width, height);
+SIPixelSelecterInside.prototype = new SIPixelSelecter();
+var SIPixelSelecterFill = function(width, height) {
+	SIPixelSelecter.prototype._init.call(this, width, height);
 };
-SIPPixelSelecterFill.prototype = new SIPPixelSelecter();
-SIPPixelSelecterFill.prototype.getPixelPosition = function(x, y) {
+SIPixelSelecterFill.prototype = new SIPixelSelecter();
+SIPixelSelecterFill.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -404,11 +404,11 @@ SIPPixelSelecterFill.prototype.getPixelPosition = function(x, y) {
 	y = ~~Math.floor(Math.min(Math.max(0, y), this.height - 1));
 	return [x, y];
 };
-var SIPPixelSelecterRepeat = function(width, height) {
-	SIPPixelSelecter.prototype._init.call(this, width, height);
+var SIPixelSelecterRepeat = function(width, height) {
+	SIPixelSelecter.prototype._init.call(this, width, height);
 };
-SIPPixelSelecterRepeat.prototype = new SIPPixelSelecter();
-SIPPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
+SIPixelSelecterRepeat.prototype = new SIPixelSelecter();
+SIPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -433,7 +433,7 @@ SIPPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
  * フィルタ用クラス
  * /////////////////////////////////////////////////////////
  */
-var SIPMatrix = function(matrix) {
+var SIMatrix = function(matrix) {
 	this.height = matrix.length;
 	this.width  = matrix[0].length;
 	this.matrix = [];
@@ -442,10 +442,10 @@ var SIPMatrix = function(matrix) {
 		this.matrix[i] = matrix[i].slice();
 	}
 };
-SIPMatrix.prototype.clone = function() {
-	return new SIPMatrix(this.matrix);
+SIMatrix.prototype.clone = function() {
+	return new SIMatrix(this.matrix);
 };
-SIPMatrix.prototype.rotateEdge = function(val) {
+SIMatrix.prototype.rotateEdge = function(val) {
 	// 周囲の値を時計回りに回転させます。
 	var m = this.clone();
 	
@@ -490,7 +490,7 @@ SIPMatrix.prototype.rotateEdge = function(val) {
 	}
 	return m;
 };
-SIPMatrix.prototype.mul = function(val) {
+SIMatrix.prototype.mul = function(val) {
 	var m = this.clone();
 	var x, y;
 	for(y = 0; y < m.height; y++) {
@@ -500,7 +500,7 @@ SIPMatrix.prototype.mul = function(val) {
 	}
 	return m;
 };
-SIPMatrix.prototype.sum = function() {
+SIMatrix.prototype.sum = function() {
 	var sum = 0;
 	var x, y;
 	for(y = 0; y < this.height; y++) {
@@ -510,26 +510,26 @@ SIPMatrix.prototype.sum = function() {
 	}
 	return sum;
 };
-SIPMatrix.prototype.normalize = function() {
+SIMatrix.prototype.normalize = function() {
 	return this.clone().mul(1.0 / this.sum());
 };
-SIPMatrix.prototype.addCenter = function(val) {
+SIMatrix.prototype.addCenter = function(val) {
 	var m = this.clone();
 	m.matrix[m.height >> 1][m.width >> 1] += val;
 	return m;
 };
-SIPMatrix.makeLaplacianFilter = function() {
-	return new SIPMatrix([
+SIMatrix.makeLaplacianFilter = function() {
+	return new SIMatrix([
 		[ 0.0, -1.0, 0.0],
 		[-1.0,  4.0,-1.0],
 		[ 0.0, -1.0, 0.0]
 	]);
 };
-SIPMatrix.makeSharpenFilter = function(power) {
-	var m = SIPMatrix.makeLaplacianFilter();
+SIMatrix.makeSharpenFilter = function(power) {
+	var m = SIMatrix.makeLaplacianFilter();
 	return m.mul(power).addCenter(1.0);
 };
-SIPMatrix.makeBlur = function(width, height) {
+SIMatrix.makeBlur = function(width, height) {
 	var m = [];
 	var value = 1.0 / (width * height);
 	var x, y;
@@ -539,9 +539,9 @@ SIPMatrix.makeBlur = function(width, height) {
 			m[y][x] = value;
 		}
 	}
-	return new SIPMatrix(m);
+	return new SIMatrix(m);
 };
-SIPMatrix.makeGaussianFilter = function(width, height, sd) {
+SIMatrix.makeGaussianFilter = function(width, height, sd) {
 	if(!sd) {
 		sd = 1.0;
 	}
@@ -559,26 +559,26 @@ SIPMatrix.makeGaussianFilter = function(width, height, sd) {
 			m[y][x] = v[x] * v[y];
 		}
 	}
-	return new SIPMatrix(m).normalize();
+	return new SIMatrix(m).normalize();
 };
 
 
 /**
  * /////////////////////////////////////////////////////////
  * 画像データクラス
- * SIPDataRGBA   32bit整数 0xRRGGBBAA で管理
- * SIPDataS 32bit浮動小数点で管理
+ * SIDataRGBA   32bit整数 0xRRGGBBAA で管理
+ * SIDataS 32bit浮動小数点で管理
  * /////////////////////////////////////////////////////////
  */
 
-var SIPData = function() {
+var SIData = function() {
 };
-SIPData.selectertype = {
+SIData.selectertype = {
 	INSIDE : "INSIDE",
 	FILL   : "FILL",
 	REPEAT : "REPEAT"
 };
-SIPData.interpolationtype = {
+SIData.interpolationtype = {
 	NEAREST_NEIGHBOR	: "NEAREST_NEIGHBOR",
 	BILINEAR			: "BILINEAR",
 	COSINE				: "COSINE",
@@ -591,7 +591,7 @@ SIPData.interpolationtype = {
 	BICUBIC_SHARP		: "BICUBIC_SHARP"
 };
 
-SIPData.brendtype = {
+SIData.brendtype = {
 	NONE				: "NONE",
 	ALPHA				: "ALPHA",
 	ADD					: "ADD",
@@ -600,13 +600,13 @@ SIPData.brendtype = {
 	MUL					: "MUL"
 };
 
-SIPData.prototype._init = function() {
-	this.setSelecter(SIPData.selectertype.INSIDE);
-	this.setInterPolation(SIPData.interpolationtype.NEAREST_NEIGHBOR);
-	this.setBlendType(SIPData.brendtype.NONE);
+SIData.prototype._init = function() {
+	this.setSelecter(SIData.selectertype.INSIDE);
+	this.setInterPolation(SIData.interpolationtype.NEAREST_NEIGHBOR);
+	this.setBlendType(SIData.brendtype.NONE);
 	this.globalAlpha = 1.0;
 };
-SIPData.prototype._copyData = function(x) {
+SIData.prototype._copyData = function(x) {
 	x.setSelecter(this.getSelecter());
 	x.setInterPolation(this.getInterPolation());
 	x.setBlendType(this.getBlendType());
@@ -614,97 +614,97 @@ SIPData.prototype._copyData = function(x) {
 	x.data.set(this.data);
 	x.globalAlpha = this.globalAlpha;
 };
-SIPData.prototype.clone = function() {
-	var x = new SIPData();
+SIData.prototype.clone = function() {
+	var x = new SIData();
 	this._copyData(x);
 	return x;
 };
-SIPData.prototype.setSelecter = function(_selectertype) {
+SIData.prototype.setSelecter = function(_selectertype) {
 	this._selectertype = _selectertype;
-	if(_selectertype === SIPData.selectertype.INSIDE) {
-		this.selecter = new SIPPixelSelecterInside(this.width, this.height);
+	if(_selectertype === SIData.selectertype.INSIDE) {
+		this.selecter = new SIPixelSelecterInside(this.width, this.height);
 	}
-	else if(_selectertype === SIPData.selectertype.FILL) {
-		this.selecter = new SIPPixelSelecterFill(this.width, this.height);
+	else if(_selectertype === SIData.selectertype.FILL) {
+		this.selecter = new SIPixelSelecterFill(this.width, this.height);
 	}
-	else if(_selectertype === SIPData.selectertype.REPEAT) {
-		this.selecter = new SIPPixelSelecterRepeat(this.width, this.height);
+	else if(_selectertype === SIData.selectertype.REPEAT) {
+		this.selecter = new SIPixelSelecterRepeat(this.width, this.height);
 	}
 };
-SIPData.prototype.getSelecter = function() {
+SIData.prototype.getSelecter = function() {
 	return this._selectertype;
 };
-SIPData.prototype.setInterPolation = function(iptype) {
+SIData.prototype.setInterPolation = function(iptype) {
 	this.iptype	= iptype;
-	if(iptype === SIPData.interpolationtype.NEAREST_NEIGHBOR) {
-		this.ipfunc	= SIPColor.ipLerp;
+	if(iptype === SIData.interpolationtype.NEAREST_NEIGHBOR) {
+		this.ipfunc	= SIColor.ipLerp;
 		this.ipn	= 1;
 	}
-	else if(iptype === SIPData.interpolationtype.BILINEAR) {
-		this.ipfunc = SIPColor.ipLerp;
+	else if(iptype === SIData.interpolationtype.BILINEAR) {
+		this.ipfunc = SIColor.ipLerp;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIPData.interpolationtype.COSINE) {
-		this.ipfunc = SIPColor.ipCosine;
+	else if(iptype === SIData.interpolationtype.COSINE) {
+		this.ipfunc = SIColor.ipCosine;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIPData.interpolationtype.HERMITE4_3) {
-		this.ipfunc = SIPColor.ipHermite2p3;
+	else if(iptype === SIData.interpolationtype.HERMITE4_3) {
+		this.ipfunc = SIColor.ipHermite2p3;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIPData.interpolationtype.HERMITE4_5) {
-		this.ipfunc = SIPColor.ipHermite2p5;
+	else if(iptype === SIData.interpolationtype.HERMITE4_5) {
+		this.ipfunc = SIColor.ipHermite2p5;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIPData.interpolationtype.HERMITE16) {
-		this.ipfunc = SIPColor.ipHermite4p;
+	else if(iptype === SIData.interpolationtype.HERMITE16) {
+		this.ipfunc = SIColor.ipHermite4p;
 		this.ipn	= 4;
 	}
-	else if(iptype === SIPData.interpolationtype.BICUBIC) {
-		this.ipfunc = SIPColor.ipBicubicSoft;
+	else if(iptype === SIData.interpolationtype.BICUBIC) {
+		this.ipfunc = SIColor.ipBicubicSoft;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIPData.interpolationtype.BICUBIC_SOFT) {
-		this.ipfunc = SIPColor.ipBicubicSoft;
+	else if(iptype === SIData.interpolationtype.BICUBIC_SOFT) {
+		this.ipfunc = SIColor.ipBicubicSoft;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIPData.interpolationtype.BICUBIC_NORMAL) {
-		this.ipfunc = SIPColor.ipBicubicNormal;
+	else if(iptype === SIData.interpolationtype.BICUBIC_NORMAL) {
+		this.ipfunc = SIColor.ipBicubicNormal;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIPData.interpolationtype.BICUBIC_SHARP) {
-		this.ipfunc = SIPColor.ipBicubicSharp;
+	else if(iptype === SIData.interpolationtype.BICUBIC_SHARP) {
+		this.ipfunc = SIColor.ipBicubicSharp;
 		this.ipn	= 16;
 	}
 };
-SIPData.prototype.getInterPolation = function() {
+SIData.prototype.getInterPolation = function() {
 	return this.iptype;
 };
-SIPData.prototype.setBlendType = function(_blendtype) {
+SIData.prototype.setBlendType = function(_blendtype) {
 	this._blendtype = _blendtype;
-	if(_blendtype === SIPData.brendtype.NONE) {
-		this.blendfunc = SIPColor.brendNone;
+	if(_blendtype === SIData.brendtype.NONE) {
+		this.blendfunc = SIColor.brendNone;
 	}
-	else if(_blendtype === SIPData.brendtype.ALPHA) {
-		this.blendfunc = SIPColor.brendAlpha;
+	else if(_blendtype === SIData.brendtype.ALPHA) {
+		this.blendfunc = SIColor.brendAlpha;
 	}
-	else if(_blendtype === SIPData.brendtype.ADD) {
-		this.blendfunc = SIPColor.brendAdd;
+	else if(_blendtype === SIData.brendtype.ADD) {
+		this.blendfunc = SIColor.brendAdd;
 	}
-	else if(_blendtype === SIPData.brendtype.SUB) {
-		this.blendfunc = SIPColor.brendSub;
+	else if(_blendtype === SIData.brendtype.SUB) {
+		this.blendfunc = SIColor.brendSub;
 	}
-	else if(_blendtype === SIPData.brendtype.REVSUB) {
-		this.blendfunc = SIPColor.brendRevSub;
+	else if(_blendtype === SIData.brendtype.REVSUB) {
+		this.blendfunc = SIColor.brendRevSub;
 	}
-	else if(_blendtype === SIPData.brendtype.MUL) {
-		this.blendfunc = SIPColor.brendMul;
+	else if(_blendtype === SIData.brendtype.MUL) {
+		this.blendfunc = SIColor.brendMul;
 	}
 };
-SIPData.prototype.getBlendType = function() {
+SIData.prototype.getBlendType = function() {
 	return this._blendtype;
 };
-SIPData.prototype.setSize = function(width, height) {
+SIData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		this.selecter.setSize(width, height);
 		return;
@@ -714,14 +714,14 @@ SIPData.prototype.setSize = function(width, height) {
 	this.selecter.setSize(width, height);
 	this.data	= new Uint8ClampedArray(this.width * this.height * 4);
 };
-SIPData.prototype.clear = function() {
+SIData.prototype.clear = function() {
 	if(this.data) {
 		this.data.fill(0);
 	}
 };
 
-SIPData.prototype.convolution = function(matrix) {
-	if(!(matrix instanceof SIPMatrix)) {
+SIData.prototype.convolution = function(matrix) {
+	if(!(matrix instanceof SIMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	var x, y, fx, fy, mx, my;
@@ -748,8 +748,8 @@ SIPData.prototype.convolution = function(matrix) {
 	}
 };
 
-SIPData.prototype.convolutionBilateral = function(matrix, p) {
-	if(!(matrix instanceof SIPMatrix)) {
+SIData.prototype.convolutionBilateral = function(matrix, p) {
+	if(!(matrix instanceof SIMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	if(!p) {
@@ -798,9 +798,9 @@ SIPData.prototype.convolutionBilateral = function(matrix, p) {
 
 // PixelInside 系のメソッドは、x, y が整数かつ画像の範囲内を保証している場合に使用可能
 
-SIPData.prototype.getPixelInside = function(x, y) {
+SIData.prototype.getPixelInside = function(x, y) {
 	var p = (y * this.width + x) * 4;
-	var c = new SIPColorRGBA([
+	var c = new SIColorRGBA([
 		this.data[p],
 		this.data[p + 1],
 		this.data[p + 2],
@@ -808,7 +808,7 @@ SIPData.prototype.getPixelInside = function(x, y) {
 	]);
 	return c;
 };
-SIPData.prototype.setPixelInside = function(x, y, color) {
+SIData.prototype.setPixelInside = function(x, y, color) {
 	var p = (y * this.width + x) * 4;
 	this.data[p]     = color.getColor()[0];
 	this.data[p + 1] = color.getColor()[1];
@@ -818,17 +818,17 @@ SIPData.prototype.setPixelInside = function(x, y, color) {
 
 // Pixel 系のメソッドは、x, y が整数かつ画像の範囲内を保証していない場合に使用可能
 
-SIPData.prototype.getPixel = function(x, y) {
+SIData.prototype.getPixel = function(x, y) {
 	var p = this.selecter.getPixelPosition(x, y);
 	if(p) {
 		return this.getPixelInside(p[0], p[1]);
 	}
 	return null;
 };
-SIPData.prototype.setPixel = function(x, y, color) {
+SIData.prototype.setPixel = function(x, y, color) {
 	var p = this.selecter.getPixelPosition(x, y);
 	if(p) {
-		if(this._blendtype === SIPData.brendtype.NONE) {
+		if(this._blendtype === SIData.brendtype.NONE) {
 			this.setPixelInside(p[0], p[1], color);
 		}
 		else {
@@ -841,7 +841,7 @@ SIPData.prototype.setPixel = function(x, y, color) {
 
 // Color 系のメソッドは、x, y が実数かつ画像の範囲内を保証していない場合に使用可能
 
-SIPData.prototype.getColor = function(x, y) {
+SIData.prototype.getColor = function(x, y) {
 	var rx = Math.floor(x);
 	var ry = Math.floor(y);
 	if(	(this.ipn === 1) ||
@@ -904,19 +904,19 @@ SIPData.prototype.getColor = function(x, y) {
 	}
 	return null;
 };
-SIPData.prototype.getColorUV = function(u, v) {
+SIData.prototype.getColorUV = function(u, v) {
 	return this.getColor(u * this.width, v * this.height);
 };
-SIPData.prototype.setColor = function(x, y, color) {
+SIData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
 
-// drawImage と同じ使用方法で SIPData をドローする
+// drawImage と同じ使用方法で SIData をドローする
 // RGBA データの上には、RGBA のみ書き込み可能
 // スカラーデータの上には、スカラーのみ書き込み可能
 
-SIPData.prototype.drawSIPData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
-	if(!(image instanceof SIPData)) {
+SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+	if(!(image instanceof SIData)) {
 		throw "IllegalArgumentException";
 	}
 	if(arguments.length === 3) {
@@ -965,7 +965,7 @@ SIPData.prototype.drawSIPData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) 
 
 // 全画素に指定した関数の操作を行う
 
-SIPData.prototype.each = function(func) {
+SIData.prototype.each = function(func) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
@@ -974,8 +974,8 @@ SIPData.prototype.each = function(func) {
 		}
 	}
 };
-var SIPDataRGBA = function() {
-	SIPData.prototype._init.call(this);
+var SIDataRGBA = function() {
+	SIData.prototype._init.call(this);
 	if(arguments.length === 1) {
 		var image = arguments[0];
 		this.putImageData(image);
@@ -986,14 +986,14 @@ var SIPDataRGBA = function() {
 		this.setSize(width, height);
 	}
 };
-SIPDataRGBA.prototype = new SIPData();
-SIPDataRGBA.prototype.clone = function() {
-	var x = new SIPDataRGBA(this.width, this.height);
+SIDataRGBA.prototype = new SIData();
+SIDataRGBA.prototype.clone = function() {
+	var x = new SIDataRGBA(this.width, this.height);
 	this._copyData(x);
 	return x;
 };
-SIPDataRGBA.prototype.putDataS = function(imagedata, n) {
-	if(!(imagedata instanceof SIPDataS)) {
+SIDataRGBA.prototype.putDataS = function(imagedata, n) {
+	if(!(imagedata instanceof SIDataS)) {
 		throw "IllegalArgumentException";
 	}
 	this.setSize(imagedata.width, imagedata.height);
@@ -1006,32 +1006,32 @@ SIPDataRGBA.prototype.putDataS = function(imagedata, n) {
 		p += 4;
 	}
 };
-SIPDataRGBA.prototype.putDataSToR = function(imagedata) {
+SIDataRGBA.prototype.putDataSToR = function(imagedata) {
 	this.putDataS(imagedata, 0);
 };
-SIPDataRGBA.prototype.putDataSToG = function(imagedata) {
+SIDataRGBA.prototype.putDataSToG = function(imagedata) {
 	this.putDataS(imagedata, 1);
 };
-SIPDataRGBA.prototype.putDataSToB = function(imagedata) {
+SIDataRGBA.prototype.putDataSToB = function(imagedata) {
 	this.putDataS(imagedata, 2);
 };
-SIPDataRGBA.prototype.putDataSToA = function(imagedata) {
+SIDataRGBA.prototype.putDataSToA = function(imagedata) {
 	this.putDataS(imagedata, 3);
 };
-SIPDataRGBA.prototype.putImageData = function(imagedata) {
+SIDataRGBA.prototype.putImageData = function(imagedata) {
 	if(	(imagedata instanceof ImageData) ||
-		(imagedata instanceof SIPDataRGBA)) {
+		(imagedata instanceof SIDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
-	else if(imagedata instanceof SIPDataS) {
+	else if(imagedata instanceof SIDataS) {
 		this.putImageData(imagedata.getImageData());
 	}
 	else {
 		throw "IllegalArgumentException";
 	}
 };
-SIPDataRGBA.prototype.getImageData = function() {
+SIDataRGBA.prototype.getImageData = function() {
 	var canvas, context;
 	canvas = document.createElement("canvas");
 	canvas.width  = this.width;
@@ -1041,20 +1041,20 @@ SIPDataRGBA.prototype.getImageData = function() {
 	imagedata.data.set(this.data);
 	return imagedata;
 };
-SIPDataRGBA.prototype.grayscale = function() {
+SIDataRGBA.prototype.grayscale = function() {
 	this.each(function(x, y, color) {
 		var luminance = 
 			  0.2126 * color.rgba[0]
 			+ 0.7152 * color.rgba[1]
 			+ 0.0722 * color.rgba[2];
 		luminance = ~~luminance;
-		return new SIPColorRGBA(
+		return new SIColorRGBA(
 			[luminance, luminance, luminance, color.rgba[3]]
 		);
 	});
 };
-var SIPDataS = function() {
-	SIPData.prototype._init.call(this);
+var SIDataS = function() {
+	SIData.prototype._init.call(this);
 	if(arguments.length === 1) {
 		var image = arguments[0];
 		this.putImageData(image);
@@ -1065,13 +1065,13 @@ var SIPDataS = function() {
 		this.setSize(width, height);
 	}
 };
-SIPDataS.prototype = new SIPData();
-SIPDataS.prototype.clone = function() {
-	var x = new SIPDataS(this.width, this.height);
+SIDataS.prototype = new SIData();
+SIDataS.prototype.clone = function() {
+	var x = new SIDataS(this.width, this.height);
 	this._copyData(x);
 	return x;
 };
-SIPDataS.prototype.setSize = function(width, height) {
+SIDataS.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		return;
 	}
@@ -1080,17 +1080,17 @@ SIPDataS.prototype.setSize = function(width, height) {
 	this.selecter.setSize(width, height);
 	this.data	= new Float32Array(this.width * this.height);
 };
-SIPDataS.prototype.getPixelInside = function(x, y) {
+SIDataS.prototype.getPixelInside = function(x, y) {
 	var p = y * this.width + x;
-	return new SIPColorS(this.data[p]);
+	return new SIColorS(this.data[p]);
 };
-SIPDataS.prototype.setPixelInside = function(x, y, color) {
+SIDataS.prototype.setPixelInside = function(x, y, color) {
 	var p = y * this.width + x;
 	this.data[p]     = color.getColor();
 };
-SIPDataS.prototype.putImageData = function(imagedata, n) {
+SIDataS.prototype.putImageData = function(imagedata, n) {
 	if(	(imagedata instanceof ImageData) ||
-		(imagedata instanceof SIPDataRGBA)) {
+		(imagedata instanceof SIDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
 		if(!n) {
 			n = 0;
@@ -1101,7 +1101,7 @@ SIPDataS.prototype.putImageData = function(imagedata, n) {
 			p += 4;
 		}
 	}
-	else if(imagedata instanceof SIPDataS) {
+	else if(imagedata instanceof SIDataS) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
@@ -1109,19 +1109,19 @@ SIPDataS.prototype.putImageData = function(imagedata, n) {
 		throw "IllegalArgumentException";
 	}
 };
-SIPDataS.prototype.putImageDataR = function(imagedata) {
+SIDataS.prototype.putImageDataR = function(imagedata) {
 	this.putImageData(imagedata, 0);
 };
-SIPDataS.prototype.putImageDataG = function(imagedata) {
+SIDataS.prototype.putImageDataG = function(imagedata) {
 	this.putImageData(imagedata, 1);
 };
-SIPDataS.prototype.putImageDataB = function(imagedata) {
+SIDataS.prototype.putImageDataB = function(imagedata) {
 	this.putImageData(imagedata, 2);
 };
-SIPDataS.prototype.putImageDataA = function(imagedata) {
+SIDataS.prototype.putImageDataA = function(imagedata) {
 	this.putImageData(imagedata, 3);
 };
-SIPDataS.prototype.getImageData = function() {
+SIDataS.prototype.getImageData = function() {
 	var canvas, context;
 	canvas = document.createElement("canvas");
 	canvas.width  = this.width;
@@ -1170,22 +1170,22 @@ SIPVector.prototype.normalize = function() {
 	);
 };
 SIPVector.prototype.getNormalMapColor = function() {
-	return new SIPColorRGBA([
+	return new SIColorRGBA([
 		Math.round((1.0 + this.x) * 127.5),
 		Math.round((1.0 - this.y) * 127.5),
 		Math.round((1.0 + this.z) * 127.5),
 		255
 	]);
 };
-SIPColorRGBA.prototype.getNormalVector = function() {
+SIColorRGBA.prototype.getNormalVector = function() {
 	return new SIPVector(
 		  (this.rgba[0] / 128.0) - 1.0,
 		- (this.rgba[1] / 128.0) + 1.0,
 		  (this.rgba[2] / 128.0) - 1.0
 	);
 };
-SIPDataS.prototype.getNormalMap = function() {
-	var output = new SIPDataRGBA(this.width, this.height);
+SIDataS.prototype.getNormalMap = function() {
+	var output = new SIDataRGBA(this.width, this.height);
 	var x, y;
 	for(y = 0; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
