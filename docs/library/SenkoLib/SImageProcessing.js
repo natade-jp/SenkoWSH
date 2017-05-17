@@ -39,6 +39,18 @@ SIPColor.prototype.add = function() {
 SIPColor.prototype.sub = function() {
 	return null;
 };
+SIPColor.prototype.mul = function() {
+	return null;
+};
+SIPColor.prototype.div = function() {
+	return null;
+};
+SIPColor.prototype.exp = function() {
+	return null;
+};
+SIPColor.prototype.log = function() {
+	return null;
+};
 SIPColor.prototype.addColor = function() {
 	return null;
 };
@@ -48,16 +60,19 @@ SIPColor.prototype.subColor = function() {
 SIPColor.prototype.mulColor = function() {
 	return null;
 };
-SIPColor.prototype.mul = function() {
+SIPColor.prototype.divColor = function() {
 	return null;
 };
-SIPColor.prototype.div = function() {
+SIPColor.prototype.maxColor = function() {
 	return null;
 };
-SIPColor.prototype.max = function() {
+SIPColor.prototype.minColor = function() {
 	return null;
 };
-SIPColor.prototype.min = function() {
+SIPColor.prototype.normManhattan = function() {
+	return null;
+};
+SIPColor.prototype.normEugrid = function() {
 	return null;
 };
 SIPColor.prototype.getBlendAlpha = function() {
@@ -169,55 +184,52 @@ SIPColorS.prototype.one = function() {
 	return new SIPColorS(1.0);
 };
 SIPColorS.prototype.add = function(x) {
-	var color = this.clone();
-	color.x += x;
-	return color;
+	return new SIPColorS(this.x + x);
 };
 SIPColorS.prototype.sub = function(x) {
-	var color = this.clone();
-	color.x -= x;
-	return color;
-};
-SIPColorS.prototype.addColor = function(c) {
-	var color = this.clone();
-	color.x += c.x;
-	return color;
-};
-SIPColorS.prototype.subColor = function(c) {
-	var color = this.clone();
-	color.x -= c.x;
-	return color;
-};
-SIPColorS.prototype.mulColor = function(c) {
-	var color = this.clone();
-	color.x *= c.x;
-	return color;
+	return new SIPColorS(this.x - x);
 };
 SIPColorS.prototype.mul = function(x) {
-	var color = this.clone();
-	color.x *= x;
-	return color;
+	return new SIPColorS(this.x * x);
 };
 SIPColorS.prototype.div = function(x) {
-	var color = this.clone();
-	color.x /= x;
-	return color;
+	return new SIPColorS(this.x / x);
 };
-SIPColorS.prototype.max = function(c) {
-	var color = this.clone();
-	color.x = Math.max(c.x, this.x);
-	return color;
+SIPColorS.prototype.exp = function() {
+	return new SIPColorS(Math.exp(this.x));
 };
-SIPColorS.prototype.min = function(c) {
-	var color = this.clone();
-	color.x = Math.min(c.x, this.x);
-	return color;
+SIPColorS.prototype.log = function() {
+	return new SIPColorS(Math.log(this.x));
+};
+SIPColorS.prototype.addColor = function(c) {
+	return new SIPColorS(this.x + c.x);
+};
+SIPColorS.prototype.subColor = function(c) {
+	return new SIPColorS(this.x - c.x);
+};
+SIPColorS.prototype.mulColor = function(c) {
+	return new SIPColorS(this.x * c.x);
+};
+SIPColorS.prototype.divColor = function(c) {
+	return new SIPColorS(this.x / c.x);
+};
+SIPColorS.prototype.maxColor = function(c) {
+	return new SIPColorS(Math.max(c.x, this.x));
+};
+SIPColorS.prototype.minColor = function(c) {
+	return new SIPColorS(Math.min(c.x, this.x));
+};
+SIPColorS.prototype.normManhattan = function() {
+	return Math.abs(this.x);
+};
+SIPColorS.prototype.normEugrid = function() {
+	return Math.abs(this.x);
 };
 SIPColorS.prototype.getBlendAlpha = function() {
 	return 1.0;
 };
 SIPColorS.prototype.setBlendAlpha = function() {
-	return this.clone();
+	return this;
 };
 SIPColorS.prototype.toString = function() {
 	return "color(" + this.x + ")";
@@ -240,58 +252,81 @@ SIPColorRGBA.prototype.one = function() {
 	return new SIPColorRGBA([1.0, 1.0, 1.0, 1.0]);
 };
 SIPColorRGBA.prototype.add = function(x) {
-	var color = this.clone();
-	color.rgba[0] += x;	color.rgba[1] += x;
-	color.rgba[2] += x;	color.rgba[3] += x;
-	return color;
+	return new SIPColorRGBA([
+		this.rgba[0] + x,	this.rgba[1] + x,
+		this.rgba[2] + x,	this.rgba[3] + x ]);
 };
 SIPColorRGBA.prototype.sub = function(x) {
-	var color = this.clone();
-	color.rgba[0] -= x;	color.rgba[1] -= x;
-	color.rgba[2] -= x;	color.rgba[3] -= x;
-	return color;
-};
-SIPColorRGBA.prototype.addColor = function(c) {
-	var color = this.clone();
-	color.rgba[0] += c.rgba[0];	color.rgba[1] += c.rgba[1];
-	color.rgba[2] += c.rgba[2];	color.rgba[3] += c.rgba[3];
-	return color;
-};
-SIPColorRGBA.prototype.subColor = function(c) {
-	var color = this.clone();
-	color.rgba[0] -= c.rgba[0];	color.rgba[1] -= c.rgba[1];
-	color.rgba[2] -= c.rgba[2];	color.rgba[3] -= c.rgba[3];
-	return color;
-};
-SIPColorRGBA.prototype.mulColor = function(c) {
-	var color = this.clone();
-	color.rgba[0] *= c.rgba[0];	color.rgba[1] *= c.rgba[1];
-	color.rgba[2] *= c.rgba[2];	color.rgba[3] *= c.rgba[3];
-	return color;
-};
-SIPColorRGBA.prototype.addVector = function(v) {
-	var color = this.clone();
-	color.rgba[0] += v[0];	color.rgba[1] += v[1];
-	color.rgba[2] += v[2];	color.rgba[3] += v[3];
-	return color;
-};
-SIPColorRGBA.prototype.subVector = function(v) {
-	var color = this.clone();
-	color.rgba[0] -= v[0];	color.rgba[1] -= v[1];
-	color.rgba[2] -= v[2];	color.rgba[3] -= v[3];
-	return color;
+	return new SIPColorRGBA([
+		this.rgba[0] - x,	this.rgba[1] - x,
+		this.rgba[2] - x,	this.rgba[3] - x ]);
 };
 SIPColorRGBA.prototype.mul = function(x) {
+	return new SIPColorRGBA([
+		this.rgba[0] * x,	this.rgba[1] * x,
+		this.rgba[2] * x,	this.rgba[3] * x ]);
+};
+SIPColorRGBA.prototype.div = function(x) {
+	return new SIPColorRGBA([
+		this.rgba[0] / x,	this.rgba[1] / x,
+		this.rgba[2] / x,	this.rgba[3] / x ]);
+};
+SIPColorRGBA.prototype.exp = function(c) {
+	return new SIPColorRGBA([
+		Math.exp(this.rgba[0]),	Math.exp(this.rgba[1]),
+		Math.exp(this.rgba[2]),	Math.exp(this.rgba[3]) ]);
+};
+SIPColorRGBA.prototype.log = function(c) {
+	return new SIPColorRGBA([
+		Math.log(this.rgba[0]),	Math.log(this.rgba[1]),
+		Math.log(this.rgba[2]),	Math.log(this.rgba[3]) ]);
+};
+SIPColorRGBA.prototype.addColor = function(c) {
+	return new SIPColorRGBA([
+		this.rgba[0] + c.rgba[0],	this.rgba[1] + c.rgba[1],
+		this.rgba[2] + c.rgba[2],	this.rgba[3] + c.rgba[3] ]);
+};
+SIPColorRGBA.prototype.subColor = function(c) {
+	return new SIPColorRGBA([
+		this.rgba[0] - c.rgba[0],	this.rgba[1] - c.rgba[1],
+		this.rgba[2] - c.rgba[2],	this.rgba[3] - c.rgba[3] ]);
+};
+SIPColorRGBA.prototype.mulColor = function(c) {
+	return new SIPColorRGBA([
+		this.rgba[0] * c.rgba[0],	this.rgba[1] * c.rgba[1],
+		this.rgba[2] * c.rgba[2],	this.rgba[3] * c.rgba[3] ]);
+};
+SIPColorRGBA.prototype.divColor = function(c) {
+	return new SIPColorRGBA([
+		this.rgba[0] / c.rgba[0],	this.rgba[1] / c.rgba[1],
+		this.rgba[2] / c.rgba[2],	this.rgba[3] / c.rgba[3] ]);
+};
+SIPColorRGBA.prototype.maxColor = function(c) {
+	return new SIPColorRGBA([
+		Math.max(c.rgba[0], this.rgba[0]),Math.max(c.rgba[1], this.rgba[1]),
+		Math.max(c.rgba[2], this.rgba[2]),Math.max(c.rgba[3], this.rgba[3])]);
+};
+SIPColorRGBA.prototype.minColor = function(c) {
+	return new SIPColorRGBA([
+		Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
+		Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
+};
+SIPColorS.prototype.normManhattan = function() {
+	return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
+};
+SIPColorS.prototype.normEugrid = function() {
+	return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
+};
+SIPColorRGBA.prototype.getBlendAlpha = function() {
+	return this.rgba[3] / 255.0;
+};
+SIPColorRGBA.prototype.setBlendAlpha = function(x) {
 	var color = this.clone();
-	color.rgba[0] *= x;	color.rgba[1] *= x;
-	color.rgba[2] *= x;	color.rgba[3] *= x;
+	color.rgba[3] = x * 255.0;
 	return color;
 };
-SIPColorRGBA.prototype.mulVector = function(v) {
-	var color = this.clone();
-	color.rgba[0] *= v[0];	color.rgba[1] *= v[1];
-	color.rgba[2] *= v[2];	color.rgba[3] *= v[3];
-	return color;
+SIPColorRGBA.prototype.toString = function() {
+	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
 };
 SIPColorRGBA.prototype.mulMatrix = function(m) {
 	var color = new SIPColorRGBA();
@@ -312,45 +347,6 @@ SIPColorRGBA.prototype.mulMatrix = function(m) {
 					this.rgba[2] * m[3][2] +
 					this.rgba[3] * m[3][3];
 	return color;
-};
-SIPColorRGBA.prototype.div = function(x) {
-	var color = this.clone();
-	color.rgba[0] /= x;	color.rgba[1] /= x;
-	color.rgba[2] /= x;	color.rgba[3] /= x;
-	return color;
-};
-SIPColorRGBA.prototype.divVector = function(v) {
-	var color = this.clone();
-	color.rgba[0] /= v[0];	color.rgba[1] /= v[1];
-	color.rgba[2] /= v[2];	color.rgba[3] /= v[3];
-	return color;
-};
-SIPColorRGBA.prototype.max = function(c) {
-	var color = this.clone();
-	color.rgba[0] = Math.max(c.color[0], this.rgba[0]);
-	color.rgba[1] = Math.max(c.color[1], this.rgba[1]);
-	color.rgba[2] = Math.max(c.color[2], this.rgba[2]);
-	color.rgba[3] = Math.max(c.color[3], this.rgba[3]);
-	return color;
-};
-SIPColorRGBA.prototype.min = function(c) {
-	var color = this.clone();
-	color.rgba[0] = Math.min(c.color[0], this.rgba[0]);
-	color.rgba[1] = Math.min(c.color[1], this.rgba[1]);
-	color.rgba[2] = Math.min(c.color[2], this.rgba[2]);
-	color.rgba[3] = Math.min(c.color[3], this.rgba[3]);
-	return color;
-};
-SIPColorRGBA.prototype.getBlendAlpha = function() {
-	return this.rgba[3] / 255.0;
-};
-SIPColorRGBA.prototype.setBlendAlpha = function(x) {
-	var color = this.clone();
-	color.rgba[3] = x * 255.0;
-	return color;
-};
-SIPColorRGBA.prototype.toString = function() {
-	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
 };
 
 /**
@@ -751,6 +747,54 @@ SIPData.prototype.convolution = function(matrix) {
 		}
 	}
 };
+
+SIPData.prototype.convolutionBilateral = function(matrix, p) {
+	if(!(matrix instanceof SIPMatrix)) {
+		throw "IllegalArgumentException";
+	}
+	if(!p) {
+		p = 1.0;
+	}
+	var x, y, fx, fy, mx, my;
+	var fx_offset	= - (matrix.width  >> 1);
+	var fy_offset	= - (matrix.height >> 1);
+	var m			= matrix.matrix;
+	var zero_color  = this.getPixelInside(0, 0).zero();
+	var bufferimage = this.clone();
+	var rate = - (1.001 - p) * 3.0; // -3.003 ～ -0.003 大きいほど強度高い
+	var exptable = [];
+	for(x = 0; x < 256 * 3; x++) {
+		exptable[x] = Math.exp(x * x * rate);
+	}
+	for(y = 0; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			var thiscolor = bufferimage.getPixel(x, y);
+			var thisalpha = thiscolor.getBlendAlpha();
+			var sumcolor  = zero_color;
+			var newcolor  = zero_color;
+			m2 = [];
+			fy = y + fy_offset;
+			for(my = 0; my < matrix.height; my++, fy++) {
+				fx = x + fx_offset;
+				m2[my] = [];
+				for(mx = 0; mx < matrix.width; mx++, fx++) {
+					var tgtcolor = bufferimage.getPixel(fx, fy);
+					if(!tgtcolor) {
+						continue;
+					}
+					var delta = tgtcolor.subColor(thiscolor);
+					delta     = delta.mulColor(delta);
+					newfilter = exptable[Math.floor(delta.normManhattan())] * m[my][mx];
+					newcolor = newcolor.addColor(tgtcolor.mul(newfilter));
+					sumcolor = sumcolor.addColor(newfilter);
+				}
+			}
+			newcolor = newcolor.divColor(sumcolor).setBlendAlpha(thisalpha);
+			this.setPixelInside(x, y, newcolor);
+		}
+	}
+};
+
 
 // PixelInside 系のメソッドは、x, y が整数かつ画像の範囲内を保証している場合に使用可能
 
