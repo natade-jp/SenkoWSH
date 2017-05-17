@@ -284,7 +284,8 @@ function testEtc(panel) {
 		"シャープ",
 		"グレースケール",
 		"ノーマルマップ",
-		"ガウシアンフィルタ"
+		"ガウシアンフィルタ",
+		"バイラテラルフィルタ"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -327,6 +328,12 @@ function testEtc(panel) {
 			src.setSelecter(SIData.selectertype.FILL);
 			m = SIMatrix.makeGaussianFilter(5, 5);
 			src.convolution(m);
+			canvas_dst.setImageData(src.getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[5]) {
+			src.setSelecter(SIData.selectertype.FILL);
+			m = SIMatrix.makeGaussianFilter(5, 5);
+			src.convolutionBilateral(m);
 			canvas_dst.setImageData(src.getImageData());
 		}
 	});

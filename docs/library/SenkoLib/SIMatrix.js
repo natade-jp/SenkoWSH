@@ -1,4 +1,4 @@
-/* global System, ImageData */
+/* global System, ImageData, SIData */
 
 ﻿/**
  * SIMatrix.js
@@ -151,7 +151,11 @@ SIMatrix.makeGaussianFilter = function(width, height, sd) {
 	return new SIMatrix(m).normalize();
 };
 
-
+/**
+ * SIMatrix を使用して畳込みを行う
+ * @param {SIMatrix} matrix
+ * @returns {undefined}
+ */
 SIData.prototype.convolution = function(matrix) {
 	if(!(matrix instanceof SIMatrix)) {
 		throw "IllegalArgumentException";
@@ -180,12 +184,19 @@ SIData.prototype.convolution = function(matrix) {
 	}
 };
 
+/**
+ * SIMatrix を使用してバイラテラルフィルタ的な畳込みを行う
+ * 対象の色に近いほど、フィルタをかける処理となる
+ * @param {SIMatrix} matrix
+ * @param {type} p 0.0～1.0 強度
+ * @returns {undefined}
+ */
 SIData.prototype.convolutionBilateral = function(matrix, p) {
 	if(!(matrix instanceof SIMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	if(!p) {
-		p = 1.0;
+		p = 0.5;
 	}
 	var x, y, fx, fy, mx, my;
 	var fx_offset	= - (matrix.width  >> 1);
@@ -193,7 +204,8 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 	var m			= matrix.matrix;
 	var zero_color  = this.getPixelInside(0, 0).zero();
 	var bufferimage = this.clone();
-	var rate = - (1.001 - p) * 3.0; // -3.003 ～ -0.003 大きいほど強度高い
+	// -0.010 - -0.001
+	var rate = - (1.0 - p) * 0.01 - 0.001;
 	var exptable = [];
 	for(x = 0; x < 256 * 3; x++) {
 		exptable[x] = Math.exp(x * x * rate);
@@ -202,7 +214,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 		for(x = 0; x < this.width; x++) {
 			var thiscolor = bufferimage.getPixel(x, y);
 			var thisalpha = thiscolor.getBlendAlpha();
-			var sumcolor  = zero_color;
+			var sumfilter = 0;
 			var newcolor  = zero_color;
 			m2 = [];
 			fy = y + fy_offset;
@@ -215,13 +227,12 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 						continue;
 					}
 					var delta = tgtcolor.subColor(thiscolor);
-					delta     = delta.mulColor(delta);
 					newfilter = exptable[Math.floor(delta.normManhattan())] * m[my][mx];
 					newcolor = newcolor.addColor(tgtcolor.mul(newfilter));
-					sumcolor = sumcolor.addColor(newfilter);
+					sumfilter += newfilter;
 				}
 			}
-			newcolor = newcolor.divColor(sumcolor).setBlendAlpha(thisalpha);
+			newcolor = newcolor.div(sumfilter).setBlendAlpha(thisalpha);
 			this.setPixelInside(x, y, newcolor);
 		}
 	}
