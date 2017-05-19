@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SFile, SFileButton */
+﻿/* global System, SComponent, SFile, SFileButton, SFileLoadButton */
 
 ﻿function main(args) {
 	
@@ -50,7 +50,7 @@
 	});
 	
 	var button2 = new SButton("無効化");
-	button1.put(button2, SComponent.putype.RIGHT);
+	button1.put(button2, SComponent.putype.NEWLINE);
 	var pushed2 = 0;
 	button2.addListener(function () {
 		pushed2++;
@@ -66,9 +66,9 @@
 	
 	
 	// File
-	var filebutton1 = new SFileButton("file");
-	filebutton1.setFileAccept(SFileButton.fileaccept.image);
-	button2.put(filebutton1, SComponent.putype.RIGHT);
+	var filebutton1 = new SFileLoadButton("load");
+	filebutton1.setFileAccept(SFileLoadButton.fileaccept.image);
+	button2.put(filebutton1, SComponent.putype.NEWLINE);
 	filebutton1.addListener(function(file) {
 		var i = 0;
 		for(;i < file.length; i++) {
@@ -81,9 +81,10 @@
 	canvas.setPixelSize(200, 20);
 	canvas.setUnit(SComponent.unittype.PX);
 	canvas.setSize(200, 20);
-	filebutton1.put(canvas, SComponent.putype.RIGHT);
+	filebutton1.put(canvas, SComponent.putype.NEWLINE);
 	canvas.getContext().fillText("canvas", 0, 20);
 	canvas.getContext().strokeText("canvas", 100, 20);
+	
 	
 	// ComboBox
 	// 配列で内部を初期化できる
@@ -100,11 +101,15 @@
 		System.out.println("ComboBox " + combobox.getSelectedItem());
 	});
 	
+	// CheckBox
 	var checkbox = new SCheckBox("チェックボックス");
 	combobox.put(checkbox, SComponent.putype.NEWLINE);
 	checkbox.addListener(function () {
 		System.out.println("CheckBox " + checkbox.isChecked());
 	});
 	
+	var imagepanel = new SImagePanel();
+	checkbox.put(imagepanel, SComponent.putype.NEWLINE);
+	imagepanel.setImage("./img/image_test1.jpg");
 	
 }

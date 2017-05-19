@@ -38,7 +38,7 @@ SComponent.CLASS_COMBOBOX	= "SCOMPONENT_ComboBox";
 SComponent.CLASS_CHECKBOX	= "SCOMPONENT_CheckBox";
 SComponent.CLASS_CHECKBOX_IMAGE	= "SCOMPONENT_CheckBoxImage";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
-SComponent.CLASS_FILE		= "SCOMPONENT_File";
+SComponent.CLASS_FILELOAD	= "SCOMPONENT_FileLoad";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
 
 SComponent.putype = {
@@ -602,12 +602,12 @@ SButton.prototype.addListener = function(func) {
 	this.getElement().addEventListener("click", func, false);
 };
 
-var SFileButton = function(title) {
+var SFileLoadButton = function(title) {
 	// CSS有効化のために、label 内に input(file) を入れる
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
 	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
-	this.super.addClass.call(this, SComponent.CLASS_FILE);
+	this.super.addClass.call(this, SComponent.CLASS_FILELOAD);
 	var element   = this.super.getElement.call(this);
 	var file = document.createElement("input");
 	element.style.textAlign =  "center";  
@@ -617,8 +617,8 @@ var SFileButton = function(title) {
 	this.file = file;
 	element.appendChild(file);
 };
-SFileButton.prototype = new SComponent();
-SFileButton.fileaccept = {
+SFileLoadButton.prototype = new SComponent();
+SFileLoadButton.fileaccept = {
 	default	: "",
 	image	: "image/*",
 	audio	: "audio/*",
@@ -628,7 +628,7 @@ SFileButton.fileaccept = {
 	jpeg 	: "image/jpg",
 	gif 	: "image/gif"
 };
-SFileButton.prototype.setEnabled = function(isenabled) {
+SFileLoadButton.prototype.setEnabled = function(isenabled) {
 	if(isenabled) {
 		this.removeClass(SComponent.CLASS_DISABLED);
 	}
@@ -637,15 +637,15 @@ SFileButton.prototype.setEnabled = function(isenabled) {
 	}
 	this._setBooleanAttribute(this.file, "disabled", isenabled);
 };
-SFileButton.prototype.isEnabled = function() {
+SFileLoadButton.prototype.isEnabled = function() {
 	return this._isBooleanAttribute(this.file, "disabled");
 };
-SFileButton.prototype.getFileAccept = function() {
+SFileLoadButton.prototype.getFileAccept = function() {
 	var accept = this.file.getAttribute("accept");
 	return (accept === null) ? "" : accept;
 };
-SFileButton.prototype.setFileAccept = function(filter) {
-	if(filter === SFileButton.fileaccept.default) {
+SFileLoadButton.prototype.setFileAccept = function(filter) {
+	if(filter === SFileLoadButton.fileaccept.default) {
 		if(this.file.getAttribute("accept") !== null) {
 			this.file.removeAttribute("accept");
 		}
@@ -654,7 +654,7 @@ SFileButton.prototype.setFileAccept = function(filter) {
 		this.file.setAttribute("accept", filter);
 	}
 };
-SFileButton.prototype.addListener = function(func) {
+SFileLoadButton.prototype.addListener = function(func) {
 	this.file.addEventListener("change",
 		function(event){
 			func(event.target.files);
@@ -815,6 +815,12 @@ SCanvas.prototype.setImage = function(data, drawcallback, drawsize, isresizecanv
 		throw "IllegalArgumentException";
 	}
 };
+SCanvas.prototype.toDataURL = function(type) {
+	if(!type) {
+		type = "image/png";
+	}
+	return this.canvas.toDataURL(type);
+};
 
 var SImagePanel = function() {
 	this.super = SComponent.prototype;
@@ -830,10 +836,15 @@ SImagePanel.prototype.clear = function() {
 	this.clearChildNodes();
 };
 SImagePanel.prototype.setImage = function(data, drawcallback) {
+	if(!drawcallback) {
+		drawcallback = null;
+	}
 	if(typeof data === "string") {
 		// URL(string) -> IMG
 		this.image.onload = function() {
-			drawcallback();
+			if(typeof drawcallback === "function") {
+				drawcallback();
+			}
 		};
 		this.image.src = data;
 	}
