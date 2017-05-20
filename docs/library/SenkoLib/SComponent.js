@@ -230,6 +230,9 @@ SComponent.prototype.setEnabled = function(isenabled) {
 	// input要素ではないなら中の要素を使用する
 	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
 		element = this.getElementNode();
+		if(element === null) {
+			return;
+		}
 	}
 	// disabled属性が利用可能ならつける
 	if(	(element.tagName === "INPUT") ||
@@ -668,6 +671,42 @@ SFileLoadButton.prototype.addListener = function(func) {
 		function(event){
 			func(event.target.files);
 		}, false );
+};
+
+
+var SFileSaveButton = function(title) {
+	// CSS有効化のために、label 内に input(file) を入れる
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "a", title);
+	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
+	this.super.addClass.call(this, SComponent.CLASS_FILESAVE);
+	this.filename = "";
+	this.url      = "";
+	var element   = this.super.getElement.call(this);
+	element.setAttribute("download", this.filename);
+};
+SFileSaveButton.prototype = new SComponent();
+SFileSaveButton.prototype.getFileName = function() {
+	return this.filename;
+};
+SFileSaveButton.prototype.setFileName = function(filename) {
+	this.filename = filename;
+	this.getElement().setAttribute("download", this.filenam);
+};
+SFileSaveButton.prototype.setURL = function(url) {
+	this.getElement().href = url;
+	this.url               = url;
+};
+SFileSaveButton.prototype.setEnabled = function(isenabled) {
+	if(this.isEnabled() !== isenabled) {
+		if(isenabled) {
+			this.getElement().href = this.url;
+		}
+		else {
+			this.getElement().removeAttribute("href");
+		}
+	}
+	this.super.setEnabled.call(this, isenabled);
 };
 
 var SCanvas = function() {

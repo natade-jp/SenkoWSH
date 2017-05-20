@@ -42,7 +42,8 @@
 			pushed1--;
 		}
 		if(pushed1 === 0) {
-			filebutton1.setVisible(false);
+			fileloadbtn.setVisible(false);
+			filesavebtn.setVisible(false);
 			combobox.setVisible(false);
 			checkbox.setVisible(false);
 		}
@@ -58,32 +59,38 @@
 		
 		// 押すたびに有効化／無効化の変更
 		button1.setEnabled(!button1.isEnabled());
-		filebutton1.setEnabled(!filebutton1.isEnabled());
+		fileloadbtn.setEnabled(!fileloadbtn.isEnabled());
+		filesavebtn.setEnabled(!filesavebtn.isEnabled());
 		combobox.setEnabled(!combobox.isEnabled());
 		checkbox.setEnabled(!checkbox.isEnabled());
 	});
 	
-	
-	
-	// File
-	var filebutton1 = new SFileLoadButton("load");
-	filebutton1.setFileAccept(SFileLoadButton.fileaccept.image);
-	button2.put(filebutton1, SComponent.putype.NEWLINE);
-	filebutton1.addListener(function(file) {
+	// FileLoad
+	var fileloadbtn = new SFileLoadButton("load");
+	fileloadbtn.setFileAccept(SFileLoadButton.fileaccept.image);
+	button2.put(fileloadbtn, SComponent.putype.NEWLINE);
+	fileloadbtn.addListener(function(file) {
 		var i = 0;
 		for(;i < file.length; i++) {
 			System.out.println(file[i].name + " " + file[i].size + "byte");
 		}
 	});
 	
+	
+	// FileSave
+	var filesavebtn = new SFileSaveButton("save");
+	fileloadbtn.put(filesavebtn, SComponent.putype.RIGHT);
+	
 	// Canvas
 	var canvas = new SCanvas();
 	canvas.setPixelSize(200, 20);
 	canvas.setUnit(SComponent.unittype.PX);
 	canvas.setSize(200, 20);
-	filebutton1.put(canvas, SComponent.putype.NEWLINE);
+	filesavebtn.put(canvas, SComponent.putype.NEWLINE);
 	canvas.getContext().fillText("canvas", 0, 20);
 	canvas.getContext().strokeText("canvas", 100, 20);
+	
+	filesavebtn.setURL(canvas.toDataURL());
 	
 	
 	// ComboBox

@@ -44,6 +44,9 @@
 	cursor:				pointer;
 	-webkit-appearance:	none;
 }
+.SCOMPONENT_FileSave {
+	text-decoration:	none;
+}
 .SCOMPONENT_Button.SCOMPONENT_MouseOver {
 	background-color:	#ffffff;
 }
@@ -53,7 +56,7 @@
 .SCOMPONENT_Button.SCOMPONENT_Disabled {
 	color:				gray;
 	background-color:	#e0e0e0;
-	cursor:				auto;
+	cursor:				default;
 }
 
 .SCOMPONENT_CheckBox {
