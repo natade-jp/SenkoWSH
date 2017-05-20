@@ -81,7 +81,8 @@
 	opacity:			0.5;
 }
 
-@media screen and (max-device-width : 700px)  { 
+/* iPhone用、あるいは横幅が480px以下用 */
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
 
 	/* 次の行を出す場合は、間に線を引く */
 	.SCOMPONENT_Newline {
