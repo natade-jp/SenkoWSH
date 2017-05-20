@@ -51,6 +51,15 @@ SIColor.prototype.exp = function() {
 SIColor.prototype.log = function() {
 	return null;
 };
+SIColor.prototype.pow = function() {
+	return null;
+};
+SIColor.prototype.baselog = function() {
+	return null;
+};
+SIColor.prototype.table = function() {
+	return null;
+};
 SIColor.prototype.addColor = function() {
 	return null;
 };
@@ -201,6 +210,15 @@ SIColorY.prototype.exp = function() {
 SIColorY.prototype.log = function() {
 	return new SIColorY(Math.log(this.y));
 };
+SIColorY.prototype.pow = function(base) {
+	return new SIColorY(Math.pow(base, this.y));
+};
+SIColorY.prototype.baselog = function(base) {
+	return new SIColorY(Math.log(this.y) / Math.log(base));
+};
+SIColorY.prototype.table = function(table) {
+	return new SIColorY(table[Math.floor(this.y)]);
+};
 SIColorY.prototype.addColor = function(c) {
 	return new SIColorY(this.y + c.y);
 };
@@ -271,15 +289,31 @@ SIColorRGBA.prototype.div = function(x) {
 		this.rgba[0] / x,	this.rgba[1] / x,
 		this.rgba[2] / x,	this.rgba[3] / x ]);
 };
-SIColorRGBA.prototype.exp = function(c) {
+SIColorRGBA.prototype.exp = function() {
 	return new SIColorRGBA([
 		Math.exp(this.rgba[0]),	Math.exp(this.rgba[1]),
 		Math.exp(this.rgba[2]),	Math.exp(this.rgba[3]) ]);
 };
-SIColorRGBA.prototype.log = function(c) {
+SIColorRGBA.prototype.log = function() {
 	return new SIColorRGBA([
 		Math.log(this.rgba[0]),	Math.log(this.rgba[1]),
 		Math.log(this.rgba[2]),	Math.log(this.rgba[3]) ]);
+};
+SIColorRGBA.prototype.pow = function(base) {
+	return new SIColorRGBA([
+		Math.pow(base, this.rgba[0]),	Math.pow(base, this.rgba[1]),
+		Math.pow(base, this.rgba[2]),	Math.pow(base, this.rgba[3]) ]);
+};
+SIColorRGBA.prototype.baselog = function(base) {
+	var x = 1.0 / Math.log(base);
+	return new SIColorRGBA([
+		Math.log(this.rgba[0]) * x,	Math.log(this.rgba[1]) * x,
+		Math.log(this.rgba[2]) * x,	Math.log(this.rgba[3]) * x ]);
+};
+SIColorRGBA.prototype.table = function(table) {
+	return new SIColorRGBA([
+		table[Math.round(this.rgba[0])], table[Math.round(this.rgba[1])],
+		table[Math.round(this.rgba[2])], table[Math.round(this.rgba[3])] ]);
 };
 SIColorRGBA.prototype.addColor = function(c) {
 	return new SIColorRGBA([
@@ -863,8 +897,10 @@ SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 };
 
 /**
+ * 
+/**
  * 全画素に指定した関数の操作を行う
- * @param {type} func func(x, y, newcolor) 実行したいコールバック関数。
+ * @param {function} func func(x, y, newcolor) 実行したいコールバック関数
  * @returns {undefined}
  */
 SIData.prototype.each = function(func) {

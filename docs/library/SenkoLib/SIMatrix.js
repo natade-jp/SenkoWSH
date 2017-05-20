@@ -151,6 +151,26 @@ SIMatrix.makeGaussianFilter = function(width, height, sd) {
 	return new SIMatrix(m).normalize();
 };
 
+SIMatrix.makeCircle = function(r) {
+	var m = [];
+	var radius	= r * 0.5;
+	var center	= r >> 1;
+	var x, y;
+	for(y = 0; y < r; y++) {
+		m[y] = [];
+		for(x = 0; x < r; x++) {
+			if (Math.sqrt(	(center - x) * (center - x) +
+							(center - y) * (center - y)) < radius) {
+				m[y][x] = 1.0;
+			}
+			else {
+				m[y][x] = 0.0;
+			}
+		}
+	}
+	return new SIMatrix(m).normalize();
+};
+
 /**
  * SIMatrix を使用して畳込みを行う
  * @param {SIMatrix} matrix
@@ -188,7 +208,7 @@ SIData.prototype.convolution = function(matrix) {
  * SIMatrix を使用してバイラテラルフィルタ的な畳込みを行う
  * 対象の色に近いほど、フィルタをかける処理となる
  * @param {SIMatrix} matrix
- * @param {type} p 0.0～1.0 強度
+ * @param {number} p 0.0～1.0 強度
  * @returns {undefined}
  */
 SIData.prototype.convolutionBilateral = function(matrix, p) {
@@ -196,7 +216,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 		throw "IllegalArgumentException";
 	}
 	if(!p) {
-		p = 0.5;
+		p = 0.8;
 	}
 	var x, y, fx, fy, mx, my;
 	var fx_offset	= - (matrix.width  >> 1);
@@ -237,3 +257,102 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 		}
 	}
 };
+
+/**
+ * SIMatrix を使用して指数関数空間で畳込みを行う
+ * @param {SIMatrix} matrix
+ * @param {number} e 底(1.01-1.2)
+ * @returns {undefined}
+ */
+SIData.prototype.convolutionExp = function(matrix, e) {
+	if(!(matrix instanceof SIMatrix)) {
+		throw "IllegalArgumentException";
+	}
+	if(!e) {
+		e = 1.2;
+	}
+	var x, y, fx, fy, mx, my;
+	var fx_offset	= - (matrix.width  >> 1);
+	var fy_offset	= - (matrix.height >> 1);
+	var m			= matrix.matrix;
+	var zero_color  = this.getPixelInside(0, 0).zero();
+	var bufferimage = this.clone();
+	var exptable = [];
+	for(x = 0; x < 256; x++) {
+		exptable[x] = Math.pow(e, x);
+	}
+	for(y = 0; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			var newcolor = zero_color;
+			fy = y + fy_offset;
+			for(my = 0; my < matrix.height; my++, fy++) {
+				fx = x + fx_offset;
+				for(mx = 0; mx < matrix.width; mx++, fx++) {
+					var color = bufferimage.getPixel(fx, fy);
+					if(color) {
+						newcolor = newcolor.addColor(color.table(exptable).mul(m[my][mx]));
+					}
+				}
+			}
+			this.setPixelInside(x, y, newcolor.baselog(e));
+		}
+	}
+};
+
+
+/**
+ * シャープフィルタ
+ * @param {number} power 強度
+ * @returns {undefined}
+ */
+SIData.prototype.filterSharp = function(power) {
+	var m = SIMatrix.makeSharpenFilter(power);
+	this.convolution(m);
+};
+
+/**
+ * ブラーフィルタ
+ * @param {number} n 口径
+ * @returns {undefined}
+ */
+SIData.prototype.filterBlur = function(n) {
+	var m = SIMatrix.makeBlur(n, 1);
+	this.convolution(m);
+	var m = SIMatrix.makeBlur(1, n);
+	this.convolution(m);
+};
+
+/**
+ * ガウシアンフィルタ
+ * @param {number} n 口径
+ * @returns {undefined}
+ */
+SIData.prototype.filterGaussian = function(n) {
+	var m = SIMatrix.makeGaussianFilter(n, 1);
+	this.convolution(m);
+	var m = SIMatrix.makeGaussianFilter(1, n);
+	this.convolution(m);
+};
+
+/**
+ * バイラテラルフィルタ
+ * @param {number} n 口径
+ * @param {number} p 0.0～1.0 強度
+ * @returns {undefined}
+ */
+SIData.prototype.filterBilateral = function(n, p) {
+	var m = SIMatrix.makeGaussianFilter(n, n);
+	this.convolutionBilateral(m, p);
+};
+
+/**
+ * レンズフィルタ
+ * @param {type} n 口径
+ * @param {type} e 底(1.01-1.2)
+ * @returns {undefined}
+ */
+SIData.prototype.filterSoftLens = function(n, e) {
+	var m = SIMatrix.makeCircle(n);
+	this.convolutionExp(m, e);
+};
+

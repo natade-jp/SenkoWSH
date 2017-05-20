@@ -285,7 +285,8 @@ function testEtc(panel) {
 		"グレースケール",
 		"ノーマルマップ",
 		"ガウシアンフィルタ",
-		"バイラテラルフィルタ"
+		"バイラテラルフィルタ",
+		"レンズフィルタ"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -300,16 +301,12 @@ function testEtc(panel) {
 		var m;
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
 			src.setSelecter(SIData.selectertype.FILL);
-			m = SIMatrix.makeBlur(7, 1);
-			src.convolution(m);
-			m = SIMatrix.makeBlur(1, 7);
-			src.convolution(m);
+			src.filterBlur(7);
 			canvas_dst.setImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[1]) {
 			src.setSelecter(SIData.selectertype.FILL);
-			m = SIMatrix.makeSharpenFilter(0.5);
-			src.convolution(m);
+			src.filterSharp(0.5);
 			canvas_dst.setImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[2]) {
@@ -319,21 +316,23 @@ function testEtc(panel) {
 		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
 			src.grayscale();
 			var height = new SIDataY(src);
-			m = SIMatrix.makeGaussianFilter(5, 5);
 			height.setSelecter(SIData.selectertype.REPEAT);
-			height.convolution(m);
+			height.filterGaussian(5);
 			canvas_dst.setImageData(height.getNormalMap().getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[4]) {
 			src.setSelecter(SIData.selectertype.FILL);
-			m = SIMatrix.makeGaussianFilter(5, 5);
-			src.convolution(m);
+			src.filterGaussian(7);
 			canvas_dst.setImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[5]) {
 			src.setSelecter(SIData.selectertype.FILL);
-			m = SIMatrix.makeGaussianFilter(5, 5);
-			src.convolutionBilateral(m);
+			src.filterBilateral(5, 0.8);
+			canvas_dst.setImageData(src.getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[6]) {
+			src.setSelecter(SIData.selectertype.FILL);
+			src.filterSoftLens(5, 1.2);
 			canvas_dst.setImageData(src.getImageData());
 		}
 	});
@@ -343,6 +342,7 @@ function testEtc(panel) {
 	var label3 = new SLabel("結果画像");
 	button.put(label3, SComponent.putype.NEWLINE);
 	label3.put(canvas_dst, SComponent.putype.RIGHT);
+	
 	
 };
 
