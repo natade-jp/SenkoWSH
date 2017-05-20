@@ -10,12 +10,6 @@
 	padding:			0.1em;
 }
 
-.SCOMPONENT_Newline {
-}
-
-.SCOMPONENT_Space {
-}
-
 .SCOMPONENT_Panel {
 	border-style:		solid;
 	border-width:		1px;
@@ -24,9 +18,6 @@
 	margin:				0.2em;
 	padding:			0.8em;
 	background-color:	#ffffff;
-}
-
-.SCOMPONENT_Label {
 }
 
 .SCOMPONENT_Button {
@@ -42,40 +33,57 @@
 						0px  1px 0px rgba(255,255,255,0.5) inset,
 						0px -1px 0px rgba(255,255,255,0.2) inset;
 	cursor:				pointer;
-	-webkit-appearance:	none;
-}
-.SCOMPONENT_FileSave {
+	/* A要素などで作ったものも中央に配置し、下線を除去する */
+	text-align:			center;
 	text-decoration:	none;
+	/* iphoneなどでもボタンの形が独自にする */
+	-webkit-appearance:	none;
+	/* ボタンなので選択できないようにする */
+	-moz-user-select:		none;
+	-webkit-user-select:	none;
+	-ms-user-select:		none;
 }
+
 .SCOMPONENT_Button.SCOMPONENT_MouseOver {
 	background-color:	#ffffff;
 }
 .SCOMPONENT_Button.SCOMPONENT_MouseDown {
 	background-color:	#e0e0e0;
 }
+
 .SCOMPONENT_Button.SCOMPONENT_Disabled {
 	color:				gray;
 	background-color:	#e0e0e0;
 	cursor:				default;
 }
 
-.SCOMPONENT_CheckBox {
-	color:				black;
-	cursor:				pointer;
+.SCOMPONENT_CheckBox, .SCOMPONENT_CheckBoxImage {
+	color:					black;
+	cursor:					pointer;
+	-moz-user-select:		none;
+	-webkit-user-select:	none;
+	-ms-user-select:		none;
 }
 
 .SCOMPONENT_Disabled {
-	color:				gray;
-	cursor:				default;
+	color:					gray;
+	cursor:					default;
+	/* 無効とした場合は、必ず選択できないようにする */
+	-moz-user-select:		none;
+	-webkit-user-select:	none;
+	-ms-user-select:		none;
 }
 
-
-.SCOMPONENT_Canvas {
+/* disabled が対応していないボタン以外の物は、半透明化 */
+.SCOMPONENT_Canvas.SCOMPONENT_Disabled,
+.SCOMPONENT_ImagePanel.SCOMPONENT_Disabled,
+.SCOMPONENT_Label.SCOMPONENT_Disabled {
+	opacity:			0.5;
 }
-
 
 @media screen and (max-device-width : 700px)  { 
 
+	/* 次の行を出す場合は、間に線を引く */
 	.SCOMPONENT_Newline {
 		height:				0px;
 		margin:				0.5em 0px 0.5em 0px;
@@ -84,6 +92,7 @@
 		display:			block !important;
 	}
 	
+	/* 右に表示させる場合だったものも、次の行へ表示させる */
 	.SCOMPONENT_Space {
 		height:				0.1em;
 		display:			block !important;
@@ -93,19 +102,28 @@
 		padding:			0em;
 	}
 	
+	/* スマホに見せるように横いっぱいに引き延ばす */
 	.SCOMPONENT_Canvas, SCOMPONENT_ImagePanel {
 		width:				100% !important;
 		height:				initial !important;
 	}
 	
+	/* スマホの場合はチェックボックスのサイズが小さいので設定する */
 	.SCOMPONENT_CheckBoxImage {
 		width:				3em;
 		height:				3em;
 	}
 	
-	.SCOMPONENT_Button, .SCOMPONENT_ComboBox, .SCOMPONENT_Label {
+	/* ボタンは横にひきのばす */
+	.SCOMPONENT_Button,
+	.SCOMPONENT_ComboBox,
+	.SCOMPONENT_Label {
+		margin:				0.1em 0px 0.1em 0px;
+		padding:			0.1em 0px 0.1em 0px;
 		width:				100% !important;
 	}
+	
+	/* 横に引き延ばす */
 	.SCOMPONENT_Panel {
 		width:				92%;
 		margin:				2%;

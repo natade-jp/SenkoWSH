@@ -46,6 +46,11 @@
 			filesavebtn.setVisible(false);
 			combobox.setVisible(false);
 			checkbox.setVisible(false);
+			label1.setVisible(false);
+			label2.setVisible(false);
+			label3.setVisible(false);
+			canvas.setVisible(false);
+			imagepanel.setVisible(false);
 		}
 		button1.setText("残り " + pushed1);
 	});
@@ -63,6 +68,11 @@
 		filesavebtn.setEnabled(!filesavebtn.isEnabled());
 		combobox.setEnabled(!combobox.isEnabled());
 		checkbox.setEnabled(!checkbox.isEnabled());
+		label1.setEnabled(!label1.isEnabled());
+		label2.setEnabled(!label2.isEnabled());
+		label3.setEnabled(!label3.isEnabled());
+		canvas.setEnabled(!canvas.isEnabled());
+		imagepanel.setEnabled(!imagepanel.isEnabled());
 	});
 	
 	// FileLoad
