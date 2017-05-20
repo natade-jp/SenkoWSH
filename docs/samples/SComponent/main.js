@@ -41,6 +41,7 @@
 		if(pushed1 > 0) {
 			pushed1--;
 		}
+		progressbar.setValue(pushed1);
 		if(pushed1 === 0) {
 			fileloadbtn.setVisible(false);
 			filesavebtn.setVisible(false);
@@ -55,14 +56,18 @@
 		button1.setText("残り " + pushed1);
 	});
 	
+	var progressbar = new SProgressBar(10, 0);
+	button1.put(progressbar, SComponent.putype.RIGHT);
+	
 	var button2 = new SButton("無効化");
-	button1.put(button2, SComponent.putype.NEWLINE);
+	progressbar.put(button2, SComponent.putype.NEWLINE);
 	var pushed2 = 0;
 	button2.addListener(function () {
 		pushed2++;
 		button2.setText((pushed2 % 2 === 1) ? "有効化" : "無効化");
 		
 		// 押すたびに有効化／無効化の変更
+		progressbar.setIndeterminate(!progressbar.isIndeterminate());
 		button1.setEnabled(!button1.isEnabled());
 		fileloadbtn.setEnabled(!fileloadbtn.isEnabled());
 		filesavebtn.setEnabled(!filesavebtn.isEnabled());

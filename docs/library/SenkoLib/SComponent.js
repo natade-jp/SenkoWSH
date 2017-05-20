@@ -292,14 +292,6 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 	this.unit			= SComponent.unittype.EM;
 	
 	this.tool			= {
-		removeAttribute : function(id, attribute) {
-			var element = document.getElementById(id);
-			if(element) {
-				if(element.getAttribute(attribute) !== null) {
-					element.removeAttribute(attribute);
-				}
-			}
-		},
 		remove : function(id) {
 			var element = document.getElementById(id);
 			if(element) {
@@ -665,7 +657,7 @@ SFileLoadButton.prototype.setFileAccept = function(filter) {
 		}
 	}
 	else {
-		this.file.setAttribute("accept", filter);
+		this.file.accept = filter;
 	}
 };
 SFileLoadButton.prototype.addListener = function(func) {
@@ -677,7 +669,6 @@ SFileLoadButton.prototype.addListener = function(func) {
 
 
 var SFileSaveButton = function(title) {
-	// CSS有効化のために、label 内に input(file) を入れる
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "a", title);
 	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
@@ -928,3 +919,64 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 };
 
 
+var SProgressBar = function(min, max) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "label");
+	this.super.addClass.call(this,  SComponent.CLASS_IMAGEPANEL);
+	this.min	= 0.0;
+	this.max	= 0.0;
+	this.value	= min;
+	this.is_indeterminate = false;
+	if(arguments.length === 0) {
+		this.min = 0.0;
+		this.max = 1.0;
+	}
+	else if(arguments.length === 2) {
+		this.min = min;
+		this.max = max;
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
+	this.progress = document.createElement("progress");
+	this.getElement.call(this).appendChild(this.progress);
+	this.progress.id = this.id + "_progress";
+	this.progress.value	= 0.0;
+	this.progress.max	= 1.0;
+};
+SProgressBar.prototype = new SComponent();
+SProgressBar.prototype.setMaximum = function(max) {
+	this.max = max;
+};
+SProgressBar.prototype.setMinimum = function(min) {
+	this.min = min;
+};
+SProgressBar.prototype.getMaximum = function() {
+	return this.max;
+};
+SProgressBar.prototype.getMinimum = function() {
+	return this.min;
+};
+SProgressBar.prototype.setValue = function(value) {
+	this.value = value;
+	this.progress.value = this.getPercentComplete();
+};
+SProgressBar.prototype.getValue = function() {
+	return this.value;
+};
+SProgressBar.prototype.setIndeterminate = function(newValue) {
+	this.is_indeterminate = newValue;
+	if(this.is_indeterminate) {
+		this.progress.removeAttribute("value");
+	}
+	else {
+		this.setValue(this.value);
+	}
+};
+SProgressBar.prototype.isIndeterminate = function() {
+	return this.is_indeterminate;
+};
+SProgressBar.prototype.getPercentComplete = function() {
+	var delta = this.max - this.min;
+	return (this.value - this.min) / delta;
+};
