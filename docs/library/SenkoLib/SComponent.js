@@ -616,6 +616,8 @@ SButton.prototype.addListener = function(func) {
 
 var SFileLoadButton = function(title) {
 	// CSS有効化のために、label 内に input(file) を入れる
+	// Edge のバグがあるので Edgeで使用できない
+	// https://github.com/facebook/react/issues/7683
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
 	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
