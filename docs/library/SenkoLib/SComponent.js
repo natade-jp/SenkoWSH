@@ -39,6 +39,7 @@ SComponent.CLASS_CHECKBOX	= "SCOMPONENT_CheckBox";
 SComponent.CLASS_CHECKBOX_IMAGE	= "SCOMPONENT_CheckBoxImage";
 SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 SComponent.CLASS_FILELOAD	= "SCOMPONENT_FileLoad";
+SComponent.CLASS_FILESAVE	= "SCOMPONENT_FileSave";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
 
 SComponent.putype = {
@@ -230,15 +231,14 @@ SComponent.prototype.setEnabled = function(isenabled) {
 	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
 		element = this.getElementNode();
 	}
-	this._setBooleanAttribute(element, "disabled", isenabled);
+	// disabled属性が利用可能ならつける
+	if(	(element.tagName === "INPUT") ||
+		(element.tagName === "SELECT") ){
+		this._setBooleanAttribute(element, "disabled", isenabled);
+	}
 };
 SComponent.prototype.isEnabled = function() {
-	var element = this.getElement();
-	// input要素ではないなら中の要素を使用する
-	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
-		element = this.getElementNode();
-	}
-	return this._isBooleanAttribute(element, "disabled");
+	return !this.isSetClass(SComponent.CLASS_DISABLED);
 };
 SComponent.prototype.getId = function() {
 	return this.id;
@@ -248,6 +248,15 @@ SComponent.prototype.getUnit = function() {
 };
 SComponent.prototype.setUnit = function(unittype) {
 	this.unit = unittype;
+};
+SComponent.prototype.isSetClass = function(classname) {
+	var element = this.getElement();
+	var classdata = element.className;
+	if(classdata === null) {
+		return false;
+	}
+	var pattern = new RegExp( " *" + classname + " *" , "g");
+	return pattern.test(classdata);
 };
 SComponent.prototype.addClass = function(classname) {
 	var element = this.getElement();
