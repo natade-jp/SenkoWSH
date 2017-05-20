@@ -47,12 +47,8 @@ body {
 	float:				right;
 }
 
-@media screen and (max-device-width : 700px)  { 
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
 	
-	body {
-		font-size:		3em;
-	}
-
 	#header {
 		display:		none;
 	}
@@ -63,4 +59,12 @@ body {
 		-moz-tab-size:		2;
 		tab-size:			2;
 	}
+}
+
+@media screen and (max-device-width : 700px) { 
+	
+	body {
+		font-size:		3em;
+	}
+	
 }
