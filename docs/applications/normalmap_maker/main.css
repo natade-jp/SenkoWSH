@@ -2,3 +2,11 @@
 	height:			100%;
 	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
 }
+
+@media screen and (max-device-width : 700px) { 
+	
+	body {
+		font-size:		3em;
+	}
+	
+}
