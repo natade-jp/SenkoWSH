@@ -131,7 +131,7 @@ SIMatrix.makeBlur = function(width, height) {
 	return new SIMatrix(m);
 };
 SIMatrix.makeGaussianFilter = function(width, height, sd) {
-	if(!sd) {
+	if(sd === undefined) {
 		sd = 1.0;
 	}
 	var m = [];
@@ -215,7 +215,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 	if(!(matrix instanceof SIMatrix)) {
 		throw "IllegalArgumentException";
 	}
-	if(!p) {
+	if(p === undefined) {
 		p = 0.8;
 	}
 	var x, y, fx, fy, mx, my;
@@ -268,7 +268,7 @@ SIData.prototype.convolutionExp = function(matrix, e) {
 	if(!(matrix instanceof SIMatrix)) {
 		throw "IllegalArgumentException";
 	}
-	if(!e) {
+	if(e === undefined) {
 		e = 1.2;
 	}
 	var x, y, fx, fy, mx, my;

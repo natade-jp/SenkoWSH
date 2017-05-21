@@ -946,7 +946,7 @@ SIDataRGBA.prototype.putDataY = function(imagedata, n) {
 		throw "IllegalArgumentException";
 	}
 	this.setSize(imagedata.width, imagedata.height);
-	if(!n) {
+	if(n === undefined) {
 		n = 0;
 	}
 	var p = 0, i = 0;
@@ -1041,7 +1041,7 @@ SIDataY.prototype.putImageData = function(imagedata, n) {
 	if(	(imagedata instanceof ImageData) ||
 		(imagedata instanceof SIDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
-		if(!n) {
+		if(n === undefined) {
 			n = 0;
 		}
 		var p = 0, i = 0;
