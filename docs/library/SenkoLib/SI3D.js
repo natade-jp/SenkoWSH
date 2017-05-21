@@ -104,10 +104,10 @@ SIDataY.prototype.getNormalMap = function() {
 	var x, y;
 	for(y = 0; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
-			var x1 = new SIVector(x    , y, this.getPixel(x    , y).getColor());
+			var x1 = new SIVector(x - 1, y, this.getPixel(x - 1, y).getColor());
 			var x2 = new SIVector(x + 1, y, this.getPixel(x + 1, y).getColor());
 			var x3 = x1.getDirection(x2);
-			var y1 = new SIVector(x, y    , this.getPixel(x, y    ).getColor());
+			var y1 = new SIVector(x, y - 1, this.getPixel(x, y - 1).getColor());
 			var y2 = new SIVector(x, y + 1, this.getPixel(x, y + 1).getColor());
 			var y3 = y1.getDirection(y2);
 			var n  = x3.cross(y3).normalize();
