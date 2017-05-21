@@ -130,8 +130,17 @@
 		System.out.println("CheckBox " + checkbox.isChecked());
 	});
 	
+	// Slider
+	var slider = new SSlider(0, 100);
+	combobox.put(slider, SComponent.putype.NEWLINE);
+	slider.setMinorTickSpacing(10);
+	slider.setMajorTickSpacing(50);
+	slider.addListener(function () {
+		System.out.println("" + slider.getValue());
+	});
+	
 	var imagepanel = new SImagePanel();
-	checkbox.put(imagepanel, SComponent.putype.NEWLINE);
+	slider.put(imagepanel, SComponent.putype.NEWLINE);
 	imagepanel.setImage("./img/image_test1.jpg");
 	
 }

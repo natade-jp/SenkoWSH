@@ -111,15 +111,16 @@
 	
 	/* スマホの場合はチェックボックスのサイズが小さいので設定する */
 	.SCOMPONENT_CheckBoxImage {
-		width:				3em;
-		height:				3em;
+		width:				1em;
+		height:				1em;
 	}
 	
 	/* ボタンは横にひきのばす */
 	.SCOMPONENT_Button,
 	.SCOMPONENT_ComboBox,
 	.SCOMPONENT_Label,
-	.SCOMPONENT_ProgressBar {
+	.SCOMPONENT_ProgressBar,
+	.SCOMPONENT_Slider {
 		margin:				0.1em 0px 0.1em 0px;
 		padding:			0.1em 0px 0.1em 0px;
 		width:				100% !important;

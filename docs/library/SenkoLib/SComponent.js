@@ -42,6 +42,7 @@ SComponent.CLASS_FILELOAD	= "SCOMPONENT_FileLoad";
 SComponent.CLASS_FILESAVE	= "SCOMPONENT_FileSave";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
 SComponent.CLASS_PROGRESSBAR= "SCOMPONENT_ProgressBar";
+SComponent.CLASS_SLIDER		= "SCOMPONENT_Slider";
 
 
 SComponent.putype = {
@@ -568,9 +569,10 @@ SComboBox.prototype.getSelectedItem = function() {
 var SCheckBox = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
+	this.super.addClass.call(this, SComponent.CLASS_LABEL);
 	this.super.addClass.call(this, SComponent.CLASS_CHECKBOX);
 	var checkbox = document.createElement("input");
-	checkbox.setAttribute("type", "checkbox");
+	checkbox.type = "checkbox";
 	checkbox.id = this.id + "_checkbox";
 	checkbox.className = SComponent.CLASS_CHECKBOX_IMAGE;
 	this.checkbox = checkbox;
@@ -600,8 +602,7 @@ var SButton = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "input", title);
 	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
-	var element   = this.super.getElement.call(this);
-	element.setAttribute("type", "button");
+	this.super.getElement.call(this).type = "button";
 };
 SButton.prototype = new SComponent();
 SButton.prototype.addListener = function(func) {
@@ -924,6 +925,7 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 var SProgressBar = function(min, max) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label");
+	this.super.addClass.call(this, SComponent.CLASS_LABEL);
 	this.super.addClass.call(this, SComponent.CLASS_PROGRESSBAR);
 	this.min	= 0.0;
 	this.max	= 0.0;
@@ -944,6 +946,7 @@ var SProgressBar = function(min, max) {
 	this.getElement.call(this).appendChild(this.progress);
 	this.progress.id = this.id + "_progress";
 	this.progress.className = SComponent.CLASS_PROGRESSBAR;
+	// 内部の目盛りは0-1を使用する
 	this.progress.value	= 0.0;
 	this.progress.max	= 1.0;
 };
@@ -983,3 +986,87 @@ SProgressBar.prototype.getPercentComplete = function() {
 	var delta = this.max - this.min;
 	return (this.value - this.min) / delta;
 };
+
+var SSlider = function(min, max) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "label");
+	this.super.addClass.call(this, SComponent.CLASS_LABEL);
+	this.super.addClass.call(this, SComponent.CLASS_SLIDER);
+	if(arguments.length === 0) {
+		min = 0.0;
+		max = 1.0;
+	}
+	else if(arguments.length === 2) {
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
+	this.slider = document.createElement("input");
+	this.slider.id = this.id + "_slider";
+	this.slider.type	= "range";
+	this.slider.className = SComponent.CLASS_SLIDER;
+	this.slider.value	= min;
+	this.slider.min		= min;
+	this.slider.max		= max;
+	this.slider.step	= (max - min) / 100;
+	this.datalist		= document.createElement("datalist");
+	this.datalist.id	= this.id + "_datalist";
+	this.slider.setAttribute("list", this.datalist.id);
+	this.getElement.call(this).appendChild(this.slider);
+	this.getElement.call(this).appendChild(this.datalist);
+};
+SSlider.prototype = new SComponent();
+SSlider.prototype.setMaximum = function(max) {
+	this.slider.max = max;
+};
+SSlider.prototype.setMinimum = function(min) {
+	this.slider.min = min;
+};
+SSlider.prototype.getMaximum = function() {
+	return parseFloat(this.slider.max);
+};
+SSlider.prototype.getMinimum = function() {
+	return parseFloat(this.slider.min);
+};
+SSlider.prototype.setValue = function(value) {
+	this.slider.value = value;
+};
+SSlider.prototype.getValue = function() {
+	return parseFloat(this.slider.value);
+};
+SSlider.prototype.setMinorTickSpacing = function(step) {
+	this.slider.step = step;
+};
+SSlider.prototype.getMinorTickSpacing = function() {
+	return parseFloat(this.slider.step);
+};
+SSlider.prototype.setMajorTickSpacing = function(step) {
+	this.majortick = step;
+	this.removeMajorTickSpacing();
+	var i;
+	var min = this.getMinimum();
+	var max = this.getMaximum();
+	for(i = min; i <= max; i+= step) {
+		var option_node = document.createElement("option");
+		option_node.value = i.toString();
+		this.datalist.appendChild(option_node);
+	}
+};
+SSlider.prototype.getMajorTickSpacing = function() {
+	return this.majortick;
+};
+SSlider.prototype.removeMajorTickSpacing = function() {
+	var element = this.datalist;
+	var child = element.lastChild;
+	while (child) {
+		element.removeChild(child);
+		child = element.lastChild;
+	}
+};
+SSlider.prototype.addListener = function(func) {
+	this.slider.addEventListener("change",
+		function(){
+			func();
+		}, false );
+};
+
