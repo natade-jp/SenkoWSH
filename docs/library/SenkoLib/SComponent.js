@@ -41,6 +41,8 @@ SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
 SComponent.CLASS_FILELOAD	= "SCOMPONENT_FileLoad";
 SComponent.CLASS_FILESAVE	= "SCOMPONENT_FileSave";
 SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
+SComponent.CLASS_PROGRESSBAR= "SCOMPONENT_ProgressBar";
+
 
 SComponent.putype = {
 	IN		: 0,
@@ -922,7 +924,7 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 var SProgressBar = function(min, max) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label");
-	this.super.addClass.call(this,  SComponent.CLASS_IMAGEPANEL);
+	this.super.addClass.call(this, SComponent.CLASS_PROGRESSBAR);
 	this.min	= 0.0;
 	this.max	= 0.0;
 	this.value	= min;
@@ -941,6 +943,7 @@ var SProgressBar = function(min, max) {
 	this.progress = document.createElement("progress");
 	this.getElement.call(this).appendChild(this.progress);
 	this.progress.id = this.id + "_progress";
+	this.progress.className = SComponent.CLASS_PROGRESSBAR;
 	this.progress.value	= 0.0;
 	this.progress.max	= 1.0;
 };

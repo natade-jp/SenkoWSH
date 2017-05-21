@@ -118,7 +118,8 @@
 	/* ボタンは横にひきのばす */
 	.SCOMPONENT_Button,
 	.SCOMPONENT_ComboBox,
-	.SCOMPONENT_Label {
+	.SCOMPONENT_Label,
+	.SCOMPONENT_ProgressBar {
 		margin:				0.1em 0px 0.1em 0px;
 		padding:			0.1em 0px 0.1em 0px;
 		width:				100% !important;
