@@ -816,10 +816,10 @@ SCanvas.prototype.setImage = function(data, drawcallback, drawsize, isresizecanv
 	if(!drawcallback) {
 		drawcallback = null;
 	}
-	if(!drawsize) {
+	if(drawsize === undefined) {
 		drawsize = SCanvas.drawtype.LETTER_BOX;
 	}
-	if(!isresizecanvas) {
+	if(isresizecanvas === undefined) {
 		isresizecanvas = false;
 	}
 	if((data instanceof Image) || (data instanceof ImageData)) {
