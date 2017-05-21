@@ -879,6 +879,12 @@ SImagePanel.prototype = new SComponent();
 SImagePanel.prototype.clear = function() {
 	this.clearChildNodes();
 };
+SImagePanel.prototype.toDataURL = function() {
+	return this.image.src;
+};
+SImagePanel.prototype.setImageData = function(imagedata) {
+	this.setImage(imagedata);
+};
 SImagePanel.prototype.setImage = function(data, drawcallback) {
 	if(!drawcallback) {
 		drawcallback = null;
@@ -892,6 +898,14 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 		};
 		this.image.src = data;
 	}
+	else if(data instanceof ImageData) {
+		var canvas = document.createElement("canvas");
+		canvas.width = data.width;
+		canvas.height = data.height;
+		var context = canvas.getContext("2d");
+		context.putImageData(data, 0, 0);
+		this.setImage(canvas, drawcallback);
+	}
 	else if(data instanceof SCanvas) {
 		// SCanvas -> canvas
 		this.setImage(data.getElement(), drawcallback);
@@ -901,10 +915,10 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 		try {
 			this.setImage(data.toDataURL("image/png"), drawcallback);
 		} catch(e) {
-		}
-		try {
-			this.setImage(data.toDataURL("image/jpeg"), drawcallback);;
-		} catch(e) {
+			try {
+				this.setImage(data.toDataURL("image/jpeg"), drawcallback);;
+			} catch(e) {
+			}
 		}
 	}
 	else if((data instanceof Blob) || (data instanceof File)) {
