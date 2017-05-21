@@ -16,11 +16,11 @@ var setting_denoise = 0;
 var fileloadbtn = new SFileLoadButton("読み込む");
 var filesavebtn = new SFileSaveButton("保存する");
 
-var canvas_readsample = new SCanvas();
-canvas_readsample.setUnit(SComponent.unittype.PX);
+var img_readsample = new SImagePanel();
+img_readsample.setUnit(SComponent.unittype.PX);
 
-var canvas_normalsample = new SCanvas();
-canvas_normalsample.setUnit(SComponent.unittype.PX);
+var img_normalsample = new SImagePanel();
+img_normalsample.setUnit(SComponent.unittype.PX);
 
 var redrawReadSample = function() {
 	var src_size = imagedata_readgray.width * imagedata_readgray.height;
@@ -54,19 +54,18 @@ var redrawReadSample = function() {
 			);
 		}
 	}
-	canvas_readsample.setPixelSize(setting_width, setting_height);
-	canvas_readsample.setSize(setting_width, setting_height);
-	canvas_readsample.setImageData(imagedata_resized.getImageData());
+	img_readsample.setSize(setting_width, setting_height);
+	img_readsample.setImageData(imagedata_resized.getImageData());
 	redrawNormalMap();
 };
 
 var redrawNormalMap = function() {
 	
-	canvas_normalsample.setPixelSize(setting_width, setting_height);
-	canvas_normalsample.setSize(setting_width, setting_height);
-	canvas_normalsample.setImageData(imagedata_resized.getNormalMap().getImageData());
+	img_normalsample.setSize(setting_width, setting_height);
+	img_normalsample.setImageData(imagedata_resized.getNormalMap().getImageData());
 	
-	filesavebtn.setURL(canvas_normalsample.toDataURL());
+	filesavebtn.setURL(img_normalsample.toDataURL());
+	filesavebtn.setFileName("undefined.png");
 };
 
 	
@@ -126,7 +125,7 @@ function makeInputPanel() {
 	});
 	
 	// Canvas
-	canvas_readsample.putMe(fileloadbtn, SComponent.putype.NEWLINE);
+	img_readsample.putMe(fileloadbtn, SComponent.putype.NEWLINE);
 	
 }
 
@@ -142,10 +141,7 @@ function makeEditPanel() {
 	filesavebtn.putMe(l_disc, SComponent.putype.NEWLINE);
 	
 	// Canvas
-	canvas_normalsample.putMe(filesavebtn, SComponent.putype.NEWLINE);
-	
-	
-	
+	img_normalsample.putMe(filesavebtn, SComponent.putype.NEWLINE);
 	
 }
 
