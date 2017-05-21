@@ -1,8 +1,17 @@
 ﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIData, SIMatrix, SFileLoadButton */
 
-var read_image = new SCanvas();
+var imagedata_readrgba	= new SIDataRGBA(32, 32);
+imagedata_readrgba.setSelecter(SIData.selectertype.REPEAT);
+imagedata_readrgba.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+var imagedata_readgray	= new SIDataY(32, 32);
+imagedata_readgray.setSelecter(SIData.selectertype.REPEAT);
+imagedata_readgray.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+var imagedata_resized	= new SIDataY(32, 32);
+imagedata_resized.setSelecter(SIData.selectertype.REPEAT);
+imagedata_resized.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
 var setting_width = 0;
 var setting_height = 0;
+
 
 function makeInputPanel() {
 	
@@ -21,14 +30,11 @@ function makeInputPanel() {
 	var redraw = function() {
 		setting_width  = parseFloat(c_width.getSelectedItem());
 		setting_height = parseFloat(c_height.getSelectedItem());
-		var data	= new SIDataRGBA(read_image.getImageData());
-		data.setSelecter(SIData.selectertype.REPEAT);
-		data.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
-		var newdata	= new SIDataRGBA(setting_width, setting_height);
-		newdata.drawSIData(data, 0, 0, setting_width, setting_height);
-		canvas.setPixelSize(setting_width, setting_height);
-		canvas.setSize(setting_width, setting_height);
-		canvas.setImageData(newdata.getImageData());
+		imagedata_resized.setSize(setting_width, setting_height);
+		imagedata_resized.drawSIData(imagedata_readgray, 0, 0, setting_width, setting_height);
+		canvas_readsample.setPixelSize(setting_width, setting_height);
+		canvas_readsample.setSize(setting_width, setting_height);
+		canvas_readsample.setImageData(imagedata_resized.getImageData());
 	};
 	
 	var edit_size = function() {
@@ -50,9 +56,14 @@ function makeInputPanel() {
 	fileloadbtn.setFileAccept(SFileLoadButton.fileaccept.image);
 	fileloadbtn.putMe(c_height, SComponent.putype.NEWLINE);
 	fileloadbtn.addListener(function(file) {
-		read_image.setImage(
+		var canvas_read = new SCanvas();
+		canvas_read.setImage(
 			file[0],
 			function() {
+				imagedata_readrgba.putImageData(canvas_read.getImageData());
+				imagedata_readrgba.grayscale();
+				imagedata_readgray.putImageData(imagedata_readrgba);
+				
 				redraw();
 			},
 			SCanvas.drawtype.ORIGINAL,
@@ -61,11 +72,17 @@ function makeInputPanel() {
 	});
 	
 	// Canvas
-	var canvas = new SCanvas();
-	canvas.setUnit(SComponent.unittype.PX);
-	canvas.putMe(fileloadbtn, SComponent.putype.NEWLINE);
+	var canvas_readsample = new SCanvas();
+	canvas_readsample.setUnit(SComponent.unittype.PX);
+	canvas_readsample.putMe(fileloadbtn, SComponent.putype.NEWLINE);
 	
 }
+
+function makeEditPanel() {
+	
+}
+
+
 
 
 ﻿function main(args) {
