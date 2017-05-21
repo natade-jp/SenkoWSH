@@ -96,8 +96,8 @@ function testInterpolation(panel) {
 	var genefunc = function() {
 		var data = new SIDataY();
 		data.putImageData(inputcanvas.getImageData());
-		data.each(function() {
-			return new SIColorY(Math.random() * 256);
+		data.each(function(x, y, color) {
+			return color.random();
 		});
 		inputcanvas.setImageData(data.getImageData());
 	};

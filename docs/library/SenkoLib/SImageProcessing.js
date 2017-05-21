@@ -60,6 +60,9 @@ SIColor.prototype.baselog = function() {
 SIColor.prototype.table = function() {
 	return null;
 };
+SIColor.prototype.random = function() {
+	return null;
+};
 SIColor.prototype.addColor = function() {
 	return null;
 };
@@ -219,6 +222,9 @@ SIColorY.prototype.baselog = function(base) {
 SIColorY.prototype.table = function(table) {
 	return new SIColorY(table[Math.floor(this.y)]);
 };
+SIColorY.prototype.random = function() {
+	return new SIColorY(Math.random() * 256);
+};
 SIColorY.prototype.addColor = function(c) {
 	return new SIColorY(this.y + c.y);
 };
@@ -314,6 +320,11 @@ SIColorRGBA.prototype.table = function(table) {
 	return new SIColorRGBA([
 		table[Math.round(this.rgba[0])], table[Math.round(this.rgba[1])],
 		table[Math.round(this.rgba[2])], table[Math.round(this.rgba[3])] ]);
+};
+SIColorRGBA.prototype.random = function() {
+	return new SIColorRGBA([
+		Math.floor(Math.random() * 256), Math.floor(Math.random() * 256),
+		Math.floor(Math.random() * 256), Math.floor(Math.random() * 256) ]);
 };
 SIColorRGBA.prototype.addColor = function(c) {
 	return new SIColorRGBA([
@@ -883,9 +894,9 @@ SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 	var dst_x, dst_y;
 	
 	src_y = sy;
-	for(dst_y = dy; dst_y < (dy + dw); dst_y++) {
+	for(dst_y = dy; dst_y < (dy + dh); dst_y++) {
 		src_x = sx;
-		for(dst_x = dx; dst_x < (dx + dh); dst_x++) {
+		for(dst_x = dx; dst_x < (dx + dw); dst_x++) {
 			var color = image.getColor(src_x, src_y);
 			if(color) {
 				this.setColor(dst_x, dst_y, color);
@@ -921,7 +932,7 @@ var SIDataRGBA = function() {
 	else if(arguments.length === 2) {
 		var width  = arguments[0];
 		var height = arguments[1];
-		this.setSize(width, height);
+		SIData.prototype.setSize.call(this, width, height);
 	}
 };
 SIDataRGBA.prototype = new SIData();
