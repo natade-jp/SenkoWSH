@@ -39,10 +39,12 @@ var filterDenoise = function(imagedata, setting_denoise) {
 
 var filterBoyake = function(imagedata, setting_boyake) {
 	if(setting_boyake > 0) {
-		var sizelist	= [0, 3, 5, 7];
-		imagedata.filterBlur(
-			sizelist[setting_boyake]
-		);
+		var i = 0;
+		for(i = 0;i < setting_boyake;i++) {
+			imagedata.filterGaussian(
+				3
+			);
+		}
 	}
 };
 
