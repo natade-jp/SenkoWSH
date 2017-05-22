@@ -299,6 +299,42 @@ SIData.prototype.convolutionExp = function(matrix, e) {
 	}
 };
 
+/**
+ * SIMatrix を使用してアンシャープ畳込みを行う
+ * @param {SIMatrix} matrix
+ * @param {type} rate
+ * @returns {undefined}
+ */
+SIData.prototype.convolutionUnSharp = function(matrix, rate) {
+	if(!(matrix instanceof SIMatrix)) {
+		throw "IllegalArgumentException";
+	}
+	var x, y, fx, fy, mx, my;
+	var fx_offset	= - (matrix.width  >> 1);
+	var fy_offset	= - (matrix.height >> 1);
+	var m			= matrix.matrix;
+	var zero_color  = this.getPixelInside(0, 0).zero();
+	var bufferimage = this.clone();
+	for(y = 0; y < this.height; y++) {
+		for(x = 0; x < this.width; x++) {
+			var newcolor = zero_color;
+			fy = y + fy_offset;
+			for(my = 0; my < matrix.height; my++, fy++) {
+				fx = x + fx_offset;
+				for(mx = 0; mx < matrix.width; mx++, fx++) {
+					var color = bufferimage.getPixel(fx, fy);
+					if(color) {
+						newcolor = newcolor.addColor(color.mul(m[my][mx]));
+					}
+				}
+			}
+			var thiscolor = bufferimage.getPixel(x, y);
+			var deltaColor = thiscolor.subColor(newcolor).mul(rate);
+			this.setPixelInside(x, y, thiscolor.addColor(deltaColor));
+		}
+	}
+};
+
 
 /**
  * シャープフィルタ
@@ -332,6 +368,17 @@ SIData.prototype.filterGaussian = function(n) {
 	this.convolution(m);
 	var m = SIMatrix.makeGaussianFilter(1, n);
 	this.convolution(m);
+};
+
+/**
+ * アンシャープ
+ * @param {number} n 口径
+ * @param {number} rate
+ * @returns {undefined}
+ */
+SIData.prototype.filterUnSharp = function(n, rate) {
+	var m = SIMatrix.makeGaussianFilter(n, n);
+	this.convolutionUnSharp(m, rate);
 };
 
 /**

@@ -286,7 +286,8 @@ function testEtc(panel) {
 		"ノーマルマップ",
 		"ガウシアンフィルタ",
 		"バイラテラルフィルタ",
-		"レンズフィルタ"
+		"レンズフィルタ",
+		"アンシャープ"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -333,6 +334,11 @@ function testEtc(panel) {
 		else if(cb_filtertype.getSelectedItem() === filtertype[6]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterSoftLens(5, 1.2);
+			canvas_dst.setImageData(src.getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[7]) {
+			src.setSelecter(SIData.selectertype.FILL);
+			src.filterUnSharp(7, 1);
 			canvas_dst.setImageData(src.getImageData());
 		}
 	});
