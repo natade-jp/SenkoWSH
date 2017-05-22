@@ -177,9 +177,9 @@ function makeEditPanel() {
 		redrawNormalMap();
 	};
 	
-	var c_surudosa = new SSlider(0, 5);
+	var c_surudosa = new SSlider(0, 2);
 	c_surudosa.setMinorTickSpacing(0.1);
-	c_surudosa.setMajorTickSpacing(1);
+	c_surudosa.setMajorTickSpacing(0.5);
 	c_surudosa.addListener(redraw);
 	
 	var l_surudosa = new SLabel("するどさ");
