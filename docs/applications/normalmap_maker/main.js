@@ -22,6 +22,19 @@ img_readsample.setUnit(SComponent.unittype.PX);
 var img_normalsample = new SImagePanel();
 img_normalsample.setUnit(SComponent.unittype.PX);
 
+
+var filterDenoiseBilateral = function(imagedata, setting_denoise) {
+	if(setting_denoise > 0) {
+		var sizelist	= [0, 3, 3, 5];
+		var powerlist	= [0, 0.8, 1.0, 1.0];
+		imagedata.filterBilateral(
+			sizelist[setting_denoise],
+			powerlist[setting_denoise]
+		);
+	}
+	
+};
+
 var redrawReadSample = function() {
 	var src_size = imagedata_readgray.width * imagedata_readgray.height;
 	var dst_size = imagedata_readgray.width * imagedata_readgray.height;
@@ -32,31 +45,18 @@ var redrawReadSample = function() {
 		var imagedata_denoised = new SIDataY(imagedata_readgray);
 		imagedata_denoised.setSelecter(SIData.selectertype.REPEAT);
 		imagedata_denoised.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
-		if(setting_denoise > 0) {
-			var sizelist	= [0, 3, 3, 5];
-			var powerlist	= [0, 0.8, 1.0, 1.0];
-			imagedata_denoised.filterBilateral(
-				sizelist[setting_denoise],
-				powerlist[setting_denoise]
-			);
-		}
+		filterDenoiseBilateral(imagedata_denoised, setting_denoise);
 		imagedata_resized.drawSIData(imagedata_denoised, 0, 0, setting_width, setting_height);
 	}
 	// 出力画像が小さいのであれば、出力画像にデノイズ処理
 	else {
 		imagedata_resized.drawSIData(imagedata_readgray, 0, 0, setting_width, setting_height);
-		if(setting_denoise > 0) {
-			var sizelist	= [0, 3, 3, 5];
-			var powerlist	= [0, 0.8, 1.0, 1.0];
-			imagedata_resized.filterBilateral(
-				sizelist[setting_denoise],
-				powerlist[setting_denoise]
-			);
-		}
+		filterDenoiseBilateral(imagedata_resized, setting_denoise);
 	}
+	
 	img_readsample.setSize(setting_width, setting_height);
 	img_readsample.setImageData(imagedata_resized.getImageData());
-	redrawNormalMap();
+	setTimeout(redrawNormalMap, 10);
 };
 
 var redrawNormalMap = function() {
