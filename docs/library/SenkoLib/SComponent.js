@@ -74,6 +74,13 @@ SComponent.prototype.getTextNode = function() {
 	// テキストノードがない場合は null をかえす
 	return textnode;
 };
+SComponent.prototype.removeTextNode = function() {
+	var element = this.getElement();
+	var textnode = this.getTextNode();
+	if(textnode) {
+		element.removeChild(textnode);
+	}
+};
 SComponent.prototype.getElementNode = function() {
 	var element = this.getElement();
 	// children でテキストノード意外を取得する
@@ -1078,9 +1085,19 @@ SSlider.prototype.removeMajorTickSpacing = function() {
 	}
 };
 SSlider.prototype.addListener = function(func) {
-	this.slider.addEventListener("change",
-		function(){
-			func();
-		}, false );
+	var isDown = false;
+	var _this = this;
+	var setDown = function() {
+		isDown = true;
+	};
+	var setUp = function() {
+		if(isDown) {
+			if(_this.slider.disabled !== "disabled") {
+					func();
+			}
+			isDown = false;
+		}
+	};
+	this.slider.addEventListener("mousedown", function(){ setDown(); }, false );
+	this.slider.addEventListener("mouseup", function(){ setUp(); }, false );
 };
-

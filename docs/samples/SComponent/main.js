@@ -51,6 +51,7 @@
 			label2.setVisible(false);
 			label3.setVisible(false);
 			canvas.setVisible(false);
+			slider.setVisible(false);
 			imagepanel.setVisible(false);
 		}
 		button1.setText("残り " + pushed1);
@@ -77,6 +78,7 @@
 		label2.setEnabled(!label2.isEnabled());
 		label3.setEnabled(!label3.isEnabled());
 		canvas.setEnabled(!canvas.isEnabled());
+		slider.setEnabled(!slider.isEnabled());
 		imagepanel.setEnabled(!imagepanel.isEnabled());
 	});
 	
