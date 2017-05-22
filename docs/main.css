@@ -1,4 +1,3 @@
-
 html, body {
 	height:			100%;
 	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
@@ -37,4 +36,17 @@ div {
 }
 .dllist dd {
 	margin-left:	1em;
+}
+
+/* iPhone用、あるいは横幅が480px以下用 */
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
+	
+	.dllist dl {
+		margin-left:	0em;
+		padding-left:	1em;
+	}
+	.dllist dt {
+		width:			12em;
+		float:			none;
+	}
 }

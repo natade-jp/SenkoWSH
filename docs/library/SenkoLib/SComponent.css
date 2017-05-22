@@ -104,15 +104,11 @@
 	}
 	
 	/* スマホに見せるように横いっぱいに引き延ばす */
-	.SCOMPONENT_Canvas, SCOMPONENT_ImagePanel {
+	.SCOMPONENT_Canvas,
+	.SCOMPONENT_ImagePanel,
+	.SCOMPONENT_ImagePanel img {
 		width:				100% !important;
 		height:				initial !important;
-	}
-	
-	/* スマホの場合はチェックボックスのサイズが小さいので設定する */
-	.SCOMPONENT_CheckBoxImage {
-		width:				1em;
-		height:				1em;
 	}
 	
 	/* ボタンは横にひきのばす */

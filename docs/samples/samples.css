@@ -60,11 +60,3 @@ body {
 		tab-size:			2;
 	}
 }
-
-@media screen and (max-device-width : 700px) { 
-	
-	body {
-		font-size:		3em;
-	}
-	
-}
