@@ -187,8 +187,8 @@ function makeEditPanel() {
 		redrawNormalMap();
 	};
 	
-	var c_surudosa = new SSlider(0, 2);
-	c_surudosa.setMinorTickSpacing(0.1);
+	var c_surudosa = new SSlider(0, 1);
+	c_surudosa.setMinorTickSpacing(0.05);
 	c_surudosa.setMajorTickSpacing(0.5);
 	c_surudosa.addListener(redraw);
 	
