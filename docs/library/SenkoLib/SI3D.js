@@ -1,4 +1,4 @@
-/* global SIColorRGBA, SIDataY */
+/* global SIColorRGBA, SIDataY, SIData */
 
 ﻿/**
  * SI3D.js
@@ -100,6 +100,11 @@ SIColorRGBA.prototype.getNormalVector = function() {
  * @returns {SIColorRGBA}
  */
 SIDataY.prototype.getNormalMap = function() {
+	if(this.getSelecter() === SIData.selectertype.INSIDE) {
+		// 端の値を取得できないのでエラー
+		throw "not inside";
+	}
+	
 	var output = new SIDataRGBA(this.width, this.height);
 	var x, y;
 	for(y = 0; y < this.height; y++) {
