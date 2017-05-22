@@ -42,6 +42,8 @@
 	-moz-user-select:		none;
 	-webkit-user-select:	none;
 	-ms-user-select:		none;
+	/* メニューを出さない */
+	-webkit-touch-callout:	none;
 }
 
 .SCOMPONENT_Button.SCOMPONENT_MouseOver {
@@ -55,6 +57,8 @@
 	color:				gray;
 	background-color:	#e0e0e0;
 	cursor:				default;
+	/* リンクであれば無効化 */
+	pointer-events:		none;
 }
 
 .SCOMPONENT_CheckBox, .SCOMPONENT_CheckBoxImage {
@@ -63,6 +67,8 @@
 	-moz-user-select:		none;
 	-webkit-user-select:	none;
 	-ms-user-select:		none;
+	/* メニューを出さない */
+	-webkit-touch-callout:	none;
 }
 
 .SCOMPONENT_Disabled {
