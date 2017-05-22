@@ -151,6 +151,14 @@ function makeInputPanel() {
 				imagedata_readrgba.putImageData(canvas_read.getImageData());
 				imagedata_readrgba.grayscale();
 				imagedata_readgray.putImageData(imagedata_readrgba);
+				var w	= imagedata_readrgba.width;
+				var h	= imagedata_readrgba.height;
+				w	= Math.round(Math.pow(2, Math.ceil(Math.log(w) / Math.log(2))));
+				h	= Math.round(Math.pow(2, Math.ceil(Math.log(h) / Math.log(2))));
+				w	= w < 8 ? 8 : w > 512 ? 512 : w;
+				h	= h < 8 ? 8 : h > 512 ? 512 : h;
+				c_width.setSelectedItem(w);
+				c_height.setSelectedItem(h);
 				redrawReadSampleResized();
 			},
 			SCanvas.drawtype.ORIGINAL,
