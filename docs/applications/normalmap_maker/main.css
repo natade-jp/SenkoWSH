@@ -3,6 +3,12 @@
 	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
 }
 
+h1 {
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+	font-weight: normal;
+}
+
 #scomponent_input,
 #scomponent_edit,
 #scomponent_output {
