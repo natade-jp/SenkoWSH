@@ -14,6 +14,7 @@ var setting_height	= 0;
 var setting_denoise	= 0;
 var setting_boyake	= 0;
 var setting_surudosa = 0;
+var setting_outotsu = 0;
 
 var fileloadbtn = new SFileLoadButton("読み込む");
 var filesavebtn = new SFileSaveButton("保存する");
@@ -49,8 +50,23 @@ var filterBoyake = function(imagedata, setting_boyake) {
 };
 
 var filterSurudosa = function(imagedata, surudosa) {
-	if(surudosa > 0.001) {
+	if(surudosa !== 0) {
 		imagedata.filterSharp(surudosa);
+	}
+};
+
+var filterOutotsu = function(imagedata, outotsu) {
+	if(outotsu !== 0) {
+		if(outotsu > 0) {
+			imagedata.each(function(x, y, color) {
+				return color.mul(Math.pow(2.5, outotsu));
+			});
+		}
+		else {
+			imagedata.each(function(x, y, color) {
+				return color.mul(Math.pow(50.0, outotsu));
+			});
+		}
 	}
 };
 
@@ -87,6 +103,7 @@ var redrawNormalMap = function() {
 	imagedata_filter.setSelecter(SIData.selectertype.REPEAT);
 	imagedata_filter.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
 	
+	filterOutotsu(imagedata_filter, setting_outotsu);
 	filterSurudosa(imagedata_filter, setting_surudosa);
 	
 	img_normalsample.setSize(setting_width, setting_height);
@@ -183,19 +200,28 @@ function makeEditPanel() {
 	
 	
 	var redraw= function() {
+		setting_outotsu		= parseFloat(c_outotsu.getValue());
 		setting_surudosa	= parseFloat(c_surudosa.getValue());
 		redrawNormalMap();
 	};
 	
-	var c_surudosa = new SSlider(0, 1);
-	c_surudosa.setMinorTickSpacing(0.05);
-	c_surudosa.setMajorTickSpacing(0.5);
+	var c_outotsu = new SSlider(-1, 1);
+	c_outotsu.setMinorTickSpacing(0.001);
+	c_outotsu.setValue(0);
+	c_outotsu.addListener(redraw);
+	
+	var l_outotsu = new SLabel("でこぼこ");
+	l_outotsu.putMe(l_disc, SComponent.putype.NEWLINE);
+	c_outotsu.putMe(l_outotsu, SComponent.putype.RIGHT);
+	
+	var c_surudosa = new SSlider(0, 0.5);
+	c_surudosa.setMinorTickSpacing(0.001);
+	c_surudosa.setMajorTickSpacing(0.25);
 	c_surudosa.addListener(redraw);
 	
 	var l_surudosa = new SLabel("するどさ");
-	l_surudosa.putMe(l_disc, SComponent.putype.NEWLINE);
+	l_surudosa.putMe(c_outotsu, SComponent.putype.NEWLINE);
 	c_surudosa.putMe(l_surudosa, SComponent.putype.RIGHT);
-	
 	
 	// FileSave
 	filesavebtn.putMe(c_surudosa, SComponent.putype.NEWLINE);

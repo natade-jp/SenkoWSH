@@ -1103,3 +1103,32 @@ SSlider.prototype.addListener = function(func) {
 	this.slider.addEventListener("mousedown", setDown, false );
 	this.slider.addEventListener("mouseup", setUp, false );
 };
+
+SSlider.prototype.getWidth = function() {
+	var width = this.slider.width;
+	if(width === null) {
+		return null;
+	}
+	width = width.match(/[\+\-]?\s*[0-9]*\.?[0-9]*/)[0];
+	return parseFloat(width);
+};
+SSlider.prototype.getHeight = function() {
+	var height = this.slider.height;
+	if(height === null) {
+		return null;
+	}
+	height = height.match(/[\+\-]?\s*[0-9]*\.?[0-9]*/)[0];
+	return parseFloat(height);
+};
+SSlider.prototype.setWidth = function(width) {
+	if(typeof width !== "number") {
+		throw "IllegalArgumentException not number";
+	}
+	this.slider.style.width = width.toString() + this.unit;
+};
+SSlider.prototype.setHeight = function(height) {
+	if(typeof height !== "number") {
+		throw "IllegalArgumentException not number";
+	}
+	this.slider.style.height = height.toString() + this.unit;
+};
