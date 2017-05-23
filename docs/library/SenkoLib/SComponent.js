@@ -1098,6 +1098,8 @@ SSlider.prototype.addListener = function(func) {
 			isDown = false;
 		}
 	};
+	this.slider.addEventListener("touchstart", function(){ setDown(); }, false );
+	this.slider.addEventListener("touchend", function(){ setUp(); }, false );
 	this.slider.addEventListener("mousedown", function(){ setDown(); }, false );
 	this.slider.addEventListener("mouseup", function(){ setUp(); }, false );
 };
