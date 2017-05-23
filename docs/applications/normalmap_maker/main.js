@@ -77,7 +77,7 @@ var redrawReadSample = function() {
 	}
 	
 	img_readsample.setSize(setting_width, setting_height);
-	img_readsample.setImageData(imagedata_resized.getImageData());
+	img_readsample.putImageData(imagedata_resized.getImageData());
 	setTimeout(redrawNormalMap, 10);
 };
 
@@ -90,7 +90,7 @@ var redrawNormalMap = function() {
 	filterSurudosa(imagedata_filter, setting_surudosa);
 	
 	img_normalsample.setSize(setting_width, setting_height);
-	img_normalsample.setImageData(imagedata_filter.getNormalMap().getImageData());
+	img_normalsample.putImageData(imagedata_filter.getNormalMap().getImageData());
 	
 	filesavebtn.setURL(img_normalsample.toDataURL());
 	filesavebtn.setFileName("undefined.png");
@@ -147,7 +147,7 @@ function makeInputPanel() {
 	fileloadbtn.putMe(c_boyake, SComponent.putype.NEWLINE);
 	fileloadbtn.addListener(function(file) {
 		var canvas_read = new SCanvas();
-		canvas_read.setImage(
+		canvas_read.putImage(
 			file[0],
 			function() {
 				imagedata_readrgba.putImageData(canvas_read.getImageData());

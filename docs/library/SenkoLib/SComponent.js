@@ -750,10 +750,10 @@ SCanvas.prototype.clear = function() {
 SCanvas.prototype.getImageData = function() {
 	return this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
 };
-SCanvas.prototype.setImageData = function(imagedata) {
+SCanvas.prototype.putImageData = function(imagedata) {
 	this.context.putImageData(imagedata, 0, 0);
 };
-SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
+SCanvas.prototype._putImage = function(image, isresizecanvas, drawsize) {
 	var pixelsize = this.canvas;
 	var dx = 0, dy = 0;
 	var width  = pixelsize.width;
@@ -819,7 +819,7 @@ SCanvas.prototype._setImage = function(image, isresizecanvas, drawsize) {
 		);
 	}
 };
-SCanvas.prototype.setImage = function(data, drawcallback, drawsize, isresizecanvas) {
+SCanvas.prototype.putImage = function(data, drawcallback, drawsize, isresizecanvas) {
 	if(!drawcallback) {
 		drawcallback = null;
 	}
@@ -831,7 +831,7 @@ SCanvas.prototype.setImage = function(data, drawcallback, drawsize, isresizecanv
 	}
 	if((data instanceof Image) || (data instanceof ImageData)) {
 		// Image -> canvas, ImageData -> canvas
-		this._setImage(data, isresizecanvas, drawsize);
+		this._putImage(data, isresizecanvas, drawsize);
 		if(typeof drawcallback === "function") {
 			drawcallback();
 		}
@@ -841,24 +841,24 @@ SCanvas.prototype.setImage = function(data, drawcallback, drawsize, isresizecanv
 		var image = new Image();
 		// URL(string) -> Image
 		image.onload = function() {
-			_this.setImage(image, isresizecanvas, drawsize, drawcallback);
+			_this.putImage(image, isresizecanvas, drawsize, drawcallback);
 		};
 		image.src = data;
 	}
 	else if(data instanceof SCanvas) {
 		// SCanvas -> canvas
-		_this.setImage(data.getElement(), isresizecanvas, drawsize, drawcallback);
+		_this.putImage(data.getElement(), isresizecanvas, drawsize, drawcallback);
 	}
 	else if((data instanceof Element) && (data.tagName === "CANVAS")){
 		// canvas -> URL(string)
-		_this.setImage(data.toDataURL(), isresizecanvas, drawsize, drawcallback);
+		_this.putImage(data.toDataURL(), isresizecanvas, drawsize, drawcallback);
 	}
 	else if((data instanceof Blob) || (data instanceof File)) {
 		var _this = this;
 		var reader = new FileReader();
 		// Blob, File -> URL(string)
 		reader.onload = function() {
-			_this.setImage(reader.result, isresizecanvas, drawsize, drawcallback);
+			_this.putImage(reader.result, isresizecanvas, drawsize, drawcallback);
 		};
 		reader.readAsDataURL(data);
 	}
@@ -889,10 +889,10 @@ SImagePanel.prototype.clear = function() {
 SImagePanel.prototype.toDataURL = function() {
 	return this.image.src;
 };
-SImagePanel.prototype.setImageData = function(imagedata) {
-	this.setImage(imagedata);
+SImagePanel.prototype.putImageData = function(imagedata) {
+	this.putImage(imagedata);
 };
-SImagePanel.prototype.setImage = function(data, drawcallback) {
+SImagePanel.prototype.putImage = function(data, drawcallback) {
 	if(!drawcallback) {
 		drawcallback = null;
 	}
@@ -911,19 +911,19 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 		canvas.height = data.height;
 		var context = canvas.getContext("2d");
 		context.putImageData(data, 0, 0);
-		this.setImage(canvas, drawcallback);
+		this.putImage(canvas, drawcallback);
 	}
 	else if(data instanceof SCanvas) {
 		// SCanvas -> canvas
-		this.setImage(data.getElement(), drawcallback);
+		this.putImage(data.getElement(), drawcallback);
 	}
 	else if((data instanceof Element) && (data.tagName === "CANVAS")){
 		// canvas -> URL(string)
 		try {
-			this.setImage(data.toDataURL("image/png"), drawcallback);
+			this.putImage(data.toDataURL("image/png"), drawcallback);
 		} catch(e) {
 			try {
-				this.setImage(data.toDataURL("image/jpeg"), drawcallback);;
+				this.putImage(data.toDataURL("image/jpeg"), drawcallback);;
 			} catch(e) {
 			}
 		}
@@ -933,7 +933,7 @@ SImagePanel.prototype.setImage = function(data, drawcallback) {
 		var reader = new FileReader();
 		// Blob, File -> URL(string)
 		reader.onload = function() {
-			_this.setImage(reader.result, drawcallback);
+			_this.putImage(reader.result, drawcallback);
 		};
 		reader.readAsDataURL(data);
 	}

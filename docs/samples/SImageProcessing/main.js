@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIData, SIMatrix */
+﻿/* global System, SComponent, SCanvas, SFile, SIData, SIMatrix, SFileLoadButton */
 
 function testFileLoad(panel) {
 	
@@ -12,11 +12,11 @@ function testFileLoad(panel) {
 	panel.put(canvas, SComponent.putype.IN);
 	
 	// ボタン1
-	var loadbutton = new SFileButton("読み込み");
-	loadbutton.setFileAccept(SFileButton.fileaccept.image);
+	var loadbutton = new SFileLoadButton("読み込み");
+	loadbutton.setFileAccept(SFileLoadButton.fileaccept.image);
 	canvas.put(loadbutton, SComponent.putype.NEWLINE);
 	loadbutton.addListener(function(file) {
-		canvas.setImage(file[0],
+		canvas.putImage(file[0],
 		function() {
 			System.out.println("ロード完了");
 		});
@@ -25,7 +25,7 @@ function testFileLoad(panel) {
 	var savebutton = new SButton("IMG要素化");
 	loadbutton.put(savebutton, SComponent.putype.RIGHT);
 	savebutton.addListener(function() {
-		imagepanel.setImage(canvas,
+		imagepanel.putImage(canvas,
 		function() {
 			System.out.println("描写完了");
 		});
@@ -63,7 +63,7 @@ function testWritePixel(panel) {
 			var y = Math.floor(Math.random() * data.height);
 			data.setPixelInside(x, y, new SIColorRGBA([255, 255, 255, 255]));
 		}
-		canvas.setImageData(data.getImageData());
+		canvas.putImageData(data.getImageData());
 	});
 	
 	// ボタン2
@@ -77,7 +77,7 @@ function testWritePixel(panel) {
 			var y = Math.floor(Math.random() * data.height);
 			data.setPixelInside(x, y, new SIColorY(255));
 		}
-		canvas.setImageData(data.getImageData());
+		canvas.putImageData(data.getImageData());
 	});
 	
 };
@@ -99,7 +99,7 @@ function testInterpolation(panel) {
 		data.each(function(x, y, color) {
 			return color.random();
 		});
-		inputcanvas.setImageData(data.getImageData());
+		inputcanvas.putImageData(data.getImageData());
 	};
 	gene.addListener(genefunc);
 	panel.put(gene, SComponent.putype.IN);
@@ -149,7 +149,7 @@ function testInterpolation(panel) {
 		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
 		var dstdata = new SIDataY(dstWidth, dstHeight);
 		dstdata.drawSIData(srcdata, 0, 0, dstWidth, dstHeight);
-		outputcanvas.setImageData(dstdata.getImageData());
+		outputcanvas.putImageData(dstdata.getImageData());
 	});
 	
 	outputcanvas.setUnit(SComponent.unittype.PX);
@@ -178,11 +178,11 @@ function testBlending(panel) {
 	canvas_src1.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src1.setUnit(SComponent.unittype.PX);
 	canvas_src1.setSize(canvasWidth, canvasHeight);
-	canvas_src1.setImage("./img/image_x.png");
+	canvas_src1.putImage("./img/image_x.png");
 	canvas_src2.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src2.setUnit(SComponent.unittype.PX);
 	canvas_src2.setSize(canvasWidth, canvasHeight);
-	canvas_src2.setImage("./img/image_y.png");
+	canvas_src2.putImage("./img/image_y.png");
 	canvas_dst.setPixelSize(canvasWidth, canvasHeight);
 	canvas_dst.setUnit(SComponent.unittype.PX);
 	canvas_dst.setSize(canvasWidth, canvasHeight);
@@ -224,7 +224,7 @@ function testBlending(panel) {
 		src1.setBlendType(cb_brendtype.getSelectedItem());
 		src1.globalAlpha = parseFloat(cb_globalalpha.getSelectedItem());
 		src1.drawSIData(src2, 0, 0);
-		canvas_dst.setImageData(src1.getImageData());
+		canvas_dst.putImageData(src1.getImageData());
 	});
 	
 	var label3 = new SLabel("結果画像");
@@ -265,9 +265,9 @@ function testEtc(panel) {
 	cb_picturetype.setWidth(32);
 	label1.put(cb_picturetype, SComponent.putype.RIGHT);
 	cb_picturetype.addListener(function () {
-		canvas_src.setImage(cb_picturetype.getSelectedItem());
+		canvas_src.putImage(cb_picturetype.getSelectedItem());
 	});
-	canvas_src.setImage(picturetype[0]);
+	canvas_src.putImage(picturetype[0]);
 	
 	//-------------------------
 	
@@ -303,43 +303,43 @@ function testEtc(panel) {
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterBlur(7);
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[1]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterSharp(0.5);
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[2]) {
 			src.grayscale();
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
 			src.grayscale();
 			var height = new SIDataY(src);
 			height.setSelecter(SIData.selectertype.REPEAT);
 			height.filterGaussian(5);
-			canvas_dst.setImageData(height.getNormalMap().getImageData());
+			canvas_dst.putImageData(height.getNormalMap().getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[4]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterGaussian(7);
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[5]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterBilateral(5, 0.8);
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[6]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterSoftLens(5, 1.2);
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[7]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterUnSharp(7, 1);
-			canvas_dst.setImageData(src.getImageData());
+			canvas_dst.putImageData(src.getImageData());
 		}
 	});
 	
