@@ -130,9 +130,9 @@
 	
 	/* 横に引き延ばす */
 	.SCOMPONENT_Panel {
-		width:				92%;
-		margin:				2%;
-		padding:			2%;
+		width:				92% !important;
+		margin:				2% !important;
+		padding:			2% !important;
 	}
 	
 }
