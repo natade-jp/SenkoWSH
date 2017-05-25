@@ -1124,11 +1124,13 @@ SSlider.prototype.setWidth = function(width) {
 	if(typeof width !== "number") {
 		throw "IllegalArgumentException not number";
 	}
+	this.super.setWidth.call(this, width);
 	this.slider.style.width = width.toString() + this.unit;
 };
 SSlider.prototype.setHeight = function(height) {
 	if(typeof height !== "number") {
 		throw "IllegalArgumentException not number";
 	}
+	this.super.setHeight.call(this, height);
 	this.slider.style.height = height.toString() + this.unit;
 };
