@@ -14,3 +14,15 @@ h1 {
 #scomponent_output {
 	float:				left;
 }
+
+
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
+	
+	
+#scomponent_input,
+#scomponent_edit,
+#scomponent_output {
+	float:		none;
+}
+
+}

@@ -26,6 +26,18 @@ var img_normalsample = new SImagePanel();
 img_normalsample.setUnit(SComponent.unittype.PX);
 
 
+var c_denoise = new SSlider(0, 3);
+c_denoise.setMinorTickSpacing(1);
+c_denoise.setMajorTickSpacing(1);
+var c_boyake = new SSlider(0, 3);
+c_boyake.setMinorTickSpacing(1);
+c_boyake.setMajorTickSpacing(1);
+var c_outotsu = new SSlider(0, 1);
+c_outotsu.setMinorTickSpacing(0.001);
+c_outotsu.setValue(0.5);
+var c_surudosa = new SSlider(0, 0.5);
+c_surudosa.setMinorTickSpacing(0.001);
+
 var filterDenoise = function(imagedata, setting_denoise) {
 	if(setting_denoise > 0) {
 		var i = 0;
@@ -56,18 +68,10 @@ var filterSurudosa = function(imagedata, surudosa) {
 };
 
 var filterOutotsu = function(imagedata, outotsu) {
-	if(outotsu !== 0) {
-		if(outotsu > 0) {
-			imagedata.each(function(x, y, color) {
-				return color.mul(Math.pow(2.5, outotsu));
-			});
-		}
-		else {
-			imagedata.each(function(x, y, color) {
-				return color.mul(Math.pow(50.0, outotsu));
-			});
-		}
-	}
+	var power = Math.pow(outotsu, 2);
+	imagedata.each(function(x, y, color) {
+		return color.mul(power);
+	});
 };
 
 
@@ -75,7 +79,9 @@ var redrawReadSample = function() {
 	var src_size = imagedata_readgray.width * imagedata_readgray.height;
 	var dst_size = imagedata_readgray.width * imagedata_readgray.height;
 	imagedata_resized.setSize(setting_width, setting_height);
-	
+	setting_denoise	= parseFloat(c_denoise.getValue());
+	setting_boyake	= parseFloat(c_boyake.getValue());
+
 	// 入力画像が小さいのであれば、入力画像にデノイズ処理
 	if(src_size < dst_size) {
 		var imagedata_denoised = new SIDataY(imagedata_readgray);
@@ -103,14 +109,14 @@ var redrawNormalMap = function() {
 	imagedata_filter.setSelecter(SIData.selectertype.REPEAT);
 	imagedata_filter.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
 	
+	setting_outotsu		= parseFloat(c_outotsu.getValue());
+	setting_surudosa	= parseFloat(c_surudosa.getValue());
 	filterOutotsu(imagedata_filter, setting_outotsu);
 	filterSurudosa(imagedata_filter, setting_surudosa);
 	
 	img_normalsample.setSize(setting_width, setting_height);
 	img_normalsample.putImageData(imagedata_filter.getNormalMap().getImageData());
 	
-	filesavebtn.setURL(img_normalsample.toDataURL());
-	filesavebtn.setFileName("undefined.png");
 };
 
 	
@@ -119,7 +125,7 @@ function makeInputPanel() {
 	var panel = new SPanel();
 	panel.putMe("scomponent_input", SComponent.putype.IN);
 	
-	var l_disc = new SLabel("入力画像の設定");
+	var l_disc = new SLabel("入力画像");
 	l_disc.putMe(panel, SComponent.putype.IN);
 	
 	var sizelist = [8, 16, 32, 64, 128, 256, 512];
@@ -127,18 +133,10 @@ function makeInputPanel() {
 	c_width.setSelectedItem(512);
 	var c_height = new SComboBox(sizelist);
 	c_height.setSelectedItem(512);
-	var c_denoise = new SSlider(0, 3);
-	c_denoise.setMinorTickSpacing(1);
-	c_denoise.setMajorTickSpacing(1);
-	var c_boyake = new SSlider(0, 3);
-	c_boyake.setMinorTickSpacing(1);
-	c_boyake.setMajorTickSpacing(1);
 	
 	var redrawReadSampleResized = function() {
 		setting_width	= parseFloat(c_width.getSelectedItem());
 		setting_height	= parseFloat(c_height.getSelectedItem());
-		setting_denoise	= parseFloat(c_denoise.getValue());
-		setting_boyake	= parseFloat(c_boyake.getValue());
 		redrawReadSample();
 	};
 	c_width.addListener(redrawReadSampleResized);
@@ -147,21 +145,31 @@ function makeInputPanel() {
 	c_boyake.addListener(redrawReadSampleResized);
 	
 	var l_width  = new SLabel("よこ[px]");
-	l_width.putMe (l_disc, SComponent.putype.NEWLINE);
+	l_width.putMe (l_disc, SComponent.putype.RIGHT);
 	c_width.putMe (l_width, SComponent.putype.RIGHT);
 	var l_height = new SLabel("たて[px]");
 	l_height.putMe(c_width, SComponent.putype.RIGHT);
 	c_height.putMe(l_height, SComponent.putype.RIGHT);
-	var l_denoise = new SLabel("なめらか");
+	
+	var l_denoise = new SLabel("きれいさ");
 	l_denoise.putMe(c_height, SComponent.putype.NEWLINE);
 	c_denoise.putMe(l_denoise, SComponent.putype.RIGHT);
 	var l_boyake = new SLabel("ぼやけ");
 	l_boyake.putMe(c_denoise, SComponent.putype.NEWLINE);
 	c_boyake.putMe(l_boyake, SComponent.putype.RIGHT);
 	
+	panel.setUnit(SComponent.unittype.PX);
+	panel.setWidth(512);
+	l_denoise.setWidth(5);
+	l_boyake.setWidth(5);
+	
+	c_denoise.setUnit(SComponent.unittype.PERCENT);
+	c_denoise.setWidth(70);
+	c_boyake.setUnit(SComponent.unittype.PERCENT);
+	c_boyake.setWidth(70);
+	
 	// FileLoad
 	fileloadbtn.setFileAccept(SFileLoadButton.fileaccept.image);
-	fileloadbtn.putMe(c_boyake, SComponent.putype.NEWLINE);
 	fileloadbtn.addListener(function(file) {
 		var canvas_read = new SCanvas();
 		canvas_read.putImage(
@@ -186,7 +194,8 @@ function makeInputPanel() {
 	});
 	
 	// Canvas
-	img_readsample.putMe(fileloadbtn, SComponent.putype.NEWLINE);
+	img_readsample.putMe(c_boyake, SComponent.putype.NEWLINE);
+	fileloadbtn.putMe(img_readsample, SComponent.putype.NEWLINE);
 	
 }
 
@@ -195,39 +204,38 @@ function makeEditPanel() {
 	var panel = new SPanel();
 	panel.putMe("scomponent_edit", SComponent.putype.IN);
 	
-	var l_disc = new SLabel("ノーマルマップの調整");
+	var l_disc = new SLabel("ノーマルマップ調整");
 	l_disc.putMe(panel, SComponent.putype.IN);
 	
 	
 	var redraw= function() {
-		setting_outotsu		= parseFloat(c_outotsu.getValue());
-		setting_surudosa	= parseFloat(c_surudosa.getValue());
 		redrawNormalMap();
 	};
 	
-	var c_outotsu = new SSlider(-1, 1);
-	c_outotsu.setMinorTickSpacing(0.001);
-	c_outotsu.setValue(0);
 	c_outotsu.addListener(redraw);
 	
 	var l_outotsu = new SLabel("でこぼこ");
 	l_outotsu.putMe(l_disc, SComponent.putype.NEWLINE);
 	c_outotsu.putMe(l_outotsu, SComponent.putype.RIGHT);
 	
-	var c_surudosa = new SSlider(0, 0.5);
-	c_surudosa.setMinorTickSpacing(0.001);
-	c_surudosa.setMajorTickSpacing(0.25);
 	c_surudosa.addListener(redraw);
 	
-	var l_surudosa = new SLabel("するどさ");
+	var l_surudosa = new SLabel("とがり");
 	l_surudosa.putMe(c_outotsu, SComponent.putype.NEWLINE);
 	c_surudosa.putMe(l_surudosa, SComponent.putype.RIGHT);
 	
-	// FileSave
-	filesavebtn.putMe(c_surudosa, SComponent.putype.NEWLINE);
+	panel.setUnit(SComponent.unittype.PX);
+	panel.setWidth(512);
+	l_outotsu.setWidth(5);
+	l_surudosa.setWidth(5);
+	
+	c_outotsu.setUnit(SComponent.unittype.PERCENT);
+	c_outotsu.setWidth(70);
+	c_surudosa.setUnit(SComponent.unittype.PERCENT);
+	c_surudosa.setWidth(70);
 	
 	// Canvas
-	img_normalsample.putMe(filesavebtn, SComponent.putype.NEWLINE);
+	img_normalsample.putMe(c_surudosa, SComponent.putype.NEWLINE);
 	
 }
 
