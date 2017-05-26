@@ -1,4 +1,4 @@
-/* global SIColorRGBA, SIDataY, SIData */
+﻿/* global SIColorRGBA, SIDataY, SIData */
 
 ﻿/**
  * SI3D.js

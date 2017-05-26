@@ -1,4 +1,4 @@
-/* global System, ImageData, SIData */
+﻿/* global System, ImageData, SIData */
 
 ﻿/**
  * SIMatrix.js

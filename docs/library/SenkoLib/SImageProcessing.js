@@ -1,4 +1,4 @@
-/* global System, ImageData */
+﻿/* global System, ImageData */
 
 ﻿/**
  * SImageProcessing.js

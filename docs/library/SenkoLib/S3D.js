@@ -1,4 +1,4 @@
-/* global System, Text, Blob, File, Element, ImageData */
+﻿/* global System, Text, Blob, File, Element, ImageData */
 
 ﻿/**
  * S3D.js
