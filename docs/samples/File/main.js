@@ -1,4 +1,4 @@
-/* global System, File */
+﻿/* global System, File */
 
 ﻿function main(args) {
 	var text, binary, filename, file, buff;
