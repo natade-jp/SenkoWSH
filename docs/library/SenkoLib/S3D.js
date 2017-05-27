@@ -204,23 +204,19 @@ S3Vector.prototype.clone = function() {
 S3Matrix.prototype.mul = function(tgt) {
 	if(tgt instanceof S3Matrix) {
 		var A = this; var B = tgt;
-		var b00 = A.m11 * B.m11 + A.m12 * B.m21 + A.m13 * B.m31;
-		var b01 = A.m11 * B.m12 + A.m12 * B.m22 + A.m13 * B.m32;
-		var b02 = A.m11 * B.m13 + A.m12 * B.m23 + A.m13 * B.m33;
-		var b10 = A.m21 * B.m11 + A.m22 * B.m21 + A.m23 * B.m31;
-		var b11 = A.m21 * B.m12 + A.m22 * B.m22 + A.m23 * B.m32;
-		var b12 = A.m21 * B.m13 + A.m22 * B.m23 + A.m23 * B.m33;
-		var b20 = A.m31 * B.m11 + A.m32 * B.m21 + A.m33 * B.m31;
-		var b21 = A.m31 * B.m12 + A.m32 * B.m22 + A.m33 * B.m32;
-		var b22 = A.m31 * B.m13 + A.m32 * B.m23 + A.m33 * B.m33;
-		var b30 = A.mtx * B.m11 + A.mty * B.m21 + A.mtz * B.m31 + B.mtx;
-		var b31 = A.mtx * B.m12 + A.mty * B.m22 + A.mtz * B.m32 + B.mty;
-		var b32 = A.mtx * B.m13 + A.mty * B.m23 + A.mtz * B.m33 + B.mtz;
 		return new S3Matrix(
-			b00, b01, b02,
-			b10, b11, b12,
-			b20, b21, b22,
-			b30, b31, b32
+			A.m11 * B.m11 + A.m12 * B.m21 + A.m13 * B.m31,
+			A.m11 * B.m12 + A.m12 * B.m22 + A.m13 * B.m32,
+			A.m11 * B.m13 + A.m12 * B.m23 + A.m13 * B.m33,
+			A.m21 * B.m11 + A.m22 * B.m21 + A.m23 * B.m31,
+			A.m21 * B.m12 + A.m22 * B.m22 + A.m23 * B.m32,
+			A.m21 * B.m13 + A.m22 * B.m23 + A.m23 * B.m33,
+			A.m31 * B.m11 + A.m32 * B.m21 + A.m33 * B.m31,
+			A.m31 * B.m12 + A.m32 * B.m22 + A.m33 * B.m32,
+			A.m31 * B.m13 + A.m32 * B.m23 + A.m33 * B.m33,
+			A.mtx * B.m11 + A.mty * B.m21 + A.mtz * B.m31 + B.mtx,
+			A.mtx * B.m12 + A.mty * B.m22 + A.mtz * B.m32 + B.mty,
+			A.mtx * B.m13 + A.mty * B.m23 + A.mtz * B.m33 + B.mtz
 		);
 	}
 	else {
