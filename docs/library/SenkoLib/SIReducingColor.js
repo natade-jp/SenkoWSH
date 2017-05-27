@@ -1,8 +1,8 @@
 ﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA */
 
 ﻿/**
- * SIColor.js
- *  色数に関する処理をまとめました。
+ * SIReducingColor.js
+ *  減色に関する処理をまとめました。
  *  オレンジビューアのソースコードを参考に作成しています。
  * 
  * AUTHOR:
