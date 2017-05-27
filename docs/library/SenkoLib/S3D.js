@@ -322,15 +322,28 @@ S3Matrix.getScale = function(x, y, z) {
 };
 
 /**
+ * DirectX準拠。左手座標系
+ * @type Number
+ */
+S3Matrix.rotatetype.DIRECTX	= 0;
+
+/**
+ * OpenGL準拠。右手座標系
+ * @type Number
+ */
+S3Matrix.rotatetype.OPENGL	= 1;
+S3Matrix.rotatetypeset		= S3Matrix.rotatetype.DIRECTX;
+
+/**
  * X軸周りの回転行列を作成します。
  * X軸回転・仰俯角（ぎょうふかく）・垂直角・ピッチに対応。
- * DirectX準拠。左手座標系。
  * @param {double} rad
  * @returns {S3Matrix}
  */
 S3Matrix.getRotateX = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
+	sin *= S3Matrix.rotatetypeset === S3Matrix.rotatetype.DIRECTX ? 1.0 : -1.0;
 	return new S3Matrix(
 		1.0,	0.0,	0.0,
 		0.0,	cos,	sin,
@@ -341,13 +354,13 @@ S3Matrix.getRotateX = function(rad) {
 /**
  * Y軸周りの回転行列を作成します。
  * Y軸回転・水平回転・水平角・ヘディングに対応。左手座標系。
- * DirectX準拠。左手座標系。
  * @param {double} rad
  * @returns {S3Matrix}
  */
 S3Matrix.getRotateY = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
+	sin *= S3Matrix.rotatetypeset === S3Matrix.rotatetype.DIRECTX ? 1.0 : -1.0;
 	return new S3Matrix(
 		cos,	0.0,	-sin,
 		0.0,	1.0,	0.0,
@@ -358,13 +371,13 @@ S3Matrix.getRotateY = function(rad) {
 /**
  * Z軸周りの回転行列を作成します。
  * Z軸回転・レンズ回転・回転角・バンクに対応。左手座標系。
- * DirectX準拠。左手座標系。
  * @param {double} rad
  * @returns {S3Matrix}
  */
 S3Matrix.getRotateZ = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
+	sin *= S3Matrix.rotatetypeset === S3Matrix.rotatetype.DIRECTX ? 1.0 : -1.0;
 	return new S3Matrix(
 		cos,	sin,	0.0,
 		-sin,	cos,	0.0,
