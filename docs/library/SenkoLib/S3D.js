@@ -322,19 +322,6 @@ S3Matrix.getScale = function(x, y, z) {
 };
 
 /**
- * DirectX準拠。左手座標系
- * @type Number
- */
-S3Matrix.DIRECTX	= 0;
-
-/**
- * OpenGL準拠。右手座標系
- * @type Number
- */
-S3Matrix.OPENGL		= 1;
-S3Matrix.rotatetypeset		= S3Matrix.DIRECTX;
-
-/**
  * X軸周りの回転行列を作成します。
  * X軸回転・仰俯角（ぎょうふかく）・垂直角・ピッチに対応。
  * @param {double} rad
@@ -343,7 +330,6 @@ S3Matrix.rotatetypeset		= S3Matrix.DIRECTX;
 S3Matrix.getRotateX = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
-	sin *= S3Matrix.rotatetypeset === S3Matrix.DIRECTX ? 1.0 : -1.0;
 	return new S3Matrix(
 		1.0,	0.0,	0.0,
 		0.0,	cos,	sin,
@@ -360,7 +346,6 @@ S3Matrix.getRotateX = function(rad) {
 S3Matrix.getRotateY = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
-	sin *= S3Matrix.rotatetypeset === S3Matrix.DIRECTX ? 1.0 : -1.0;
 	return new S3Matrix(
 		cos,	0.0,	-sin,
 		0.0,	1.0,	0.0,
@@ -377,7 +362,6 @@ S3Matrix.getRotateY = function(rad) {
 S3Matrix.getRotateZ = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
-	sin *= S3Matrix.rotatetypeset === S3Matrix.DIRECTX ? 1.0 : -1.0;
 	return new S3Matrix(
 		cos,	sin,	0.0,
 		-sin,	cos,	0.0,
