@@ -362,7 +362,7 @@ S3Matrix.getRotateY = function(rad) {
  * @param {double} rad
  * @returns {S3Matrix}
  */
-S3Matrix.getRotateY = function(rad) {
+S3Matrix.getRotateZ = function(rad) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
 	return new S3Matrix(
