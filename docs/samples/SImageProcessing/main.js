@@ -287,7 +287,8 @@ function testEtc(panel) {
 		"ガウシアンフィルタ",
 		"バイラテラルフィルタ",
 		"レンズフィルタ",
-		"アンシャープ"
+		"アンシャープ",
+		"減色"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -339,6 +340,14 @@ function testEtc(panel) {
 		else if(cb_filtertype.getSelectedItem() === filtertype[7]) {
 			src.setSelecter(SIData.selectertype.FILL);
 			src.filterUnSharp(7, 1);
+			canvas_dst.putImageData(src.getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[8]) {
+			var count = src.getColorCount();
+			if(count > 64) {
+				var pallet = src.getPalletMedianCut(64);
+				src.filterSimpleReducingColor(pallet);
+			}
 			canvas_dst.putImageData(src.getImageData());
 		}
 	});
