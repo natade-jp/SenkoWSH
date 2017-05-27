@@ -13,7 +13,7 @@ natade / https://twitter.com/natadea
 【概要・ポリシー】
 ECMAScript ライブラリです。
 
-・Java に似た機能があれば、操作感はJavaに極力似せる
+・操作感はJavaに極力似せる
 ・業務アプリ向けの操作は JavaScript、Windows 上で動く JScript の両方で動くことを目指す
 ・画像関連の操作は、IE, Edge, Chrome, Firefox などで動かすことを目指す
 ・読みやすさと速度をうまくバランスをとったコードにする
@@ -62,17 +62,18 @@ github にアップロード時は、HTML5用動作の基準でアップロー�
 
 
 【SenkoLib ライセンスについて】
-各ファイルの最も上部にライセンスが書いていない場合は、
-NYSL Version 0.9982 / The MIT License のデュアルライセンスとします。
-NYSLがある理由は、プログラマーにとって誰でも自由に使えるのが便利だと考えたからです。
 
-比較的自由とされる MITライセンスなどの場合でも、
-コンパイル後に表記を入れる必要があったりします。
-簡単なJScriptマクロを組むだけの場合で、
-このような制限があると面倒になってしまうと考えております。
+SenkoLib のライセンスは、ソースコードの上部に書かれています。
+ライセンスは、下記の2種類のどちらかが書いてあります。
+
+タイプ1 NYSL Version 0.9982 / The MIT License のデュアルライセンス形式
+タイプ2 The zlib/libpng License
 
 NYSL Version 0.9982
 http://www.kmonos.net/nysl/
 
 The MIT License
 https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+
+The zlib/libpng License (Zlib)
+https://opensource.org/licenses/Zlib

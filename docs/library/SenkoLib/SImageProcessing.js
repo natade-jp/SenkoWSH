@@ -7,9 +7,7 @@
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  *
  * DEPENDENT LIBRARIES:
  */
@@ -369,6 +367,18 @@ SIColorRGBA.prototype.setBlendAlpha = function(x) {
 	var color = this.clone();
 	color.rgba[3] = x * 255.0;
 	return color;
+};
+SIColorRGBA.prototype.getRRGGBB = function() {
+	return (this.rgba[0] << 16) | (this.rgba[1] << 8) | (this.rgba[2] & 0xff);
+};
+SIColorRGBA.prototype.getRed = function() {
+	return (this.rgba[0]);
+};
+SIColorRGBA.prototype.getGreen = function() {
+	return (this.rgba[1]);
+};
+SIColorRGBA.prototype.getBlue = function() {
+	return (this.rgba[2]);
 };
 SIColorRGBA.prototype.toString = function() {
 	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";

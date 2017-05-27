@@ -2,18 +2,17 @@
 
 ﻿/**
  * SIMatrix.js
+ *  オレンジビューアのソースコードを参考に作成しています。
  *  マトリックスとマトリックスを使用する処理を集めました。
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  *
  * DEPENDENT LIBRARIES:
- * 先に、SIMatrix.js が必要です。
+ * 先に、SImageProcessing.js が必要です。
  */
 
 
@@ -21,6 +20,12 @@
  * /////////////////////////////////////////////////////////
  * フィルタ用クラス
  * /////////////////////////////////////////////////////////
+ */
+
+/**
+ * 画像処理に使用する配列
+ * @param {type} matrix 2次元配列
+ * @returns {SIMatrix}
  */
 var SIMatrix = function(matrix) {
 	this.height = matrix.length;
