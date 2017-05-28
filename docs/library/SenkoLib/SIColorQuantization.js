@@ -225,6 +225,33 @@ SIDataRGBA.prototype.getPalletMedianCut = function(colors) {
 };
 
 /**
+ * 使用されている色のパレットを取得します。
+ * 最大256色まで取得します。
+ * @returns {Array|SIData.getPallet.pallet}
+ */
+SIDataRGBA.prototype.getPallet = function() {
+	var pallet = [];
+	var rrggbb_array = new Uint32Array(256);
+	var count = 0;
+	var i = 0;
+	this.forEach(function(color) {
+		if(count > 255) {
+			return;
+		}
+		var rrggbb = color.getRRGGBB();
+		for(i = 0; i < count; i++) {
+			if(rrggbb_array[i] === rrggbb) {
+				return;
+			}
+		}
+		rrggbb_array[count] = rrggbb;
+		pallet[count] = color;
+		count++;
+	});
+	return pallet;
+};
+
+/**
  * グレースケールのパレットを取得します。
  * @param {Number} colors 階調数(2~256)
  * @returns {}
@@ -388,6 +415,13 @@ SIDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, norm
 	});
 };
 
+
+
+/**
+ * 単純減色
+ * @param {type} colorcount 減色後の色数
+ * @returns {undefined}
+ */
 SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
 	var count = this.getColorCount();
 	if(count > colorcount) {
@@ -396,6 +430,12 @@ SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
 	}
 };
 
+/**
+ * 組織的ディザ法による減色
+ * @param {type} colorcount 減色後の色数
+ * @param {type} normType 
+ * @returns {undefined}
+ */
 SIDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) {
 	if(normType === undefined) {
 		normType = SIColor.normType.Eugrid;
