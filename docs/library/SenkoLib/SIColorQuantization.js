@@ -250,20 +250,36 @@ SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
 	return pallet;
 };
 
-
 /**
- * 
- * @returns {unresolved}
+ * パレットから最も近い色を2色探します。
+ * @param {type} palettes
+ * @param {type} normType
+ * @returns {Array}
  */
 SIColor.prototype.searchColor = function(palettes, normType) {
-	
-	
-	
-	return null;
+	var i;
+	var norm = 0;
+	var c1_norm_max	= 0xffffff;
+	var c1_color	= null;
+	var c2_norm_max	= 0xffffff;
+	var c2_color	= null;
+	for(i = 0; i < palettes.length; i++) {
+		norm = this.normColorFast(palettes[i], normType);
+		if(norm < c2_norm_max) {
+			if(norm < c1_norm_max) {
+				c2_norm_max	= c1_norm_max;
+				c2_color	= c1_color;
+				c1_norm_max	= norm;
+				c1_color	= palettes[i];
+			}
+			else {
+				c2_norm_max	= norm;
+				c2_color	= i;
+			}
+		}
+	}
+	return [ c1_color, c2_color ];
 };
-
-
-
 
 var SIColorQuantization = {
 
@@ -277,8 +293,8 @@ var SIColorQuantization = {
 			height	: 2,
 			center	: 1,
 			pattern	: [
-				0, 0, 7,
-				3, 5, 1
+				[0, 0, 7],
+				[3, 5, 1]
 			]
 		},
 
@@ -290,9 +306,9 @@ var SIColorQuantization = {
 			height	: 3,
 			center	: 2,
 			pattern	: [
-				0, 0, 0, 7, 5,
-				3, 5, 7, 5, 3,
-				1, 3, 5, 3, 1
+				[0, 0, 0, 7, 5],
+				[3, 5, 7, 5, 3],
+				[1, 3, 5, 3, 1]
 			]
 		}
 	},
@@ -305,10 +321,10 @@ var SIColorQuantization = {
 			width	: 4,
 			height	: 4,
 			pattern	: [
-				0, 8, 2,10,
-			   12, 4,14, 6,
-				3,11, 1, 9,
-			   15, 7,13, 5
+				[ 0, 8, 2,10],
+				[12, 4,14, 6],
+				[ 3,11, 1, 9],
+				[15, 7,13, 5]
 			]
 		}
 	}
@@ -320,26 +336,17 @@ var SIColorQuantization = {
  * @param {Array} pallet
  * @returns {undefined}
  */
-SIDataRGBA.prototype.filterColorQuantizationSimpleWithPallet = function(pallet) {
+SIDataRGBA.prototype.quantizationSimple = function(pallet) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
-			var j, num;
-			var thiscolor = this.getPixelInside(x, y);
-			var norm = 0;
-			var norm_max = 0xffffff;
-			for(j = 0; j < pallet.length; j++) {
-				norm = thiscolor.normColorFast(pallet[j], SIColor.normType.Eugrid);
-				if(norm < norm_max) {
-					norm_max = norm;
-					num = j;
-				}
-			}
+			var thiscolor   = this.getPixelInside(x, y);
+			var palletcolor = thiscolor.searchColor(pallet, SIColor.normType.Eugrid);
 			var color = new SIColorRGBA(
 				[
-					pallet[num].getColor()[0],
-					pallet[num].getColor()[1],
-					pallet[num].getColor()[2],
+					palletcolor[0].getColor()[0],
+					palletcolor[0].getColor()[1],
+					palletcolor[0].getColor()[2],
 					thiscolor.getColor()[3]
 				]
 			);

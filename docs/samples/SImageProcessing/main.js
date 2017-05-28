@@ -346,7 +346,7 @@ function testEtc(panel) {
 			var count = src.getColorCount();
 			if(count > 64) {
 				var pallet = src.getPalletMedianCut(64);
-				src.filterColorQuantizationSimpleWithPallet(pallet);
+				src.quantizationSimple(pallet);
 			}
 			canvas_dst.putImageData(src.getImageData());
 		}
