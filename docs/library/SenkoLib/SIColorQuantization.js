@@ -415,11 +415,88 @@ SIDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, norm
 	});
 };
 
-
+/**
+ * パレットから誤差拡散法による減色を行います。
+ * @param {Array} palettes
+ * @param {SIColorQuantization.diffusionPattern} diffusionPattern
+ * @returns {undefined}
+ */
+SIDataRGBA.prototype.quantizationDiffusion = function(palettes, diffusionPattern) {
+	
+	// 誤差拡散するにあたって、0未満や255より大きな値を使用するため
+	// 一旦、下記のバッファにうつす
+	var pixelcount	= this.width * this.height;
+	var color_r		= new Int16Array(pixelcount);
+	var color_g		= new Int16Array(pixelcount);
+	var color_b		= new Int16Array(pixelcount);
+	
+	// 現在の位置
+	var point		= 0;
+	this.forEach(function(thiscolor, x, y, data) {
+		point = y * data.width + x;
+		color_r[point] = thiscolor.getRed();
+		color_g[point] = thiscolor.getGreen();
+		color_b[point] = thiscolor.getBlue();
+	});
+	
+	// 誤差拡散できない右端
+	var width_max = this.width - diffusionPattern.width + diffusionPattern.center;
+	
+	// パターンを正規化して合計を1にする
+	var px, py;
+	var pattern_sum = 0;
+	for(py = 0; py < diffusionPattern.height; py++) {
+		for(px = 0; px < diffusionPattern.width; px++) {
+			pattern_sum += diffusionPattern.pattern[py][px];
+		}
+	}
+	var pattern_normalize = [];
+	for(py = 0; py < diffusionPattern.height; py++) {
+		pattern_normalize[py] = [];
+		for(px = 0; px < diffusionPattern.width; px++) {
+			pattern_normalize[py][px] = diffusionPattern.pattern[py][px] / pattern_sum;
+		}
+	}
+	
+	// 選択処理
+	this.forEach(function(thiscolor, x, y, data) {
+		point = y * data.width + x;
+		var diffcolor = new SIColorRGBA(
+			[color_r[point], color_g[point], color_b[point], 255]
+		);
+		// 最も近い色を探して
+		var palletcolor = diffcolor.searchColor(palettes, SIColor.normType.Eugrid);
+		palletcolor = palletcolor.c1.color;
+		// 値を設定する
+		data.setPixelInside(x, y, palletcolor.exchangeColorAlpha(thiscolor));
+		// 右端の近くは誤差分散させられないので拡散しない
+		if(x > width_max) {
+			return;
+		}
+		// ここから誤差を求める
+		var deltacolor = diffcolor.subColor(palletcolor);
+		for(py = 0; py < diffusionPattern.height; py++) {
+			px = py === 0 ? diffusionPattern.center : 0;
+			for(; px < diffusionPattern.width; px++) {
+				var dx = x + px - diffusionPattern.center;
+				var dy = y + py;
+				// 画面外への拡散を防止する
+				if((dx < 0) || (dy >= data.height)){
+					continue;
+				}
+				var dp = dy * data.width + dx;
+				color_r[dp] += deltacolor.getRed()   * pattern_normalize[py][px];
+				color_g[dp] += deltacolor.getGreen() * pattern_normalize[py][px];
+				color_b[dp] += deltacolor.getBlue()  * pattern_normalize[py][px];
+			}
+		}
+	});
+	
+};
 
 /**
  * 単純減色
- * @param {type} colorcount 減色後の色数
+ * @param {Array} colorcount 減色後の色数
  * @returns {undefined}
  */
 SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
@@ -432,8 +509,8 @@ SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
 
 /**
  * 組織的ディザ法による減色
- * @param {type} colorcount 減色後の色数
- * @param {type} normType 
+ * @param {Array} colorcount 減色後の色数
+ * @param {SIColor.normType} normType 
  * @returns {undefined}
  */
 SIDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) {
@@ -447,6 +524,26 @@ SIDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) 
 			pallet,
 			SIColorQuantization.orderPattern.patternBayer,
 			normType
+		);
+	}
+};
+
+/**
+ * 誤差拡散法による減色
+ * @param {Array} colorcount
+ * @param {SIColorQuantization.diffusionPattern} diffusionPattern
+ * @returns {undefined}
+ */
+SIDataRGBA.prototype.filterQuantizationDiffusion = function(colorcount, diffusionPattern) {
+	if(diffusionPattern === undefined) {
+		diffusionPattern = SIColorQuantization.diffusionPattern.patternFloydSteinberg;
+	}
+	var count = this.getColorCount();
+	if(count > colorcount) {
+		var pallet = this.getPalletMedianCut(colorcount);
+		this.quantizationDiffusion(
+			pallet,
+			diffusionPattern
 		);
 	}
 };
