@@ -69,8 +69,8 @@ var filterSurudosa = function(imagedata, surudosa) {
 
 var filterOutotsu = function(imagedata, outotsu) {
 	var power = Math.pow(outotsu, 2);
-	imagedata.each(function(x, y, color) {
-		return color.mul(power);
+	imagedata.forEach(function(color, x, y) {
+		imagedata.setPixelInside(x, y, color.mul(power));
 	});
 };
 

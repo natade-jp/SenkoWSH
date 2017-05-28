@@ -24,18 +24,15 @@ SIDataRGBA.prototype.getColorCount = function() {
 	// 0x200000 = 256 * 256 * 256 / 8 = 2097152
 	var sw = new Uint8ClampedArray(0x200000);
 	var count = 0;
-	var x = 0, y = 0;
-	for(; y < this.height; y++) {
-		for(x = 0; x < this.width; x++) {
-			var rrggbb = this.getPixelInside(x, y).getRRGGBB();
-			var p1 = rrggbb >> 3; // x / 8
-			var p2 = rrggbb  % 7; // x & 8
-			if(((sw[p1] >> p2) & 1) === 0) {
-				count++;
-				sw[p1] = (sw[p1] ^ (1 << p2)) & 0xFF;
-			}
+	this.forEach(function(color) {
+		var rrggbb = color.getRRGGBB();
+		var p1 = rrggbb >> 3; // x / 8
+		var p2 = rrggbb  % 7; // x & 8
+		if(((sw[p1] >> p2) & 1) === 0) {
+			count++;
+			sw[p1] = (sw[p1] ^ (1 << p2)) & 0xFF;
 		}
-	}
+	});
 	return count;
 };
 
@@ -83,12 +80,9 @@ SIDataRGBA.prototype.getPalletMedianCut = function(colors) {
 	}
 	
 	// あらかじめ各色が何画素含まれているかを調査する
-	var x = 0, y = 0;
-	for(; y < this.height; y++) {
-		for(x = 0; x < this.width; x++) {
-			color[RGBtoPositionForColor(this.getPixelInside(x, y))]++;
-		}
-	}
+	this.forEach(function(targetcolor) {
+		color[RGBtoPositionForColor(targetcolor)]++;
+	});
 	
 	// 色の幅
 	var r_delta, g_delta, b_delta;
@@ -259,9 +253,9 @@ SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
 SIColor.prototype.searchColor = function(palettes, normType) {
 	var i;
 	var norm = 0;
-	var c1_norm_max	= 0xffffff;
+	var c1_norm_max	= 0x7fffffff;
 	var c1_color	= null;
-	var c2_norm_max	= 0xffffff;
+	var c2_norm_max	= 0x7ffffffe;
 	var c2_color	= null;
 	for(i = 0; i < palettes.length; i++) {
 		norm = this.normColorFast(palettes[i], normType);
@@ -320,6 +314,7 @@ var SIColorQuantization = {
 		patternBayer : {
 			width	: 4,
 			height	: 4,
+			maxnumber : 16,
 			pattern	: [
 				[ 0, 8, 2,10],
 				[12, 4,14, 6],
@@ -333,24 +328,15 @@ var SIColorQuantization = {
 
 /**
  * パレットを用いて単純減色する
- * @param {Array} pallet
+ * @param {Array} palettes
  * @returns {undefined}
  */
-SIDataRGBA.prototype.quantizationSimple = function(pallet) {
-	var x = 0, y = 0;
-	for(; y < this.height; y++) {
-		for(x = 0; x < this.width; x++) {
-			var thiscolor   = this.getPixelInside(x, y);
-			var palletcolor = thiscolor.searchColor(pallet, SIColor.normType.Eugrid);
-			var color = new SIColorRGBA(
-				[
-					palletcolor[0].getColor()[0],
-					palletcolor[0].getColor()[1],
-					palletcolor[0].getColor()[2],
-					thiscolor.getColor()[3]
-				]
-			);
-			this.setPixelInside(x, y, color);
-		}
-	}
+SIDataRGBA.prototype.quantizationSimple = function(palettes) {
+	this.forEach(function(thiscolor, x, y, data) {
+		var palletcolor = thiscolor.searchColor(palettes, SIColor.normType.Eugrid);
+		data.setPixelInside(x, y, palletcolor[0].exchangeColorAlpha(thiscolor));
+	});
+};
+
+SIDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, normType) {
 };

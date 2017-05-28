@@ -113,6 +113,9 @@ SIColor.prototype.getBlendAlpha = function() {
 SIColor.prototype.setBlendAlpha = function() {
 	return null;
 };
+SIColor.prototype.exchangeColorAlpha = function() {
+	return null;
+};
 SIColor.ipLerp = function(v0, v1, x) {
 	var delta = v1.subColor(v0);
 	return v0.addColor(delta.mul(x));
@@ -278,6 +281,9 @@ SIColorY.prototype.getBlendAlpha = function() {
 SIColorY.prototype.setBlendAlpha = function() {
 	return this;
 };
+SIColorY.prototype.exchangeColorAlpha = function() {
+	return this;
+};
 SIColorY.prototype.toString = function() {
 	return "color(" + this.y + ")";
 };
@@ -405,6 +411,9 @@ SIColorRGBA.prototype.setBlendAlpha = function(x) {
 	var color = this.clone();
 	color.rgba[3] = x * 255.0;
 	return color;
+};
+SIColorRGBA.prototype.exchangeColorAlpha = function(color) {
+	return new SIColorRGBA( [ this.rgba[0], this.rgba[1], this.rgba[2], color.rgba[3] ]);
 };
 SIColorRGBA.prototype.getRRGGBB = function() {
 	return (this.rgba[0] << 16) | (this.rgba[1] << 8) | (this.rgba[2] & 0xff);
@@ -959,15 +968,14 @@ SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
  * 
 /**
  * 全画素に指定した関数の操作を行う
- * @param {function} func func(x, y, newcolor) 実行したいコールバック関数
+ * @param {function} callback callback(color, x, y, this) 実行したいコールバック関数
  * @returns {undefined}
  */
-SIData.prototype.each = function(func) {
+SIData.prototype.forEach = function(callback) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
-			var newcolor = func(x, y, this.getPixelInside(x, y));
-			this.setPixelInside(x, y, newcolor);
+			callback(this.getPixelInside(x, y), x, y, this);
 		}
 	}
 };
@@ -1039,11 +1047,10 @@ SIDataRGBA.prototype.getImageData = function() {
 	return imagedata;
 };
 SIDataRGBA.prototype.grayscale = function() {
-	this.each(function(x, y, color) {
+	this.forEach(function(color, x, y, data) {
 		var luminance = ~~color.luminance();
-		return new SIColorRGBA(
-			[luminance, luminance, luminance, color.rgba[3]]
-		);
+		var newcolor = new SIColorRGBA( [luminance, luminance, luminance, color.rgba[3]] );
+		data.setPixelInside(x, y, newcolor);
 	});
 };
 var SIDataY = function() {
