@@ -79,11 +79,30 @@ SIColor.prototype.maxColor = function() {
 SIColor.prototype.minColor = function() {
 	return null;
 };
-SIColor.prototype.normManhattan = function() {
+SIColor.normType = {
+	/**
+	 * マンハッタン距離を使用する
+	 * @type Number
+	 */
+	Manhattan : 0,
+
+	/**
+	 * ユーグリッド距離を使用する
+	 * @type Number
+	 */
+	Eugrid : 1
+};
+SIColor.prototype.norm = function() {
 	return null;
 };
-SIColor.prototype.normEugrid = function() {
+SIColor.prototype.normFast = function() {
 	return null;
+};
+SIColor.prototype.normColor = function(c, normType) {
+	return this.subColor(c).norm(normType);
+};
+SIColor.prototype.normColorFast = function(c, normType) {
+	return this.subColor(c).normFast(normType);
 };
 SIColor.prototype.getBlendAlpha = function() {
 	return null;
@@ -241,10 +260,10 @@ SIColorY.prototype.maxColor = function(c) {
 SIColorY.prototype.minColor = function(c) {
 	return new SIColorY(Math.min(c.y, this.y));
 };
-SIColorY.prototype.normManhattan = function() {
+SIColorY.prototype.norm = function() {
 	return Math.abs(this.y);
 };
-SIColorY.prototype.normEugrid = function() {
+SIColorY.prototype.normFast = function() {
 	return Math.abs(this.y);
 };
 SIColorY.prototype.getBlendAlpha = function() {
@@ -354,11 +373,21 @@ SIColorRGBA.prototype.minColor = function(c) {
 		Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
 		Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
 };
-SIColorRGBA.prototype.normManhattan = function() {
-	return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
+SIColorRGBA.prototype.norm = function(normType) {
+	if(normType === SIColor.normType.Manhattan) {
+		return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
+	}
+	else if(normType === SIColor.normType.Eugrid) {
+		return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
+	}
 };
-SIColorRGBA.prototype.normEugrid = function() {
-	return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
+SIColorRGBA.prototype.normFast = function(normType) {
+	if(normType === SIColor.normType.Manhattan) {
+		return Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2]);
+	}
+	else if(normType === SIColor.normType.Eugrid) {
+		return this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2];
+	}
 };
 SIColorRGBA.prototype.getBlendAlpha = function() {
 	return this.rgba[3] / 255.0;

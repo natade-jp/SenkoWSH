@@ -1,4 +1,4 @@
-﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA */
+﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA, SIColor, SIColorY */
 
 ﻿/**
  * SIColorQuantization.js
@@ -250,29 +250,88 @@ SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
 	return pallet;
 };
 
+
+/**
+ * 
+ * @returns {unresolved}
+ */
+SIColor.prototype.searchColor = function(palettes, normType) {
+	
+	
+	
+	return null;
+};
+
+
+
+
+var SIColorQuantization = {
+
+	diffusionPattern : {
+
+		/**
+		 * 誤差拡散法に用いるFloyd & Steinbergのパターン
+		 */
+		patternFloydSteinberg : {
+			width	: 3,
+			height	: 2,
+			center	: 1,
+			pattern	: [
+				0, 0, 7,
+				3, 5, 1
+			]
+		},
+
+		/**
+		 * 誤差拡散法に用いるJarvis,Judice & Ninkeのパターン
+		 */
+		patternJarvisJudiceNinke : {
+			width	: 5,
+			height	: 3,
+			center	: 2,
+			pattern	: [
+				0, 0, 0, 7, 5,
+				3, 5, 7, 5, 3,
+				1, 3, 5, 3, 1
+			]
+		}
+	},
+	
+	orderPattern : {
+		/**
+		 * 組織的ディザ法に用いるBayerのパターン
+		 */
+		patternBayer : {
+			width	: 4,
+			height	: 4,
+			pattern	: [
+				0, 8, 2,10,
+			   12, 4,14, 6,
+				3,11, 1, 9,
+			   15, 7,13, 5
+			]
+		}
+	}
+	
+};
+
 /**
  * パレットを用いて単純減色する
  * @param {Array} pallet
  * @returns {undefined}
  */
-SIDataRGBA.prototype.filterSimpleReducingColor = function(pallet) {
+SIDataRGBA.prototype.filterColorQuantizationSimpleWithPallet = function(pallet) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
 			var j, num;
 			var thiscolor = this.getPixelInside(x, y);
-			var sum = 0;
-			var max = 0xffffff;
+			var norm = 0;
+			var norm_max = 0xffffff;
 			for(j = 0; j < pallet.length; j++) {
-				var difr = pallet[j].getColor()[0] - thiscolor.getColor()[0];
-				var difg = pallet[j].getColor()[1] - thiscolor.getColor()[1];
-				var difb = pallet[j].getColor()[2] - thiscolor.getColor()[2];
-				difr *= difr;
-				difg *= difg;
-				difb *= difb;
-				sum = difr + difg + difb;
-				if(sum<max) {
-					max = sum;
+				norm = thiscolor.normColorFast(pallet[j], SIColor.normType.Eugrid);
+				if(norm < norm_max) {
+					norm_max = norm;
 					num = j;
 				}
 			}
@@ -287,49 +346,4 @@ SIDataRGBA.prototype.filterSimpleReducingColor = function(pallet) {
 			this.setPixelInside(x, y, color);
 		}
 	}
-};
-
-SIColorQuantization = {
-	
-	/**
-	 * 誤差拡散法に用いるFloyd & Steinbergのパターン
-	 */
-	patternFloydSteinberg : {
-		width	: 3,
-		height	: 2,
-		center	: 1,
-		pattern	: [
-			0, 0, 7,
-			3, 5, 1
-		]
-	},
-	
-	/**
-	 * 誤差拡散法に用いるJarvis,Judice & Ninkeのパターン
-	 */
-	patternJarvisJudiceNinke : {
-		width	: 5,
-		height	: 3,
-		center	: 2,
-		pattern	: [
-			0, 0, 0, 7, 5,
-			3, 5, 7, 5, 3,
-			1, 3, 5, 3, 1
-		]
-	},
-	
-	/**
-	 * 組織的ディザ法に用いるBayerのパターン
-	 */
-	patternBayer : {
-		width	: 4,
-		height	: 4,
-		pattern	: [
-			0, 8, 2,10,
-		   12, 4,14, 6,
-			3,11, 1, 9,
-		   15, 7,13, 5
-		]
-	}
-	
 };

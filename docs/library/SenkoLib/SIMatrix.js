@@ -1,4 +1,4 @@
-﻿/* global System, ImageData, SIData */
+﻿/* global System, ImageData, SIData, SIColor */
 
 ﻿/**
  * SIMatrix.js
@@ -251,8 +251,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 					if(!tgtcolor) {
 						continue;
 					}
-					var delta = tgtcolor.subColor(thiscolor);
-					newfilter = exptable[Math.floor(delta.normManhattan())] * m[my][mx];
+					newfilter = exptable[Math.floor(tgtcolor.normColor(thiscolor, SIColor.normType.Eugrid))] * m[my][mx];
 					newcolor = newcolor.addColor(tgtcolor.mul(newfilter));
 					sumfilter += newfilter;
 				}
