@@ -61,6 +61,9 @@ SIColor.prototype.table = function() {
 SIColor.prototype.random = function() {
 	return null;
 };
+SIColor.prototype.luminance = function() {
+	return null;
+};
 SIColor.prototype.addColor = function() {
 	return null;
 };
@@ -242,6 +245,9 @@ SIColorY.prototype.table = function(table) {
 SIColorY.prototype.random = function() {
 	return new SIColorY(Math.random() * 256);
 };
+SIColorY.prototype.luminance = function() {
+	return this.y;
+};
 SIColorY.prototype.addColor = function(c) {
 	return new SIColorY(this.y + c.y);
 };
@@ -342,6 +348,9 @@ SIColorRGBA.prototype.random = function() {
 	return new SIColorRGBA([
 		Math.floor(Math.random() * 256), Math.floor(Math.random() * 256),
 		Math.floor(Math.random() * 256), Math.floor(Math.random() * 256) ]);
+};
+SIColorRGBA.prototype.luminance = function() {
+	return 0.2126 * this.rgba[0] + 0.7152 * this.rgba[1] + 0.0722 * this.rgba[2];
 };
 SIColorRGBA.prototype.addColor = function(c) {
 	return new SIColorRGBA([
@@ -1031,11 +1040,7 @@ SIDataRGBA.prototype.getImageData = function() {
 };
 SIDataRGBA.prototype.grayscale = function() {
 	this.each(function(x, y, color) {
-		var luminance = 
-			  0.2126 * color.rgba[0]
-			+ 0.7152 * color.rgba[1]
-			+ 0.0722 * color.rgba[2];
-		luminance = ~~luminance;
+		var luminance = ~~color.luminance();
 		return new SIColorRGBA(
 			[luminance, luminance, luminance, color.rgba[3]]
 		);
