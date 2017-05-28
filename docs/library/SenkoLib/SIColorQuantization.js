@@ -1,7 +1,7 @@
 ﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA */
 
 ﻿/**
- * SIReducingColor.js
+ * SIColorQuantization.js
  *  減色に関する処理をまとめました。
  *  オレンジビューアのソースコードを参考に作成しています。
  * 
@@ -231,6 +231,26 @@ SIDataRGBA.prototype.getPalletMedianCut = function(colors) {
 };
 
 /**
+ * グレースケールのパレットを取得します。
+ * @param {Number} colors 階調数(2~256)
+ * @returns {}
+ */
+SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
+	var n = colors < 2 ? 2 : colors > 256 ? 256 : colors;
+	var pallet = [];
+	var diff = 255.0 / (n - 1);
+	var col = 0.0;
+	var i;
+	for(i = 0; i < n; i++) {
+		var y = Math.round(col);
+		y = y < 0 ? 0 : y > 255 ? 255 : y;
+		pallet[i] = new SIColorRGBA([y, y, y, 255]);
+		col += diff;
+	}
+	return pallet;
+};
+
+/**
  * パレットを用いて単純減色する
  * @param {Array} pallet
  * @returns {undefined}
@@ -267,4 +287,49 @@ SIDataRGBA.prototype.filterSimpleReducingColor = function(pallet) {
 			this.setPixelInside(x, y, color);
 		}
 	}
+};
+
+SIColorQuantization = {
+	
+	/**
+	 * 誤差拡散法に用いるFloyd & Steinbergのパターン
+	 */
+	patternFloydSteinberg : {
+		width	: 3,
+		height	: 2,
+		center	: 1,
+		pattern	: [
+			0, 0, 7,
+			3, 5, 1
+		]
+	},
+	
+	/**
+	 * 誤差拡散法に用いるJarvis,Judice & Ninkeのパターン
+	 */
+	patternJarvisJudiceNinke : {
+		width	: 5,
+		height	: 3,
+		center	: 2,
+		pattern	: [
+			0, 0, 0, 7, 5,
+			3, 5, 7, 5, 3,
+			1, 3, 5, 3, 1
+		]
+	},
+	
+	/**
+	 * 組織的ディザ法に用いるBayerのパターン
+	 */
+	patternBayer : {
+		width	: 4,
+		height	: 4,
+		pattern	: [
+			0, 8, 2,10,
+		   12, 4,14, 6,
+			3,11, 1, 9,
+		   15, 7,13, 5
+		]
+	}
+	
 };
