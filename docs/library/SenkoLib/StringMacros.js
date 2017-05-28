@@ -1,20 +1,13 @@
 ﻿/**
- * StringMacros.js
+ * SenkoLib StringMacros.js
+ *  文字列操作ライブラリ
  * 
- * VERSION:
- *  0.02
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
- *
+ * 
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
- *
- * HISTORY:
- *  2014/04/24 - v0.01 - natade - first release
- *  
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ * 
  * DEPENDENT LIBRARIES:
  *  なし
  */

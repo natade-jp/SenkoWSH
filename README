@@ -13,26 +13,26 @@ natade / https://twitter.com/natadea
 【概要・ポリシー】
 ECMAScript ライブラリです。
 
-・操作感はJavaに極力似せる
+・操作感をJavaに極力似せる
 ・業務アプリ向けの操作は JavaScript、Windows 上で動く JScript の両方で動くことを目指す
 ・画像関連の操作は、IE, Edge, Chrome, Firefox などで動かすことを目指す
-・読みやすさと速度をうまくバランスをとったコードにする
+・読みやすさを重視したコードにする
 ・1つのJavaScriptライブラリには1つのクラス、それに類するクラス群を書く
 ・移植性を上げるため、出来る限り単体でロードするだけで動作することを目指す
 
 
 【文字コードについて】
-HTML5用動作の場合は、utf-8（BOM付き※, UTF-8, LF）とします。
-JScript用動作の場合は、utf-16le（BOM付き, UTF-16, LittleEndian, CRLF）とします。
-Windows上ではJScriptに切り替えられるように「toHTML5.wsf」「toJScript.wsf」で変更が行えます。
-スクリプトで自動で文字コード変換を行う都合上、BOM付きとします。
-これは、日本語が少ししか含まれていないutf-8を、WSHが判断できないためです。
-github にアップロード時は、HTML5用動作の基準でアップロードします。
+ソースコードは、utf-8（BOM付き, UTF-8, LF）で統一します。
+スクリプトで自動で文字コード変換を行う都合上、BOM付きとしています。
+なお、Windows上ではJScriptに切り替えられるように「toHTML5.wsf」「toJScript.wsf」で変更が行えます。
 
 
 【フォルダ構成】
+
 ./
 　READMEと、上述のHTML5⇔JScript変換用WSF置き場
+　toJScript.wsf　utf-16le（BOM付き, UTF-16, LittleEndian, CRLF）に変換されます。
+　toHTML5.wsf　utf-8（BOM付き, UTF-8, LF）に変換されます。
 
 ./docs/index.html
 　「GitHub Pages」の公開用サイト
@@ -40,40 +40,52 @@ github にアップロード時は、HTML5用動作の基準でアップロー�
 
 ./docs/library/
 　サンプルやアプリを使用するときに使用するライブラリ置き場
+　ここには、アプリケーションを作成するための SenkoLib 以外のライブラリを置くことがあります。
 
 ./docs/library/SenkoLib
 　SenkoLibを構成するJavaScirptライブラリがおいてあります。
 　もし他のクラスに依存する場合は、コメントに説明文を書く必要があります。
-　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
-　各クラスのテスト用プログラム、サンプルプログラムは、
-　sample内にフォルダを作成して入れます。
+　文字コードは、utf-8（BOM付き, UTF-8, LF）とします。
 
 ./docs/samples
 　SenkoLib内部に入っている各クラスの使用方法が入っています。
 　テストプログラムのようにメソッドが正しく動作するような形でいれます。
-　「index.html」「main.wsf」は、依存ライブラリ追加以外に変更しないでください。
+　「index.html」「main.wsf」は、依存ライブラリ追加以外に変更しません。
 　「main.js」を変更してサンプルプログラムを作ります。
-　文字コードは、utf-8（BOM付き, UTF-8, LF）としてください。
-　サンプルのライセンスは、但し書きがないかぎり、NYSL Version 0.9982 とします。
+　文字コードは、utf-8（BOM付き, UTF-8, LF）とします。
 
 ./docs/applications
 　SenkoLibを用いた、より実践的なアプリケーションを作成します。
-　アプリケーションのライセンスは、The MIT Licenseとします。
 
 
-【SenkoLib ライセンスについて】
 
-SenkoLib のライセンスは、ソースコードの上部に書かれています。
-ライセンスは、下記の2種類のどちらかが書いてあります。
+【ライセンスについて】
 
-タイプ1 NYSL Version 0.9982 / The MIT License のデュアルライセンス形式
-タイプ2 The zlib/libpng License
+ライブラリとサンプルとアプリケーションは、
+私の元気のために、それぞれライセンスが異なります。
 
-NYSL Version 0.9982
-http://www.kmonos.net/nysl/
 
-The MIT License
-https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+SenkoLib Library (./docs/library/SenkoLib)
+　SenkoLib のライセンスは、ソースコードの上部に書かれています。
+　書かれていない場合は、zlibライセンスとします
 
-The zlib/libpng License (Zlib)
-https://opensource.org/licenses/Zlib
+　The zlib/libpng License
+　https://opensource.org/licenses/Zlib
+
+
+SenkoLib Samples (./docs/samples)
+　ライブラリを使用したサンプルのライセンスは、
+　ソースコードの上部に書かれています。
+　書かれていない場合は、NYSL Version 0.9982とします
+　
+　NYSL Version 0.9982
+　http://www.kmonos.net/nysl/
+
+
+SenkoLib Applications (./docs/samples)
+　ライブラリを使用したアプリケーションのライセンスは、
+　ソースコードの上部に書かれています。
+　書かれていない場合は、 MIT ライセンスとします
+　
+　The MIT License
+　https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license

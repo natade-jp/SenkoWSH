@@ -2,15 +2,16 @@
 
 ﻿/**
  * SIMatrix.js
+ *  画像処理ライブラリの中の行列を使用する画像処理
+ *   ・畳込みによるFIRフィルタがメインです。
  *  オレンジビューアのソースコードを参考に作成しています。
- *  マトリックスとマトリックスを使用する処理を集めました。
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
+ * 
  * DEPENDENT LIBRARIES:
  * 先に、SImageProcessing.js が必要です。
  */

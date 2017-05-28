@@ -1,27 +1,11 @@
 ﻿/**
- * Byte.js
+ * SenkoLib Byte.js
  * 
- * VERSION:
- *  0.06
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
- *
- * HISTORY:
- *  2013/06/04 - v0.01 - natade - first release
- *  2013/06/27 - v0.02 - natade - bug fix  bitのoffsetが誤っていた
- *  2013/08/24 - v0.03 - natade - change   NYSL Version 0.9982 -> TRIPLE LICENSE
- *  2013/09/15 - v0.04 - natade -  ビット長取得のgetBitLengthを追加, getBitを最適化
- *                       cloneとコンストラクタ追加
- *                       setLengthのメモリ削減の方法にバグがあったのを修正
- *  2013/11/07 - v0.05 - natade - JavaScript Lint による修正
- *  2013/11/10 - v0.06 - natade - HTML5のDataViewに近いことが分かったため、構文を似せた。
- *                       いずれ、DataViewに切り換えしやすいように名前を変更するかもしれません。
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  *
  * DEPENDENT LIBRARIES:
  *  なし

@@ -1,25 +1,13 @@
 ﻿/* global Random */
 
 ﻿/**
- * BigInteger.js
+ * SenkoLib BigInteger.js
  * 
- * VERSION:
- *  0.05
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
- * HISTORY:
- *  2013/10/27 - v0.01 - natade - first release
- *  2013/11/07 - v0.02 - natade - JavaScript Lint による修正
- *  2014/05/10 - v0.03 - natade - 割った時の解が0のときの余りが誤っていたのを修正
- *							文字列 ⇔ 内部変数のアルゴリズムを変更して高速化
- *							-0"を入れると、表示時に"-0"と表示してしまう不具合を修正
- *  2015/08/20 - v0.04 - natade	0のabsをとるとsignが1になるのを修正
- *  2015/09/27 - v0.05 - natade	shortValue, byteValue を追加、一部コメントを追加
  *
  * DEPENDENT LIBRARIES:
  *  素数関連のメソッドは Random.js が必要

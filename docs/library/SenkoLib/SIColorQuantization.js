@@ -2,7 +2,7 @@
 
 ﻿/**
  * SIColorQuantization.js
- *  減色に関する処理をまとめました。
+ *  画像処理ライブラリの中の減色に関する処理
  *  オレンジビューアのソースコードを参考に作成しています。
  * 
  * AUTHOR:
@@ -10,7 +10,7 @@
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
+ * 
  * DEPENDENT LIBRARIES:
  * 先に、SImageProcessing.js が必要です。
  */

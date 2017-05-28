@@ -2,13 +2,15 @@
 
 ﻿/**
  * SImageProcessing.js
+ *  画像処理ライブラリの基本ライブラリ
+ *  色(SIColor) と 画像データ(SIData) の定義を行います。
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
+ * 
  * DEPENDENT LIBRARIES:
  */
 

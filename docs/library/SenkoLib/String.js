@@ -1,25 +1,13 @@
 ﻿/**
- * String.js
+ * SenkoLib String.js
+ *  文字列の拡張ライブラリ
  * 
- * VERSION:
- *  0.05
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  *
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
- *
- * HISTORY:
- *  2013/04/24 - v0.01 - natade - first release
- *  2013/04/30 - v0.02 - natade - support  unicode, harfwidth, fullwidth, hiragana, katakana
- *  2013/08/25 - v0.03 - natade - change   NYSL Version 0.9982 -> TRIPLE LICENSE
- *                     - support  String.format
- *  2013/10/24 - v0.04 - natade - String.format で %s 指定時でも空白に、0を使用可能とした
- *  2013/11/07 - v0.05 - natade - JavaScript Lint による修正
- *
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ * 
  * DEPENDENT LIBRARIES:
  *  なし
  */

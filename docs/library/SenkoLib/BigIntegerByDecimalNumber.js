@@ -1,9 +1,6 @@
 ﻿/**
- * BigIntegerByDecimalNumber.js
+ * SenkoLib BigIntegerByDecimalNumber.js
  * 
- * VERSION:
- *  0.01
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  *

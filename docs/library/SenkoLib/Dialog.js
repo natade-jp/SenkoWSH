@@ -1,23 +1,13 @@
 ﻿/* global WScript */
 
 ﻿/**
- * Dialog.js
- *
- * VERSION:
- *  0.03
+ * SenkoLib Dialog.js
  *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  *
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
- *
- * HISTORY:
- *  2013/05/06 - v0.01 - natade - first release
- *  2013/08/24 - v0.02 - natade - change   NYSL Version 0.9982 -> TRIPLE LICENSE
- *  2013/11/10 - v0.03 - natade - JavaScriptに対応、制限時間を設定してしまう不具合の修正
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  *
  * DEPENDENT LIBRARIES:
  *  なし

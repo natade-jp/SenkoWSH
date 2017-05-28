@@ -2,15 +2,16 @@
 
 ﻿/**
  * SI3D.js
- *  3D系の画像処理を集めました。
+ *  画像処理ライブラリの中の3D系画像処理
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
+ * 
  * DEPENDENT LIBRARIES:
+ * 先に、SImageProcessing.js が必要です。
  */
 
 /**

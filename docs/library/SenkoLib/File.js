@@ -1,29 +1,13 @@
 ﻿/* global WScript */
 
 ﻿/**
- * File.js
+ * SenkoLib File.js
  * 
- * VERSION:
- *  0.09
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  *
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
- *
- * HISTORY:
- *  2013/04/07 - v0.01 - natade - first release
- *  2013/04/15 - v0.02 - natade - bug fix
- *  2013/04/22 - v0.03 - natade - support  csv
- *  2013/04/22 - v0.04 - natade - support  http
- *  2013/04/30 - v0.05 - natade - support  binary
- *  2013/08/24 - v0.06 - natade - change   NYSL Version 0.9982 -> TRIPLE LICENSE
- *  2013/11/07 - v0.07 - natade - JavaScript Lint による修正
- *  2013/11/10 - v0.08 - natade - 将来性を考えて、csvの解析部分をCSVToolに分離しました。
- *  2014/06/03 - v0.09 - natade - toStringにbugがあったのを修正
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  *
  * DEPENDENT LIBRARIES:
  *  なし

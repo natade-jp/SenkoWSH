@@ -1,20 +1,13 @@
 ﻿/* global BigInteger */
 
 ﻿/**
- * BigDecimal.js
+ * SenkoLib BigDecimal.js
  * 
- * VERSION:
- *  0.02
- *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
- * HISTORY:
- *  2014/06/27 - v0.01 - natade - alpha version
- *  2015/09/27 - v0.02 - natade - beta version (大体実装完了)
  *
  * DEPENDENT LIBRARIES:
  *  なし

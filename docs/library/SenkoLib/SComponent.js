@@ -1,7 +1,8 @@
 ﻿/* global System, Text, Blob, File, Element, ImageData */
 
 ﻿/**
- * SComponent.js
+ * SenkoLib SComponent.js
+ *  HTML5 アプリケーションを作るための GUI パーツクラス
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -10,8 +11,9 @@
  *  NYSL Version 0.9982 / The MIT License の Multi-licensing
  *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
  *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
- *
+ * 
  * DEPENDENT LIBRARIES:
+ *  なし
  */
 
 /**

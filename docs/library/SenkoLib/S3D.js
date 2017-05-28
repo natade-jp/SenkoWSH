@@ -1,15 +1,16 @@
 ﻿/* global System, Text, Blob, File, Element, ImageData */
 
 ﻿/**
- * S3D.js
+ * SenkoLib S3D.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
+ * 
  * DEPENDENT LIBRARIES:
+ *  なし
  */
 
 

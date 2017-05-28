@@ -1,32 +1,18 @@
 ﻿/* global WSH, WScript, main */
 
 ﻿/**
- * System.js
+ * SenkoLib System.js
+ *  次のようなことを使用する場合に利用する。
  * 
- * VERSION:
- *  0.09
- *
+ * ・JScript として動作させる。
+ * ・コンソールに文字を出す
+ * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  *
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
- * HISTORY:
- *  2013/04/15 - v0.01 - natade - first release
- *  2013/04/22 - v0.02 - natade - bug fix
- *  2013/04/24 - v0.03 - natade - support  readLine
- *  2013/08/24 - v0.04 - natade - change   NYSL Version 0.9982 -> TRIPLE LICENSE
-						isJScirpt追加
-						標準出力をFireFox, Chorme, IE10 を想定して動作するように変更
- *  2013/10/15 - v0.05 - natade - System.out.printfを追加
- *  2013/11/07 - v0.06 - natade - JavaScript Lint による修正
- *  2013/11/10 - v0.07 - natade - window.prompt()を追加
- *  2013/11/12 - v0.08 - natade - printlnのブラウザ対応の際に関数なのに括弧を着けていなかったのを修正
- *  2014/05/10 - v0.09 - natade - HTML用 main関数を実行する startHtmlMain を追加
- *
  * DEPENDENT LIBRARIES:
  *  System.out.printf を使用する場合は String.js が必要です
  *  ない場合は、依存した機能が動作しません。

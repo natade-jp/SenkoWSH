@@ -1,13 +1,11 @@
 ﻿/**
- * Color.js
+ * SenkoLib Color.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  NYSL Version 0.9982 / The MIT License の Multi-licensing
- *  NYSL Version 0.9982 http://www.kmonos.net/nysl/
- *  The MIT License https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
  *
  * DEPENDENT LIBRARIES:
  *  なし
