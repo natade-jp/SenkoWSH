@@ -288,7 +288,8 @@ function testEtc(panel) {
 		"バイラテラルフィルタ",
 		"レンズフィルタ",
 		"アンシャープ",
-		"減色"
+		"単純減色",
+		"組織的ディザ法による減色"
 	];
 	var cb_filtertype = new SComboBox(filtertype);
 	cb_filtertype.setWidth(32);
@@ -343,11 +344,11 @@ function testEtc(panel) {
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[8]) {
-			var count = src.getColorCount();
-			if(count > 64) {
-				var pallet = src.getPalletMedianCut(64);
-				src.quantizationSimple(pallet);
-			}
+			src.filterQuantizationSimple(64);
+			canvas_dst.putImageData(src.getImageData());
+		}
+		else if(cb_filtertype.getSelectedItem() === filtertype[9]) {
+			src.filterQuantizationOrdered(64);
 			canvas_dst.putImageData(src.getImageData());
 		}
 	});

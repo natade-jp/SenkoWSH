@@ -248,7 +248,7 @@ SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
  * パレットから最も近い色を2色探します。
  * @param {type} palettes
  * @param {type} normType
- * @returns {Array}
+ * @returns {object}
  */
 SIColor.prototype.searchColor = function(palettes, normType) {
 	var i;
@@ -268,11 +268,20 @@ SIColor.prototype.searchColor = function(palettes, normType) {
 			}
 			else {
 				c2_norm_max	= norm;
-				c2_color	= i;
+				c2_color	= palettes[i];
 			}
 		}
 	}
-	return [ c1_color, c2_color ];
+	return {
+		c1 : {
+			color : c1_color,
+			norm  : c1_norm_max
+		},
+		c2 : {
+			color : c2_color,
+			norm  : c2_norm_max
+		}
+	};
 };
 
 var SIColorQuantization = {
@@ -334,9 +343,70 @@ var SIColorQuantization = {
 SIDataRGBA.prototype.quantizationSimple = function(palettes) {
 	this.forEach(function(thiscolor, x, y, data) {
 		var palletcolor = thiscolor.searchColor(palettes, SIColor.normType.Eugrid);
-		data.setPixelInside(x, y, palletcolor[0].exchangeColorAlpha(thiscolor));
+		data.setPixelInside(x, y, palletcolor.c1.color.exchangeColorAlpha(thiscolor));
 	});
 };
 
+/**
+ * パレットから組織的ディザ法による減色を行います。(Error-diffusion dithering)
+ * @param {Array} palettes
+ * @param {SIColorQuantization.orderPattern} orderPattern
+ * @param {SIColor.normType} normType
+ * @returns {undefined}
+ */
 SIDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, normType) {
+	this.forEach(function(thiscolor, x, y, data) {
+		var palletcolor = thiscolor.searchColor(palettes, normType);
+		var color1 = palletcolor.c1.color;
+		var norm1  = palletcolor.c1.norm;
+		var color2 = palletcolor.c2.color;
+		var norm2  = palletcolor.c2.norm;
+		var normsum = norm1 + norm2;
+		var sumdiff = 0;
+		normsum = normsum === 0 ? 1 : normsum;
+		var pattern = orderPattern.pattern[y % orderPattern.height][x % orderPattern.width];
+		var newcolor = null;
+		if(color1.luminance > color2.luminance) {
+			sumdiff = Math.floor((norm2 * orderPattern.maxnumber) / normsum);
+			if (pattern <= sumdiff) {
+				newcolor = color1.exchangeColorAlpha(thiscolor); // 1番目に似ている色
+			}
+			else {
+				newcolor = color2.exchangeColorAlpha(thiscolor); // 2番目に似ている色
+			}
+		}
+		else {
+			sumdiff = Math.floor((norm1 * orderPattern.maxnumber) / normsum);
+			if (pattern >= sumdiff) {
+				newcolor = color1.exchangeColorAlpha(thiscolor); // 1番目に似ている色
+			}
+			else {
+				newcolor = color2.exchangeColorAlpha(thiscolor); // 2番目に似ている色
+			}
+		}
+		data.setPixelInside(x, y, newcolor);
+	});
+};
+
+SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
+	var count = this.getColorCount();
+	if(count > colorcount) {
+		var pallet = this.getPalletMedianCut(colorcount);
+		this.quantizationSimple(pallet);
+	}
+};
+
+SIDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) {
+	if(normType === undefined) {
+		normType = SIColor.normType.Eugrid;
+	}
+	var count = this.getColorCount();
+	if(count > colorcount) {
+		var pallet = this.getPalletMedianCut(colorcount);
+		this.quantizationOrdered(
+			pallet,
+			SIColorQuantization.orderPattern.patternBayer,
+			normType
+		);
+	}
 };
