@@ -116,6 +116,9 @@ SIColor.prototype.setBlendAlpha = function() {
 SIColor.prototype.exchangeColorAlpha = function() {
 	return null;
 };
+SIColor.prototype.equals = function() {
+	return false;
+};
 SIColor.ipLerp = function(v0, v1, x) {
 	var delta = v1.subColor(v0);
 	return v0.addColor(delta.mul(x));
@@ -284,6 +287,9 @@ SIColorY.prototype.setBlendAlpha = function() {
 SIColorY.prototype.exchangeColorAlpha = function() {
 	return this;
 };
+SIColorY.prototype.equals = function(c) {
+	return this.y === c.y;
+};
 SIColorY.prototype.toString = function() {
 	return "color(" + this.y + ")";
 };
@@ -426,6 +432,12 @@ SIColorRGBA.prototype.getGreen = function() {
 };
 SIColorRGBA.prototype.getBlue = function() {
 	return (this.rgba[2]);
+};
+SIColorRGBA.prototype.equals = function(c) {
+	return	(this.rgba[0] === c.rgba[0]) &&
+			(this.rgba[1] === c.rgba[1]) &&
+			(this.rgba[2] === c.rgba[2]) &&
+			(this.rgba[3] === c.rgba[3]) ;
 };
 SIColorRGBA.prototype.toString = function() {
 	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
