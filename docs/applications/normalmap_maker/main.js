@@ -32,7 +32,7 @@ c_denoise.setMajorTickSpacing(1);
 var c_boyake = new SSlider(0, 3);
 c_boyake.setMinorTickSpacing(1);
 c_boyake.setMajorTickSpacing(1);
-var c_outotsu = new SSlider(0, 1);
+var c_outotsu = new SSlider(-1, 1);
 c_outotsu.setMinorTickSpacing(0.001);
 c_outotsu.setValue(0.5);
 var c_surudosa = new SSlider(0, 0.5);
@@ -68,7 +68,7 @@ var filterSurudosa = function(imagedata, surudosa) {
 };
 
 var filterOutotsu = function(imagedata, outotsu) {
-	var power = Math.pow(outotsu, 2);
+	var power = outotsu >= 0 ? Math.pow(outotsu, 1.8) : - Math.pow(-outotsu, 1.8 );
 	imagedata.forEach(function(color, x, y) {
 		imagedata.setPixelInside(x, y, color.mul(power));
 	});
