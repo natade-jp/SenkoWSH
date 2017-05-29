@@ -1,7 +1,7 @@
 ﻿/* global System, ImageData */
 
 ﻿/**
- * SImageProcessing.js
+ * SenkoLib SImageProcessing.js
  *  画像処理ライブラリの基本ライブラリ
  *  色(SIColor) と 画像データ(SIData) の定義を行います。
  * 

@@ -1,7 +1,7 @@
 ﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA, SIColor, SIColorY */
 
 ﻿/**
- * SIColorQuantization.js
+ * SenkoLib SIColorQuantization.js
  *  画像処理ライブラリの中の減色に関する処理
  *  オレンジビューアのソースコードを参考に作成しています。
  * 

@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SCanvas, SFile, SIData, SIMatrix, SFileLoadButton */
+﻿/* global System, SComponent, SCanvas, SFile, SIData, SFileLoadButton */
 
 function testFileLoad(panel) {
 	

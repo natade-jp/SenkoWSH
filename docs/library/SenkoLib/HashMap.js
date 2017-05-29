@@ -1,5 +1,5 @@
 ﻿/**
- * HashMap.js
+ * SenkoLib HashMap.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

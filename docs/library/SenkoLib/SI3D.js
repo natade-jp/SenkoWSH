@@ -1,7 +1,7 @@
 ﻿/* global SIColorRGBA, SIDataY, SIData */
 
 ﻿/**
- * SI3D.js
+ * SenkoLib SI3D.js
  *  画像処理ライブラリの中の3D系画像処理
  * 
  * AUTHOR:

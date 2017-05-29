@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIData, SIMatrix, SFileLoadButton */
+﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIData, SFileLoadButton */
 
 var imagedata_readrgba	= new SIDataRGBA(32, 32);
 imagedata_readrgba.setSelecter(SIData.selectertype.REPEAT);
