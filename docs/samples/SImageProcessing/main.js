@@ -117,7 +117,7 @@ function testInterpolation(panel) {
 	
 	var selectertype = [
 		SIData.selectertype.REPEAT,
-		SIData.selectertype.FILL
+		SIData.selectertype.CLAMP
 	];
 	var interpolationtype = [
 		SIData.interpolationtype.NEAREST_NEIGHBOR,
@@ -304,12 +304,12 @@ function testEtc(panel) {
 		var src = new SIDataRGBA(canvas_src.getImageData());
 		var m;
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
-			src.setSelecter(SIData.selectertype.FILL);
+			src.setSelecter(SIData.selectertype.CLAMP);
 			src.filterBlur(7);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[1]) {
-			src.setSelecter(SIData.selectertype.FILL);
+			src.setSelecter(SIData.selectertype.CLAMP);
 			src.filterSharp(0.5);
 			canvas_dst.putImageData(src.getImageData());
 		}
@@ -325,22 +325,22 @@ function testEtc(panel) {
 			canvas_dst.putImageData(height.getNormalMap().getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[4]) {
-			src.setSelecter(SIData.selectertype.FILL);
+			src.setSelecter(SIData.selectertype.CLAMP);
 			src.filterGaussian(7);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[5]) {
-			src.setSelecter(SIData.selectertype.FILL);
+			src.setSelecter(SIData.selectertype.CLAMP);
 			src.filterBilateral(5, 0.8);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[6]) {
-			src.setSelecter(SIData.selectertype.FILL);
+			src.setSelecter(SIData.selectertype.CLAMP);
 			src.filterSoftLens(5, 1.2);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[7]) {
-			src.setSelecter(SIData.selectertype.FILL);
+			src.setSelecter(SIData.selectertype.CLAMP);
 			src.filterUnSharp(7, 1);
 			canvas_dst.putImageData(src.getImageData());
 		}

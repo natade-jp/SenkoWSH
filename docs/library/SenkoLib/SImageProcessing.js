@@ -471,7 +471,7 @@ SIColorRGBA.prototype.mulMatrix = function(m) {
  * xとyは中に納まらなくてもよいが、離散値を使用すること
  * 
  * SIPixelSelecterNormal はみでた色は null
- * SIPixelSelecterFill   はみでた色は最も近い位置の色にする
+ * SIPixelSelecterClamp   はみでた色は最も近い位置の色にする
  * SIPixelSelecterRepeat はみでた色は反対側の方向から取得する
  * /////////////////////////////////////////////////////////
  */
@@ -505,11 +505,11 @@ var SIPixelSelecterInside = function(width, height) {
 	SIPixelSelecter.prototype._init.call(this, width, height);
 };
 SIPixelSelecterInside.prototype = new SIPixelSelecter();
-var SIPixelSelecterFill = function(width, height) {
+var SIPixelSelecterClamp = function(width, height) {
 	SIPixelSelecter.prototype._init.call(this, width, height);
 };
-SIPixelSelecterFill.prototype = new SIPixelSelecter();
-SIPixelSelecterFill.prototype.getPixelPosition = function(x, y) {
+SIPixelSelecterClamp.prototype = new SIPixelSelecter();
+SIPixelSelecterClamp.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -557,9 +557,9 @@ SIPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
 var SIData = function() {
 };
 SIData.selectertype = {
-	INSIDE : "INSIDE",
-	FILL   : "FILL",
-	REPEAT : "REPEAT"
+	INSIDE			: "INSIDE",
+	CLAMP	: "CLAMP",
+	REPEAT			: "REPEAT"
 };
 SIData.interpolationtype = {
 	NEAREST_NEIGHBOR	: "NEAREST_NEIGHBOR",
@@ -613,8 +613,8 @@ SIData.prototype.setSelecter = function(_selectertype) {
 	if(_selectertype === SIData.selectertype.INSIDE) {
 		this.selecter = new SIPixelSelecterInside(this.width, this.height);
 	}
-	else if(_selectertype === SIData.selectertype.FILL) {
-		this.selecter = new SIPixelSelecterFill(this.width, this.height);
+	else if(_selectertype === SIData.selectertype.CLAMP) {
+		this.selecter = new SIPixelSelecterClamp(this.width, this.height);
 	}
 	else if(_selectertype === SIData.selectertype.REPEAT) {
 		this.selecter = new SIPixelSelecterRepeat(this.width, this.height);

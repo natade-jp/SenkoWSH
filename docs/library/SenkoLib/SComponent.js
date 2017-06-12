@@ -739,10 +739,10 @@ SCanvas.prototype.getContext = function() {
 	return this.context;
 };
 SCanvas.drawtype = {
-	ORIGINAL					: 0,
-	ASPECT_RATIO				: 1,
-	FILL						: 2,
-	LETTER_BOX					: 3
+	ORIGINAL		: 0,
+	ASPECT_RATIO	: 1,
+	STRETCH			: 2,
+	LETTER_BOX		: 3
 };
 SCanvas.prototype.clear = function() {
 	this.context.clearRect(0, 0,  this.canvas.width, this.canvas.height);
@@ -762,7 +762,7 @@ SCanvas.prototype._putImage = function(image, isresizecanvas, drawsize) {
 		width  = image.width;
 		height = image.height;
 	}
-	else if(SCanvas.drawtype.FILL === drawsize) {
+	else if(SCanvas.drawtype.STRETCH === drawsize) {
 		width  = pixelsize.width;
 		height = pixelsize.height;
 		isresize = false;
