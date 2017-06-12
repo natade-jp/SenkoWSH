@@ -1,14 +1,14 @@
 ﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIData, SFileLoadButton */
 
 var imagedata_readrgba	= new SIDataRGBA(32, 32);
-imagedata_readrgba.setSelecter(SIData.selectertype.REPEAT);
-imagedata_readrgba.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+imagedata_readrgba.setWrapMode(SIData.wrapmode.REPEAT);
+imagedata_readrgba.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
 var imagedata_readgray	= new SIDataY(32, 32);
-imagedata_readgray.setSelecter(SIData.selectertype.REPEAT);
-imagedata_readgray.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+imagedata_readgray.setWrapMode(SIData.wrapmode.REPEAT);
+imagedata_readgray.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
 var imagedata_resized	= new SIDataY(32, 32);
-imagedata_resized.setSelecter(SIData.selectertype.REPEAT);
-imagedata_resized.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+imagedata_resized.setWrapMode(SIData.wrapmode.REPEAT);
+imagedata_resized.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
 var setting_width	= 0;
 var setting_height	= 0;
 var setting_denoise	= 0;
@@ -85,8 +85,8 @@ var redrawReadSample = function() {
 	// 入力画像が小さいのであれば、入力画像にデノイズ処理
 	if(src_size < dst_size) {
 		var imagedata_denoised = new SIDataY(imagedata_readgray);
-		imagedata_denoised.setSelecter(SIData.selectertype.REPEAT);
-		imagedata_denoised.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+		imagedata_denoised.setWrapMode(SIData.wrapmode.REPEAT);
+		imagedata_denoised.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
 		filterDenoise(imagedata_denoised, setting_denoise);
 		filterBoyake(imagedata_denoised, setting_boyake);
 		imagedata_resized.drawSIData(imagedata_denoised, 0, 0, setting_width, setting_height);
@@ -106,8 +106,8 @@ var redrawReadSample = function() {
 var redrawNormalMap = function() {
 	
 	var imagedata_filter = new SIDataY(imagedata_resized);
-	imagedata_filter.setSelecter(SIData.selectertype.REPEAT);
-	imagedata_filter.setInterPolation(SIData.interpolationtype.BICUBIC_SOFT);
+	imagedata_filter.setWrapMode(SIData.wrapmode.REPEAT);
+	imagedata_filter.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
 	
 	setting_outotsu		= parseFloat(c_outotsu.getValue());
 	setting_surudosa	= parseFloat(c_surudosa.getValue());

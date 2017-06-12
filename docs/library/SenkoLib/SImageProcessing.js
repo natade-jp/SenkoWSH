@@ -470,28 +470,28 @@ SIColorRGBA.prototype.mulMatrix = function(m) {
  * 指定した部分の色を取得するクラス
  * xとyは中に納まらなくてもよいが、離散値を使用すること
  * 
- * SIPixelSelecterNormal はみでた色は null
- * SIPixelSelecterClamp   はみでた色は最も近い位置の色にする
- * SIPixelSelecterRepeat はみでた色は反対側の方向から取得する
+ * SIWrapNone	はみでた色は null
+ * SIWrapClamp	はみでた色は最も近い位置の色にする
+ * SIWrapRepeat	はみでた色は反対側の方向から取得する
  * /////////////////////////////////////////////////////////
  */
-var SIPixelSelecter = function() {
+var SIWrap = function() {
 };
-SIPixelSelecter.prototype._init = function(width, height) {
+SIWrap.prototype._init = function(width, height) {
 	this.setSize(width, height);
 };
-SIPixelSelecter.prototype.clone = function() {
+SIWrap.prototype.clone = function() {
 	var func = this.getPixelPosition;
-	var x = new SIPixelSelecter();
+	var x = new SIWrap();
 	x._init(this.width, this.height);
 	x.getPixelPosition = func;
 	return x;
 };
-SIPixelSelecter.prototype.setSize = function(width, height) {
+SIWrap.prototype.setSize = function(width, height) {
 	this.width  = width;
 	this.height = height;
 };
-SIPixelSelecter.prototype.getPixelPosition = function(x, y) {
+SIWrap.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -501,15 +501,15 @@ SIPixelSelecter.prototype.getPixelPosition = function(x, y) {
 		return null;
 	}
 };
-var SIPixelSelecterInside = function(width, height) {
-	SIPixelSelecter.prototype._init.call(this, width, height);
+var SIWrapNone = function(width, height) {
+	SIWrap.prototype._init.call(this, width, height);
 };
-SIPixelSelecterInside.prototype = new SIPixelSelecter();
-var SIPixelSelecterClamp = function(width, height) {
-	SIPixelSelecter.prototype._init.call(this, width, height);
+SIWrapNone.prototype = new SIWrap();
+var SIWrapClamp = function(width, height) {
+	SIWrap.prototype._init.call(this, width, height);
 };
-SIPixelSelecterClamp.prototype = new SIPixelSelecter();
-SIPixelSelecterClamp.prototype.getPixelPosition = function(x, y) {
+SIWrapClamp.prototype = new SIWrap();
+SIWrapClamp.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -520,11 +520,11 @@ SIPixelSelecterClamp.prototype.getPixelPosition = function(x, y) {
 	y = ~~Math.floor(Math.min(Math.max(0, y), this.height - 1));
 	return [x, y];
 };
-var SIPixelSelecterRepeat = function(width, height) {
-	SIPixelSelecter.prototype._init.call(this, width, height);
+var SIWrapRepeat = function(width, height) {
+	SIWrap.prototype._init.call(this, width, height);
 };
-SIPixelSelecterRepeat.prototype = new SIPixelSelecter();
-SIPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
+SIWrapRepeat.prototype = new SIWrap();
+SIWrapRepeat.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -556,12 +556,12 @@ SIPixelSelecterRepeat.prototype.getPixelPosition = function(x, y) {
 
 var SIData = function() {
 };
-SIData.selectertype = {
+SIData.wrapmode = {
 	INSIDE			: "INSIDE",
-	CLAMP	: "CLAMP",
+	CLAMP			: "CLAMP",
 	REPEAT			: "REPEAT"
 };
-SIData.interpolationtype = {
+SIData.filtermode = {
 	NEAREST_NEIGHBOR	: "NEAREST_NEIGHBOR",
 	BILINEAR			: "BILINEAR",
 	COSINE				: "COSINE",
@@ -584,14 +584,14 @@ SIData.brendtype = {
 };
 
 SIData.prototype._init = function() {
-	this.setSelecter(SIData.selectertype.INSIDE);
-	this.setInterPolation(SIData.interpolationtype.NEAREST_NEIGHBOR);
+	this.setWrapMode(SIData.wrapmode.INSIDE);
+	this.setFilterMode(SIData.filtermode.NEAREST_NEIGHBOR);
 	this.setBlendType(SIData.brendtype.NONE);
 	this.globalAlpha = 1.0;
 };
 SIData.prototype._copyData = function(x) {
-	x.setSelecter(this.getSelecter());
-	x.setInterPolation(this.getInterPolation());
+	x.setWrapMode(this.getWrapMode());
+	x.setFilterMode(this.getFilterMode());
 	x.setBlendType(this.getBlendType());
 	x.setSize(this.width, this.height);
 	x.data.set(this.data);
@@ -605,74 +605,74 @@ SIData.prototype.clone = function() {
 
 /**
  * 画面外の色を選択する方法を選ぶ
- * @param {SIData.selectertype} _selectertype
+ * @param {SIData.wrapmode} _wrapmode
  * @returns {undefined}
  */
-SIData.prototype.setSelecter = function(_selectertype) {
-	this._selectertype = _selectertype;
-	if(_selectertype === SIData.selectertype.INSIDE) {
-		this.selecter = new SIPixelSelecterInside(this.width, this.height);
+SIData.prototype.setWrapMode = function(_wrapmode) {
+	this._wrapmode = _wrapmode;
+	if(_wrapmode === SIData.wrapmode.INSIDE) {
+		this.wrapper = new SIWrapNone(this.width, this.height);
 	}
-	else if(_selectertype === SIData.selectertype.CLAMP) {
-		this.selecter = new SIPixelSelecterClamp(this.width, this.height);
+	else if(_wrapmode === SIData.wrapmode.CLAMP) {
+		this.wrapper = new SIWrapClamp(this.width, this.height);
 	}
-	else if(_selectertype === SIData.selectertype.REPEAT) {
-		this.selecter = new SIPixelSelecterRepeat(this.width, this.height);
+	else if(_wrapmode === SIData.wrapmode.REPEAT) {
+		this.wrapper = new SIWrapRepeat(this.width, this.height);
 	}
 };
 
 /**
  * 画面外の色を選択する方法を取得する
- * @returns {SIData.selectertype}
+ * @returns {SIData.wrapmode}
  */
-SIData.prototype.getSelecter = function() {
-	return this._selectertype;
+SIData.prototype.getWrapMode = function() {
+	return this._wrapmode;
 };
 
 /**
  * 実数で色を選択した場合に、どのように色を補完するか選択する
- * @param {SIData.interpolationtype} iptype
+ * @param {SIData.filtermode} iptype
  * @returns {undefined}
  */
-SIData.prototype.setInterPolation = function(iptype) {
+SIData.prototype.setFilterMode = function(iptype) {
 	this.iptype	= iptype;
-	if(iptype === SIData.interpolationtype.NEAREST_NEIGHBOR) {
+	if(iptype === SIData.filtermode.NEAREST_NEIGHBOR) {
 		this.ipfunc	= SIColor.ipLerp;
 		this.ipn	= 1;
 	}
-	else if(iptype === SIData.interpolationtype.BILINEAR) {
+	else if(iptype === SIData.filtermode.BILINEAR) {
 		this.ipfunc = SIColor.ipLerp;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.interpolationtype.COSINE) {
+	else if(iptype === SIData.filtermode.COSINE) {
 		this.ipfunc = SIColor.ipCosine;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.interpolationtype.HERMITE4_3) {
+	else if(iptype === SIData.filtermode.HERMITE4_3) {
 		this.ipfunc = SIColor.ipHermite2p3;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.interpolationtype.HERMITE4_5) {
+	else if(iptype === SIData.filtermode.HERMITE4_5) {
 		this.ipfunc = SIColor.ipHermite2p5;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.interpolationtype.HERMITE16) {
+	else if(iptype === SIData.filtermode.HERMITE16) {
 		this.ipfunc = SIColor.ipHermite4p;
 		this.ipn	= 4;
 	}
-	else if(iptype === SIData.interpolationtype.BICUBIC) {
+	else if(iptype === SIData.filtermode.BICUBIC) {
 		this.ipfunc = SIColor.ipBicubicSoft;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIData.interpolationtype.BICUBIC_SOFT) {
+	else if(iptype === SIData.filtermode.BICUBIC_SOFT) {
 		this.ipfunc = SIColor.ipBicubicSoft;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIData.interpolationtype.BICUBIC_NORMAL) {
+	else if(iptype === SIData.filtermode.BICUBIC_NORMAL) {
 		this.ipfunc = SIColor.ipBicubicNormal;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIData.interpolationtype.BICUBIC_SHARP) {
+	else if(iptype === SIData.filtermode.BICUBIC_SHARP) {
 		this.ipfunc = SIColor.ipBicubicSharp;
 		this.ipn	= 16;
 	}
@@ -680,9 +680,9 @@ SIData.prototype.setInterPolation = function(iptype) {
 
 /**
  * 実数で色を選択した場合に、どのように色を補完するか取得する
- * @returns {SIData.interpolationtype}
+ * @returns {SIData.filtermode}
  */
-SIData.prototype.getInterPolation = function() {
+SIData.prototype.getFilterMode = function() {
 	return this.iptype;
 };
 
@@ -730,12 +730,12 @@ SIData.prototype.getBlendType = function() {
  */
 SIData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
-		this.selecter.setSize(width, height);
+		this.wrapper.setSize(width, height);
 		return;
 	}
 	this.width	= width;
 	this.height	= height;
-	this.selecter.setSize(width, height);
+	this.wrapper.setSize(width, height);
 	this.data	= new Uint8ClampedArray(this.width * this.height * 4);
 };
 
@@ -792,11 +792,11 @@ SIData.prototype.setPixelInside = function(x, y, color) {
  * @returns {SIColor}
  */
 SIData.prototype.getPixel = function(x, y) {
-	var p = this.selecter.getPixelPosition(x, y);
+	var p = this.wrapper.getPixelPosition(x, y);
 	if(p) {
 		return this.getPixelInside(p[0], p[1]);
 	}
-	return null;
+	return this.getPixelInside(0, 0).zero();
 };
 
 /**
@@ -808,7 +808,7 @@ SIData.prototype.getPixel = function(x, y) {
  * @returns {undefined}
  */
 SIData.prototype.setPixel = function(x, y, color) {
-	var p = this.selecter.getPixelPosition(x, y);
+	var p = this.wrapper.getPixelPosition(x, y);
 	if(p) {
 		if(this._blendtype === SIData.brendtype.NONE) {
 			this.setPixelInside(p[0], p[1], color);
@@ -1091,7 +1091,7 @@ SIDataY.prototype.setSize = function(width, height) {
 	}
 	this.width	= width;
 	this.height	= height;
-	this.selecter.setSize(width, height);
+	this.wrapper.setSize(width, height);
 	this.data	= new Float32Array(this.width * this.height);
 };
 SIDataY.prototype.getPixelInside = function(x, y) {

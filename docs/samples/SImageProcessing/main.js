@@ -115,28 +115,28 @@ function testInterpolation(panel) {
 	gene.put(inputcanvas, SComponent.putype.NEWLINE);
 	
 	
-	var selectertype = [
-		SIData.selectertype.REPEAT,
-		SIData.selectertype.CLAMP
+	var wrapmode = [
+		SIData.wrapmode.REPEAT,
+		SIData.wrapmode.CLAMP
 	];
-	var interpolationtype = [
-		SIData.interpolationtype.NEAREST_NEIGHBOR,
-		SIData.interpolationtype.BILINEAR,
-		SIData.interpolationtype.COSINE,
-		SIData.interpolationtype.HERMITE4_3,
-		SIData.interpolationtype.HERMITE4_5,
-		SIData.interpolationtype.HERMITE16,
-		SIData.interpolationtype.BICUBIC,
-		SIData.interpolationtype.BICUBIC_SOFT,
-		SIData.interpolationtype.BICUBIC_NORMAL,
-		SIData.interpolationtype.BICUBIC_SHARP
+	var filtermode = [
+		SIData.filtermode.NEAREST_NEIGHBOR,
+		SIData.filtermode.BILINEAR,
+		SIData.filtermode.COSINE,
+		SIData.filtermode.HERMITE4_3,
+		SIData.filtermode.HERMITE4_5,
+		SIData.filtermode.HERMITE16,
+		SIData.filtermode.BICUBIC,
+		SIData.filtermode.BICUBIC_SOFT,
+		SIData.filtermode.BICUBIC_NORMAL,
+		SIData.filtermode.BICUBIC_SHARP
 	];
 	
-	var cb_selectertype = new SComboBox(selectertype);
+	var cb_selectertype = new SComboBox(wrapmode);
 	inputcanvas.put(cb_selectertype, SComponent.putype.NEWLINE);
 	cb_selectertype.setWidth(16);
 	
-	var cb_interpolationtype = new SComboBox(interpolationtype);
+	var cb_interpolationtype = new SComboBox(filtermode);
 	cb_selectertype.put(cb_interpolationtype, SComponent.putype.NEWLINE);
 	cb_interpolationtype.setWidth(16);
 	
@@ -145,8 +145,8 @@ function testInterpolation(panel) {
 	cb_interpolationtype.put(button, SComponent.putype.NEWLINE);
 	button.addListener(function() {
 		var srcdata = new SIDataY(inputcanvas.getImageData());
-		srcdata.setSelecter(cb_selectertype.getSelectedItem());
-		srcdata.setInterPolation(cb_interpolationtype.getSelectedItem());
+		srcdata.setWrapMode(cb_selectertype.getSelectedItem());
+		srcdata.setFilterMode(cb_interpolationtype.getSelectedItem());
 		var dstdata = new SIDataY(dstWidth, dstHeight);
 		dstdata.drawSIData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.putImageData(dstdata.getImageData());
@@ -304,12 +304,12 @@ function testEtc(panel) {
 		var src = new SIDataRGBA(canvas_src.getImageData());
 		var m;
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
-			src.setSelecter(SIData.selectertype.CLAMP);
+			src.setWrapMode(SIData.wrapmode.CLAMP);
 			src.filterBlur(7);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[1]) {
-			src.setSelecter(SIData.selectertype.CLAMP);
+			src.setWrapMode(SIData.wrapmode.CLAMP);
 			src.filterSharp(0.5);
 			canvas_dst.putImageData(src.getImageData());
 		}
@@ -320,27 +320,27 @@ function testEtc(panel) {
 		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
 			src.grayscale();
 			var height = new SIDataY(src);
-			height.setSelecter(SIData.selectertype.REPEAT);
+			height.setWrapMode(SIData.wrapmode.REPEAT);
 			height.filterGaussian(5);
 			canvas_dst.putImageData(height.getNormalMap().getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[4]) {
-			src.setSelecter(SIData.selectertype.CLAMP);
+			src.setWrapMode(SIData.wrapmode.CLAMP);
 			src.filterGaussian(7);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[5]) {
-			src.setSelecter(SIData.selectertype.CLAMP);
+			src.setWrapMode(SIData.wrapmode.CLAMP);
 			src.filterBilateral(5, 0.8);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[6]) {
-			src.setSelecter(SIData.selectertype.CLAMP);
+			src.setWrapMode(SIData.wrapmode.CLAMP);
 			src.filterSoftLens(5, 1.2);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[7]) {
-			src.setSelecter(SIData.selectertype.CLAMP);
+			src.setWrapMode(SIData.wrapmode.CLAMP);
 			src.filterUnSharp(7, 1);
 			canvas_dst.putImageData(src.getImageData());
 		}

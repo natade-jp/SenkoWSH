@@ -99,7 +99,7 @@ SIColorRGBA.prototype.getNormalVector = function() {
  * @returns {SIColorRGBA}
  */
 SIDataY.prototype.getNormalMap = function() {
-	if(this.getSelecter() === SIData.selectertype.INSIDE) {
+	if(this.getWrapMode() === SIData.wrapmode.INSIDE) {
 		// 端の値を取得できないのでエラー
 		throw "not inside";
 	}
