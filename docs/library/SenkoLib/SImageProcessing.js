@@ -149,7 +149,25 @@ SIColor.funcInBicubic = function(d, a) {
 		return (-4.0 * a) + (8.0 * a * d) - (5.0 * a * d * d) + (a * d * d * d);
 	}
 };
-SIColor.ipBicubic = function(va, nx, ny, a) {
+SIColor.ipBicubic = function(v0, v1, v2, v3, x, a) {
+	var w0, w1, w2, w3, c;
+	w0 = SIColor.funcInBicubic(x + 1, a);
+	w1 = SIColor.funcInBicubic(x    , a);
+	w2 = SIColor.funcInBicubic(1 - x, a);
+	w3 = SIColor.funcInBicubic(2 - x, a);
+	c = v0.mul(w0).addColor(v1.mul(w1)).addColor(v2.mul(w2)).addColor(v3.mul(w3));
+	return c.mul(1.0 / (w0 + w1 + w2 + w3));
+};
+SIColor.ipBicubicSoft = function(v0, v1, v2, v3, x) {
+	return SIColor.ipBicubic(v0, v1, v2, v3, x, -0.5);
+};
+SIColor.ipBicubicNormal = function(v0, v1, v2, v3, x) {
+	return SIColor.ipBicubic(v0, v1, v2, v3, x, -1.0);
+};
+SIColor.ipBicubicSharp = function(v0, v1, v2, v3, x) {
+	return SIColor.ipBicubic(v0, v1, v2, v3, x, -1.2);
+};
+SIColor.ipBicubic2D = function(va, nx, ny, a) {
 	var output = va[0][0].zero();
 	var x, y, y_weight, weight, sum = 0.0;
 	for(y = 0; y < 4; y++) {
@@ -164,14 +182,14 @@ SIColor.ipBicubic = function(va, nx, ny, a) {
 	output = output.mul(1.0 / sum);
 	return output;
 };
-SIColor.ipBicubicSoft = function(va, nx, ny) {
-	return SIColor.ipBicubic(va, nx, ny, -0.5);
+SIColor.ipBicubic2DSoft = function(va, nx, ny) {
+	return SIColor.ipBicubic2D(va, nx, ny, -0.5);
 };
-SIColor.ipBicubicNormal = function(va, nx, ny) {
-	return SIColor.ipBicubic(va, nx, ny, -1.0);
+SIColor.ipBicubic2DNormal = function(va, nx, ny) {
+	return SIColor.ipBicubic2D(va, nx, ny, -1.0);
 };
-SIColor.ipBicubicSharp = function(va, nx, ny) {
-	return SIColor.ipBicubic(va, nx, ny, -1.2);
+SIColor.ipBicubic2DSharp = function(va, nx, ny) {
+	return SIColor.ipBicubic2D(va, nx, ny, -1.2);
 };
 SIColor.brendNone = function(x, y, alpha) {
 	return y;
@@ -661,20 +679,20 @@ SIData.prototype.setFilterMode = function(iptype) {
 		this.ipn	= 4;
 	}
 	else if(iptype === SIData.filtermode.BICUBIC) {
-		this.ipfunc = SIColor.ipBicubicSoft;
+		this.ipfunc = SIColor.ipBicubic2DNormal;
 		this.ipn	= 16;
 	}
 	else if(iptype === SIData.filtermode.BICUBIC_SOFT) {
 		this.ipfunc = SIColor.ipBicubicSoft;
-		this.ipn	= 16;
+		this.ipn	= 4;
 	}
 	else if(iptype === SIData.filtermode.BICUBIC_NORMAL) {
 		this.ipfunc = SIColor.ipBicubicNormal;
-		this.ipn	= 16;
+		this.ipn	= 4;
 	}
 	else if(iptype === SIData.filtermode.BICUBIC_SHARP) {
 		this.ipfunc = SIColor.ipBicubicSharp;
-		this.ipn	= 16;
+		this.ipn	= 4;
 	}
 };
 
