@@ -243,7 +243,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 			var thisalpha = thiscolor.getBlendAlpha();
 			var sumfilter = 0;
 			var newcolor  = zero_color;
-			m2 = [];
+			var m2 = [];
 			fy = y + fy_offset;
 			for(my = 0; my < matrix.height; my++, fy++) {
 				fx = x + fx_offset;
@@ -253,7 +253,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 					if(!tgtcolor) {
 						continue;
 					}
-					newfilter = exptable[Math.floor(tgtcolor.normColor(thiscolor, SIColor.normType.Eugrid))] * m[my][mx];
+					var newfilter = exptable[Math.floor(tgtcolor.normColor(thiscolor, SIColor.normType.Eugrid))] * m[my][mx];
 					newcolor = newcolor.addColor(tgtcolor.mul(newfilter));
 					sumfilter += newfilter;
 				}
