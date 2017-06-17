@@ -26,16 +26,15 @@
  * @param {type} x
  * @param {type} y
  * @param {type} z
- * @param {type} w
  * @returns {S3Vector}
  */
-var S3Vector = function(x, y, z, w) {
+var S3Vector = function(x, y, z) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
 };
 S3Vector.prototype.clone = function() {
-	return new S3Vector(this.x, this.y, this.z, this.w);
+	return new S3Vector(this.x, this.y, this.z);
 };
 S3Vector.prototype.cross = function(tgt) {
 	return new S3Vector(
@@ -172,7 +171,11 @@ S3Vector.getNormalVector = function(A, B, C) {
  * @param {type} mtz
  * @returns {S3Matrix}
  */
-var S3Matrix = function(m00, m01, m02, m10, m11, m12, m20, m21, m22, mtx, mty, mtz) {
+var S3Matrix = function(
+		m00, m01, m02,
+		m10, m11, m12,
+		m20, m21, m22,
+		mtx, mty, mtz ) {
 	if(arguments.length === 0) {
 		this.m00 = 0.0;	this.m01 = 0.0;	this.m02 = 0.0;
 		this.m10 = 0.0;	this.m11 = 0.0;	this.m12 = 0.0;
