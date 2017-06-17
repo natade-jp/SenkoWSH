@@ -369,6 +369,11 @@ S3Matrix.prototype.toString = function() {
 		" [" + this.m30 + " " + this.m31 + " " + this.m32 + " " + this.m33 + "]]";
 };
 
+var S3SystemMode = {
+	OPENG_GL	: 0,
+	DIRECT_X	: 1
+};
+
 var S3DepthMode = {
 	/**
 	 * Z値の範囲などの依存関係をOpenGL準拠
@@ -409,9 +414,21 @@ var S3VectorMode = {
 };
 
 var S3System = function() {
-	this.depthmode		= S3DepthMode.OPENG_GL;
-	this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
-	this.vectormode		= S3VectorMode.VECTOR4x1;
+	this.setSystemMode(S3SystemMode.OPENG_GL);
+};
+
+S3System.prototype.setSystemMode = function(mode) {
+	this.systemmode = mode;
+	if(this.systemmode === S3SystemMode.OPENG_GL) {
+		this.depthmode		= S3DepthMode.OPENG_GL;
+		this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
+		this.vectormode		= S3VectorMode.VECTOR4x1;
+	}
+	else {
+		this.depthmode		= S3DepthMode.DIRECT_X;
+		this.dimensionmode	= S3DimensionMode.LEFT_HAND;
+		this.vectormode		= S3VectorMode.VECTOR1x4;
+	}
 };
 
 /**
@@ -468,6 +485,15 @@ S3System.calcAspect = function(width, height) {
 };
 
 /**
+ * 度数法から弧度法に変換
+ * @param {Number} theta
+ * @returns {Number}
+ */
+S3System.calcArc = function(theta) {
+	return((theta / 360) * (2 * Math.PI));
+};
+
+/**
  * パースペクティブ射影行列を作成する
  * @param {Number} fovY 視体積の上下方向の視野角（0度から180度）
  * @param {Number} Aspect 近平面、遠平面のアスペクト比（Width / Height）
@@ -476,7 +502,8 @@ S3System.calcAspect = function(width, height) {
  * @returns {S3Matrix}
  */
 S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Far, Near) {
-	var zoomY = 1.0 / Math.tan(fovY / 2.0);
+	var arc = S3System.calcArc(fovY);
+	var zoomY = 1.0 / Math.tan(arc / 2.0);
 	var zoomX = zoomY / Aspect;
 	var M = new S3Matrix();
 	M.m00 =zoomX; M.m01 =  0.0; M.m02 = 0.0; M.m03 = 0.0;
@@ -576,12 +603,13 @@ S3System.prototype.getMatrixScale = function(x, y, z) {
 
 /**
  * X軸周りの回転行列を作成します。
- * @param {Number} rad
+ * @param {Number} theta 角度を度数法で指定
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixRotateX = function(rad) {
-	var cos = Math.cos(rad);
-	var sin = Math.sin(rad);
+S3System.prototype.getMatrixRotateX = function(theta) {
+	var arc = S3System.calcArc(theta);
+	var cos = Math.cos(arc);
+	var sin = Math.sin(arc);
 	var M = new S3Matrix();
 	M.m00 = 1.0; M.m01 = 0.0; M.m02 = 0.0; M.m03 = 0.0;
 	M.m10 = 0.0; M.m11 = cos; M.m12 = sin; M.m13 = 0.0;
@@ -592,12 +620,13 @@ S3System.prototype.getMatrixRotateX = function(rad) {
 
 /**
  * Y軸周りの回転行列を作成します。
- * @param {Number} rad
+ * @param {Number} theta 角度を度数法で指定
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixRotateY = function(rad) {
-	var cos = Math.cos(rad);
-	var sin = Math.sin(rad);
+S3System.prototype.getMatrixRotateY = function(theta) {
+	var arc = S3System.calcArc(theta);
+	var cos = Math.cos(arc);
+	var sin = Math.sin(arc);
 	var M = new S3Matrix();
 	M.m00 = cos; M.m01 = 0.0; M.m02 =-sin; M.m03 = 0.0;
 	M.m10 = 0.0; M.m11 = 1.0; M.m12 = 0.0; M.m13 = 0.0;
@@ -608,12 +637,13 @@ S3System.prototype.getMatrixRotateY = function(rad) {
 
 /**
  * Z軸周りの回転行列を作成します。
- * @param {Number} rad
+ * @param {Number} theta 角度を度数法で指定
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixRotateZ = function(rad) {
-	var cos = Math.cos(rad);
-	var sin = Math.sin(rad);
+S3System.prototype.getMatrixRotateZ = function(theta) {
+	var arc = S3System.calcArc(theta);
+	var cos = Math.cos(arc);
+	var sin = Math.sin(arc);
 	var M = new S3Matrix();
 	M.m00 = cos; M.m01 = sin; M.m02 = 0.0; M.m03 = 0.0;
 	M.m10 =-sin; M.m11 = cos; M.m12 = 0.0; M.m13 = 0.0;
