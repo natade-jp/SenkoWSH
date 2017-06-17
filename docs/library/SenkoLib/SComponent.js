@@ -1,3 +1,5 @@
+﻿"use strict";
+
 ﻿/* global System, Text, Blob, File, Element, ImageData */
 
 ﻿/**

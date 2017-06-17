@@ -1,4 +1,6 @@
-﻿/* global System, ImageData, SIData, SIColor */
+﻿"use strict";
+﻿
+/* global System, ImageData, SIData, SIColor */
 
 ﻿/**
  * SenkoLib SIFIR.js

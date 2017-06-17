@@ -1,4 +1,6 @@
-﻿/**
+﻿"use strict";
+
+/**
  * SenkoLib String.js
  *  文字列の拡張ライブラリ
  * 
@@ -546,7 +548,7 @@ String.format = function(){
 			parm_number = parseInt(buff , 10);
 		}
 		// 引数を取得
-		parameter = parm[parm_number];
+		var parameter = parm[parm_number];
 		parm_number = parm_number + 1;
 		// [2] フラグ
 		buff = str.match(/^[\-\+\s\#0]+/);

@@ -1,4 +1,4 @@
-﻿/* global System, Text, Blob, File, Element, ImageData */
+"use strict";
 
 ﻿/**
  * SenkoLib S3D.js
@@ -26,15 +26,16 @@
  * @param {type} x
  * @param {type} y
  * @param {type} z
+ * @param {type} w
  * @returns {S3Vector}
  */
-var S3Vector = function(x, y, z) {
+var S3Vector = function(x, y, z, w) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
 };
 S3Vector.prototype.clone = function() {
-	return new S3Vector(this.x, this.y, this.z);
+	return new S3Vector(this.x, this.y, this.z, this.w);
 };
 S3Vector.prototype.cross = function(tgt) {
 	return new S3Vector(
@@ -70,9 +71,9 @@ S3Vector.prototype.mul = function(tgt) {
 	}
 	else if(tgt instanceof S3Matrix) {
 		return new S3Vector(
-			this.x * tgt.m11 + this.y * tgt.m21 + this.z * tgt.m31 + tgt.mtx,
-			this.x * tgt.m12 + this.y * tgt.m22 + this.z * tgt.m32 + tgt.mty,
-			this.x * tgt.m13 + this.y * tgt.m23 + this.z * tgt.m33 + tgt.mtz
+			this.x * tgt.m00 + this.y * tgt.m10 + this.z * tgt.m20 + tgt.mtx,
+			this.x * tgt.m01 + this.y * tgt.m11 + this.z * tgt.m21 + tgt.mty,
+			this.x * tgt.m02 + this.y * tgt.m12 + this.z * tgt.m22 + tgt.mtz
 		);
 	}
 	else {
@@ -156,47 +157,47 @@ S3Vector.getNormalVector = function(A, B, C) {
  */
 
 /**
- * 3x4行列（ 回転などの直交行列に、移動行列を入れたハイブリッド行列、DirectX準拠 ）
+ * 3x4行列（ 回転などの直交行列に、移動行列を入れたハイブリッド行列 ）
+ * @param {type} m00
+ * @param {type} m01
+ * @param {type} m02
+ * @param {type} m10
  * @param {type} m11
  * @param {type} m12
- * @param {type} m13
+ * @param {type} m20
  * @param {type} m21
  * @param {type} m22
- * @param {type} m23
- * @param {type} m31
- * @param {type} m32
- * @param {type} m33
  * @param {type} mtx
  * @param {type} mty
  * @param {type} mtz
  * @returns {S3Matrix}
  */
-var S3Matrix = function(m11, m12, m13, m21, m22, m23, m31, m32, m33, mtx, mty, mtz) {
+var S3Matrix = function(m00, m01, m02, m10, m11, m12, m20, m21, m22, mtx, mty, mtz) {
 	if(arguments.length === 0) {
-		this.m11 = 0.0;	this.m12 = 0.0;	this.m13 = 0.0;
-		this.m21 = 0.0;	this.m22 = 0.0;	this.m23 = 0.0;
-		this.m31 = 0.0;	this.m32 = 0.0;	this.m33 = 0.0;
+		this.m00 = 0.0;	this.m01 = 0.0;	this.m02 = 0.0;
+		this.m10 = 0.0;	this.m11 = 0.0;	this.m12 = 0.0;
+		this.m20 = 0.0;	this.m21 = 0.0;	this.m22 = 0.0;
 		this.mtx = 0.0;	this.mty = 0.0;	this.mtz = 0.0;
 	}
 	else if(arguments.length === 9) {
-		this.m11 = m11;	this.m12 = m12;	this.m13 = m13;
-		this.m21 = m21;	this.m22 = m22;	this.m23 = m23;
-		this.m31 = m31;	this.m32 = m32;	this.m33 = m33;
+		this.m00 = m00;	this.m01 = m01;	this.m02 = m02;
+		this.m10 = m10;	this.m11 = m11;	this.m12 = m12;
+		this.m20 = m20;	this.m21 = m21;	this.m22 = m22;
 		this.mtx = 0.0;	this.mty = 0.0;	this.mtz = 0.0;
 	}
 	else if(arguments.length === 12) {
-		this.m11 = m11;	this.m12 = m12;	this.m13 = m13;
-		this.m21 = m21;	this.m22 = m22;	this.m23 = m23;
-		this.m31 = m31;	this.m32 = m32;	this.m33 = m33;
+		this.m00 = m00;	this.m01 = m01;	this.m02 = m02;
+		this.m10 = m10;	this.m11 = m11;	this.m12 = m12;
+		this.m20 = m20;	this.m21 = m21;	this.m22 = m22;
 		this.mtx = mtx;	this.mty = mty;	this.mtz = mtz;
 	}
 };
 
 S3Vector.prototype.clone = function() {
 	return new S3Matrix(
-		this.m11, this.m12, this.m13,
-		this.m21, this.m22, this.m23,
-		this.m31, this.m32, this.m33,
+		this.m00, this.m01, this.m02,
+		this.m10, this.m11, this.m12,
+		this.m20, this.m21, this.m22,
 		this.mtx, this.mty, this.mtz
 	);
 };
@@ -204,25 +205,25 @@ S3Matrix.prototype.mul = function(tgt) {
 	if(tgt instanceof S3Matrix) {
 		var A = this; var B = tgt;
 		return new S3Matrix(
-			A.m11 * B.m11 + A.m12 * B.m21 + A.m13 * B.m31,
-			A.m11 * B.m12 + A.m12 * B.m22 + A.m13 * B.m32,
-			A.m11 * B.m13 + A.m12 * B.m23 + A.m13 * B.m33,
-			A.m21 * B.m11 + A.m22 * B.m21 + A.m23 * B.m31,
-			A.m21 * B.m12 + A.m22 * B.m22 + A.m23 * B.m32,
-			A.m21 * B.m13 + A.m22 * B.m23 + A.m23 * B.m33,
-			A.m31 * B.m11 + A.m32 * B.m21 + A.m33 * B.m31,
-			A.m31 * B.m12 + A.m32 * B.m22 + A.m33 * B.m32,
-			A.m31 * B.m13 + A.m32 * B.m23 + A.m33 * B.m33,
-			A.mtx * B.m11 + A.mty * B.m21 + A.mtz * B.m31 + B.mtx,
-			A.mtx * B.m12 + A.mty * B.m22 + A.mtz * B.m32 + B.mty,
-			A.mtx * B.m13 + A.mty * B.m23 + A.mtz * B.m33 + B.mtz
+			A.m00 * B.m00 + A.m01 * B.m10 + A.m02 * B.m20,
+			A.m00 * B.m01 + A.m01 * B.m11 + A.m02 * B.m21,
+			A.m00 * B.m02 + A.m01 * B.m12 + A.m02 * B.m22,
+			A.m10 * B.m00 + A.m11 * B.m10 + A.m12 * B.m20,
+			A.m10 * B.m01 + A.m11 * B.m11 + A.m12 * B.m21,
+			A.m10 * B.m02 + A.m11 * B.m12 + A.m12 * B.m22,
+			A.m20 * B.m00 + A.m21 * B.m10 + A.m22 * B.m20,
+			A.m20 * B.m01 + A.m21 * B.m11 + A.m22 * B.m21,
+			A.m20 * B.m02 + A.m21 * B.m12 + A.m22 * B.m22,
+			A.mtx * B.m00 + A.mty * B.m10 + A.mtz * B.m20 + B.mtx,
+			A.mtx * B.m01 + A.mty * B.m11 + A.mtz * B.m21 + B.mty,
+			A.mtx * B.m02 + A.mty * B.m12 + A.mtz * B.m22 + B.mtz
 		);
 	}
-	else {
+	else if(typeof tgt === "number") {
 		return new S3Matrix(
-			this.m11 * tgt, this.m12 * tgt, this.m13 * tgt,
-			this.m21 * tgt, this.m22 * tgt, this.m23 * tgt,
-			this.m31 * tgt, this.m32 * tgt, this.m33 * tgt,
+			this.m00 * tgt, this.m01 * tgt, this.m02 * tgt,
+			this.m10 * tgt, this.m11 * tgt, this.m12 * tgt,
+			this.m20 * tgt, this.m21 * tgt, this.m22 * tgt,
 			this.mtx * tgt, this.mty * tgt, this.mtz * tgt
 		);
 	}
@@ -230,19 +231,19 @@ S3Matrix.prototype.mul = function(tgt) {
 S3Matrix.prototype.det = function() {
 	var A = this;
 	var out;
-	out  = A.m11 * A.m22 * A.m33;
-	out += A.m21 * A.m32 * A.m13;
-	out += A.m31 * A.m12 * A.m23;
-	out -= A.m11 * A.m32 * A.m23;
-	out -= A.m31 * A.m22 * A.m13;
-	out -= A.m21 * A.m12 * A.m33;
+	out  = A.m00 * A.m11 * A.m22;
+	out += A.m10 * A.m21 * A.m02;
+	out += A.m20 * A.m01 * A.m12;
+	out -= A.m00 * A.m21 * A.m12;
+	out -= A.m20 * A.m11 * A.m02;
+	out -= A.m10 * A.m01 * A.m22;
 	return out;
 };
 S3Matrix.prototype.transposed = function() {
 	return new S3Matrix(
-		this.m11, this.m21, this.m31,
-		this.m12, this.m22, this.m32,
-		this.m13, this.m23, this.m33,
+		this.m00, this.m10, this.m20,
+		this.m01, this.m11, this.m21,
+		this.m02, this.m12, this.m22,
 		this.mtx, this.mty, this.mtz
 	);
 };
@@ -253,26 +254,26 @@ S3Matrix.prototype.inverse = function() {
 		return( null );
 	}
 	var B = new S3Matrix();
-	B.m11 = A.m22 * A.m33 - A.m23 * A.m32;
-	B.m12 = A.m13 * A.m32 - A.m12 * A.m33;
-	B.m13 = A.m12 * A.m23 - A.m13 * A.m22;
-	B.m21 = A.m23 * A.m31 - A.m21 * A.m33;
-	B.m22 = A.m11 * A.m33 - A.m13 * A.m31;
-	B.m23 = A.m13 * A.m21 - A.m11 * A.m23;
-	B.m31 = A.m21 * A.m32 - A.m22 * A.m31;
-	B.m32 = A.m12 * A.m31 - A.m11 * A.m32;
-	B.m33 = A.m11 * A.m22 - A.m12 * A.m21;
+	B.m00 = A.m11 * A.m22 - A.m12 * A.m21;
+	B.m01 = A.m02 * A.m21 - A.m01 * A.m22;
+	B.m02 = A.m01 * A.m12 - A.m02 * A.m11;
+	B.m10 = A.m12 * A.m20 - A.m10 * A.m22;
+	B.m11 = A.m00 * A.m22 - A.m02 * A.m20;
+	B.m12 = A.m02 * A.m10 - A.m00 * A.m12;
+	B.m20 = A.m10 * A.m21 - A.m11 * A.m20;
+	B.m21 = A.m01 * A.m20 - A.m00 * A.m21;
+	B.m22 = A.m00 * A.m11 - A.m01 * A.m10;
 	B = B.mul(1.0 / det);
-	B.mtx = - A.mtx * B.m11 - A.mty * B.m21 - A.mtz * B.m31;
-	B.mty = - A.mtx * B.m12 - A.mty * B.m22 - A.mtz * B.m32;
-	B.mtz = - A.mtx * B.m13 - A.mty * B.m23 - A.mtz * B.m33;
+	B.mtx = - A.mtx * B.m00 - A.mty * B.m10 - A.mtz * B.m20;
+	B.mty = - A.mtx * B.m01 - A.mty * B.m11 - A.mtz * B.m21;
+	B.mtz = - A.mtx * B.m02 - A.mty * B.m12 - A.mtz * B.m22;
 	return B;
 };
 S3Matrix.prototype.toString = function() {
 	return "[" +
-		"[" + this.m11 + " " + this.m21 + " " + this.m31 + "]\n" + 
-		" [" + this.m12 + " " + this.m22 + " " + this.m32 + "]\n" + 
-		" [" + this.m13 + " " + this.m23 + " " + this.m33 + "]\n" + 
+		"[" + this.m00 + " " + this.m10 + " " + this.m20 + "]\n" + 
+		" [" + this.m01 + " " + this.m11 + " " + this.m21 + "]\n" + 
+		" [" + this.m02 + " " + this.m12 + " " + this.m22 + "]\n" + 
 		" [" + this.mtx + " " + this.mty + " " + this.mtz + "]]";
 };
 
@@ -322,7 +323,6 @@ S3Matrix.getScale = function(x, y, z) {
 
 /**
  * X軸周りの回転行列を作成します。
- * X軸回転・仰俯角（ぎょうふかく）・垂直角・ピッチに対応。
  * @param {double} rad
  * @returns {S3Matrix}
  */
@@ -338,7 +338,6 @@ S3Matrix.getRotateX = function(rad) {
 
 /**
  * Y軸周りの回転行列を作成します。
- * Y軸回転・水平回転・水平角・ヘディングに対応。左手座標系。
  * @param {double} rad
  * @returns {S3Matrix}
  */
@@ -354,7 +353,6 @@ S3Matrix.getRotateY = function(rad) {
 
 /**
  * Z軸周りの回転行列を作成します。
- * Z軸回転・レンズ回転・回転角・バンクに対応。左手座標系。
  * @param {double} rad
  * @returns {S3Matrix}
  */
@@ -366,17 +364,4 @@ S3Matrix.getRotateZ = function(rad) {
 		-sin,	cos,	0.0,
 		0.0,	0.0,	1.0
 	);
-};
-
-/**
- 回転行列を作成します。
- ヘディング × ピッチ × バンク の 順番です。
- Z軸 × X軸 × Y軸 の 順番です。
- * @param {double} z
- * @param {double} x
- * @param {double} y
- * @returns {S3Matrix}
- */
-S3Matrix.getRotateZXY = function(z, x, y) {
-	return S3Matrix.getRotateZ(z).mul(S3Matrix.getRotateX(x)).mul(S3Matrix.getRotateY(y));
 };

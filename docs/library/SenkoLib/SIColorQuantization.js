@@ -1,3 +1,5 @@
+﻿"use strict";
+
 ﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA, SIColor, SIColorY */
 
 ﻿/**

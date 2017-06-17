@@ -1,4 +1,6 @@
-﻿/**
+﻿"use strict";
+
+/**
  * SenkoLib ArrayList.js
  * 
  * AUTHOR:

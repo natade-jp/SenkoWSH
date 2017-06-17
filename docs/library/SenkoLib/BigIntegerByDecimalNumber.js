@@ -1,4 +1,6 @@
-﻿/**
+﻿"use strict";
+
+/**
  * SenkoLib BigIntegerByDecimalNumber.js
  * 
  * AUTHOR:

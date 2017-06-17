@@ -1,4 +1,6 @@
-﻿/**
+﻿"use strict";
+
+/**
  * SenkoLib StringMacros.js
  *  文字列操作ライブラリ
  * 

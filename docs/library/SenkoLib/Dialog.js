@@ -1,4 +1,6 @@
-﻿/* global WScript */
+﻿"use strict";
+
+/* global WScript */
 
 ﻿/**
  * SenkoLib Dialog.js

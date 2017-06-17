@@ -1,4 +1,6 @@
-﻿/* global WSH, WScript, main */
+﻿"use strict";
+
+/* global WSH, WScript, main */
 
 ﻿/**
  * SenkoLib System.js
@@ -339,7 +341,10 @@ var System = {
 				if(typeof text === "undefined") {
 					printtext = typeof text;
 				}
-				else if(typeof text === null) {
+				else if(text === null) {
+					printtext = "null";
+				}
+				else if(text.toString === null) {
 					printtext = "null";
 				}
 				else if(typeof text.toString === "function") {

@@ -1,4 +1,6 @@
-﻿/**
+﻿"use strict";
+
+/**
  * SenkoLib HashMap.js
  * 
  * AUTHOR:

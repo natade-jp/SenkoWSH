@@ -1,4 +1,6 @@
-﻿/* global BigInteger */
+﻿"use strict";
+
+/* global BigInteger */
 
 ﻿/**
  * SenkoLib BigDecimal.js
@@ -400,7 +402,7 @@ BigDecimal.prototype.toScientificNotation = function(e) {
 	var text	= this._getUnsignedIntegerString();
 	var s		= this.scale();
 	var x		= [];
-	var k;
+	var i, k;
 	// -
 	if(this.signum() === -1) {
 		x[x.length] = "-";
@@ -679,13 +681,13 @@ BigDecimal.prototype.max = function(val) {
 };
 
 BigDecimal.prototype.movePointLeft = function(n) {
-	output = this.scaleByPowerOfTen( -n );
+	var output = this.scaleByPowerOfTen( -n );
 	output = output.setScale(Math.max(this.scale() + n, 0));
 	return(output);
 };
 
 BigDecimal.prototype.movePointRight = function(n) {
-	output = this.scaleByPowerOfTen( n );
+	var output = this.scaleByPowerOfTen( n );
 	output = output.setScale(Math.max(this.scale() - n, 0));
 	return(output);
 };
@@ -797,6 +799,7 @@ BigDecimal.prototype.divideToIntegralValue = function(divisor, mc) {
 		throw "not MathContext";
 	}
 	var getDigit  = function( num ) {
+		var i;
 		var text = "1";
 		for(i = 0; i < num; i++) {
 			text = text + "0";

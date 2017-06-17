@@ -1,4 +1,6 @@
-﻿/* global Random */
+﻿"use strict";
+
+/* global Random */
 
 ﻿/**
  * SenkoLib BigInteger.js

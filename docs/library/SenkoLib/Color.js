@@ -1,4 +1,6 @@
-﻿/**
+﻿"use strict";
+
+/**
  * SenkoLib Color.js
  * 
  * AUTHOR:
@@ -485,8 +487,8 @@ Color.newColorNormalizedHLS = function() {
 
 Color.newColorHLS = function() {
 	var h = 0.0;
+	var l = 0.0;
 	var s = 0.0;
-	var v = 0.0;
 	var a = 255.0;
 	if(arguments.length === 1) {
 		if(arguments[0].h) h = arguments[0].h;
