@@ -101,6 +101,39 @@ S3Vector.prototype.mul = function(tgt) {
 		throw "IllegalArgumentException";
 	}
 };
+S3Vector.prototype.max = function(tgt) {
+	return new S3Vector(
+		Math.max(this.x, tgt.x),
+		Math.max(this.y, tgt.y),
+		Math.max(this.z, tgt.z),
+		Math.max(this.w, tgt.w)
+	);
+};
+S3Vector.prototype.min = function(tgt) {
+	return new S3Vector(
+		Math.min(this.x, tgt.x),
+		Math.min(this.y, tgt.y),
+		Math.min(this.z, tgt.z),
+		Math.min(this.w, tgt.w)
+	);
+};
+S3Vector.prototype.equals = function(tgt) {
+	var EPSILON = 2.2204460492503130808472633361816E-16;
+	return (
+		(Math.abs(this.x - tgt.x) < EPSILON) &&
+		(Math.abs(this.y - tgt.y) < EPSILON) &&
+		(Math.abs(this.z - tgt.z) < EPSILON) &&
+		(Math.abs(this.w - tgt.w) < EPSILON)
+	);
+};
+S3Vector.prototype.lerp = function(tgt, alpha) {
+	return new S3Vector(
+		this.x + (tgt.x - this.x) * alpha,
+		this.y + (tgt.y - this.y) * alpha,
+		this.z + (tgt.z - this.z) * alpha,
+		this.w + (tgt.w - this.w) * alpha
+	);
+};
 S3Vector.prototype.norm = function() {
 	return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 };
@@ -213,6 +246,27 @@ var S3Matrix = function(
 	else {
 		throw "IllegalArgumentException";
 	}
+};
+S3Matrix.prototype.equals = function(tgt) {
+	var EPSILON = 2.2204460492503130808472633361816E-16;
+	return (
+		(Math.abs(this.m00 - tgt.m00) < EPSILON) &&
+		(Math.abs(this.m01 - tgt.m01) < EPSILON) &&
+		(Math.abs(this.m02 - tgt.m02) < EPSILON) &&
+		(Math.abs(this.m03 - tgt.m03) < EPSILON) &&
+		(Math.abs(this.m10 - tgt.m10) < EPSILON) &&
+		(Math.abs(this.m11 - tgt.m11) < EPSILON) &&
+		(Math.abs(this.m12 - tgt.m12) < EPSILON) &&
+		(Math.abs(this.m13 - tgt.m13) < EPSILON) &&
+		(Math.abs(this.m20 - tgt.m20) < EPSILON) &&
+		(Math.abs(this.m21 - tgt.m21) < EPSILON) &&
+		(Math.abs(this.m22 - tgt.m22) < EPSILON) &&
+		(Math.abs(this.m23 - tgt.m23) < EPSILON) &&
+		(Math.abs(this.m30 - tgt.m30) < EPSILON) &&
+		(Math.abs(this.m31 - tgt.m31) < EPSILON) &&
+		(Math.abs(this.m32 - tgt.m32) < EPSILON) &&
+		(Math.abs(this.m33 - tgt.m33) < EPSILON)
+	);
 };
 S3Matrix.prototype.clone = function() {
 	return new S3Matrix(
