@@ -24,6 +24,13 @@
 	System.out.println("行列の掛け算");
 	System.out.println(m.mul(m));
 	
+	var panel;
+	// パネルを作って、指定した ID の要素内に入れる。
+	panel = new SCanvas();
+	panel.putMe("scomponent", SComponent.putype.IN);
+	panel.setUnit(SComponent.unittype.PX);
+	panel.setPixelSize(640, 480);
+	panel.setSize(640, 480);
 	
 	
 }

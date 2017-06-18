@@ -20,7 +20,7 @@
  */
 
 /**
- * 3DCG用 のベクトルクラス
+ * 3DCG用 のベクトルクラス (immutable)
  * @param {Number} x
  * @param {Number} y
  * @param {Number} z
@@ -117,6 +117,15 @@ S3Vector.prototype.min = function(tgt) {
 		Math.min(this.w, tgt.w)
 	);
 };
+S3Vector.prototype.perspective = function() {
+	return new S3Vector(
+		this.x / this.w,
+		this.y / this.w,
+		this.z / this.w,
+		this.w
+	);
+};
+
 S3Vector.prototype.equals = function(tgt) {
 	var EPSILON = 2.2204460492503130808472633361816E-16;
 	return (
@@ -205,7 +214,7 @@ S3Vector.getNormalVector = function(A, B, C) {
  */
 
 /**
- * 4x4行列を作成します
+ * 4x4行列  (immutable)
  * 引数は、MATLAB と同じように行で順番に定義していきます。
  * この理由は、行列を初期化する際に見た目が分かりやすいためです。
  * @param {Number} m00
@@ -424,7 +433,7 @@ S3Matrix.prototype.toString = function() {
 };
 
 var S3SystemMode = {
-	OPENG_GL	: 0,
+	OPEN_GL	: 0,
 	DIRECT_X	: 1
 };
 
@@ -433,7 +442,7 @@ var S3DepthMode = {
 	 * Z値の範囲などの依存関係をOpenGL準拠
 	 * @type Number
 	 */
-	OPENG_GL	: 0,
+	OPEN_GL	: 0,
 	/**
 	 * Z値の範囲などの依存関係をDirecX準拠
 	 * @type Number
@@ -468,13 +477,13 @@ var S3VectorMode = {
 };
 
 var S3System = function() {
-	this.setSystemMode(S3SystemMode.OPENG_GL);
+	this.setSystemMode(S3SystemMode.OPEN_GL);
 };
 
 S3System.prototype.setSystemMode = function(mode) {
 	this.systemmode = mode;
-	if(this.systemmode === S3SystemMode.OPENG_GL) {
-		this.depthmode		= S3DepthMode.OPENG_GL;
+	if(this.systemmode === S3SystemMode.OPEN_GL) {
+		this.depthmode		= S3DepthMode.OPEN_GL;
 		this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
 		this.vectormode		= S3VectorMode.VECTOR4x1;
 	}
@@ -483,6 +492,10 @@ S3System.prototype.setSystemMode = function(mode) {
 		this.dimensionmode	= S3DimensionMode.LEFT_HAND;
 		this.vectormode		= S3VectorMode.VECTOR1x4;
 	}
+};
+
+S3System.prototype.setCanvas = function(canvas) {
+	this.canvas = canvas;
 };
 
 /**
@@ -512,7 +525,7 @@ S3System.prototype.getMatrixViewport = function(x, y, Width, Height, MinZ, MaxZ)
 		M.m22 = MinZ - MaxZ;
 		M.m32 = MinZ;
 	}
-	else if(this.depthmode === S3DepthMode.OPENG_GL) {
+	else if(this.depthmode === S3DepthMode.OPEN_GL) {
 		M.m22 = (MinZ - MaxZ) / 2;
 		M.m32 = (MinZ + MaxZ) / 2;
 	}
@@ -570,7 +583,7 @@ S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Far, Near) {
 		M.m22 = Far / Delta;
 		M.m32 = - Far * Near / Delta;
 	}
-	else if(this.depthmode === S3DepthMode.OPENG_GL) {
+	else if(this.depthmode === S3DepthMode.OPEN_GL) {
 		M.m22 = (Far + Near) / Delta;
 		M.m32 = - 2.0 * Far * Near / Delta;
 	}
@@ -706,3 +719,244 @@ S3System.prototype.getMatrixRotateZ = function(theta) {
 	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
 };
 
+/**
+ * 縦型、横型を踏まえて掛け算します。
+ * @param {S3Matrix} A
+ * @param {S3Matrix|S3Vertex} B
+ * @returns {S3Matrix|S3Vertex}
+ */
+S3System.prototype.mulMatrix = function(A, B) {
+	if(B instanceof S3Matrix) {
+		// 横型の場合は、v[AB]=u
+		// 縦型の場合は、[BA]v=u
+		return (this.vectormode === S3VectorMode.VECTOR4x1) ? B.mul(A) : A.mul(B);
+	}
+	else if(B instanceof S3Vertex) {
+		// 横型の場合は、[vA]=u
+		// 縦型の場合は、[Av]=u
+		return (this.vectormode === S3VectorMode.VECTOR4x1) ? A.mul(B) : B.mul(A);
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
+};
+
+/**
+ * 航空機の姿勢制御（ロール・ピッチ・ヨー）の順序で回転
+ * @param {Number} z
+ * @param {Number} x
+ * @param {Number} y
+ * @returns {S3Matrix}
+ */
+S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
+	var Z = this.getMatrixRotateZ(z);
+	var X = this.getMatrixRotateX(x);
+	var Y = this.getMatrixRotateY(y);
+	return this.mulMatrix(this.mulMatrix(Z, X), Y);
+};
+
+/**
+ * 頂点 (immutable)
+ * @param {S3Vector} position
+ * @param {S3Vector} color
+ * @returns {S3Vertex}
+ */
+var S3Vertex = function(position, color) {
+	this.position	= position.clone();
+	this.color		= color.clone();
+};
+S3Vertex.prototype.clone = function() {
+	return new S3Vertex(this.position, this.color);
+};
+
+/**
+ * 3角ポリゴンのインデックス (immutable)
+ * @param {Number} i1
+ * @param {Number} i2
+ * @param {Number} i3
+ * @returns {S3Index}
+ */
+var S3TriangleIndex = function(i1, i2, i3) {
+	this.i1	= i1;
+	this.i2	= i2;
+	this.i3	= i3;
+};
+S3TriangleIndex.prototype.clone = function() {
+	return new S3TriangleIndex(this.i1, this.i2, this.i3);
+};
+
+/**
+ * 立体物 (mutable)
+ * @param {Array} vertex
+ * @param {Array} index
+ * @returns {S3Mesh}
+ */
+var S3Mesh = function(vertex, index) {
+	this.vertex		= [];
+	this.index		= [];
+	if(arguments.length !== 0) {
+		this.addVertex(vertex);
+		this.addIndex(index);
+	}
+};
+S3Mesh.prototype.clone = function() {
+	return new S3Mesh(this.vertex, this.index);
+};
+S3Mesh.prototype.addVertex = function(vertex) {
+	if(vertex instanceof S3Vertex) {
+		this.vertex[this.vertex.length] = vertex.clone();
+	}
+	else {
+		var i = 0;
+		for(i = 0; i < vertex.length; i++) {
+			this.vertex[this.vertex.length] = vertex[i].clone();
+		}
+	}
+};
+S3Mesh.prototype.addTriangleIndex = function(index) {
+	if(index instanceof S3TriangleIndex) {
+		this.index[this.index.length] = index.clone();
+	}
+	else {
+		var i = 0;
+		for(i = 0; i < index.length; i++) {
+			this.index[this.index.length] = index[i].clone();
+		}
+	}
+};
+
+/**
+ * オイラー角 (immutable)
+ * @param {Number} z ロール
+ * @param {Number} x ピッチ
+ * @param {Number} y ヨー
+ * @returns {S3Angle}
+ */
+var S3Angles = function(z, x, y) {
+	this.roll	= (z === undefined) ? 0.0 : z;
+	this.pitch	= (x === undefined) ? 0.0 : x;
+	this.yaw	= (y === undefined) ? 0.0 : y;
+	this.normalize();
+};
+S3Angles.prototype.clone = function() {
+	return new S3Angles(this.roll, this.pitch, this.yaw);
+};
+S3Angles.PI		= 180.0;
+S3Angles.PIOVER2= S3Angles.PI / 2.0;
+S3Angles.PILOCK	= S3Angles.PIOVER2 - 0.0001;
+S3Angles.PI2	= 2.0 * S3Angles.PI;
+S3Angles.toPeriodicAngle = function(x) {
+	if(x>0) {
+		x -= PI2 * parseInt(( x + PI) / PI2);
+	}
+	else {
+		x += PI2 * parseInt((-x + PI) / PI2);
+	}
+};
+S3Angles.prototype.addX = function(x) {
+	return new S3Angles(this.roll, this.pitch + x, this.yaw);
+};
+S3Angles.prototype.addY = function(y) {
+	return new S3Angles(this.roll, this.pitch, this.yaw + y);
+};
+S3Angles.prototype.addZ = function(z) {
+	return new S3Angles(this.roll + z, this.pitch, this.yaw);
+};
+S3Angles.prototype.setX = function(x) {
+	return new S3Angles(this.roll, x, this.yaw);
+};
+S3Angles.prototype.setY = function(y) {
+	return new S3Angles(this.roll, this.pitch, y);
+};
+S3Angles.prototype.setZ = function(z) {
+	return new S3Angles(z, this.pitch, this.yaw);
+};
+/**
+ * 正準オイラー角に正規化
+ * @returns {S3Angles}
+ */
+S3Angles.prototype.normalize = function() {
+	//X軸ピッチを-180度から180度にする
+	this.pitch = toPeriodicAngle(this.pitch);
+	//X軸ピッチが-90度から90度の中に含まれていない場合。
+	if(this.pitch < -PIOVER2) {
+		this.pitch = - PI - this.pitch;
+		this.yaw  += PI;
+		this.roll += PI;
+	}
+	else if(this.pitch > PIOVER2) {
+		this.pitch = PI - this.pitch;
+		this.yaw  += PI;
+		this.roll += PI;
+	}
+	//ジンバルロックをチェック 90度付近
+	if(Math.abs(this.pitch) > PILOCK) {
+		this.yaw  += this.roll;
+		this.roll = 0;
+	}
+	else {
+		this.roll = toPeriodicAngle(this.roll);
+	}
+	this.yaw = toPeriodicAngle(this.yaw);
+};
+
+/**
+ * 色々な情報をいれたモデル (mutable)
+ * @returns {S3Model}
+ */
+var S3Model = function() {
+	this.angles		= new S3Angles();
+	this.scale		= new S3Vector(1, 1, 1);
+	this.position	= new S3Vector(0, 0, 0);
+	this.mesh		= new S3Mesh();
+};
+
+/**
+ * 描写するときのシーン (mutable)
+ * @returns {S3Scene}
+ */
+var S3Scene = function() {
+	this.fovY		= 45;
+	this.eye		= new S3Vector(0, 0, 0);
+	this.lookat		= new S3Vector(0, 0, 1);
+	this.clearModel();
+};
+S3Scene.prototype.setFovY = function(fovY) {
+	this.fovY = fovY;
+};
+S3Scene.prototype.setEye = function(eye) {
+	this.eye = eye.clone();
+};
+S3Scene.prototype.setLookAt = function(lookat) {
+	this.lookat = lookat.clone();
+};
+S3Scene.prototype.clearModel = function() {
+	this.model		= [];
+};
+S3Scene.prototype.addModel = function(model) {
+	this.model[this.model.length] = model;
+};
+
+S3System.prototype.drawScene = function(scene) {
+	var i = 0;
+	// ビューイング変換行列を作成する
+	var L = this.getMatrixLookAt(scene.eye, scene.lookat);
+	// 射影トランスフォーム行列
+	var aspect = this.calcAspect(this.canvas.width, this.canvas.height);
+	var P = this.getMatrixPerspectiveFov(scene.fovY, aspect, 0, 1000 );
+	// ビューポート行列
+	var V = this.getMatrixViewport(0, 0, this.canvas.width, this.canvas.height);
+	
+	for(i = 0; i < scene.model.length; i++) {
+		var m = scene.model[i];
+		// 回転行列
+		var R = this.getMatrixRotateZXY(m.angles.roll, m.angles.pitch, m.angles.yaw);
+		// スケーリング
+		var S = this.getMatrixScale(m.scale.x, m.scale.y, m.scale.z);
+		// 移動行列
+		var T = this.getMatrixTranslate(m.position.x, m.position.y, m.position.z);
+		// ワールド変換行列を作成する
+		var W = this.mulMatrix(this.mulMatrix(S, R), T);
+	}
+	
+};
