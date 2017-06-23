@@ -726,6 +726,9 @@ SCanvas.prototype = new SComponent();
 SCanvas.prototype.getPixelSize = function() {
 	return {width: this.canvas.width, height: this.canvas.height};
 };
+SCanvas.prototype.getCanvas = function() {
+	return this.canvas;
+};
 SCanvas.prototype.setPixelSize = function(width, height) {
 	if(	(arguments.length !== 2) || 
 		((typeof width !== "number") || (typeof height !== "number")) ||

@@ -118,11 +118,14 @@ S3Vector.prototype.min = function(tgt) {
 	);
 };
 S3Vector.prototype.perspective = function() {
+	if(this.w === 0.0) {
+		throw "divide error";
+	}
 	return new S3Vector(
 		this.x / this.w,
 		this.y / this.w,
 		this.z / this.w,
-		this.w
+		1.0
 	);
 };
 
@@ -148,6 +151,9 @@ S3Vector.prototype.norm = function() {
 };
 S3Vector.prototype.normalize = function() {
 	var b = this.x * this.x + this.y * this.y + this.z * this.z;
+	if(b === 0.0) {
+		throw "divide error";
+	}
 	b = Math.sqrt(1.0 / b);
 	return new S3Vector(
 		this.x * b,
@@ -512,7 +518,7 @@ S3System.prototype.getMatrixViewport = function(x, y, Width, Height, MinZ, MaxZ)
 	if(MinZ === undefined) {
 		MinZ = 0.0;
 	}
-	else if(MaxZ === undefined) {
+	if(MaxZ === undefined) {
 		MaxZ = 1.0;
 	}
 	
@@ -521,6 +527,7 @@ S3System.prototype.getMatrixViewport = function(x, y, Width, Height, MinZ, MaxZ)
 	M.m10 =      0.0; M.m11 =  Height/2; M.m12 = 0.0; M.m13 = 0.0;
 	M.m20 =      0.0; M.m21 =       0.0; M.m22 = 1.0; M.m23 = 1.0;
 	M.m30 =x+Width/2; M.m31 =y+Height/2; M.m32 = 0.0; M.m33 = 1.0;
+	
 	if(this.depthmode === S3DepthMode.DIRECT_X) {
 		M.m22 = MinZ - MaxZ;
 		M.m32 = MinZ;
@@ -722,8 +729,8 @@ S3System.prototype.getMatrixRotateZ = function(theta) {
 /**
  * 縦型、横型を踏まえて掛け算します。
  * @param {S3Matrix} A
- * @param {S3Matrix|S3Vertex} B
- * @returns {S3Matrix|S3Vertex}
+ * @param {S3Matrix|S3Vector} B
+ * @returns {S3Matrix|S3Vector}
  */
 S3System.prototype.mulMatrix = function(A, B) {
 	if(B instanceof S3Matrix) {
@@ -731,7 +738,7 @@ S3System.prototype.mulMatrix = function(A, B) {
 		// 縦型の場合は、[BA]v=u
 		return (this.vectormode === S3VectorMode.VECTOR4x1) ? B.mul(A) : A.mul(B);
 	}
-	else if(B instanceof S3Vertex) {
+	else if(B instanceof S3Vector) {
 		// 横型の場合は、[vA]=u
 		// 縦型の場合は、[Av]=u
 		return (this.vectormode === S3VectorMode.VECTOR4x1) ? A.mul(B) : B.mul(A);
@@ -758,15 +765,13 @@ S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
 /**
  * 頂点 (immutable)
  * @param {S3Vector} position
- * @param {S3Vector} color
  * @returns {S3Vertex}
  */
-var S3Vertex = function(position, color) {
+var S3Vertex = function(position) {
 	this.position	= position.clone();
-	this.color		= color.clone();
 };
 S3Vertex.prototype.clone = function() {
-	return new S3Vertex(this.position, this.color);
+	return new S3Vertex(this.position);
 };
 
 /**
@@ -847,10 +852,10 @@ S3Angles.PILOCK	= S3Angles.PIOVER2 - 0.0001;
 S3Angles.PI2	= 2.0 * S3Angles.PI;
 S3Angles.toPeriodicAngle = function(x) {
 	if(x>0) {
-		x -= PI2 * parseInt(( x + PI) / PI2);
+		return x - S3Angles.PI2 * parseInt(( x + S3Angles.PI) / S3Angles.PI2);
 	}
 	else {
-		x += PI2 * parseInt((-x + PI) / PI2);
+		return x + S3Angles.PI2 * parseInt((-x + S3Angles.PI) / S3Angles.PI2);
 	}
 };
 S3Angles.prototype.addX = function(x) {
@@ -871,33 +876,36 @@ S3Angles.prototype.setY = function(y) {
 S3Angles.prototype.setZ = function(z) {
 	return new S3Angles(z, this.pitch, this.yaw);
 };
+S3Angles.prototype.toString = function() {
+	return "angles[" + this.roll + "," + this.pitch + "," + this.yaw + "]";
+};
 /**
  * 正準オイラー角に正規化
  * @returns {S3Angles}
  */
 S3Angles.prototype.normalize = function() {
 	//X軸ピッチを-180度から180度にする
-	this.pitch = toPeriodicAngle(this.pitch);
+	this.pitch = S3Angles.toPeriodicAngle(this.pitch);
 	//X軸ピッチが-90度から90度の中に含まれていない場合。
-	if(this.pitch < -PIOVER2) {
-		this.pitch = - PI - this.pitch;
-		this.yaw  += PI;
-		this.roll += PI;
+	if(this.pitch < - S3Angles.PIOVER2) {
+		this.pitch = - S3Angles.PI - this.pitch;
+		this.yaw  += S3Angles.PI;
+		this.roll += S3Angles.PI;
 	}
-	else if(this.pitch > PIOVER2) {
-		this.pitch = PI - this.pitch;
-		this.yaw  += PI;
-		this.roll += PI;
+	else if(this.pitch > S3Angles.PIOVER2) {
+		this.pitch = S3Angles.PI - this.pitch;
+		this.yaw  += S3Angles.PI;
+		this.roll += S3Angles.PI;
 	}
 	//ジンバルロックをチェック 90度付近
-	if(Math.abs(this.pitch) > PILOCK) {
+	if(Math.abs(this.pitch) > S3Angles.PILOCK) {
 		this.yaw  += this.roll;
 		this.roll = 0;
 	}
 	else {
-		this.roll = toPeriodicAngle(this.roll);
+		this.roll = S3Angles.toPeriodicAngle(this.roll);
 	}
-	this.yaw = toPeriodicAngle(this.yaw);
+	this.yaw = S3Angles.toPeriodicAngle(this.yaw);
 };
 
 /**
@@ -937,26 +945,51 @@ S3Scene.prototype.addModel = function(model) {
 	this.model[this.model.length] = model;
 };
 
+S3System.prototype.getMatrixWorldTransform = function(model) {
+	// 回転行列
+	var R = this.getMatrixRotateZXY(model.angles.roll, model.angles.pitch, model.angles.yaw);
+	// スケーリング
+	var S = this.getMatrixScale(model.scale.x, model.scale.y, model.scale.z);
+	// 移動行列
+	var T = this.getMatrixTranslate(model.position.x, model.position.y, model.position.z);
+	// ワールド変換行列を作成する
+	var W = this.mulMatrix(this.mulMatrix(S, R), T);
+	return W;
+};
+
 S3System.prototype.drawScene = function(scene) {
 	var i = 0;
 	// ビューイング変換行列を作成する
 	var L = this.getMatrixLookAt(scene.eye, scene.lookat);
 	// 射影トランスフォーム行列
-	var aspect = this.calcAspect(this.canvas.width, this.canvas.height);
+	var aspect = S3System.calcAspect(this.canvas.width, this.canvas.height);
 	var P = this.getMatrixPerspectiveFov(scene.fovY, aspect, 0, 1000 );
 	// ビューポート行列
 	var V = this.getMatrixViewport(0, 0, this.canvas.width, this.canvas.height);
 	
+	var context = this.canvas.getContext("2d");
+	context.strokeStyle = "rgb(0,0,0)";
+	context.lineWidth = 1.0;
+	
 	for(i = 0; i < scene.model.length; i++) {
 		var m = scene.model[i];
-		// 回転行列
-		var R = this.getMatrixRotateZXY(m.angles.roll, m.angles.pitch, m.angles.yaw);
-		// スケーリング
-		var S = this.getMatrixScale(m.scale.x, m.scale.y, m.scale.z);
-		// 移動行列
-		var T = this.getMatrixTranslate(m.position.x, m.position.y, m.position.z);
-		// ワールド変換行列を作成する
-		var W = this.mulMatrix(this.mulMatrix(S, R), T);
+		var W = this.getMatrixWorldTransform(m);
+		var M = this.mulMatrix(this.mulMatrix(W, L), P);
+		var newvertex = [];
+		for(i = 0; i < m.mesh.vertex.length; i++) {
+			var p = m.mesh.vertex[i].position;
+			p = this.mulMatrix(M, p);
+			p = p.perspective();
+			p = this.mulMatrix(V, p);
+			newvertex[newvertex.length] = p;
+		}
+		for(i = 0; i < m.mesh.index.length; i++) {
+			var index = m.mesh.index[i];
+			context.moveTo( newvertex[index.i1].x , newvertex[index.i1].y );
+			context.lineTo( newvertex[index.i2].x , newvertex[index.i2].y );
+			context.lineTo( newvertex[index.i3].x , newvertex[index.i3].y );
+			context.lineTo( newvertex[index.i1].x , newvertex[index.i1].y );
+			context.stroke();
+		}
 	}
-	
 };

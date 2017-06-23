@@ -1,6 +1,34 @@
-/* global System */
+/* global System, SComponent */
 
-﻿
+var s3 = new S3System();
+
+
+﻿function test3D() {
+	var v0 = new S3Vertex( new S3Vector(-5,  0, -10));
+	var v1 = new S3Vertex( new S3Vector( 0, 10, -20));
+	var v2 = new S3Vertex( new S3Vector( 5,  0, -30));
+	
+	var i1 = new S3TriangleIndex(0 ,1, 2);
+	
+	var mesh = new S3Mesh();
+	mesh.addVertex(v0);
+	mesh.addVertex(v1);
+	mesh.addVertex(v2);
+	mesh.addTriangleIndex(i1);
+
+	var model = new S3Model();
+	model.mesh		= mesh;
+
+	var scene = new S3Scene();
+	scene.setEye(new S3Vector( 0,  0,  50));
+	scene.setLookAt(new S3Vector( 0,  0,  0));
+	scene.addModel(model);
+
+	s3.drawScene(scene);
+}
+
+
+
 ﻿function main(args) {
 	
 	System.out.println("S3D クラスのサンプル");
@@ -31,6 +59,11 @@
 	panel.setUnit(SComponent.unittype.PX);
 	panel.setPixelSize(640, 480);
 	panel.setSize(640, 480);
+	
+	s3.setCanvas(panel.getCanvas());
+	
+	test3D();
+	
 	
 	
 }
