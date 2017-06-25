@@ -19,9 +19,12 @@ var s3 = new S3System();
 	var model = new S3Model();
 	model.mesh		= mesh;
 
+	var camera = new S3Camera();
+	camera.setEye(new S3Vector( 0,  0,  50));
+	camera.setLookAt(new S3Vector( 0,  0,  0));
+	
 	var scene = new S3Scene();
-	scene.setEye(new S3Vector( 0,  0,  50));
-	scene.setLookAt(new S3Vector( 0,  0,  0));
+	scene.setCamera(camera);
 	scene.addModel(model);
 
 	s3.drawScene(scene);
