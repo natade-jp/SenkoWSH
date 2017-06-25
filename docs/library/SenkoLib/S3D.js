@@ -560,11 +560,11 @@ S3System.calcAspect = function(width, height) {
 
 /**
  * 度数法から弧度法に変換
- * @param {Number} theta
+ * @param {Number} degree
  * @returns {Number}
  */
-S3System.calcArc = function(theta) {
-	return((theta / 360) * (2 * Math.PI));
+S3System.calcArc = function(degree) {
+	return((degree / 360) * (2 * Math.PI));
 };
 
 /**
@@ -677,11 +677,11 @@ S3System.prototype.getMatrixScale = function(x, y, z) {
 
 /**
  * X軸周りの回転行列を作成します。
- * @param {Number} theta 角度を度数法で指定
+ * @param {Number} degree 角度を度数法で指定
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixRotateX = function(theta) {
-	var arc = S3System.calcArc(theta);
+S3System.prototype.getMatrixRotateX = function(degree) {
+	var arc = S3System.calcArc(degree);
 	var cos = Math.cos(arc);
 	var sin = Math.sin(arc);
 	var M = new S3Matrix();
@@ -694,11 +694,11 @@ S3System.prototype.getMatrixRotateX = function(theta) {
 
 /**
  * Y軸周りの回転行列を作成します。
- * @param {Number} theta 角度を度数法で指定
+ * @param {Number} degree 角度を度数法で指定
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixRotateY = function(theta) {
-	var arc = S3System.calcArc(theta);
+S3System.prototype.getMatrixRotateY = function(degree) {
+	var arc = S3System.calcArc(degree);
 	var cos = Math.cos(arc);
 	var sin = Math.sin(arc);
 	var M = new S3Matrix();
@@ -711,11 +711,11 @@ S3System.prototype.getMatrixRotateY = function(theta) {
 
 /**
  * Z軸周りの回転行列を作成します。
- * @param {Number} theta 角度を度数法で指定
+ * @param {Number} degree 角度を度数法で指定
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixRotateZ = function(theta) {
-	var arc = S3System.calcArc(theta);
+S3System.prototype.getMatrixRotateZ = function(degree) {
+	var arc = S3System.calcArc(degree);
 	var cos = Math.cos(arc);
 	var sin = Math.sin(arc);
 	var M = new S3Matrix();
