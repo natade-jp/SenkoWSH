@@ -13,6 +13,38 @@
  *  なし
  */
 
+
+var S3Math =  {
+	EPSILON: 2.2204460492503130808472633361816E-16,
+	clamp: function(x, min, max) {
+		return((x < min) ? min : (x > max) ? max : x);
+	},
+	step: function(edge, x) {
+		return(edge > x ? 1 : 0);
+	},
+	mix: function(v0, v1, x) {
+		return(v0 + (v1 - v0) * x);
+	},
+	equals: function(x1, x2) {
+		return Math.abs(x1 - x2) < S3Math.EPSILON;
+	},
+	mod: function(x, y) {
+		return x - y * parseInt(x / y);
+	},
+	fract: function(x) {
+		return x - floor(x);
+	},
+	rsqrt: function(x) {
+		return Math.sqrt(1.0 / x);
+	},
+	radius: function(degree) {
+		return ((degree / 360.0) * (2.0 * Math.PI));
+	},
+	degrees: function(rad) {
+		return rad / (2.0 * Math.PI) * 360.0;
+	}
+};
+
 /**
  * /////////////////////////////////////////////////////////
  * 3D ベクトル
@@ -130,20 +162,19 @@ S3Vector.prototype.perspective = function() {
 };
 
 S3Vector.prototype.equals = function(tgt) {
-	var EPSILON = 2.2204460492503130808472633361816E-16;
 	return (
-		(Math.abs(this.x - tgt.x) < EPSILON) &&
-		(Math.abs(this.y - tgt.y) < EPSILON) &&
-		(Math.abs(this.z - tgt.z) < EPSILON) &&
-		(Math.abs(this.w - tgt.w) < EPSILON)
+		S3Math.equals(this.x, tgt.x) &&
+		S3Math.equals(this.y, tgt.y) &&
+		S3Math.equals(this.z, tgt.z) &&
+		S3Math.equals(this.w, tgt.w)
 	);
 };
-S3Vector.prototype.lerp = function(tgt, alpha) {
+S3Vector.prototype.mix = function(tgt, alpha) {
 	return new S3Vector(
-		this.x + (tgt.x - this.x) * alpha,
-		this.y + (tgt.y - this.y) * alpha,
-		this.z + (tgt.z - this.z) * alpha,
-		this.w + (tgt.w - this.w) * alpha
+		S3Math.mix(this.x, tgt.x, alpha),
+		S3Math.mix(this.y, tgt.y, alpha),
+		S3Math.mix(this.z, tgt.z, alpha),
+		S3Math.mix(this.w, tgt.w, alpha)
 	);
 };
 S3Vector.prototype.norm = function() {
@@ -263,24 +294,23 @@ var S3Matrix = function(
 	}
 };
 S3Matrix.prototype.equals = function(tgt) {
-	var EPSILON = 2.2204460492503130808472633361816E-16;
 	return (
-		(Math.abs(this.m00 - tgt.m00) < EPSILON) &&
-		(Math.abs(this.m01 - tgt.m01) < EPSILON) &&
-		(Math.abs(this.m02 - tgt.m02) < EPSILON) &&
-		(Math.abs(this.m03 - tgt.m03) < EPSILON) &&
-		(Math.abs(this.m10 - tgt.m10) < EPSILON) &&
-		(Math.abs(this.m11 - tgt.m11) < EPSILON) &&
-		(Math.abs(this.m12 - tgt.m12) < EPSILON) &&
-		(Math.abs(this.m13 - tgt.m13) < EPSILON) &&
-		(Math.abs(this.m20 - tgt.m20) < EPSILON) &&
-		(Math.abs(this.m21 - tgt.m21) < EPSILON) &&
-		(Math.abs(this.m22 - tgt.m22) < EPSILON) &&
-		(Math.abs(this.m23 - tgt.m23) < EPSILON) &&
-		(Math.abs(this.m30 - tgt.m30) < EPSILON) &&
-		(Math.abs(this.m31 - tgt.m31) < EPSILON) &&
-		(Math.abs(this.m32 - tgt.m32) < EPSILON) &&
-		(Math.abs(this.m33 - tgt.m33) < EPSILON)
+		S3Math.equals(this.m00, tgt.m00) &&
+		S3Math.equals(this.m01, tgt.m01) &&
+		S3Math.equals(this.m02, tgt.m02) &&
+		S3Math.equals(this.m03, tgt.m03) &&
+		S3Math.equals(this.m10, tgt.m10) &&
+		S3Math.equals(this.m11, tgt.m11) &&
+		S3Math.equals(this.m12, tgt.m12) &&
+		S3Math.equals(this.m13, tgt.m13) &&
+		S3Math.equals(this.m20, tgt.m20) &&
+		S3Math.equals(this.m21, tgt.m21) &&
+		S3Math.equals(this.m22, tgt.m22) &&
+		S3Math.equals(this.m23, tgt.m23) &&
+		S3Math.equals(this.m30, tgt.m30) &&
+		S3Math.equals(this.m31, tgt.m31) &&
+		S3Math.equals(this.m32, tgt.m32) &&
+		S3Math.equals(this.m33, tgt.m33)
 	);
 };
 S3Matrix.prototype.clone = function() {
@@ -559,15 +589,6 @@ S3System.calcAspect = function(width, height) {
 };
 
 /**
- * 度数法から弧度法に変換
- * @param {Number} degree
- * @returns {Number}
- */
-S3System.calcArc = function(degree) {
-	return((degree / 360) * (2 * Math.PI));
-};
-
-/**
  * パースペクティブ射影行列を作成する
  * @param {Number} fovY 視体積の上下方向の視野角（0度から180度）
  * @param {Number} Aspect 近平面、遠平面のアスペクト比（Width / Height）
@@ -576,7 +597,7 @@ S3System.calcArc = function(degree) {
  * @returns {S3Matrix}
  */
 S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Far, Near) {
-	var arc = S3System.calcArc(fovY);
+	var arc = S3Math.radius(fovY);
 	var zoomY = 1.0 / Math.tan(arc / 2.0);
 	var zoomX = zoomY / Aspect;
 	var M = new S3Matrix();
@@ -683,7 +704,7 @@ S3System.prototype.getMatrixScale = function(x, y, z) {
  * @returns {S3Matrix}
  */
 S3System.prototype.getMatrixRotateX = function(degree) {
-	var arc = S3System.calcArc(degree);
+	var arc = S3Math.radius(degree);
 	var cos = Math.cos(arc);
 	var sin = Math.sin(arc);
 	var M = new S3Matrix();
@@ -700,7 +721,7 @@ S3System.prototype.getMatrixRotateX = function(degree) {
  * @returns {S3Matrix}
  */
 S3System.prototype.getMatrixRotateY = function(degree) {
-	var arc = S3System.calcArc(degree);
+	var arc = S3Math.radius(degree);
 	var cos = Math.cos(arc);
 	var sin = Math.sin(arc);
 	var M = new S3Matrix();
@@ -717,7 +738,7 @@ S3System.prototype.getMatrixRotateY = function(degree) {
  * @returns {S3Matrix}
  */
 S3System.prototype.getMatrixRotateZ = function(degree) {
-	var arc = S3System.calcArc(degree);
+	var arc = S3Math.radius(degree);
 	var cos = Math.cos(arc);
 	var sin = Math.sin(arc);
 	var M = new S3Matrix();
@@ -953,6 +974,10 @@ S3Camera.prototype.setDistance = function(distance) {
 	var direction = this.center.getDirectionNormalized(this.eye);
 	this.eye = this.center.add(direction.mul(distance));
 };
+
+
+
+
 S3Camera.prototype.translate = function(v) {
 	this.eye	= this.eye.add(v);
 	this.center	= this.center.add(v);
