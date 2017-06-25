@@ -231,12 +231,12 @@ var System = {
 		}
 		if(!System.HtmlConsole) {
 			var Console = function() {
-				this.htmlinit = false;
-				this.element = null;
-				this.isshow  = false;
+				this.root		= null;
+				this.element	= null;
+				this.isshow		= false;
 			};
 			Console.prototype._initHTML = function() {
-				if(this.htmlinit) {
+				if(this.root !== null) {
 					return;
 				}
 				var root;
@@ -255,21 +255,24 @@ var System = {
 						return null;
 					}
 				}
+				root.style.backgroundColor = "black";
 				root.style.margin = "0px";
 				root.style.padding = "0px";
+				root.style.overflowY = "scroll";
 				var element = this._getElement();
 				root.appendChild(element);
+				this.root = root;
 			};
 			Console.prototype._getElement = function() {
 				if(this.element !== null) {
 					return this.element;
 				}
 				var element = document.createElement("div");
-				element.style.display = "block";
 				element.style.backgroundColor = "black";
+				element.style.color = "white";
+				element.style.display = "block";
 				element.style.margin = "0px";
 				element.style.padding = "0.5em";
-				element.style.color = "white";
 				element.style.fontFamily = "Consolas, Courier New, Courier, Monaco, monospace";
 				element.style.whiteSpace = "pre";
 				this.element = element;
@@ -291,7 +294,21 @@ var System = {
 					}
 				}
 			};
-			Console.prototype.addNewLine = function() {
+			Console.prototype._autoScroll = function() {
+				if((this.element === null) || (this.root === null)) {
+					return;
+				}
+				var parentheight	= this.root.clientHeight;
+				var childheight		= this.element.clientHeight;
+				// スクロールしないと見えない領域とマージン
+				var hideheight		= childheight - parentheight;
+				var margin			= parentheight * 0.1;
+				// スクロールしないと見えない領域が見えている状態ならオートスクロール
+				if(hideheight - margin <= this.root.scrollTop) {
+					this.root.scrollTop = childheight;
+				}
+			};
+			Console.prototype._addNewLine = function() {
 				this._initHTML();
 				var element = this._getElement();
 				// 次の行を作成する
@@ -301,7 +318,7 @@ var System = {
 				p.style.padding = "0px";
 				element.appendChild(p);
 			};
-			Console.prototype.appendText = function(text) {
+			Console.prototype._appendText = function(text) {
 				this._initHTML();
 				var element = this._getElement();
 				var p = element.lastElementChild;
@@ -313,10 +330,11 @@ var System = {
 				if(element) {
 					// 最終行に文字を追加する
 					if(!element.lastElementChild) {
-						this.addNewLine();
+						this._addNewLine();
 					}
-					this.appendText(text);
+					this._appendText(text);
 				}
+				this._autoScroll();
 			};
 			Console.prototype.println = function(text) {
 				this._initHTML();
@@ -324,12 +342,13 @@ var System = {
 				if(element) {
 					// 最終行に文字を追加する
 					if(!element.lastElementChild) {
-						this.addNewLine();
+						this._addNewLine();
 					}
-					this.appendText(text);
+					this._appendText(text);
 					// 次の行を作成する
-					this.addNewLine();
+					this._addNewLine();
 				}
+				this._autoScroll();
 			};
 			Console.prototype.out = function(text, isNotNewLine) {
 				var printtext = null;
