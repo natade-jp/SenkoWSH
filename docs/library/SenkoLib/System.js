@@ -291,49 +291,45 @@ var System = {
 					}
 				}
 			};
+			Console.prototype.addNewLine = function() {
+				this._initHTML();
+				var element = this._getElement();
+				// 次の行を作成する
+				var p = document.createElement("p");
+				p.innerText = "> ";
+				p.style.margin = "0.2em 0px 0.2em 0px";
+				p.style.padding = "0px";
+				element.appendChild(p);
+			};
+			Console.prototype.appendText = function(text) {
+				this._initHTML();
+				var element = this._getElement();
+				var p = element.lastElementChild;
+				p.innerText = p.innerText + text;
+			};
 			Console.prototype.print = function(text) {
 				this._initHTML();
 				var element = this._getElement();
-				
 				if(element) {
-					var p = element.lastElementChild;
-					
 					// 最終行に文字を追加する
-					if(!p) {
-						p = document.createElement("p");
-						p.innerText = "> ";
-						p.style.margin = "0.2em 0px 0.2em 0px";
-						p.style.padding = "0px";
-						element.appendChild(p);
+					if(!element.lastElementChild) {
+						this.addNewLine();
 					}
-					
-					p.innerText = p.innerText + text;
+					this.appendText(text);
 				}
 			};
 			Console.prototype.println = function(text) {
 				this._initHTML();
 				var element = this._getElement();
-				
 				if(element) {
 					var p = element.lastElementChild;
-					
 					// 最終行に文字を追加する
-					if(!p) {
-						p = document.createElement("p");
-						p.innerText = "> ";
-						p.style.margin = "0.2em 0px 0.2em 0px";
-						p.style.padding = "0px";
-						element.appendChild(p);
+					if(!element.lastElementChild) {
+						this.addNewLine();
 					}
-					
-					p.innerText = p.innerText + text;
-					
+					this.appendText(text);
 					// 次の行を作成する
-					p = document.createElement("p");
-					p.innerText = "> ";
-					p.style.margin = "0.2em 0px 0.2em 0px";
-					p.style.padding = "0px";
-					element.appendChild(p);
+					this.addNewLine();
 				}
 			};
 			Console.prototype.out = function(text, isNotNewLine) {
