@@ -322,7 +322,6 @@ var System = {
 				this._initHTML();
 				var element = this._getElement();
 				if(element) {
-					var p = element.lastElementChild;
 					// 最終行に文字を追加する
 					if(!element.lastElementChild) {
 						this.addNewLine();
