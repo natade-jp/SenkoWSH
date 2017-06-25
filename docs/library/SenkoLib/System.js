@@ -234,6 +234,8 @@ var System = {
 				this.root		= null;
 				this.element	= null;
 				this.isshow		= false;
+				this.loglength	= 100;
+				this.linelength	= 0;
 			};
 			Console.prototype._initHTML = function() {
 				if(this.root !== null) {
@@ -302,7 +304,7 @@ var System = {
 				var childheight		= this.element.clientHeight;
 				// スクロールしないと見えない領域とマージン
 				var hideheight		= childheight - parentheight;
-				var margin			= parentheight * 0.1;
+				var margin			= parentheight * 0.5;
 				// スクロールしないと見えない領域が見えている状態ならオートスクロール
 				if(hideheight - margin <= this.root.scrollTop) {
 					this.root.scrollTop = childheight;
@@ -317,12 +319,26 @@ var System = {
 				p.style.margin = "0.2em 0px 0.2em 0px";
 				p.style.padding = "0px";
 				element.appendChild(p);
+				this.linelength++;
+				this._cleaningLog();
 			};
 			Console.prototype._appendText = function(text) {
 				this._initHTML();
 				var element = this._getElement();
 				var p = element.lastElementChild;
 				p.innerText = p.innerText + text;
+			};
+			Console.prototype._cleaningLog = function() {
+				if(this.element === null) {
+					return;
+				}
+				while(this.linelength > this.loglength) {
+					this.element.removeChild(this.element.firstElementChild);
+					this.linelength--;
+				}
+			};
+			Console.prototype.setLogLength = function(loglength) {
+				this.loglength = loglength;
 			};
 			Console.prototype.print = function(text) {
 				this._initHTML();
