@@ -21,7 +21,7 @@ var s3 = new S3System();
 
 	var camera = new S3Camera();
 	camera.setEye(new S3Vector( 0,  0,  50));
-	camera.setLookAt(new S3Vector( 0,  0,  0));
+	camera.setCenter(new S3Vector( 0,  0,  0));
 	
 	var scene = new S3Scene();
 	scene.setCamera(camera);

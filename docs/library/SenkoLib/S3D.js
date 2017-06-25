@@ -585,7 +585,9 @@ S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Far, Near) {
 	M.m20 =  0.0; M.m21 =  0.0; M.m22 = 1.0; M.m23 = 1.0;
 	M.m30 =  0.0; M.m31 =  0.0; M.m32 = 0.0; M.m33 = 1.0;
 	var Delta = Far - Near;
-	
+	if(Delta === 0.0) {
+		throw "divide error";
+	}
 	if(this.depthmode === S3DepthMode.DIRECT_X) {
 		M.m22 = Far / Delta;
 		M.m32 = - Far * Near / Delta;
@@ -926,13 +928,13 @@ var S3Camera = function() {
 S3Camera.prototype.init = function() {
 	this.fovY		= 45;
 	this.eye		= new S3Vector(0, 0, 0);
-	this.lookat		= new S3Vector(0, 0, 1);
+	this.center		= new S3Vector(0, 0, 1);
 };
 S3Camera.prototype.clone = function() {
 	var camera = new S3Camera();
 	camera.fovY		= this.fovY;
 	camera.eye		= this.eye;
-	camera.lookat	= this.lookat;
+	camera.center	= this.center;
 	return camera;
 };
 S3Camera.prototype.setFovY = function(fovY) {
@@ -941,8 +943,19 @@ S3Camera.prototype.setFovY = function(fovY) {
 S3Camera.prototype.setEye = function(eye) {
 	this.eye = eye.clone();
 };
-S3Camera.prototype.setLookAt = function(lookat) {
-	this.lookat = lookat.clone();
+S3Camera.prototype.setCenter = function(center) {
+	this.center = center.clone();
+};
+S3Camera.prototype.getDistance = function() {
+	return this.center.getDistance(this.eye);
+};
+S3Camera.prototype.setDistance = function(distance) {
+	var direction = this.center.getDirectionNormalized(this.eye);
+	this.eye = this.center.add(direction.mul(distance));
+};
+S3Camera.prototype.translate = function(v) {
+	this.eye	= this.eye.add(v);
+	this.center	= this.center.add(v);
 };
 
 /**
@@ -978,7 +991,7 @@ S3System.prototype.getMatrixWorldTransform = function(model) {
 S3System.prototype.drawScene = function(scene) {
 	var i = 0;
 	// ビューイング変換行列を作成する
-	var L = this.getMatrixLookAt(scene.camera.eye, scene.camera.lookat);
+	var L = this.getMatrixLookAt(scene.camera.eye, scene.camera.center);
 	// 射影トランスフォーム行列
 	var aspect = S3System.calcAspect(this.canvas.width, this.canvas.height);
 	var P = this.getMatrixPerspectiveFov(scene.camera.fovY, aspect, 0, 1000 );
