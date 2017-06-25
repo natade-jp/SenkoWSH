@@ -985,10 +985,11 @@ S3System.prototype.drawScene = function(scene) {
 		}
 		for(i = 0; i < m.mesh.index.length; i++) {
 			var index = m.mesh.index[i];
+			context.beginPath();
 			context.moveTo( newvertex[index.i1].x , newvertex[index.i1].y );
 			context.lineTo( newvertex[index.i2].x , newvertex[index.i2].y );
 			context.lineTo( newvertex[index.i3].x , newvertex[index.i3].y );
-			context.lineTo( newvertex[index.i1].x , newvertex[index.i1].y );
+			context.closePath();
 			context.stroke();
 		}
 	}
