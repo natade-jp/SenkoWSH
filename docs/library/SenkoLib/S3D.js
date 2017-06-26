@@ -1001,6 +1001,9 @@ S3Camera.prototype.setRotateY = function(deg) {
 		this.center.z + z2,
 	);
 };
+S3Camera.prototype.addRotateY = function(deg) {
+	this.setRotateY(this.getRotateY() + deg);
+};
 S3Camera.prototype.getRotateX = function() {
 	var ray = this.center.getDirection(this.eye);
 	return S3Math.degrees(Math.atan2( ray.y, ray.z ));
@@ -1019,11 +1022,14 @@ S3Camera.prototype.setRotateX = function(deg) {
 		this.center.z + z2,
 	);
 };
-S3Camera.prototype.translate = function(v) {
+S3Camera.prototype.addRotateX = function(deg) {
+	this.setRotateX(this.getRotateX() + deg);
+};
+S3Camera.prototype.translateAbsolute = function(v) {
 	this.eye	= this.eye.add(v);
 	this.center	= this.center.add(v);
 };
-S3Camera.prototype.translateFromCamera = function(v) {
+S3Camera.prototype.translateRelative = function(v) {
 	var up = new S3Vector(0.0, 1.0, 0.0);
 	// Z ベクトルの作成
 	Z = this.eye.getDirectionNormalized(this.center);
@@ -1038,7 +1044,7 @@ S3Camera.prototype.translateFromCamera = function(v) {
 	X = X.mul(v.x);
 	Y = Y.mul(v.y);
 	Z = Z.mul(v.z);
-	this.translate(X.add(Y).add(Z));
+	this.translateAbsolute(X.add(Y).add(Z));
 };
 
 /**
