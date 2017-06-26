@@ -957,12 +957,14 @@ S3Camera.prototype.init = function() {
 	this.fovY		= 45;
 	this.eye		= new S3Vector(0, 0, 0);
 	this.center		= new S3Vector(0, 0, 1);
+	this.dimensionmode = S3DimensionMode.RIGHT_HAND;
 };
 S3Camera.prototype.clone = function() {
 	var camera = new S3Camera();
 	camera.fovY		= this.fovY;
 	camera.eye		= this.eye;
 	camera.center	= this.center;
+	camera.dimensionmode	= this.dimensionmode;
 	return camera;
 };
 S3Camera.prototype.setFovY = function(fovY) {
@@ -981,13 +983,62 @@ S3Camera.prototype.setDistance = function(distance) {
 	var direction = this.center.getDirectionNormalized(this.eye);
 	this.eye = this.center.add(direction.mul(distance));
 };
-
-
-
-
+S3Camera.prototype.getRotateY = function() {
+	var ray = this.center.getDirection(this.eye);
+	return S3Math.degrees(Math.atan2(ray.x, ray.z));
+};
+S3Camera.prototype.setRotateY = function(deg) {
+	var rad = S3Math.radius(deg);
+	var ray = this.center.getDirection(this.eye);
+	var length = Math.sqrt(ray.x * ray.x + ray.z * ray.z);
+	var cos = Math.cos(rad);
+	var sin = Math.sin(rad);
+	var x2 = - length * sin;
+	var z2 = + length * cos;
+	this.eye = new S3Vector(
+		this.center.x - x2,
+		this.center.y,
+		this.center.z + z2,
+	);
+};
+S3Camera.prototype.getRotateX = function() {
+	var ray = this.center.getDirection(this.eye);
+	return S3Math.degrees(Math.atan2( ray.y, ray.z ));
+};
+S3Camera.prototype.setRotateX = function(deg) {
+	var rad = S3Math.radius(deg);
+	var ray = this.center.getDirection(this.eye);
+	var length = Math.sqrt(ray.y * ray.y + ray.z * ray.z);
+	var cos = Math.cos(rad);
+	var sin = Math.sin(rad);
+	var y2 = - length * sin;
+	var z2 = + length * cos;
+	this.eye = new S3Vector(
+		this.center.x,
+		this.center.y - y2,
+		this.center.z + z2,
+	);
+};
 S3Camera.prototype.translate = function(v) {
 	this.eye	= this.eye.add(v);
 	this.center	= this.center.add(v);
+};
+S3Camera.prototype.translateFromCamera = function(v) {
+	var up = new S3Vector(0.0, 1.0, 0.0);
+	// Z ベクトルの作成
+	Z = this.eye.getDirectionNormalized(this.center);
+	if(this.dimensionmode === S3DimensionMode.RIGHT_HAND) {
+		// 右手系なら反転
+		Z = Z.negate();
+	}
+	// X, Y ベクトルの作成
+	X = up.cross(Z).normalize();
+	Y = Z.cross(X);
+	// 移動
+	X = X.mul(v.x);
+	Y = Y.mul(v.y);
+	Z = Z.mul(v.z);
+	this.translate(X.add(Y).add(Z));
 };
 
 /**
