@@ -275,7 +275,12 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 	};
 	var mouseWheelMoved = function(e) {
 		that.mouseWheelMoved(e);
+		e.preventDefault();
 	};
+	var preventDefault  = function(e) {
+		e.preventDefault();
+	};
+	element.style.cursor = "crosshair";
 	element.addEventListener("touchstart",	touchStart, false );
 	element.addEventListener("touchend",	touchEnd, false );
 	element.addEventListener("touchmove",	touchMove, false );
@@ -284,4 +289,5 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 	element.addEventListener("mousemove",	mouseMoved, false );
 	element.addEventListener("mouseout",	focusLost, false );
 	element.addEventListener("wheel",		mouseWheelMoved, false );
+	element.addEventListener("contextmenu",	preventDefault, false );
 };
