@@ -12,8 +12,8 @@
 	scanvas.setSize(640, 480);
 	
 	scanvas.getElement().style.borderStyle		= "solid";
-	scanvas.getElement().style.borderWidth		= "1px";
-	scanvas.getElement().style.backgroundColor	= "silver";
+	scanvas.getElement().style.borderColor		= "silver";
+	scanvas.getElement().style.borderWidth		= "5px";
 	var ctx = scanvas.getContext();
 	
 	var mouse = new PCMouse();
@@ -30,7 +30,8 @@
 		System.out.println("istyped    "		+ data.left.switch.istyped);
 		if(data.left.switch.ispressed) {
 			ctx.beginPath();
-			ctx.arc( data.position.x, data.position.y, 5, 0, 2 * Math.PI, true);
+			ctx.fillStyle = "rgba(240, 240, 255, 0.5)";
+			ctx.arc( data.position.x, data.position.y, 50, 0, 2 * Math.PI, true);
 			ctx.fill();
 		}
 	};
