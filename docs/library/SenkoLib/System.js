@@ -50,7 +50,7 @@ var System = {
 				}
 			}
 			// JScript 用
-			if(System.isJScript()) {
+			else if(System.isJScript()) {
 				if(/cscript\.exe$/i.test(WSH.FullName)) {
 					WSH.StdOut.Write(text + "\n");
 				}
