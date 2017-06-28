@@ -917,7 +917,7 @@ S3Angles.prototype.setRotateZXY = function(z, x, y) {
 	this.yaw	= S3Angles.toPeriodicAngle((y === undefined) ? 0.0 : y);
 };
 S3Angles.prototype.addRotateX = function(x) {
-	this.pitch	-= x;
+	this.pitch	+= x;
 };
 S3Angles.prototype.addRotateY = function(y) {
 	this.yaw	+= y;
@@ -926,13 +926,13 @@ S3Angles.prototype.addRotateZ = function(z) {
 	this.roll	+= z;
 };
 S3Angles.prototype.setRotateX = function(x) {
-	this.pitch = x;
+	this.pitch	= x;
 };
 S3Angles.prototype.setRotateY = function(y) {
-	this.yaw = y;
+	this.yaw	= y;
 };
 S3Angles.prototype.setRotateZ = function(z) {
-	this.roll = z;
+	this.roll	= z;
 };
 S3Angles.prototype.toString = function() {
 	return "angles[" + this.roll + "," + this.pitch + "," + this.yaw + "]";

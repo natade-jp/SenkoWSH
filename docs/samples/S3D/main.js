@@ -48,8 +48,8 @@ CameraController.prototype.getCamera = function() {
 	s3.setCanvas(canvas);
 	controller.setCanvas(canvas);
 	
-	s3.setSystemMode(S3SystemMode.OPEN_GL);
-	camera.setSystemMode(S3SystemMode.OPEN_GL);
+	s3.setSystemMode(S3SystemMode.DIRECT_X);
+	camera.setSystemMode(S3SystemMode.DIRECT_X);
 	
 	var v0 = new S3Vertex( new S3Vector(  0,  0, -5));
 	var v1 = new S3Vertex( new S3Vector(  0, 20, -5));
@@ -86,6 +86,8 @@ CameraController.prototype.getCamera = function() {
 		scene.setCamera(controller.getCamera());
 		
 		s3.clear();
+		
+		model.angles.addRotateY(5);
 		s3.drawAxis(scene);
 		s3.drawScene(scene);
 	};
