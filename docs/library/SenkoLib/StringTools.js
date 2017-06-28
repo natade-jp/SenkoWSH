@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib StringMacros.js
+ * SenkoLib StringTools.js
  *  文字列操作ライブラリ
  * 
  * AUTHOR:
@@ -16,7 +16,7 @@
  
  // よく利用されそうな文字列操作をまとめました。
  
-var StringMacros = {
+var StringTools = {
 
 	// 文字列かどうか知る
 	isString: function(string) {
@@ -31,14 +31,14 @@ var StringMacros = {
 	// 正規表現表記を取得します
 	getRegularExpression : function(data) {
 		var new_reg;
-		if(StringMacros.isRegularExpression(data)) {
+		if(StringTools.isRegularExpression(data)) {
 			return(data);
 		}
-		if(!StringMacros.isString(data)) {
+		if(!StringTools.isString(data)) {
 			data = data.toString();
 		}
-		if(StringMacros.isString(data)) {
-			new_reg = new RegExp(StringMacros.escapeStringForRegularExpression(data));
+		if(StringTools.isString(data)) {
+			new_reg = new RegExp(StringTools.escapeStringForRegularExpression(data));
 		}
 		return(new_reg);
 	},
@@ -70,7 +70,7 @@ var StringMacros = {
 
 	// 最初に見つけた指定した文字より右側を抜き出す
 	rightFirstString: function(string, regexp) {
-		var reg_word = ".*?" + StringMacros.getRegularExpression(regexp).source;
+		var reg_word = ".*?" + StringTools.getRegularExpression(regexp).source;
 		var regex = new RegExp(reg_word);
 		if(regex.test(string)) {
 			return(string.replace(regex, ""));
@@ -82,7 +82,7 @@ var StringMacros = {
 	
 	// 文字の最後から左へ探索し、指定した文字より右側を抜き出す
 	rightLastString: function(string, regexp) {
-		var reg_word = ".*" + StringMacros.getRegularExpression(regexp).source;
+		var reg_word = ".*" + StringTools.getRegularExpression(regexp).source;
 		var regex = new RegExp(reg_word);
 		if(regex.test(string)) {
 			return(string.replace(regex, ""));
@@ -94,11 +94,11 @@ var StringMacros = {
 	
 	// 最初に見つけた指定した文字より左側を抜き出す
 	leftFirstString: function(string, regexp) {
-		var reg_word = StringMacros.getRegularExpression(regexp).source;
+		var reg_word = StringTools.getRegularExpression(regexp).source;
 		var regex = new RegExp(reg_word);
 		var string_array = string.match(regex);
 		if(string_array) {
-			return(StringMacros.getStartCharacter(string, string_array.index));
+			return(StringTools.getStartCharacter(string, string_array.index));
 		}
 		else {
 			return("");
@@ -107,7 +107,7 @@ var StringMacros = {
 	
 	// 文字の最後から左へ探索し、指定した文字より左側を抜き出す
 	leftLastString: function(string, regexp) {
-		var matchword = StringMacros.getMatchWords(string, regexp);
+		var matchword = StringTools.getMatchWords(string, regexp);
 		if(matchword.length === 0) {
 			return("");
 		}
@@ -117,13 +117,13 @@ var StringMacros = {
 		else {
 			matchword = matchword[0];
 		}
-		return(StringMacros.getStartCharacter(string, matchword.offset ));
+		return(StringTools.getStartCharacter(string, matchword.offset ));
 	},
 	
 	// 指定したワードの位置、ワード、サイズを配列で取得します。
 	getMatchWords: function(string, regexp) {
 		var global_reg;
-		global_reg = new RegExp(StringMacros.getRegularExpression(regexp).source, "g");
+		global_reg = new RegExp(StringTools.getRegularExpression(regexp).source, "g");
 		var output = [];
 		var dummy = function() {
 			// var offset		= arguments[arguments.length - 2];	// 先頭の番目
@@ -144,7 +144,7 @@ var StringMacros = {
 	// 指定したワードの間に挟まれたテキストを配列で取得します。
 	// getMatchWords を使用して調べるため、長さ 0 も許可します。
 	getStringsBetweenWords: function(string, regexp) {
-		var matchwords = StringMacros.getMatchWords(string, regexp);
+		var matchwords = StringTools.getMatchWords(string, regexp);
 		if(matchwords.length === 0) {
 			return(string);
 		}
