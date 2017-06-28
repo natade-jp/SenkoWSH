@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib PController.js
+ * SenkoLib InputDevice.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -15,30 +15,30 @@
 
 /**
  * 位置情報
- * @returns {PCPosition}
+ * @returns {IDPosition}
  */
-var PCPosition = function() {
+var IDPosition = function() {
 	this.init();
 };
-PCPosition.prototype.set = function(x, y) {
+IDPosition.prototype.set = function(x, y) {
 	this.x = x; this.y = y;
 };
-PCPosition.prototype.add = function(x, y) {
+IDPosition.prototype.add = function(x, y) {
 	this.x += x; this.y += y;
 };
-PCPosition.prototype.init = function() {
+IDPosition.prototype.init = function() {
 	this.x = 0; this.y = 0;
 };
 
 /**
  * 押す、離すが可能なボタン
- * @returns {PCSwitch}
+ * @returns {IDSwitch}
  */
-var PCSwitch = function() {
+var IDSwitch = function() {
 	this.init();
 };
 
-PCSwitch.prototype.init = function() {
+IDSwitch.prototype.init = function() {
 	/**
 	 * 押した瞬間に反応
 	 */
@@ -63,7 +63,7 @@ PCSwitch.prototype.init = function() {
 /**
  * キーを押した情報
  */
-PCSwitch.prototype.keyPressed = function() {
+IDSwitch.prototype.keyPressed = function() {
 	if(!this.ispressed) {
 		this.istyped = true;
 	}
@@ -74,7 +74,7 @@ PCSwitch.prototype.keyPressed = function() {
 /**
  * キーを離した情報
  */
-PCSwitch.prototype.keyReleased = function() {
+IDSwitch.prototype.keyReleased = function() {
 	this.ispressed  = false;
 	this.isreleased = true;
 	this.pressed_time = 0;
@@ -83,7 +83,7 @@ PCSwitch.prototype.keyReleased = function() {
 /**
  * フォーカスが消えたとき
  */
-PCSwitch.prototype.focusLost = function() {
+IDSwitch.prototype.focusLost = function() {
 	this.keyReleased();
 };
 
@@ -92,8 +92,8 @@ PCSwitch.prototype.focusLost = function() {
  * トリガータイプなど1回目の情報と2回の情報で異なる場合がある。
  * @param {InputSwitch} c 取得用クラス
  */
-PCSwitch.prototype.pickInput = function(c) {
-	if(!(c instanceof PCSwitch)) {
+IDSwitch.prototype.pickInput = function(c) {
+	if(!(c instanceof IDSwitch)) {
 		throw "IllegalArgumentException";
 	}
 	c.ispressed			= this.ispressed;
@@ -107,21 +107,21 @@ PCSwitch.prototype.pickInput = function(c) {
 /**
  * 動かすことが可能なクラス
  * @param {Integer} mask
- * @returns {PCDraggableSwitch}
+ * @returns {IDDraggableSwitch}
  */
-var PCDraggableSwitch = function(mask) {
+var IDDraggableSwitch = function(mask) {
 	this.init(mask);
 };
 
-PCDraggableSwitch.prototype.init = function(mask) {
+IDDraggableSwitch.prototype.init = function(mask) {
 	this.mask			= mask;
-	this.switch			= new PCSwitch();
-	this.client			= new PCPosition();
-	this.deltaBase		= new PCPosition();
-	this.dragged		= new PCPosition();
+	this.switch			= new IDSwitch();
+	this.client			= new IDPosition();
+	this.deltaBase		= new IDPosition();
+	this.dragged		= new IDPosition();
 };
 
-PCDraggableSwitch.prototype.mousePressed = function(event) {
+IDDraggableSwitch.prototype.mousePressed = function(event) {
 	var clientX	= event.clientX;
 	var clientY	= event.clientY;
 	var state	= event.button;
@@ -135,7 +135,7 @@ PCDraggableSwitch.prototype.mousePressed = function(event) {
 	}
 };
 
-PCDraggableSwitch.prototype.mouseReleased = function(event) {
+IDDraggableSwitch.prototype.mouseReleased = function(event) {
 	var state	= event.button;
 	if(state === this.mask) {
 		if(this.switch.ispressed) {
@@ -144,7 +144,7 @@ PCDraggableSwitch.prototype.mouseReleased = function(event) {
 	}
 };
 
-PCDraggableSwitch.prototype.mouseMoved = function(event) {
+IDDraggableSwitch.prototype.mouseMoved = function(event) {
 	var clientX	= event.clientX;
 	var clientY	= event.clientY;
 	if(this.switch.ispressed) {
@@ -156,7 +156,7 @@ PCDraggableSwitch.prototype.mouseMoved = function(event) {
 	this.deltaBase.set(clientX ,clientY);
 };
 
-PCDraggableSwitch.prototype.focusLost = function() {
+IDDraggableSwitch.prototype.focusLost = function() {
 	this.switch.focusLost();
 };
 
@@ -165,8 +165,8 @@ PCDraggableSwitch.prototype.focusLost = function() {
  * トリガータイプなど1回目の情報と2回の情報で異なる場合がある。
  * @param {InputSwitch} c 取得用クラス
  */
-PCDraggableSwitch.prototype.pickInput = function(c) {
-	if(!(c instanceof PCDraggableSwitch)) {
+IDDraggableSwitch.prototype.pickInput = function(c) {
+	if(!(c instanceof IDDraggableSwitch)) {
 		throw "IllegalArgumentException";
 	}
 	this.switch.pickInput(c.switch);
@@ -175,37 +175,37 @@ PCDraggableSwitch.prototype.pickInput = function(c) {
 	this.dragged.init();
 };
 
-var PCMouseEvent = {
+var IDMouseEvent = {
 	BUTTON1_MASK : 0,
 	BUTTON2_MASK : 1,
 	BUTTON3_MASK : 2
 };
 
-var PCMouse = function() {
+var IDMouse = function() {
 	this.init();
 };
 
-PCMouse.prototype.init = function() {
-	this.left   = new PCDraggableSwitch(PCMouseEvent.BUTTON1_MASK);
-	this.center = new PCDraggableSwitch(PCMouseEvent.BUTTON2_MASK);
-	this.right  = new PCDraggableSwitch(PCMouseEvent.BUTTON3_MASK);
-	this.position = new PCPosition();
+IDMouse.prototype.init = function() {
+	this.left   = new IDDraggableSwitch(IDMouseEvent.BUTTON1_MASK);
+	this.center = new IDDraggableSwitch(IDMouseEvent.BUTTON2_MASK);
+	this.right  = new IDDraggableSwitch(IDMouseEvent.BUTTON3_MASK);
+	this.position = new IDPosition();
 	this.wheelrotation = 0;
 };
 
-PCMouse.prototype.mousePressed = function(event) {
+IDMouse.prototype.mousePressed = function(event) {
 	this.left.mousePressed(event);
 	this.center.mousePressed(event);
 	this.right.mousePressed(event);
 };
 
-PCMouse.prototype.mouseReleased = function(event) {
+IDMouse.prototype.mouseReleased = function(event) {
 	this.left.mouseReleased(event);
 	this.center.mouseReleased(event);
 	this.right.mouseReleased(event);
 };
 
-PCMouse.prototype.mouseMoved = function(event) {
+IDMouse.prototype.mouseMoved = function(event) {
 	this.position.x = event.clientX;
 	this.position.y = event.clientY;
 	this.left.mouseMoved(event);
@@ -213,18 +213,18 @@ PCMouse.prototype.mouseMoved = function(event) {
 	this.right.mouseMoved(event);
 };
 
-PCMouse.prototype.mouseWheelMoved = function(event) {
+IDMouse.prototype.mouseWheelMoved = function(event) {
 	this.wheelrotation += event.wheelDelta < 0 ? -1 : 1;
 };
 
-PCMouse.prototype.focusLost = function() {
+IDMouse.prototype.focusLost = function() {
 	this.left.focusLost();
 	this.center.focusLost();
 	this.right.focusLost();
 };
 
-PCMouse.prototype.pickInput = function(c) {
-	if(!(c instanceof PCMouse)) {
+IDMouse.prototype.pickInput = function(c) {
+	if(!(c instanceof IDMouse)) {
 		throw "IllegalArgumentException";
 	}
 	this.left.pickInput(c.left);
@@ -235,7 +235,7 @@ PCMouse.prototype.pickInput = function(c) {
 	this.wheelrotation = 0;
 };
 
-PCMouse.prototype.setListenerOnElement = function(element, iscanvas) {
+IDMouse.prototype.setListenerOnElement = function(element, iscanvas) {
 	var that = this;
 	var node = element;
 	var correction = function(event) {
@@ -256,7 +256,7 @@ PCMouse.prototype.setListenerOnElement = function(element, iscanvas) {
 		var e = {
 			clientX : event.changedTouches[0].clientX,
 			clientY : event.changedTouches[0].clientY,
-			button : PCMouseEvent.BUTTON1_MASK
+			button : IDMouseEvent.BUTTON1_MASK
 		};
 		that.mousePressed(correction(e));
 	};
@@ -264,7 +264,7 @@ PCMouse.prototype.setListenerOnElement = function(element, iscanvas) {
 		var e = {
 			clientX : event.changedTouches[0].clientX,
 			clientY : event.changedTouches[0].clientY,
-			button : PCMouseEvent.BUTTON1_MASK
+			button : IDMouseEvent.BUTTON1_MASK
 		};
 		that.mouseReleased(correction(e));
 	};
@@ -272,7 +272,7 @@ PCMouse.prototype.setListenerOnElement = function(element, iscanvas) {
 		var e = {
 			clientX : event.changedTouches[0].clientX,
 			clientY : event.changedTouches[0].clientY,
-			button : PCMouseEvent.BUTTON1_MASK
+			button : IDMouseEvent.BUTTON1_MASK
 		};
 		that.mouseMoved(correction(e));
 		e.preventDefault();

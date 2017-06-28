@@ -2,8 +2,8 @@
 
 
 var CameraController = function() {
-	this.mouse		= new PCMouse();
-	this.data		= new PCMouse();
+	this.mouse		= new IDMouse();
+	this.data		= new IDMouse();
 	this.moveDistance	= 4.0;
 	this.moveRotate		= 0.1;
 	this.moveTranslateRelative	= 0.1;
