@@ -9,7 +9,7 @@ var CameraController = function() {
 	this.moveTranslateRelative	= 0.1;
 };
 CameraController.prototype.setElement = function(element) {
-	this.mouse.setListenerOnElement(element);
+	this.mouse.setListenerOnElement(element, true);
 };
 CameraController.prototype.setCamera = function(camera) {
 	this.camera = camera.clone();

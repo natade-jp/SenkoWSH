@@ -144,9 +144,9 @@ PCDraggableSwitch.prototype.mouseReleased = function(event) {
 	}
 };
 
-PCDraggableSwitch.prototype.mouseMoved = function(e) {
-	var clientX	= e.clientX;
-	var clientY	= e.clientY;
+PCDraggableSwitch.prototype.mouseMoved = function(event) {
+	var clientX	= event.clientX;
+	var clientY	= event.clientY;
 	if(this.switch.ispressed) {
 		var deltaX = clientX - this.deltaBase.x;
 		var deltaY = clientY - this.deltaBase.y;
@@ -235,15 +235,30 @@ PCMouse.prototype.pickInput = function(c) {
 	this.wheelrotation = 0;
 };
 
-PCMouse.prototype.setListenerOnElement = function(element) {
+PCMouse.prototype.setListenerOnElement = function(element, iscanvas) {
 	var that = this;
+	var node = element;
+	var correction = function(event) {
+		if(!iscanvas) {
+			return event;
+		}
+		else {
+			var e = {
+				clientX	: event.clientX / node.clientWidth  * node.width,
+				clientY	: event.clientY / node.clientHeight * node.height,
+				button	: event.button
+			};
+			return e;
+		}
+	};
+	
 	var touchStart = function(event) {
 		var e = {
 			clientX : event.changedTouches[0].clientX,
 			clientY : event.changedTouches[0].clientY,
 			button : PCMouseEvent.BUTTON1_MASK
 		};
-		that.mousePressed(e);
+		that.mousePressed(correction(e));
 	};
 	var touchEnd = function(event) {
 		var e = {
@@ -251,7 +266,7 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 			clientY : event.changedTouches[0].clientY,
 			button : PCMouseEvent.BUTTON1_MASK
 		};
-		that.mouseReleased(e);
+		that.mouseReleased(correction(e));
 	};
 	var touchMove = function(event) {
 		var e = {
@@ -259,20 +274,20 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 			clientY : event.changedTouches[0].clientY,
 			button : PCMouseEvent.BUTTON1_MASK
 		};
-		that.mouseMoved(e);
+		that.mouseMoved(correction(e));
 		e.preventDefault();
 	};
 	var mousePressed = function(e) {
-		that.mousePressed(e);
+		that.mousePressed(correction(e));
 	};
 	var mouseReleased = function(e) {
-		that.mouseReleased(e);
+		that.mouseReleased(correction(e));
 	};
 	var mouseMoved = function(e) {
-		that.mouseMoved(e);
+		that.mouseMoved(correction(e));
 	};
 	var focusLost = function(e) {
-		that.focusLost(e);
+		that.focusLost();
 	};
 	var mouseWheelMoved = function(e) {
 		that.mouseWheelMoved(e);

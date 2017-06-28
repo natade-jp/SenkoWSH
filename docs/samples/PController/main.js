@@ -18,7 +18,7 @@
 	var ctx = scanvas.getContext();
 	
 	var mouse = new PCMouse();
-	mouse.setListenerOnElement(scanvas.getElement());
+	mouse.setListenerOnElement(scanvas.getElement(), true);
 	
 	var checkMouse = function() {
 		var data = new PCMouse();
@@ -32,9 +32,7 @@
 		if(data.left.switch.ispressed) {
 			ctx.beginPath();
 			ctx.fillStyle = "rgba(240, 240, 255, 0.5)";
-			var x = data.position.x / canvas.clientWidth  * canvas.width;
-			var y = data.position.y / canvas.clientHeight * canvas.height;
-			ctx.arc( x, y, 50, 0, 2 * Math.PI, true);
+			ctx.arc( data.position.x, data.position.y, 50, 0, 2 * Math.PI, true);
 			ctx.fill();
 		}
 	};
