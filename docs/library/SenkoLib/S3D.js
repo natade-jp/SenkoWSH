@@ -1020,7 +1020,7 @@ S3Camera.prototype.setRotateY = function(deg) {
 	);
 };
 S3Camera.prototype.addRotateY = function(deg) {
-	this.setRotateY(this.getRotateY() - deg);
+	this.setRotateY(this.getRotateY() + deg);
 };
 S3Camera.prototype.getRotateX = function() {
 	var ray = this.center.getDirection(this.eye);

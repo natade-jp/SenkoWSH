@@ -26,8 +26,8 @@ CameraController.prototype.getCamera = function() {
 		);
 	}
 	{
-		this.camera.addRotateY( this.data.right.dragged.x * this.moveRotate );
-		this.camera.addRotateX( this.data.right.dragged.y * this.moveRotate );
+		this.camera.addRotateY(   this.data.right.dragged.x * this.moveRotate );
+		this.camera.addRotateX( - this.data.right.dragged.y * this.moveRotate );
 	}
 	{
 		var distance = this.camera.getDistance();
