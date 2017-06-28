@@ -10,10 +10,11 @@
 	scanvas.setUnit(SComponent.unittype.PX);
 	scanvas.setPixelSize(640, 480);
 	scanvas.setSize(640, 480);
+	var canvas = scanvas.getCanvas();
 	
-	scanvas.getElement().style.borderStyle		= "solid";
-	scanvas.getElement().style.borderColor		= "silver";
-	scanvas.getElement().style.borderWidth		= "5px";
+	canvas.style.borderStyle		= "solid";
+	canvas.style.borderColor		= "silver";
+	canvas.style.borderWidth		= "5px";
 	var ctx = scanvas.getContext();
 	
 	var mouse = new PCMouse();
@@ -31,11 +32,13 @@
 		if(data.left.switch.ispressed) {
 			ctx.beginPath();
 			ctx.fillStyle = "rgba(240, 240, 255, 0.5)";
-			ctx.arc( data.position.x, data.position.y, 50, 0, 2 * Math.PI, true);
+			var x = data.position.x / canvas.clientWidth  * canvas.width;
+			var y = data.position.y / canvas.clientHeight * canvas.height;
+			ctx.arc( x, y, 50, 0, 2 * Math.PI, true);
 			ctx.fill();
 		}
 	};
 	
-	setInterval(checkMouse, 500);
+	setInterval(checkMouse, 250);
 }
 
