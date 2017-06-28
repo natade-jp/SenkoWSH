@@ -882,16 +882,14 @@ S3Mesh.prototype.addTriangleIndex = function(index) {
 };
 
 /**
- * オイラー角 (immutable)
+ * オイラー角 (mutable)
  * @param {Number} z ロール
  * @param {Number} x ピッチ
  * @param {Number} y ヨー
  * @returns {S3Angle}
  */
 var S3Angles = function(z, x, y) {
-	this.roll	= S3Angles.toPeriodicAngle((z === undefined) ? 0.0 : z);
-	this.pitch	= S3Angles.toPeriodicAngle((x === undefined) ? 0.0 : x);
-	this.yaw	= S3Angles.toPeriodicAngle((y === undefined) ? 0.0 : y);
+	this.setRotateZXY(z, x, y);
 };
 S3Angles.PI		= 180.0;
 S3Angles.PIOVER2= S3Angles.PI / 2.0;
@@ -906,23 +904,35 @@ S3Angles.toPeriodicAngle = function(x) {
 	}
 	return x;
 };
+S3Angles.prototype.clone = function() {
+	var angles = new S3Angles();
+	angles.roll		= this.roll;
+	angles.pitch	= this.pitch;
+	angles.yaw		= this.yaw;
+	return yaw;
+};
+S3Angles.prototype.setRotateZXY = function(z, x, y) {
+	this.roll	= S3Angles.toPeriodicAngle((z === undefined) ? 0.0 : z);
+	this.pitch	= S3Angles.toPeriodicAngle((x === undefined) ? 0.0 : x);
+	this.yaw	= S3Angles.toPeriodicAngle((y === undefined) ? 0.0 : y);
+};
 S3Angles.prototype.addRotateX = function(x) {
-	return new S3Angles(this.roll, this.pitch - x, this.yaw);
+	this.pitch	-= x;
 };
 S3Angles.prototype.addRotateY = function(y) {
-	return new S3Angles(this.roll, this.pitch, this.yaw - y);
+	this.yaw	+= y;
 };
 S3Angles.prototype.addRotateZ = function(z) {
-	return new S3Angles(this.roll + z, this.pitch, this.yaw);
+	this.roll	+= z;
 };
 S3Angles.prototype.setRotateX = function(x) {
-	return new S3Angles(this.roll, x, this.yaw);
+	this.pitch = x;
 };
 S3Angles.prototype.setRotateY = function(y) {
-	return new S3Angles(this.roll, this.pitch, y);
+	this.yaw = y;
 };
 S3Angles.prototype.setRotateZ = function(z) {
-	return new S3Angles(z, this.pitch, this.yaw);
+	this.roll = z;
 };
 S3Angles.prototype.toString = function() {
 	return "angles[" + this.roll + "," + this.pitch + "," + this.yaw + "]";
@@ -959,6 +969,8 @@ S3Camera.prototype.init = function() {
 	this.fovY		= 45;
 	this.eye		= new S3Vector(0, 0, 0);
 	this.center		= new S3Vector(0, 0, 1);
+	this.near		= 0;
+	this.far		= 1000;
 	this.setSystemMode(S3SystemMode.OPEN_GL);
 };
 S3Camera.prototype.clone = function() {
@@ -966,8 +978,14 @@ S3Camera.prototype.clone = function() {
 	camera.fovY		= this.fovY;
 	camera.eye		= this.eye;
 	camera.center	= this.center;
+	camera.near		= this.near;
+	camera.far		= this.far;
 	camera.setSystemMode(this.systemmode);
 	return camera;
+};
+S3Camera.prototype.setDrawRange = function(near, far) {
+	this.near	= near;
+	this.far	= far;
 };
 S3Camera.prototype.setFovY = function(fovY) {
 	this.fovY = fovY;
@@ -1086,13 +1104,63 @@ S3System.prototype.clear = function() {
 	var context = this.canvas.getContext("2d");
 	context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 };
+S3System.prototype.drawAxis = function(scene) {
+	var i = 0;
+	// ビューイング変換行列を作成する
+	var L = this.getMatrixLookAt(scene.camera.eye, scene.camera.center);
+	// 射影トランスフォーム行列
+	var aspect = S3System.calcAspect(this.canvas.width, this.canvas.height);
+	var P = this.getMatrixPerspectiveFov(scene.camera.fovY, aspect, scene.camera.near, scene.camera.far );
+	// ビューポート行列
+	var V = this.getMatrixViewport(0, 0, this.canvas.width, this.canvas.height);
+	
+	var M = this.mulMatrix(L, P);
+	
+	
+	var vertexvector = [];
+	vertexvector[0] = new S3Vector(0, 0, 0);
+	vertexvector[1] = new S3Vector(10, 0, 0);
+	vertexvector[2] = new S3Vector(0, 10, 0);
+	vertexvector[3] = new S3Vector(0, 0, 10);
+	
+	var context = this.canvas.getContext("2d");
+	context.lineWidth = 3.0;
+	
+	var newvertex = [];
+	for(i = 0; i < vertexvector.length; i++) {
+		var p = vertexvector[i];
+		p = this.mulMatrix(M, p);
+		p = p.perspective();
+		p = this.mulMatrix(V, p);
+		newvertex[newvertex.length] = p;
+	}
+	
+	context.strokeStyle = "rgb(255, 0, 0)";
+	context.beginPath();
+	context.moveTo( newvertex[0].x , newvertex[0].y );
+	context.lineTo( newvertex[1].x , newvertex[1].y );
+	context.stroke();
+	
+	context.strokeStyle = "rgb(0, 255, 0)";
+	context.beginPath();
+	context.moveTo( newvertex[0].x , newvertex[0].y );
+	context.lineTo( newvertex[2].x , newvertex[2].y );
+	context.stroke();
+	
+	context.strokeStyle = "rgb(0, 0, 255)";
+	context.beginPath();
+	context.moveTo( newvertex[0].x , newvertex[0].y );
+	context.lineTo( newvertex[3].x , newvertex[3].y );
+	context.stroke();
+};
+
 S3System.prototype.drawScene = function(scene) {
 	var i = 0;
 	// ビューイング変換行列を作成する
 	var L = this.getMatrixLookAt(scene.camera.eye, scene.camera.center);
 	// 射影トランスフォーム行列
 	var aspect = S3System.calcAspect(this.canvas.width, this.canvas.height);
-	var P = this.getMatrixPerspectiveFov(scene.camera.fovY, aspect, 0, 1000 );
+	var P = this.getMatrixPerspectiveFov(scene.camera.fovY, aspect, scene.camera.near, scene.camera.far );
 	// ビューポート行列
 	var V = this.getMatrixViewport(0, 0, this.canvas.width, this.canvas.height);
 	

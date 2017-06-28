@@ -1,4 +1,4 @@
-/* global System, SComponent */
+/* global System, SComponent, S3SystemMode */
 
 
 var CameraController = function() {
@@ -8,7 +8,7 @@ var CameraController = function() {
 	this.moveRotate		= 0.1;
 	this.moveTranslateRelative	= 0.1;
 };
-CameraController.prototype.setElement = function(element) {
+CameraController.prototype.setCanvas = function(element) {
 	this.mouse.setListenerOnElement(element, true);
 };
 CameraController.prototype.setCamera = function(camera) {
@@ -38,15 +38,23 @@ CameraController.prototype.getCamera = function() {
 	return this.camera;
 };
 
-var s3 = new S3System();
-var controller = new CameraController();
 
+﻿function test3D(canvas) {
+	
+	var s3 = new S3System();
+	var controller = new CameraController();
+	var camera = new S3Camera();
 
-﻿function test3D() {
-	var v0 = new S3Vertex( new S3Vector(-10,  0, -20));
-	var v1 = new S3Vertex( new S3Vector(-10, 20, -20));
-	var v2 = new S3Vertex( new S3Vector( 10,  0, -20));
-	var v3 = new S3Vertex( new S3Vector(  0,  5, -40));
+	s3.setCanvas(canvas);
+	controller.setCanvas(canvas);
+	
+	s3.setSystemMode(S3SystemMode.OPEN_GL);
+	camera.setSystemMode(S3SystemMode.OPEN_GL);
+	
+	var v0 = new S3Vertex( new S3Vector(  0,  0, -5));
+	var v1 = new S3Vertex( new S3Vector(  0, 20, -5));
+	var v2 = new S3Vertex( new S3Vector( 10,  0, -5));
+	var v3 = new S3Vertex( new S3Vector(  0,  0, -20));
 	
 	var i1 = new S3TriangleIndex(0, 1, 2);
 	var i2 = new S3TriangleIndex(3, 1, 0);
@@ -66,8 +74,7 @@ var controller = new CameraController();
 	var model = new S3Model();
 	model.mesh		= mesh;
 
-	var camera = new S3Camera();
-	camera.setEye(new S3Vector( 0,  0,  50));
+	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
 	controller.setCamera(camera);
 	
@@ -77,10 +84,11 @@ var controller = new CameraController();
 
 	var redraw = function() {
 		scene.setCamera(controller.getCamera());
+		
 		s3.clear();
+		s3.drawAxis(scene);
 		s3.drawScene(scene);
 	};
-
 
 	setInterval(redraw, 50);
 
@@ -119,10 +127,7 @@ var controller = new CameraController();
 	panel.setPixelSize(640, 480);
 	panel.setSize(640, 480);
 	
-	s3.setCanvas(panel.getCanvas());
-	controller.setElement(panel.getCanvas());
-	
-	test3D();
+	test3D(panel.getCanvas());
 	
 	
 	
