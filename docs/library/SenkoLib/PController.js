@@ -260,6 +260,7 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 			button : PCMouseEvent.BUTTON1_MASK
 		};
 		that.mouseMoved(e);
+		e.preventDefault();
 	};
 	var mousePressed = function(e) {
 		that.mousePressed(e);
@@ -277,10 +278,14 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 		that.mouseWheelMoved(e);
 		e.preventDefault();
 	};
-	var preventDefault  = function(e) {
+	var contextMenu  = function(e) {
 		e.preventDefault();
 	};
 	element.style.cursor = "crosshair";
+	element.style.mozUserSelect			= "none";
+	element.style.webkitUserSelect		= "none";
+	element.style.msUserSelect			= "none";
+	element.style.webkitTouchCallout	= "none";
 	element.addEventListener("touchstart",	touchStart, false );
 	element.addEventListener("touchend",	touchEnd, false );
 	element.addEventListener("touchmove",	touchMove, false );
@@ -289,5 +294,5 @@ PCMouse.prototype.setListenerOnElement = function(element) {
 	element.addEventListener("mousemove",	mouseMoved, false );
 	element.addEventListener("mouseout",	focusLost, false );
 	element.addEventListener("wheel",		mouseWheelMoved, false );
-	element.addEventListener("contextmenu",	preventDefault, false );
+	element.addEventListener("contextmenu",	contextMenu, false );
 };

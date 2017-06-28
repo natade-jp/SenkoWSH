@@ -27,8 +27,7 @@ CameraController.prototype.getCamera = function() {
 	}
 	{
 		this.camera.addRotateY( this.data.right.dragged.x * this.moveRotate );
-//		this.camera.addRotateX( this.data.right.dragged.y * this.moveRotate );
-		System.out.println(this.camera);
+		this.camera.addRotateX( this.data.right.dragged.y * this.moveRotate );
 	}
 	{
 		var distance = this.camera.getDistance();
@@ -50,9 +49,9 @@ var controller = new CameraController();
 	var v3 = new S3Vertex( new S3Vector(  0,  5, -40));
 	
 	var i1 = new S3TriangleIndex(0, 1, 2);
-	var i2 = new S3TriangleIndex(0, 1, 3);
-	var i3 = new S3TriangleIndex(0, 3, 2);
-	var i4 = new S3TriangleIndex(3, 1, 2);
+	var i2 = new S3TriangleIndex(3, 1, 0);
+	var i3 = new S3TriangleIndex(3, 0, 2);
+	var i4 = new S3TriangleIndex(3, 0, 1);
 	
 	var mesh = new S3Mesh();
 	mesh.addVertex(v0);

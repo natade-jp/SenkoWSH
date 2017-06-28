@@ -988,7 +988,7 @@ S3Camera.prototype.setRotateY = function(deg) {
 	var sin = Math.sin(rad);
 	this.eye = new S3Vector(
 		this.center.x + length * sin,
-		this.center.y,
+		this.eye.y,
 		this.center.z + length * cos
 	);
 };
@@ -1006,7 +1006,7 @@ S3Camera.prototype.setRotateX = function(deg) {
 	var cos = Math.cos(rad);
 	var sin = Math.sin(rad);
 	this.eye = new S3Vector(
-		this.center.x,
+		this.eye.x,
 		this.center.y + length * sin,
 		this.center.z + length * cos
 	);
