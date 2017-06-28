@@ -946,18 +946,27 @@ var S3Model = function() {
 var S3Camera = function() {
 	this.init();
 };
+S3Camera.prototype.setSystemMode = function(mode) {
+	this.systemmode = mode;
+	if(this.systemmode === S3SystemMode.OPEN_GL) {
+		this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
+	}
+	else {
+		this.dimensionmode	= S3DimensionMode.LEFT_HAND;
+	}
+};
 S3Camera.prototype.init = function() {
 	this.fovY		= 45;
 	this.eye		= new S3Vector(0, 0, 0);
 	this.center		= new S3Vector(0, 0, 1);
-	this.dimensionmode = S3DimensionMode.RIGHT_HAND;
+	this.setSystemMode(S3SystemMode.OPEN_GL);
 };
 S3Camera.prototype.clone = function() {
 	var camera = new S3Camera();
 	camera.fovY		= this.fovY;
 	camera.eye		= this.eye;
 	camera.center	= this.center;
-	camera.dimensionmode	= this.dimensionmode;
+	camera.setSystemMode(this.systemmode);
 	return camera;
 };
 S3Camera.prototype.setFovY = function(fovY) {
