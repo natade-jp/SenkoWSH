@@ -22,7 +22,7 @@ var CameraController = function() {
 	this.moveTranslateRelative	= 0.1;
 };
 CameraController.prototype.setCanvas = function(element) {
-	this.mouse.setListenerOnElement(element, true);
+	this.mouse.setListenerOnElement(element);
 };
 CameraController.prototype.setCamera = function(camera) {
 	this.camera = camera.clone();

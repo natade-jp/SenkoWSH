@@ -18,7 +18,7 @@
 	var ctx = scanvas.getContext();
 	
 	var mouse = new IDMouse();
-	mouse.setListenerOnElement(scanvas.getElement(), true);
+	mouse.setListenerOnElement(scanvas.getElement());
 	
 	var checkMouse = function() {
 		var data = new IDMouse();

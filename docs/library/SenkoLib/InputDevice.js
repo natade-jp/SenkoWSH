@@ -235,9 +235,10 @@ IDMouse.prototype.pickInput = function(c) {
 	this.wheelrotation = 0;
 };
 
-IDMouse.prototype.setListenerOnElement = function(element, iscanvas) {
+IDMouse.prototype.setListenerOnElement = function(element) {
 	var that = this;
 	var node = element;
+	var iscanvas = element.tagName === "CANVAS";
 	var correction = function(event) {
 		if(!iscanvas) {
 			return event;
