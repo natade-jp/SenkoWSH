@@ -1,4 +1,4 @@
-/* global System, SComponent, S3SystemMode */
+/* global System, SComponent, S3SystemMode, IDTools */
 
 
 
@@ -64,6 +64,9 @@
 ﻿function main(args) {
 	
 	System.out.println("S3D クラスのサンプル");
+	
+	// 縦スクロール防止
+	IDTools.noScroll();
 	
 	var m = new S3Matrix(
 		3, -2, -6, 4,

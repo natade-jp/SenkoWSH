@@ -1,8 +1,11 @@
-/* global System, SComponent */
+/* global System, SComponent, IDTools */
 
 ﻿function main(args) {
 	
 	System.out.println("InputDevice クラスのサンプル");
+	
+	// 縦スクロール防止
+	IDTools.noScroll();
 	
 	var scanvas;
 	scanvas = new SCanvas();

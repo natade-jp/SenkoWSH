@@ -317,3 +317,26 @@ IDMouse.prototype.setListenerOnElement = function(element) {
 	element.addEventListener("wheel",		mouseWheelMoved, false );
 	element.addEventListener("contextmenu",	contextMenu, false );
 };
+
+
+var IDTools = {
+	
+	noScroll : function() {
+		// スマホでスクロールしたときのアニメーションを防止
+		var preventDefault = function(e) {
+			e.preventDefault();
+		};
+		document.body.addEventListener("touchmove",	preventDefault, false );
+		// 縦のスクロールバーを削除
+		var main = function() {
+			// body
+			document.body.style.height			= "100%";
+			document.body.style.overflow		= "hidden";
+			// html
+			document.documentElement.height		= "100%";
+			document.documentElement.overflow	= "hidden";
+		};
+		window.addEventListener("load", main, false);
+	}
+	
+};
