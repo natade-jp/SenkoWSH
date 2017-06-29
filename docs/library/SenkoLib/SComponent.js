@@ -446,6 +446,8 @@ SComponent.prototype.getElement = function() {
 		x.removeClass.call(x,SComponent.CLASS_MOUSEDOWN);
 	};
 	
+	element.addEventListener("touchstart", mousedownfunc,false);
+	element.addEventListener("touchend", mouseupfunc	,false);
 	element.addEventListener("mouseover",mouseoverfunc	,false);
 	element.addEventListener("mouseout"	,mouseoutfunc	,false);
 	element.addEventListener("mousedown",mousedownfunc	,false);
