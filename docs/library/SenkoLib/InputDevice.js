@@ -297,10 +297,15 @@ IDMouse.prototype.setListenerOnElement = function(element, iscanvas) {
 		e.preventDefault();
 	};
 	element.style.cursor = "crosshair";
+	// 非選択化
 	element.style.mozUserSelect			= "none";
 	element.style.webkitUserSelect		= "none";
 	element.style.msUserSelect			= "none";
+	// メニュー非表示化
 	element.style.webkitTouchCallout	= "none";
+	// タップのハイライトカラーを消す
+	element.style.webkitTapHighlightColor = "rgba(0,0,0,0)";
+	
 	element.addEventListener("touchstart",	touchStart, false );
 	element.addEventListener("touchend",	touchEnd, false );
 	element.addEventListener("touchmove",	touchMove, false );
