@@ -1024,7 +1024,7 @@ S3Camera.prototype.addRotateY = function(deg) {
 };
 S3Camera.prototype.getRotateX = function() {
 	var ray = this.center.getDirection(this.eye);
-	return S3Math.degrees(Math.atan2( ray.y, ray.z ));
+	return S3Math.degrees(Math.atan2( ray.z, ray.y ));
 };
 S3Camera.prototype.setRotateX = function(deg) {
 	var rad = S3Math.radius(deg);
@@ -1034,12 +1034,12 @@ S3Camera.prototype.setRotateX = function(deg) {
 	var sin = Math.sin(rad);
 	this.eye = new S3Vector(
 		this.eye.x,
-		this.center.y + length * sin,
-		this.center.z + length * cos
+		this.center.y + length * cos,
+		this.center.z + length * sin
 	);
 };
 S3Camera.prototype.addRotateX = function(deg) {
-	this.setRotateX(this.getRotateX() - deg);
+	this.setRotateX(this.getRotateX() + deg);
 };
 S3Camera.prototype.translateAbsolute = function(v) {
 	this.eye	= this.eye.add(v);
