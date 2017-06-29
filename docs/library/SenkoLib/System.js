@@ -251,11 +251,7 @@ var System = {
 					}
 				}
 				else {
-					root = document.getElementsByTagName("body").item(0);
-					if(!root) {
-						// まだHTMLが読み込まれていないと body が見つからない。
-						return null;
-					}
+					root = document.body;
 				}
 				root.style.backgroundColor = "black";
 				root.style.margin = "0px";
