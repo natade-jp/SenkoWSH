@@ -234,7 +234,7 @@ var System = {
 				this.root		= null;
 				this.element	= null;
 				this.isshow		= false;
-				this.loglength	= 100;
+				this.loglength	= 250;
 				this.linelength	= 0;
 			};
 			Console.prototype._initHTML = function() {
