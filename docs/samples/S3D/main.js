@@ -11,8 +11,8 @@
 	s3.setCanvas2D(canvas);
 	controller.setCanvas(canvas);
 	
-	s3.setSystemMode(S3SystemMode.DIRECT_X);
-	camera.setSystemMode(S3SystemMode.DIRECT_X);
+	s3.setSystemMode(S3SystemMode.OPEN_GL);
+	camera.setSystemMode(S3SystemMode.OPEN_GL);
 	
 	var v0 = new S3Vertex( new S3Vector(  0,  0, -5));
 	var v1 = new S3Vertex( new S3Vector(  0, 20, -5));
@@ -22,7 +22,7 @@
 	var i1 = new S3TriangleIndex(0, 1, 2);
 	var i2 = new S3TriangleIndex(3, 1, 0);
 	var i3 = new S3TriangleIndex(3, 0, 2);
-	var i4 = new S3TriangleIndex(3, 0, 1);
+	var i4 = new S3TriangleIndex(3, 2, 1);
 	
 	var mesh = new S3Mesh();
 	mesh.addVertex(v0);

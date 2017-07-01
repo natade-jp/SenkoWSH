@@ -561,7 +561,13 @@ var S3CullMode = {
 	 * 後ろ向きの三角形を描写しません。
 	 * @type Number
 	 */
-	BACK : 2
+	BACK : 2,
+	
+	/**
+	 * 常に描写しない。
+	 * @type Number
+	 */
+	FRONT_AND_BACK : 3
 };
 
 
@@ -616,6 +622,44 @@ S3System.prototype.setCanvas2D = function(canvas) {
 			this.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
 		}
 	};
+};
+
+/**
+ * カリングのテストをする
+ * @param {S3Vector} p1
+ * @param {S3Vector} p2
+ * @param {S3Vector} p3
+ * @returns {Boolean} true で描写しない
+ */
+S3System.prototype.testCull = function(p1, p2, p3) {
+	if(this.cullmode === S3CullMode.NONE) {
+		return false;
+	}
+	if(this.cullmode === S3CullMode.FRONT_AND_BACK) {
+		return true;
+	}
+	var a = p1.getDirection(p2).setZ(0);
+	var b = p1.getDirection(p3).setZ(0);
+	var ctype = a.cross(b).z;
+	if(ctype === 0 ) {
+		return true;
+	}
+	if(ctype < 0) {
+		if(this.frontface === S3FrontFace.CLOCKWISE) {
+			return this.cullmode !== S3CullMode.BACK;
+		}
+		else {
+			return this.cullmode !== S3CullMode.FRONT;
+		}
+	}
+	else {
+		if(this.frontface === S3FrontFace.CLOCKWISE) {
+			return this.cullmode === S3CullMode.BACK;
+		}
+		else {
+			return this.cullmode === S3CullMode.FRONT;
+		}
+	}
 };
 
 /**
@@ -900,6 +944,9 @@ var S3TriangleIndex = function(i1, i2, i3) {
 };
 S3TriangleIndex.prototype.clone = function() {
 	return new S3TriangleIndex(this.i1, this.i2, this.i3);
+};
+S3TriangleIndex.prototype.inverse = function() {
+	return new S3TriangleIndex(this.i3, this.i2, this.i1);
 };
 
 /**
@@ -1219,6 +1266,28 @@ S3System.prototype._calcBaseMatrix = function(camera, canvas) {
 	return { LookAt : L, aspect : x, PerspectiveFov : P, Viewport :V };
 };
 
+
+
+S3System.prototype._drawPolygon = function(vetexlist, indexlist) {
+	var i = 0;
+	
+	for(i = 0; i < indexlist.length; i++) {
+		var index = indexlist[i];
+		if(this.testCull(
+			vetexlist[index.i1].position,
+			vetexlist[index.i2].position,
+			vetexlist[index.i3].position )) {
+				continue;
+		}
+		this.context2d.drawLinePolygon(
+			vetexlist[index.i1].position,
+			vetexlist[index.i2].position,
+			vetexlist[index.i3].position
+		);
+	}
+};
+
+
 S3System.prototype.drawScene = function(scene) {
 	var ML = this._calcBaseMatrix(scene.camera, this.canvas);
 	
@@ -1227,17 +1296,10 @@ S3System.prototype.drawScene = function(scene) {
 	
 	var i = 0;
 	for(i = 0; i < scene.model.length; i++) {
-		var m = scene.model[i];
-		var W = this.getMatrixWorldTransform(m);
+		var model = scene.model[i];
+		var W = this.getMatrixWorldTransform(model);
 		var M = this.mulMatrix(this.mulMatrix(W, ML.LookAt), ML.PerspectiveFov);
-		var vlist = this._calcVertexTransformation(m.mesh.vertex, M, ML.Viewport);
-		for(i = 0; i < m.mesh.index.length; i++) {
-			var index = m.mesh.index[i];
-			this.context2d.drawLinePolygon(
-				vlist[index.i1].position,
-				vlist[index.i2].position,
-				vlist[index.i3].position
-			);
-		}
+		var vlist = this._calcVertexTransformation(model.mesh.vertex, M, ML.Viewport);
+		this._drawPolygon(vlist, model.mesh.index);
 	}
 };
