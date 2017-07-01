@@ -1,3 +1,5 @@
+/* global S3Mesh */
+
 "use strict";
 
 ﻿/**
@@ -49,4 +51,54 @@ CameraController.prototype.getCamera = function() {
 		this.camera.setDistance(distance);
 	}
 	return this.camera;
+};
+
+/**
+ * メタセコイア形式で出力
+ * ただしある程度手動で修正しないといけません。
+ * @returns {String}
+ */
+S3Mesh.prototype.toMQO = function() {
+	var i, j;
+	var material_vertexlist = [];
+	// 材質リストを取得
+	{
+		if(this.material.length === 0) {
+			material_vertexlist[0] = { material: new S3Material("none") };
+		}
+		for(i = 0; i < this.material.length; i++) {
+			material_vertexlist[i] = { material: this.material[i] };
+		}
+	}
+	var output = [];
+	
+	// 材質の出力
+	output.push("Material " + material_vertexlist.length + " {");
+	for(i = 0; i < material_vertexlist.length; i++) {
+		var mv = material_vertexlist[i].material;
+		output.push("\t\"" + mv.name + "\" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)");
+	}
+	output.push("}");
+	
+	// オブジェクトの出力
+	output.push("Object \"obj1\" {");
+	
+	// 頂点の出力
+	output.push("\tvertex " + this.vertex.length + " {");
+	for(i = 0; i < this.vertex.length; i++) {
+		var vp = this.vertex[i].position;
+		output.push("\t\t" + vp.x + " " + vp.y + " " + vp.z);
+	}
+	output.push("}");
+	
+	// 面の定義
+	output.push("\tface " + this.index.length + " {");
+	for(i = 0; i < this.index.length; i++) {
+		var vi = this.index[i];
+		output.push("\t\t3 V(" + vi.i1 + " " + vi.i2 + " " + vi.i3 +") M(" + vi.materialIndex + ")");
+	}
+	output.push("\t}");
+	
+	output.push("}");
+	return(output.join("\n"));
 };

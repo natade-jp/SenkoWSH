@@ -1,4 +1,4 @@
-/* global System, SComponent, S3SystemMode, IDTools */
+/* global System, SComponent, S3SystemMode, IDTools, S3Mesh */
 
 
 
@@ -14,26 +14,24 @@
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
 	camera.setSystemMode(S3SystemMode.OPEN_GL);
 	
-	var v0 = new S3Vertex( new S3Vector(  0,  0, -5));
-	var v1 = new S3Vertex( new S3Vector(  0, 20, -5));
-	var v2 = new S3Vertex( new S3Vector( 10,  0, -5));
-	var v3 = new S3Vertex( new S3Vector(  0,  0, -20));
+	var meshdata = {
+		Indexes:{
+			body:[
+				[ 0, 1, 2],
+				[ 3, 1, 0],
+				[ 3, 0, 2],
+				[ 3, 2, 1]
+			]
+		},
+		Vertices:[
+			[  0,  0,  -5],
+			[  0, 20,  -5],
+			[ 10,  0,  -5],
+			[  0,  0, -20]
+		]
+	};
+	var mesh = S3Mesh.fromJSON(meshdata);
 	
-	var i1 = new S3TriangleIndex(0, 1, 2);
-	var i2 = new S3TriangleIndex(3, 1, 0);
-	var i3 = new S3TriangleIndex(3, 0, 2);
-	var i4 = new S3TriangleIndex(3, 2, 1);
-	
-	var mesh = new S3Mesh();
-	mesh.addVertex(v0);
-	mesh.addVertex(v1);
-	mesh.addVertex(v2);
-	mesh.addVertex(v3);
-	mesh.addTriangleIndex(i1);
-	mesh.addTriangleIndex(i2);
-	mesh.addTriangleIndex(i3);
-	mesh.addTriangleIndex(i4);
-
 	var model = new S3Model();
 	model.mesh		= mesh;
 
