@@ -177,17 +177,6 @@ S3Vector.prototype.min = function(tgt) {
 		Math.min(this.w, tgt.w)
 	);
 };
-S3Vector.prototype.perspective = function() {
-	if(this.w === 0.0) {
-		throw "divide error";
-	}
-	return new S3Vector(
-		this.x / this.w,
-		this.y / this.w,
-		this.z / this.w,
-		1.0
-	);
-};
 
 S3Vector.prototype.equals = function(tgt) {
 	return (
@@ -540,6 +529,42 @@ var S3VectorMode = {
 	VECTOR1x4	: 1
 };
 
+var S3FrontFace = {
+	/**
+	 * 反時計回りを前面とする
+	 * @type Number
+	 */
+	COUNTER_CLOCKWISE : 0,
+	
+	/**
+	 * 時計回りを前面とする
+	 * @type Number
+	 */
+	CLOCKWISE : 1
+};
+
+var S3CullMode = {
+	
+	/**
+	 * 常にすべての三角形を描画します。
+	 * @type Number
+	 */
+	NONE : 0,
+	
+	/**
+	 * 前向きの三角形を描写しません。
+	 * @type Number
+	 */
+	FRONT : 1,
+	
+	/**
+	 * 後ろ向きの三角形を描写しません。
+	 * @type Number
+	 */
+	BACK : 2
+};
+
+
 var S3System = function() {
 	this.setSystemMode(S3SystemMode.OPEN_GL);
 };
@@ -550,16 +575,47 @@ S3System.prototype.setSystemMode = function(mode) {
 		this.depthmode		= S3DepthMode.OPEN_GL;
 		this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
 		this.vectormode		= S3VectorMode.VECTOR4x1;
+		this.frontface		= S3FrontFace.COUNTER_CLOCKWISE;
+		this.cullmode		= S3CullMode.BACK;
 	}
 	else {
 		this.depthmode		= S3DepthMode.DIRECT_X;
 		this.dimensionmode	= S3DimensionMode.LEFT_HAND;
 		this.vectormode		= S3VectorMode.VECTOR1x4;
+		this.frontface		= S3FrontFace.CLOCKWISE;
+		this.cullmode		= S3CullMode.BACK;
 	}
 };
 
-S3System.prototype.setCanvas = function(canvas) {
+S3System.prototype.setCanvas2D = function(canvas) {
+	var that = this;
 	this.canvas = canvas;
+	this.context2d = {
+		context : this.canvas.getContext("2d"),
+		drawLine : function(v0, v1) {
+			this.context.beginPath();
+			this.context.moveTo( v0.x, v0.y );
+			this.context.lineTo( v1.x, v1.y );
+			this.context.stroke();
+		},
+		drawLinePolygon : function(v0, v1, v2) {
+			this.context.beginPath();
+			this.context.moveTo( v0.x, v0.y );
+			this.context.lineTo( v1.x, v1.y );
+			this.context.lineTo( v2.x, v2.y );
+			this.context.closePath();
+			this.context.stroke();
+		},
+		setLineWidth : function(width) {
+			this.context.lineWidth = width;
+		},
+		setLineColor : function(color) {
+			this.context.strokeStyle = color;
+		},
+		clear : function() {
+			this.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+		}
+	};
 };
 
 /**
@@ -579,7 +635,8 @@ S3System.prototype.getMatrixViewport = function(x, y, Width, Height, MinZ, MaxZ)
 	if(MaxZ === undefined) {
 		MaxZ = 1.0;
 	}
-	
+	// M.m11 は、DirectXだとマイナス、OpenGLだとプラスである
+	// 今回は、下がプラスであるcanvasに表示させることを考えて、マイナスにしてある。
 	var M = new S3Matrix();
 	M.m00 =  Width/2; M.m01 =       0.0; M.m02 = 0.0; M.m03 = 0.0;
 	M.m10 =      0.0; M.m11 = -Height/2; M.m12 = 0.0; M.m13 = 0.0;
@@ -816,13 +873,17 @@ S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
 /**
  * 頂点 (immutable)
  * @param {S3Vector} position
+ * @param {Number} rhw
  * @returns {S3Vertex}
  */
-var S3Vertex = function(position) {
+var S3Vertex = function(position, rhw) {
 	this.position	= position.clone();
+	if(rhw === undefined) {
+		this.rhw		= rhw;
+	}
 };
 S3Vertex.prototype.clone = function() {
-	return new S3Vertex(this.position);
+	return new S3Vertex(this.position, this.rhw);
 };
 
 /**
@@ -1101,21 +1162,10 @@ S3System.prototype.getMatrixWorldTransform = function(model) {
 };
 
 S3System.prototype.clear = function() {
-	var context = this.canvas.getContext("2d");
-	context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	this.context2d.clear();
 };
 S3System.prototype.drawAxis = function(scene) {
-	var i = 0;
-	// ビューイング変換行列を作成する
-	var L = this.getMatrixLookAt(scene.camera.eye, scene.camera.center);
-	// 射影トランスフォーム行列
-	var aspect = S3System.calcAspect(this.canvas.width, this.canvas.height);
-	var P = this.getMatrixPerspectiveFov(scene.camera.fovY, aspect, scene.camera.near, scene.camera.far );
-	// ビューポート行列
-	var V = this.getMatrixViewport(0, 0, this.canvas.width, this.canvas.height);
-	
-	var M = this.mulMatrix(L, P);
-	
+	var ML = this._calcBaseMatrix(scene.camera, this.canvas);
 	
 	var vertexvector = [];
 	vertexvector[0] = new S3Vector(0, 0, 0);
@@ -1123,71 +1173,71 @@ S3System.prototype.drawAxis = function(scene) {
 	vertexvector[2] = new S3Vector(0, 10, 0);
 	vertexvector[3] = new S3Vector(0, 0, 10);
 	
-	var context = this.canvas.getContext("2d");
-	context.lineWidth = 3.0;
-	
-	var newvertex = [];
+	var newvector = [];
+	var i = 0;
+	var M = this.mulMatrix(ML.LookAt, ML.PerspectiveFov);
 	for(i = 0; i < vertexvector.length; i++) {
 		var p = vertexvector[i];
 		p = this.mulMatrix(M, p);
-		p = p.perspective();
-		p = this.mulMatrix(V, p);
-		newvertex[newvertex.length] = p;
+		p = p.mul(1.0 / p.w);
+		p = this.mulMatrix(ML.Viewport, p);
+		newvector[i] = p;
 	}
 	
-	context.strokeStyle = "rgb(255, 0, 0)";
-	context.beginPath();
-	context.moveTo( newvertex[0].x , newvertex[0].y );
-	context.lineTo( newvertex[1].x , newvertex[1].y );
-	context.stroke();
+	this.context2d.setLineWidth(3.0);
+	this.context2d.setLineColor("rgb(255, 0, 0)");
+	this.context2d.drawLine(newvector[0], newvector[1]);
+	this.context2d.setLineColor("rgb(0, 255, 0)");
+	this.context2d.drawLine(newvector[0], newvector[2]);
+	this.context2d.setLineColor("rgb(0, 0, 255)");
+	this.context2d.drawLine(newvector[0], newvector[3]);
+};
+
+S3System.prototype._calcVertexTransformation = function(vertexlist, M1, M2) {
+	var i;
+	var newvertexlist = [];
 	
-	context.strokeStyle = "rgb(0, 255, 0)";
-	context.beginPath();
-	context.moveTo( newvertex[0].x , newvertex[0].y );
-	context.lineTo( newvertex[2].x , newvertex[2].y );
-	context.stroke();
-	
-	context.strokeStyle = "rgb(0, 0, 255)";
-	context.beginPath();
-	context.moveTo( newvertex[0].x , newvertex[0].y );
-	context.lineTo( newvertex[3].x , newvertex[3].y );
-	context.stroke();
+	for(i = 0; i < vertexlist.length; i++) {
+		var p = vertexlist[i].position;
+		p = this.mulMatrix(M1, p);
+		var rhw = p.w;
+		p = p.mul(1.0 / rhw);
+		p = this.mulMatrix(M2, p);
+		newvertexlist[i] = new S3Vertex(p, rhw);
+	}
+	return newvertexlist;
+};
+
+S3System.prototype._calcBaseMatrix = function(camera, canvas) {
+	var x = S3System.calcAspect(canvas.width, canvas.height);
+	// ビューイング変換行列を作成する
+	var L = this.getMatrixLookAt(camera.eye, camera.center);
+	// 射影トランスフォーム行列
+	var P = this.getMatrixPerspectiveFov(camera.fovY, x, camera.near, camera.far );
+	// ビューポート行列
+	var V = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
+	return { LookAt : L, aspect : x, PerspectiveFov : P, Viewport :V };
 };
 
 S3System.prototype.drawScene = function(scene) {
+	var ML = this._calcBaseMatrix(scene.camera, this.canvas);
+	
+	this.context2d.setLineWidth(1.0);
+	this.context2d.setLineColor("rgb(0, 0, 0)");
+	
 	var i = 0;
-	// ビューイング変換行列を作成する
-	var L = this.getMatrixLookAt(scene.camera.eye, scene.camera.center);
-	// 射影トランスフォーム行列
-	var aspect = S3System.calcAspect(this.canvas.width, this.canvas.height);
-	var P = this.getMatrixPerspectiveFov(scene.camera.fovY, aspect, scene.camera.near, scene.camera.far );
-	// ビューポート行列
-	var V = this.getMatrixViewport(0, 0, this.canvas.width, this.canvas.height);
-	
-	var context = this.canvas.getContext("2d");
-	context.strokeStyle = "rgb(0,0,0)";
-	context.lineWidth = 1.0;
-	
 	for(i = 0; i < scene.model.length; i++) {
 		var m = scene.model[i];
 		var W = this.getMatrixWorldTransform(m);
-		var M = this.mulMatrix(this.mulMatrix(W, L), P);
-		var newvertex = [];
-		for(i = 0; i < m.mesh.vertex.length; i++) {
-			var p = m.mesh.vertex[i].position;
-			p = this.mulMatrix(M, p);
-			p = p.perspective();
-			p = this.mulMatrix(V, p);
-			newvertex[newvertex.length] = p;
-		}
+		var M = this.mulMatrix(this.mulMatrix(W, ML.LookAt), ML.PerspectiveFov);
+		var vlist = this._calcVertexTransformation(m.mesh.vertex, M, ML.Viewport);
 		for(i = 0; i < m.mesh.index.length; i++) {
 			var index = m.mesh.index[i];
-			context.beginPath();
-			context.moveTo( newvertex[index.i1].x , newvertex[index.i1].y );
-			context.lineTo( newvertex[index.i2].x , newvertex[index.i2].y );
-			context.lineTo( newvertex[index.i3].x , newvertex[index.i3].y );
-			context.closePath();
-			context.stroke();
+			this.context2d.drawLinePolygon(
+				vlist[index.i1].position,
+				vlist[index.i2].position,
+				vlist[index.i3].position
+			);
 		}
 	}
 };

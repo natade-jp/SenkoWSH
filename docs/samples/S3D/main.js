@@ -8,7 +8,7 @@
 	var controller = new CameraController();
 	var camera = new S3Camera();
 
-	s3.setCanvas(canvas);
+	s3.setCanvas2D(canvas);
 	controller.setCanvas(canvas);
 	
 	s3.setSystemMode(S3SystemMode.DIRECT_X);
