@@ -31,6 +31,10 @@
 		]
 	};
 	var mesh = S3Mesh.fromJSON(meshdata);
+	System.out.println(".json");
+	System.out.println(mesh.toJSON());
+	System.out.println(".mqo");
+	System.out.println(mesh.toMQO());
 	
 	var model = new S3Model();
 	model.mesh		= mesh;

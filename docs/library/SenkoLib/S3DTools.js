@@ -59,46 +59,56 @@ CameraController.prototype.getCamera = function() {
  * @returns {String}
  */
 S3Mesh.prototype.toMQO = function() {
-	var i, j;
-	var material_vertexlist = [];
-	// 材質リストを取得
-	{
-		if(this.material.length === 0) {
-			material_vertexlist[0] = { material: new S3Material("none") };
-		}
-		for(i = 0; i < this.material.length; i++) {
-			material_vertexlist[i] = { material: this.material[i] };
-		}
-	}
+	var i;
 	var output = [];
 	
 	// 材質の出力
-	output.push("Material " + material_vertexlist.length + " {");
-	for(i = 0; i < material_vertexlist.length; i++) {
-		var mv = material_vertexlist[i].material;
+	output.push("Material " + this.material.length + " {");
+	for(i = 0; i < this.material.length; i++) {
+		var mv = this.material[i];
 		output.push("\t\"" + mv.name + "\" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)");
 	}
 	output.push("}");
 	
 	// オブジェクトの出力
 	output.push("Object \"obj1\" {");
-	
-	// 頂点の出力
-	output.push("\tvertex " + this.vertex.length + " {");
-	for(i = 0; i < this.vertex.length; i++) {
-		var vp = this.vertex[i].position;
-		output.push("\t\t" + vp.x + " " + vp.y + " " + vp.z);
-	}
-	output.push("}");
-	
-	// 面の定義
-	output.push("\tface " + this.index.length + " {");
-	for(i = 0; i < this.index.length; i++) {
-		var vi = this.index[i];
-		output.push("\t\t3 V(" + vi.i1 + " " + vi.i2 + " " + vi.i3 +") M(" + vi.materialIndex + ")");
+	{
+		// 頂点の出力
+		output.push("\tvertex " + this.vertex.length + " {");
+		for(i = 0; i < this.vertex.length; i++) {
+			var vp = this.vertex[i].position;
+			output.push("\t\t" + vp.x + " " + vp.y + " " + vp.z);
+		}
+		output.push("}");
+
+		// 面の定義
+		output.push("\tface " + this.index.length + " {");
+		for(i = 0; i < this.index.length; i++) {
+			var vi = this.index[i];
+			var line = "\t\t3";
+			if(vi.i1 !== undefined) {
+				line += " V(" + vi.i1 + " " + vi.i2 + " " + vi.i3 + ")";
+			}
+			if(vi.materialIndex !== undefined) {
+				line += " M(" + vi.materialIndex + ")";
+			}
+			if(vi.uv1 !== undefined) {
+				line += " UV(" + vi.uv1 + " " + vi.uv2 + " " + vi.uv3 +")";
+			}
+			output.push(line);
+		}
 	}
 	output.push("\t}");
 	
 	output.push("}");
-	return(output.join("\n"));
+	return output.join("\n");
+};
+
+/**
+ * メタセコイア形式で入力
+ * ただしある程度手動で修正しないといけません。
+ * @returns {S3Mesh}
+ */
+S3Mesh.fromMQO = function() {
+	return null;
 };

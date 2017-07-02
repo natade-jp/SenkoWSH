@@ -917,17 +917,24 @@ S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
 /**
  * 頂点 (immutable)
  * @param {S3Vector} position
+ * @param {S3Vector} normal
  * @param {Number} rhw
  * @returns {S3Vertex}
  */
-var S3Vertex = function(position, rhw) {
-	this.position	= position.clone();
+var S3Vertex = function(position, normal, rhw) {
+	this.position	= position;
+	if(rhw !== undefined) {
+		this.normal		= normal;
+	}
 	if(rhw !== undefined) {
 		this.rhw		= rhw;
 	}
+	else {
+		this.rhw		= 1.0;
+	}
 };
 S3Vertex.prototype.clone = function() {
-	return new S3Vertex(this.position, this.rhw);
+	return new S3Vertex(this.position, this.normal, this.rhw);
 };
 
 /**
@@ -936,19 +943,29 @@ S3Vertex.prototype.clone = function() {
  * @param {Number} i2
  * @param {Number} i3
  * @param {Number} materialIndex
+ * @param {S3Vector} uv1
+ * @param {S3Vector} uv2
+ * @param {S3Vector} uv3
  * @returns {S3Index}
  */
-var S3TriangleIndex = function(i1, i2, i3, materialIndex) {
+var S3TriangleIndex = function(i1, i2, i3, materialIndex, uv1, uv2, uv3) {
 	this.i1	= i1;
 	this.i2	= i2;
 	this.i3	= i3;
 	this.materialIndex = materialIndex ? materialIndex : 0;
+	this.uv1 = uv1;
+	this.uv2 = uv2;
+	this.uv3 = uv3;
 };
 S3TriangleIndex.prototype.clone = function() {
-	return new S3TriangleIndex(this.i1, this.i2, this.i3, this.materialIndex);
+	return new S3TriangleIndex(
+		this.i1, this.i2, this.i3, this.materialIndex,
+		this.uv1, this.uv2, this.uv3 );
 };
 S3TriangleIndex.prototype.inverse = function() {
-	return new S3TriangleIndex(this.i3, this.i2, this.i1, this.materialIndex);
+	return new S3TriangleIndex(
+		this.i3, this.i2, this.i1, this.materialIndex,
+		this.uv3, this.uv2, this.uv1 );
 };
 
 /**
@@ -971,10 +988,15 @@ S3Material.prototype.clone = function() {
  * @returns {S3Mesh}
  */
 var S3Mesh = function(vertex, index, material) {
+	this.init(vertex, index, material);
+};
+S3Mesh.prototype.init = function(vertex, index, material) {
 	this.vertex		= [];
 	this.index		= [];
 	this.material	= [];
-	if(arguments.length !== 0) {
+	this.material[0] = new S3Material("s3default");
+	this.material_length = 0;
+	if(vertex !== undefined) {
 		this.addVertex(vertex);
 		this.addTriangleIndex(index);
 		this.addMaterial(material);
@@ -1007,12 +1029,12 @@ S3Mesh.prototype.addTriangleIndex = function(index) {
 };
 S3Mesh.prototype.addMaterial = function(material) {
 	if(material instanceof S3Material) {
-		this.material[this.material.length] = material.clone();
+		this.material[this.material_length++] = material.clone();
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < material.length; i++) {
-			this.material[this.material.length] = material[i].clone();
+			this.material[this.material_length++] = material[i].clone();
 		}
 	}
 };
@@ -1048,14 +1070,10 @@ S3Mesh.fromJSON = function(meshdata) {
 		for(i = 0; i < materialindexlist.length; i++) {
 			var list = materialindexlist[i];
 			for(j = 0; j < list.length - 2; j++) {
-				var ti;
 				// 3角形と4角形に対応
-				if((j % 2) === 0) {
-					ti = new S3TriangleIndex(list[j], list[j + 1], list[j + 2], material);
-				}
-				else {
-					ti = new S3TriangleIndex(list[j], list[j + 2], list[j + 1], material);
-				}
+				var ti = ((j % 2) === 0) ? 
+						new S3TriangleIndex(list[j], list[j + 1], list[j + 2], material)
+					:	new S3TriangleIndex(list[j], list[j + 2], list[j + 1], material);
 				mesh.addTriangleIndex(ti);
 			}
 		}
@@ -1073,25 +1091,16 @@ S3Mesh.prototype.toJSON = function() {
 	var i, j;
 	var material_vertexlist = [];
 	// 材質リストを取得
-	{
-		if(this.material.length === 0) {
-			material_vertexlist[0] = {
-				material: new S3Material("none"),
-				list:[]
-			};
-		}
-		for(i = 0; i < this.material.length; i++) {
-			material_vertexlist[i] = {
-				material: this.material[i],
-				list:[]
-			};
-		}
+	for(i = 0; i < this.material.length; i++) {
+		material_vertexlist[i] = {
+			material: this.material[i],
+			list:[]
+		};
 	}
 	// 材質名に合わせて、インデックスリストを取得
 	for(i = 0; i < this.index.length; i++) {
-		material_vertexlist[this.index[i].materialIndex].list.push([
-			this.index[i].i1, this.index[i].i2, this.index[i].i3
-		]);
+		material_vertexlist[this.index[i].materialIndex].list.push(
+			[ this.index[i].i1, this.index[i].i2, this.index[i].i3 ]);
 	}
 	var output = [];
 	output.push("{");
@@ -1101,18 +1110,15 @@ S3Mesh.prototype.toJSON = function() {
 		output.push("\t\t" + mv.material.name + ":[");
 		for(j = 0; j < mv.list.length; j++) {
 			var vi = mv.list[j];
-			output.push("\t\t\t[" + vi[0] + " " + vi[1] + " " + vi[2] + "]"
-				+ ((j === mv.list.length - 1) ? "" : ",") );
+			output.push("\t\t\t[" + vi[0] + " " + vi[1] + " " + vi[2] + "]" + ((j === mv.list.length - 1) ? "" : ",") );
 		}
-		output.push("\t\t]"
-			+ ((i === material_vertexlist.length - 1) ? "" : ",") );
+		output.push("\t\t]" + ((i === material_vertexlist.length - 1) ? "" : ",") );
 	}
 	output.push("\t},");
 	output.push("\tVertices:[");
 	for(i = 0; i < this.vertex.length; i++) {
 		var vp = this.vertex[i].position;
-		output.push("\t\t[" + vp.x + " " + vp.y + " " + vp.z + "]"
-			+ ((vp === this.vertex.length - 1) ? "" : ",") );
+		output.push("\t\t[" + vp.x + " " + vp.y + " " + vp.z + "]" + ((vp === this.vertex.length - 1) ? "" : ",") );
 	}
 	output.push("\t]");
 	output.push("}");
