@@ -920,6 +920,9 @@ SImagePanel.prototype.putImage = function(data, drawcallback) {
 		context.putImageData(data, 0, 0);
 		this.putImage(canvas, drawcallback);
 	}
+	else if(data instanceof Image) {
+		this.image.src = data.src;
+	}
 	else if(data instanceof SCanvas) {
 		// SCanvas -> canvas
 		this.putImage(data.getElement(), drawcallback);
