@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>HTML5 Library - SenkoLib File | Sample</title>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<script src="../../library/SenkoLib/System.js" charset="utf-8"></script>
+<script src="../../library/SenkoLib/File.js" charset="utf-8"></script>
+<script src="../../library/SenkoLib/SComponent.js" charset="utf-8"></script>
+<script src="./html5.js" charset="utf-8"></script>
+<link rel="stylesheet" type="text/css" href="../samples.css">
+<link rel="stylesheet" type="text/css" href="../../library/SenkoLib/SComponent.css">
+</head>
+<body>
+<div id="header">
+	<p id="message_chrome">Chrome -> Ctrl + Shift + J</p>
+	<p id="message_firefox">FireFox -> Ctrl + Shift + K</p>
+	<p id="message_ie">IE -> F12</p>
+</div>
+<div id="test_space"></div>
+<div id="result">
+	<div id="code"></div>
+	<div id="senko_console"></div>
+</div>
+<script type="text/javascript">
+	var element = document.getElementById("code");
+	element.innerText = main;
+	System.setShowHtmlConsole(true);
+	System.startHtmlMain();
+</script> 
+</body>
+</html>
