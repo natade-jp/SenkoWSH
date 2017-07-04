@@ -1,8 +1,6 @@
-/* global System, SComponent, S3SystemMode, IDTools, S3Mesh */
+/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
 
-
-
-﻿function test3D(canvas) {
+﻿function test3D(canvas, mqodata) {
 	
 	var s3 = new S3System();
 	var controller = new CameraController();
@@ -14,6 +12,7 @@
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
 	camera.setSystemMode(S3SystemMode.OPEN_GL);
 	
+	System.out.println("json形式での読み書きのテスト");
 	var meshdata = {
 		Indexes:{
 			body:[
@@ -33,11 +32,17 @@
 	var mesh = S3Mesh.fromJSON(meshdata);
 	System.out.println(".json");
 	System.out.println(mesh.toJSON());
+
+	System.out.println("MQOでの出力テスト");
 	System.out.println(".mqo");
 	System.out.println(mesh.toMQO());
 	
+	System.out.println("MQOでの入力テスト");
+	mesh = S3Mesh.fromMQO(mqodata);
+	
 	var model = new S3Model();
-	model.mesh		= mesh;
+	model.mesh	= mesh;
+	model.scale	= new S3Vector( 5, 5, 5);
 
 	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
@@ -97,8 +102,11 @@
 	panel.setPixelSize(640, 480);
 	panel.setSize(640, 480);
 	
-	test3D(panel.getCanvas());
-	
+	// ファイルロード
+	var fModel = new File("./teapod.mqo");
+	File.downloadFileList([fModel], function() {
+		test3D(panel.getCanvas(), fModel.getText());
+	});
 	
 	
 }

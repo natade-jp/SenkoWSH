@@ -114,90 +114,89 @@ S3Mesh.fromMQO = function(text) {
 	var lines = text.split("\n");
 	var i;
 	var block_stack = [];
-	var block_type  = "";
+	var block_type  = "none";
 	var block_level = 0;
 	var mesh = new S3Mesh();
 	var vertex_offset	= 0;
 	var vertex_point	= 0;
 	var face_offset		= 0;
 	var face_point		= 0;
+	var toValueArray = function(text) {
+		var x = text.split(" "), out = [],i = 0;
+		for(i = 0; i < x.length; i++) {
+			out[i] = parseFloat(x[i]);
+		}
+		return out;
+	};
+	var getValueFromPrm = function(text, parameter) {
+		var x = text.split(" " + parameter + "(");
+		if(x.length === 1) {
+			return [];
+		}
+		return toValueArray(x[1].split(")")[0]);
+	};
 	for(i = 0;i < lines.length; i++) {
 		var trim_line = lines[i].replace(/^\s+|\s+$/g, "");
-		var words = trim_line.split(" ");
-		var parameter = words[0];
-		if(	(parameter === "Thumbnail") || 
-			(parameter === "Scene") || 
-			(parameter === "Material") || 
-			(parameter === "Object") || 
-			(parameter === "dirlights") || 
-			(parameter === "light") || 
-			(parameter === "vertex") || 
-			(parameter === "face")) {
-			if((parameter === "Object")) {
+		var first = trim_line.split(" ")[0];
+		if ( trim_line.indexOf("{") !== -1) {
+			if(first === "Object") {
 				vertex_offset	+= vertex_point;
 				face_offset		+= face_point;
 				vertex_point	= 0;
 				face_point		= 0;
 			}
-			block_stack.push(words[0]);
-			block_type = words[0];
+			// 階層に入る前の位置を保存
+			block_stack.push(block_type);
+			block_type = first;
 			block_level++;
 			continue;
 		}
-		else if(words[words.length - 1] === "}") {
+		else if( trim_line.indexOf("}") !== -1) {
 			block_type = block_stack.pop();
 			block_level--;
+			continue;
+		}
+		if(	(block_type === "Thumbnail") || 
+			(block_type === "none")) {
+			continue;
 		}
 		if(block_type === "Material") {
-			var material_name = parameter.replace("\"", "");
+			var material_name = first.replace("\"", "");
 			var material = new S3Material(material_name);
 			mesh.addMaterial(material);
 		}
 		else if(block_type === "vertex") {
-			var vector = new S3Vector(
-				parseFloat(words[0]),
-				parseFloat(words[1]),
-				parseFloat(words[2]));
-			var vertex = S3Vertex(vector);
+			var words = toValueArray(trim_line);
+			var vector = new S3Vector(words[0], words[1], words[2]);
+			var vertex = new S3Vertex(vector);
 			mesh.addVertex(vertex);
 			vertex_point++;
 		}
 		else if(block_type === "face") {
-			var facenum = parseInt(words[0]);
+			var facenum = parseInt(first);
+			var v		= getValueFromPrm(trim_line, "V");
+			var uv_a	= getValueFromPrm(trim_line, "UV");
+			var uv		= [];
+			var material= getValueFromPrm(trim_line, "M");
+			material = (material.length === 0) ? 0 : material[0];
+			material = (material === -1) ? 0 : material;
 			var j = 0;
-			var v		= null;
-			var uv		= null;
-			var material= null;
-			var extraction = function(text) {
-				var prm = text.replace(/V|U|M|\(|\)/g, "").split(" ");
-				if(text.substr(0, 1) === "V") {
-					v = [];
-					for(j = 0; j < facenum; j++) {
-						v[j] = vertex_offset + parseInt(prm[j]);
-					}
+			if(uv_a.length !== 0) {
+				for(j = 0; j < facenum; j++) {
+					uv[j] = new S3Vector( uv_a[j * 2], uv_a[j * 2 + 1], 0);
 				}
-				else if(text.substr(0, 1) === "U") {
-					uv = [];
-					for(j = 0; j < facenum; j++) {
-						uv[j] = new S3Vector( parseFloat(prm[j * 2]), parseFloat(prm[j * 2 + 1]), 0);
-					}
-				}
-				else if(text.substr(0, 1) === "M") {
-					material = parseInt(prm[0]);
-				}
-			};
-			trim_line.replace(/((V)|(UV)|(M))\([^\)]+\)/g, extraction);
+			}
 			for(j = 0;j < facenum - 2; j++) {
 				var ti;
-				if(uv === null) {
+				if(uv_a.length === 0) {
 					ti = ((j % 2) === 0) ? 
 							new S3TriangleIndex(v[j], v[j + 1], v[j + 2], material)
-						:	new S3TriangleIndex(v[j], v[j + 2], v[j + 1], material);
+						:	new S3TriangleIndex(v[j - 1], v[j + 1], v[j + 2], material);
 				}
 				else {
 					ti = ((j % 2) === 0) ? 
 							new S3TriangleIndex(v[j], v[j + 1], v[j + 2], material, uv[j], uv[j + 1], uv[j + 2])
-						:	new S3TriangleIndex(v[j], v[j + 2], v[j + 1], material, uv[j], uv[j + 2], uv[j + 1]);
+						:	new S3TriangleIndex(v[j - 1], v[j + 1], v[j + 2], material, uv[j - 1], uv[j + 1], uv[j + 2]);
 				}
 				mesh.addTriangleIndex(ti);
 				face_point++;
