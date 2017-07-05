@@ -12,8 +12,8 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
  * DEPENDENT LIBRARIES:
- * 先に、S3D.js が必要です。
- * 部分的に、InputDevice.js が必要です。
+ *  S3D.js
+ *  部分的に、InputDevice.js が必要です。
  */
 
 var CameraController = function() {

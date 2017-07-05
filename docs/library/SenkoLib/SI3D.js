@@ -13,7 +13,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
  * DEPENDENT LIBRARIES:
- * 先に、SImageProcessing.js が必要です。
+ *  SImageProcessing.js
  */
 
 /**
