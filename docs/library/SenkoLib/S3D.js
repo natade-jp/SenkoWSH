@@ -1,3 +1,5 @@
+/* global S3Math, S3Matrix, S3Vector */
+
 "use strict";
 
 ﻿/**
@@ -12,6 +14,14 @@
  * DEPENDENT LIBRARIES:
  *  S3DMath.js
  */
+
+// 3DCGを作るうえで必要最小限の機能を提供する
+// ・それらを構成する頂点、材質、面（全てimmutable）
+// ・モデル (mutable)
+// ・カメラ (mutable)
+// ・シーン (mutable)
+// ・描写用の行列作成
+// ・描写のための必要最低限の計算
 
 var S3SystemMode = {
 	OPEN_GL	: 0,
@@ -166,13 +176,11 @@ S3System.prototype.testCull = function(p1, p2, p3) {
 	if(this.cullmode === S3CullMode.FRONT_AND_BACK) {
 		return true;
 	}
-	var a = p1.getDirection(p2).setZ(0);
-	var b = p1.getDirection(p3).setZ(0);
-	var ctype = a.cross(b).z;
-	if(ctype === 0 ) {
+	var isclock = S3Vector.isClockwise(p1, p2, p3);
+	if(isclock === null) {
 		return true;
 	}
-	if(ctype < 0) {
+	else if(!isclock) {
 		if(this.frontface === S3FrontFace.CLOCKWISE) {
 			return this.cullmode !== S3CullMode.BACK;
 		}
@@ -444,9 +452,9 @@ S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
 
 /**
  * 頂点 (immutable)
- * @param {S3Vector} position
- * @param {S3Vector} normal
- * @param {Number} rhw
+ * @param {S3Vector} position 座標
+ * @param {S3Vector} normal レンダリング前の法線値（計算して予め求める必要あり）
+ * @param {Number} rhw レンダリング値の透視変換のときに使用する、普段は使用しない
  * @returns {S3Vertex}
  */
 var S3Vertex = function(position, normal, rhw) {
@@ -466,34 +474,55 @@ S3Vertex.prototype.clone = function() {
 };
 
 /**
- * 3角ポリゴンのインデックス (immutable)
- * @param {Number} i1
- * @param {Number} i2
- * @param {Number} i3
+ * ABCの頂点を囲む3角ポリゴン (immutable)
+ * @param {Number} i1 配列の番号A
+ * @param {Number} i2 配列の番号B
+ * @param {Number} i3 配列の番号C
+ * @param {Array} indexlist Index Array
  * @param {Number} materialIndex
- * @param {S3Vector} uv1
- * @param {S3Vector} uv2
- * @param {S3Vector} uv3
- * @returns {S3Index}
+ * @param {Array} uvlist S3Vector Array
  */
-var S3TriangleIndex = function(i1, i2, i3, materialIndex, uv1, uv2, uv3) {
-	this.i1	= i1;
-	this.i2	= i2;
-	this.i3	= i3;
-	this.materialIndex = materialIndex ? materialIndex : 0;
-	this.uv1 = uv1;
-	this.uv2 = uv2;
-	this.uv3 = uv3;
+var S3TriangleIndex = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
+	this.init(i1, i2, i3, indexlist, materialIndex, uvlist);
+};
+
+/**
+ * ABCの頂点を囲む3角ポリゴン (immutable)
+ * @param {Number} i1 配列の番号A
+ * @param {Number} i2 配列の番号B
+ * @param {Number} i3 配列の番号C
+ * @param {Array} indexlist Index Array
+ * @param {Number} materialIndex 負の場合や未定義の場合は 0 とします。
+ * @param {Array} uvlist S3Vector Array
+ */
+S3TriangleIndex.prototype.init = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
+	if((indexlist instanceof Array) && (indexlist.length > 0)) {
+		this.i1 = indexlist[i1];
+		this.i2 = indexlist[i2];
+		this.i3 = indexlist[i3];
+	}
+	if((uvlist instanceof Array) && (uvlist.length > 0) && (uvlist[0] instanceof S3Vector)) {
+		this.uv1 = uvlist[i1];
+		this.uv2 = uvlist[i2];
+		this.uv3 = uvlist[i3];
+	}
+	materialIndex = materialIndex      ? materialIndex : 0;
+	materialIndex = materialIndex >= 0 ? materialIndex : 0;
+	this.materialIndex = materialIndex;
 };
 S3TriangleIndex.prototype.clone = function() {
 	return new S3TriangleIndex(
-		this.i1, this.i2, this.i3, this.materialIndex,
-		this.uv1, this.uv2, this.uv3 );
+		0, 1, 2,
+		[this.i1, this.i2, this.i3],
+		this.materialIndex,
+		[this.uv1, this.uv2, this.uv3] );
 };
 S3TriangleIndex.prototype.inverse = function() {
 	return new S3TriangleIndex(
-		this.i3, this.i2, this.i1, this.materialIndex,
-		this.uv3, this.uv2, this.uv1 );
+		2, 1, 0,
+		[this.i1, this.i2, this.i3],
+		this.materialIndex,
+		[this.uv1, this.uv2, this.uv3] );
 };
 
 /**
@@ -519,50 +548,66 @@ var S3Mesh = function(vertex, index, material) {
 	this.init(vertex, index, material);
 };
 S3Mesh.prototype.init = function(vertex, index, material) {
-	this.vertex		= [];
-	this.index		= [];
-	this.material	= [];
-	this.material[0] = new S3Material("s3default");
-	this.material_length = 0;
-	if(vertex !== undefined) {
-		this.addVertex(vertex);
-		this.addTriangleIndex(index);
-		this.addMaterial(material);
-	}
+	this.cleanVertex();
+	this.cleanTriangleIndex();
+	this.cleanMaterial();
+	this.addVertex(vertex);
+	this.addTriangleIndex(index);
+	this.addMaterial(material);
 };
 S3Mesh.prototype.clone = function() {
 	return new S3Mesh(this.vertex, this.index);
 };
+S3Mesh.prototype.cleanVertex = function() {
+	this.vertex = [];
+};
+S3Mesh.prototype.cleanTriangleIndex = function() {
+	this.index		= [];
+};
+S3Mesh.prototype.cleanMaterial = function() {
+	this.material	= [];
+	this.material[0] = new S3Material("s3default");
+	this.material_length = 0;
+};
 S3Mesh.prototype.addVertex = function(vertex) {
-	if(vertex instanceof S3Vertex) {
-		this.vertex[this.vertex.length] = vertex.clone();
+	// 一応 immutable なのでそのままシャローコピー
+	if(vertex === undefined) {
+	}
+	else if(vertex instanceof S3Vertex) {
+		this.vertex[this.vertex.length] = vertex;
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < vertex.length; i++) {
-			this.vertex[this.vertex.length] = vertex[i].clone();
+			this.vertex[this.vertex.length] = vertex[i];
 		}
 	}
 };
-S3Mesh.prototype.addTriangleIndex = function(index) {
-	if(index instanceof S3TriangleIndex) {
-		this.index[this.index.length] = index.clone();
+S3Mesh.prototype.addTriangleIndex = function(triangleindex) {
+	// 一応 immutable なのでそのままシャローコピー
+	if(triangleindex === undefined) {
+	}
+	else if(triangleindex instanceof S3TriangleIndex) {
+		this.index[this.index.length] = triangleindex;
 	}
 	else {
 		var i = 0;
-		for(i = 0; i < index.length; i++) {
-			this.index[this.index.length] = index[i].clone();
+		for(i = 0; i < triangleindex.length; i++) {
+			this.index[this.index.length] = triangleindex[i];
 		}
 	}
 };
 S3Mesh.prototype.addMaterial = function(material) {
-	if(material instanceof S3Material) {
-		this.material[this.material_length++] = material.clone();
+	// 一応 immutable なのでそのままシャローコピー
+	if(material === undefined) {
+	}
+	else if(material instanceof S3Material) {
+		this.material[this.material_length++] = material;
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < material.length; i++) {
-			this.material[this.material_length++] = material[i].clone();
+			this.material[this.material_length++] = material[i];
 		}
 	}
 };
@@ -600,8 +645,8 @@ S3Mesh.fromJSON = function(meshdata) {
 			for(j = 0; j < list.length - 2; j++) {
 				// 3角形と4角形に対応
 				var ti = ((j % 2) === 0) ? 
-						new S3TriangleIndex(list[j], list[j + 1], list[j + 2], material)
-					:	new S3TriangleIndex(list[j], list[j + 2], list[j + 1], material);
+						new S3TriangleIndex(j    , j + 1, j + 2, list, material)
+					:	new S3TriangleIndex(j - 1, j + 1, j + 2, list, material);
 				mesh.addTriangleIndex(ti);
 			}
 		}
@@ -663,6 +708,9 @@ var S3Model = function() {
 	this.position	= new S3Vector(0, 0, 0);
 	this.mesh		= new S3Mesh();
 };
+// S3Model 用のメソッドを追加する予定
+// ・拡大、回転、縮小　など
+
 
 /**
  * カメラ (mutable)

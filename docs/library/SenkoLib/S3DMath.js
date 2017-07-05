@@ -13,6 +13,12 @@
  *  なし
  */
 
+// 3DCG を作るうえで必要な計算用ライブラリ
+// S3Math   追加計算関数
+// S3Vector ベクトル (immutable)
+// S3Matrix 行列 (immutable)
+// S3Angles オイラー角 (mmutable)
+
 var S3Math =  {
 	EPSILON: 2.2204460492503130808472633361816E-16,
 	clamp: function(x, min, max) {
@@ -196,8 +202,11 @@ S3Vector.prototype.mix = function(tgt, alpha) {
 S3Vector.prototype.norm = function() {
 	return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 };
+S3Vector.prototype.normFast = function() {
+	return this.x * this.x + this.y * this.y + this.z * this.z;
+};
 S3Vector.prototype.normalize = function() {
-	var b = this.x * this.x + this.y * this.y + this.z * this.z;
+	var b = this.normFast();
 	if(b === 0.0) {
 		throw "divide error";
 	}
@@ -257,7 +266,38 @@ S3Vector.prototype.getDistance = function(tgt) {
  * @returns {S3Vector}
  */
 S3Vector.getNormalVector = function(A, B, C) {
-	return B.sub(A).cross(C.sub(A)).normalize();
+	var v1 = A.getDirection(B);
+	var v2 = A.getDirection(C);
+	var normal = v1.cross(v2);
+	try {
+		return normal.normalize();
+	}
+	catch (e) {
+		return null;
+	}
+};
+
+/**
+ * A, B, C の3点が時計回りなら true をかえす。
+ * 時計回りでも反時計回りでもないと null を返す
+ * @param {S3Vector} A
+ * @param {S3Vector} B
+ * @param {S3Vector} C
+ * @returns {Boolean}
+ */
+S3Vector.isClockwise = function(A, B, C) {
+	var v1 = A.getDirection(B).setZ(0);
+	var v2 = A.getDirection(C).setZ(0);
+	var type = v1.cross(v2).z;
+	if(type === 0) {
+		return null;
+	}
+	else if(type > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
 };
 
 /**

@@ -16,6 +16,9 @@
  *  部分的に、InputDevice.js が必要です。
  */
 
+// 3DCGツールを作るうえであると便利なツール
+// 必ずしもなくてもよい
+
 var CameraController = function() {
 	this.mouse		= new IDMouse();
 	this.data		= new IDMouse();
@@ -86,12 +89,10 @@ S3Mesh.prototype.toMQO = function() {
 		for(i = 0; i < this.index.length; i++) {
 			var vi = this.index[i];
 			var line = "\t\t3";
-			if(vi.i1 !== undefined) {
-				line += " V(" + vi.i1 + " " + vi.i2 + " " + vi.i3 + ")";
-			}
-			if(vi.materialIndex !== undefined) {
-				line += " M(" + vi.materialIndex + ")";
-			}
+			// 座標と材質は必ずある
+			line += " V(" + vi.i1 + " " + vi.i2 + " " + vi.i3 + ")";
+			line += " M(" + vi.materialIndex + ")";
+			// UVはないかもしれないので、条件を付ける
 			if(vi.uv1 !== undefined) {
 				line += " UV(" + vi.uv1 + " " + vi.uv2 + " " + vi.uv3 +")";
 			}
@@ -121,6 +122,7 @@ S3Mesh.fromMQO = function(text) {
 	var vertex_point	= 0;
 	var face_offset		= 0;
 	var face_point		= 0;
+	// 半角スペース区切りにの文字列数値を、数値型配列にする
 	var toValueArray = function(text) {
 		var x = text.split(" "), out = [],i = 0;
 		for(i = 0; i < x.length; i++) {
@@ -128,6 +130,7 @@ S3Mesh.fromMQO = function(text) {
 		}
 		return out;
 	};
+	// func(XXX) のXXXの中を抜き出す
 	var getValueFromPrm = function(text, parameter) {
 		var x = text.split(" " + parameter + "(");
 		if(x.length === 1) {
@@ -179,7 +182,6 @@ S3Mesh.fromMQO = function(text) {
 			var uv		= [];
 			var material= getValueFromPrm(trim_line, "M");
 			material = (material.length === 0) ? 0 : material[0];
-			material = (material === -1) ? 0 : material;
 			var j = 0;
 			if(uv_a.length !== 0) {
 				for(j = 0; j < facenum; j++) {
@@ -187,17 +189,9 @@ S3Mesh.fromMQO = function(text) {
 				}
 			}
 			for(j = 0;j < facenum - 2; j++) {
-				var ti;
-				if(uv_a.length === 0) {
-					ti = ((j % 2) === 0) ? 
-							new S3TriangleIndex(v[j], v[j + 1], v[j + 2], material)
-						:	new S3TriangleIndex(v[j - 1], v[j + 1], v[j + 2], material);
-				}
-				else {
-					ti = ((j % 2) === 0) ? 
-							new S3TriangleIndex(v[j], v[j + 1], v[j + 2], material, uv[j], uv[j + 1], uv[j + 2])
-						:	new S3TriangleIndex(v[j - 1], v[j + 1], v[j + 2], material, uv[j - 1], uv[j + 1], uv[j + 2]);
-				}
+				var ti = ((j % 2) === 0) ? 
+						new S3TriangleIndex(j    , j + 1, j + 2, v, material, uv)
+					:	new S3TriangleIndex(j - 1, j + 1, j + 2, v, material, uv);
 				mesh.addTriangleIndex(ti);
 				face_point++;
 			}
