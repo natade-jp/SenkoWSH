@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 ﻿/**
  * SenkoLib S3DMath.js
@@ -17,7 +17,7 @@
 // S3Math   追加計算関数
 // S3Vector ベクトル (immutable)
 // S3Matrix 行列 (immutable)
-// S3Angles オイラー角 (mmutable)
+// S3Angles オイラー角 (immutable)
 
 var S3Math =  {
 	EPSILON: 2.2204460492503130808472633361816E-16,
@@ -525,7 +525,7 @@ S3Matrix.prototype.toString = function() {
 };
 
 /**
- * オイラー角 (mutable)
+ * オイラー角 (immutable)
  * @param {Number} z ロール
  * @param {Number} x ピッチ
  * @param {Number} y ヨー
@@ -538,7 +538,7 @@ S3Angles.PI		= 180.0;
 S3Angles.PIOVER2= S3Angles.PI / 2.0;
 S3Angles.PILOCK	= S3Angles.PIOVER2 - 0.0001;
 S3Angles.PI2	= 2.0 * S3Angles.PI;
-S3Angles.toPeriodicAngle = function(x) {
+S3Angles._toPeriodicAngle = function(x) {
 	if(x > S3Angles.PI) {
 		return x - S3Angles.PI2 * parseInt(( x + S3Angles.PI) / S3Angles.PI2);
 	}
@@ -552,30 +552,30 @@ S3Angles.prototype.clone = function() {
 	angles.roll		= this.roll;
 	angles.pitch	= this.pitch;
 	angles.yaw		= this.yaw;
-	return yaw;
+	return angles;
 };
 S3Angles.prototype.setRotateZXY = function(z, x, y) {
-	this.roll	= S3Angles.toPeriodicAngle((z === undefined) ? 0.0 : z);
-	this.pitch	= S3Angles.toPeriodicAngle((x === undefined) ? 0.0 : x);
-	this.yaw	= S3Angles.toPeriodicAngle((y === undefined) ? 0.0 : y);
+	this.roll	= S3Angles._toPeriodicAngle(isNaN(z) ? 0.0 : z);
+	this.pitch	= S3Angles._toPeriodicAngle(isNaN(x) ? 0.0 : x);
+	this.yaw	= S3Angles._toPeriodicAngle(isNaN(y) ? 0.0 : y);
 };
 S3Angles.prototype.addRotateX = function(x) {
-	this.pitch	+= x;
+	return new S3Angles(this.roll, this.pitch + x, this.yaw);
 };
 S3Angles.prototype.addRotateY = function(y) {
-	this.yaw	+= y;
+	return new S3Angles(this.roll, this.pitch, this.yaw + y);
 };
 S3Angles.prototype.addRotateZ = function(z) {
-	this.roll	+= z;
+	return new S3Angles(this.roll + z, this.pitch, this.yaw);
 };
 S3Angles.prototype.setRotateX = function(x) {
-	this.pitch	= x;
+	return new S3Angles(this.roll, x, this.yaw);
 };
 S3Angles.prototype.setRotateY = function(y) {
-	this.yaw	= y;
+	return new S3Angles(this.roll, this.pitch, y);
 };
 S3Angles.prototype.setRotateZ = function(z) {
-	this.roll	= z;
+	return new S3Angles(z, this.pitch, this.yaw);
 };
 S3Angles.prototype.toString = function() {
 	return "angles[" + this.roll + "," + this.pitch + "," + this.yaw + "]";

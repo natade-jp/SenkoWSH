@@ -1,4 +1,4 @@
-/* global System, SComponent, IDTools */
+﻿/* global System, SComponent, IDTools */
 
 ﻿function main(args) {
 	

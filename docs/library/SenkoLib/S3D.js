@@ -1,6 +1,6 @@
-/* global S3Math, S3Matrix, S3Vector */
+﻿"use strict";
 
-"use strict";
+/* global S3Math, S3Matrix, S3Vector */
 
 ﻿/**
  * SenkoLib S3D.js
@@ -708,9 +708,63 @@ var S3Model = function() {
 	this.position	= new S3Vector(0, 0, 0);
 	this.mesh		= new S3Mesh();
 };
-// S3Model 用のメソッドを追加する予定
-// ・拡大、回転、縮小　など
-
+S3Model.prototype.setMesh = function(mesh) {
+	this.mesh = mesh.clone();
+};
+S3Model.prototype.getMesh = function() {
+	return this.mesh;
+};
+S3Model.prototype.setScale = function(x, y, z) {
+	if(arguments.length === 1) {
+		if(typeof x === "number"){
+			this.scale = new S3Vector(x, x, x);
+		}
+		else if(x instanceof S3Vector){
+			this.scale = x;
+		}
+	}
+	else {
+		this.scale = new S3Vector(x, y, z);
+	}
+};
+S3Model.prototype.getScale = function() {
+	return this.scale;
+};
+S3Model.prototype.setPosition = function(x, y, z) {
+	if((arguments.length === 1) && (x instanceof S3Vector)){
+		this.position = x;
+	}
+	else {
+		this.position = new S3Vector(x, y, z);
+	}
+};
+S3Model.prototype.getPosition = function() {
+	return this.position;
+};
+S3Model.prototype.getAngle = function() {
+	return this.angles;
+};
+S3Model.prototype.setAngle = function(angles) {
+	this.angles = angles;
+};
+S3Model.prototype.addRotateX = function(x) {
+	this.angles = this.angles.addRotateX(x);
+};
+S3Model.prototype.addRotateY = function(y) {
+	this.angles = this.angles.addRotateY(y);
+};
+S3Model.prototype.addRotateZ = function(z) {
+	this.angles = this.angles.addRotateZ(z);
+};
+S3Model.prototype.setRotateX = function(x) {
+	this.angles = this.angles.setRotateX(x);
+};
+S3Model.prototype.setRotateY = function(y) {
+	this.angles = this.angles.setRotateY(y);
+};
+S3Model.prototype.setRotateZ = function(z) {
+	this.angles = this.angles.addRotateZ(z);
+};
 
 /**
  * カメラ (mutable)

@@ -1,4 +1,4 @@
-/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
+﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
 
 ﻿function test3D(canvas) {
 	
@@ -31,7 +31,7 @@
 	var mesh = S3Mesh.fromJSON(meshdata);
 	
 	var model = new S3Model();
-	model.mesh	= mesh;
+	model.setMesh(mesh);
 
 	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
@@ -46,7 +46,7 @@
 		
 		s3.clear();
 		
-		model.angles.addRotateY(5);
+		model.addRotateY(5);
 		s3.drawAxis(scene);
 		s3.drawScene(scene);
 	};

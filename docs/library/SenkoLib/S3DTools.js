@@ -1,6 +1,6 @@
-/* global S3Mesh */
+﻿"use strict";
 
-"use strict";
+/* global S3Mesh */
 
 ﻿/**
  * SenkoLib S3DTools.js

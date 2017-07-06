@@ -1,4 +1,4 @@
-/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
+﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
 
 ﻿function test3D(canvas, mqodata) {
 	
@@ -41,9 +41,9 @@
 	mesh = S3Mesh.fromMQO(mqodata);
 	
 	var model = new S3Model();
-	model.mesh	= mesh;
-	model.scale	= new S3Vector( 5, 5, 5);
-
+	model.setMesh(mesh);
+	model.setScale(5);
+	
 	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
 	controller.setCamera(camera);
@@ -57,7 +57,7 @@
 		
 		s3.clear();
 		
-		model.angles.addRotateY(5);
+		model.addRotateY(5);
 		s3.drawAxis(scene);
 		s3.drawScene(scene);
 	};
