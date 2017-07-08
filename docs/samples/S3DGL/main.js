@@ -6,8 +6,11 @@
 	var controller = new CameraController();
 	var camera = new S3Camera();
 
-	s3.setCanvas2D(canvas);
+	s3.setCanvasGL(canvas);
 	controller.setCanvas(canvas);
+	
+	s3.setShaderURL("../../library/SenkoLib/S3DGL.fs");
+	s3.setShaderURL("../../library/SenkoLib/S3DGL.vs");
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
 	camera.setSystemMode(S3SystemMode.OPEN_GL);
@@ -44,13 +47,14 @@
 	var redraw = function() {
 		scene.setCamera(controller.getCamera());
 		
-		s3.clear();
+		s3.clearGL();
 		
 		model.addRotateY(5);
-		s3.drawAxis(scene);
-		s3.drawScene(scene);
+		s3.drawSceneGL(scene);
 	};
+	
 
+	//setTimeout(redraw, 50);
 	setInterval(redraw, 50);
 
 }

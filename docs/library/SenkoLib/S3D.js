@@ -460,8 +460,8 @@ S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
  */
 var S3Vertex = function(position, normal, rhw) {
 	this.position	= position;
-	if(rhw !== undefined) {
-		this.normal		= normal;
+	if(normal !== undefined) {
+		this.normal	= normal;
 	}
 	if(rhw !== undefined) {
 		this.rhw		= rhw;
@@ -472,6 +472,40 @@ var S3Vertex = function(position, normal, rhw) {
 };
 S3Vertex.prototype.clone = function() {
 	return new S3Vertex(this.position, this.normal, this.rhw);
+};
+S3Vertex.prototype.isEnabledNormal = function() {
+	return this.normal !== undefined;
+};
+S3Vertex.prototype.getVertexHash = function() {
+	var ndata = this.isEnabledNormal() ? this.normal.toString(3) : "";
+	return this.position.toString(3) + ndata;
+};
+S3Vertex.prototype.getVertexData = function() {
+	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
+	return {
+		position	: {data : this.position, size : 3 },
+		normal		: {data : ndata, size : 3}
+	};
+};
+
+/**
+ * 素材
+ * @param {String} name
+ * @returns {S3Material}
+ */
+var S3Material = function(name) {
+	this.name	= name;
+};
+S3Material.prototype.clone = function() {
+	return new S3Material(this.name);
+};
+S3Material.prototype.getVertexHash = function() {
+	return this.name;
+};
+S3Material.prototype.getVertexData = function() {
+	return {
+		color : { data : new S3Vector(1.0, 1.0, 1.0, 1.0), size : 4 }
+	};
 };
 
 /**
@@ -513,23 +547,22 @@ S3TriangleIndex.prototype.clone = function() {
 S3TriangleIndex.prototype.inverse = function() {
 	return new S3TriangleIndex( 2, 1, 0, this.index, this.materialIndex, this.uv );
 };
-S3TriangleIndex.prototype.toStringFromList = function(number, vertexList, materialList) {
-
+S3TriangleIndex.prototype.isEnabledTexture = function() {
+	return !(this.uv === undefined);
 };
-
-/**
- * 素材
- * @param {String} name
- * @returns {S3Material}
- */
-var S3Material = function(name) {
-	this.name	= name;
+S3TriangleIndex.prototype.getVertexHash = function(number, vertexList, materialList) {
+	var uvdata = this.isEnabledTexture() ? this.uv[number].toString(2) : "";
+	var vertex   = vertexList[this.index[number]].getVertexHash();
+	var material = materialList[this.materialIndex].getVertexHash();
+	return vertex + material + uvdata;
 };
-S3Material.prototype.clone = function() {
-	return new S3Material(this.name);
-};
-S3Material.prototype.toString = function() {
-	return this.name;
+S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialList) {
+	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
+	var vertex		= vertexList[this.index[number]].getVertexData();
+	var material	= materialList[this.materialIndex].getVertexData();
+	vertex.color	= material.color;
+	vertex.uv		= { data : uvdata, size : 2 };
+	return vertex;
 };
 
 /**
@@ -543,6 +576,7 @@ var S3Mesh = function(vertex, triangleindex, material) {
 	this.init(vertex, triangleindex, material);
 };
 S3Mesh.prototype.init = function(vertex, triangleindex, material) {
+	this.isFreezed = false;
 	this.cleanVertex();
 	this.cleanTriangleIndex();
 	this.cleanMaterial();
@@ -555,17 +589,21 @@ S3Mesh.prototype.clone = function() {
 };
 S3Mesh.prototype.cleanVertex = function() {
 	this.vertex = [];
+	this.isFreezed = false;
 };
 S3Mesh.prototype.cleanTriangleIndex = function() {
 	this.triangleindex = [];
+	this.isFreezed = false;
 };
 S3Mesh.prototype.cleanMaterial = function() {
 	this.material	= [];
 	this.material[0] = new S3Material("s3default");
 	this.material_length = 0;
+	this.isFreezed = false;
 };
 S3Mesh.prototype.addVertex = function(vertex) {
 	// 一応 immutable なのでそのままシャローコピー
+	this.isFreezed = false;
 	if(vertex === undefined) {
 	}
 	else if(vertex instanceof S3Vertex) {
@@ -580,6 +618,7 @@ S3Mesh.prototype.addVertex = function(vertex) {
 };
 S3Mesh.prototype.addTriangleIndex = function(ti) {
 	// 一応 immutable なのでそのままシャローコピー
+	this.isFreezed = false;
 	if(ti === undefined) {
 	}
 	else if(ti instanceof S3TriangleIndex) {
@@ -594,6 +633,7 @@ S3Mesh.prototype.addTriangleIndex = function(ti) {
 };
 S3Mesh.prototype.addMaterial = function(material) {
 	// 一応 immutable なのでそのままシャローコピー
+	this.isFreezed = false;
 	if(material === undefined) {
 	}
 	else if(material instanceof S3Material) {
@@ -605,6 +645,66 @@ S3Mesh.prototype.addMaterial = function(material) {
 			this.material[this.material_length++] = material[i];
 		}
 	}
+};
+S3Mesh.prototype.freezeMesh = function() {
+	if(this.isFreezed) {
+		return;
+	}
+	var material_list		= this.material;
+	var vertex_list			= this.vertex;
+	var triangleindex_list	= this.triangleindex;
+	var i, j;
+	var hashlist = [];
+	var vnum = 0;
+	
+	var triangle = [];
+	var tempdata = {};
+	
+	// インデックスを再構築して、VBOとIBOを作る
+	for(i = 0; i < triangleindex_list.length; i++) {
+		var triangleindex = triangleindex_list[i];
+		var hash;
+		var indlist = [];
+		for(j = 0; j < 3; j++) {
+			hash = triangleindex.getVertexHash(j, vertex_list, material_list);
+			var hit = hashlist[hash];
+			indlist[j] = (hit !== undefined) ? hit : vnum;
+			if(hit === undefined) {
+				var vertexdata = triangleindex.getVertexData(j, vertex_list, material_list);
+				hashlist[hash]  = vnum;
+				for(var key in vertexdata) {
+					var data = vertexdata[key].data;
+					var size = vertexdata[key].size;
+					if(tempdata[key] === undefined) {
+						tempdata[key] = [];
+					}
+					data.pushed(tempdata[key], size);
+				}
+				vnum++;
+			}
+		}
+		triangle[i] = new Int16Array(indlist);
+	}
+	
+	// データ結合
+	this.freeze = {};
+	this.freeze.triangle	= new Int16Array(triangleindex_list.length * 3);
+	var pt = 0;
+	for(i = 0; i < triangleindex_list.length; i++) {
+		for(j = 0; j < 3; j++) {
+			this.freeze.triangle[pt++] = triangle[i][j];
+		}
+	}
+	for(var key in tempdata) {
+		this.freeze[key] = new Float32Array(tempdata[key]);
+	}
+	this.isFreezed = true;
+};
+S3Mesh.prototype.getFreezedMesh = function() {
+	if(!this.isFreezed) {
+		this.freezeMesh();
+	}
+	return this.freeze;
 };
 
 /*
@@ -698,13 +798,13 @@ S3Mesh.prototype.toJSON = function() {
  * @returns {S3Model}
  */
 var S3Model = function() {
-	this.angles		= new S3Angles();
-	this.scale		= new S3Vector(1, 1, 1);
-	this.position	= new S3Vector(0, 0, 0);
-	this.mesh		= new S3Mesh();
+	this.angles			= new S3Angles();
+	this.scale			= new S3Vector(1, 1, 1);
+	this.position		= new S3Vector(0, 0, 0);
+	this.mesh			= new S3Mesh();
 };
 S3Model.prototype.setMesh = function(mesh) {
-	this.mesh = mesh.clone();
+	this.mesh			= mesh;
 };
 S3Model.prototype.getMesh = function() {
 	return this.mesh;
@@ -944,30 +1044,30 @@ S3System.prototype.drawAxis = function(scene) {
 	this.context2d.drawLine(newvector[0], newvector[3]);
 };
 
-S3System.prototype._calcVertexTransformation = function(vertexlist, M1, M2) {
+S3System.prototype._calcVertexTransformation = function(vertexlist, MVP, Viewport) {
 	var i;
 	var newvertexlist = [];
 	
 	for(i = 0; i < vertexlist.length; i++) {
 		var p = vertexlist[i].position;
-		p = this.mulMatrix(M1, p);
+		p = this.mulMatrix(MVP, p);
 		var rhw = p.w;
 		p = p.mul(1.0 / rhw);
-		p = this.mulMatrix(M2, p);
+		p = this.mulMatrix(Viewport, p);
 		newvertexlist[i] = new S3Vertex(p, rhw);
 	}
 	return newvertexlist;
 };
 
-S3System.prototype._calcBaseMatrix = function(camera, canvas) {
+S3System.prototype.getVPSMatrix = function(camera, canvas) {
 	var x = S3System.calcAspect(canvas.width, canvas.height);
 	// ビューイング変換行列を作成する
 	var V = this.getMatrixLookAt(camera.eye, camera.center);
 	// 射影トランスフォーム行列
 	var P = this.getMatrixPerspectiveFov(camera.fovY, x, camera.near, camera.far );
 	// ビューポート行列
-	var W = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
-	return { LookAt : V, aspect : x, PerspectiveFov : P, Viewport : W };
+	var S = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
+	return { LookAt : V, aspect : x, PerspectiveFov : P, Viewport : S };
 };
 
 S3System.prototype._drawPolygon = function(vetexlist, triangleindexlist) {
@@ -990,7 +1090,7 @@ S3System.prototype._drawPolygon = function(vetexlist, triangleindexlist) {
 };
 
 S3System.prototype.drawScene = function(scene) {
-	var ML = this._calcBaseMatrix(scene.camera, this.canvas);
+	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
 	
 	this.context2d.setLineWidth(1.0);
 	this.context2d.setLineColor("rgb(0, 0, 0)");
@@ -999,8 +1099,8 @@ S3System.prototype.drawScene = function(scene) {
 	for(i = 0; i < scene.model.length; i++) {
 		var model = scene.model[i];
 		var M = this.getMatrixWorldTransform(model);
-		var MVP = this.mulMatrix(this.mulMatrix(M, ML.LookAt), ML.PerspectiveFov);
-		var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, ML.Viewport);
+		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
+		var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, VPS.Viewport);
 		this._drawPolygon(vlist, model.mesh.triangleindex);
 	}
 };

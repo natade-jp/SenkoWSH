@@ -44,8 +44,6 @@
 	model.setMesh(mesh);
 	model.setScale(5);
 	
-	console.log(model);
-	
 	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
 	controller.setCamera(camera);

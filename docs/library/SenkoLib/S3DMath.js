@@ -74,7 +74,12 @@ var S3Math =  {
 var S3Vector = function(x, y, z, w) {
 	this.x = x;
 	this.y = y;
-	this.z = z;
+	if(z === undefined) {
+		this.z = 0.0;
+	}
+	else {
+		this.z = z;
+	}
 	if(w === undefined) {
 		this.w = 1.0;
 	}
@@ -232,6 +237,40 @@ S3Vector.prototype.toString = function(num) {
 	}
 	else {
 		return "[" + this.x + "," + this.y + "," + this.z + "," + this.w + "]T";
+	}
+};
+S3Vector.prototype.toFloat32Array = function(num) {
+	if(num === 1) {
+		return new Float32Array([this.x]);
+	}
+	else if(num === 2) {
+		return new Float32Array([this.x, this.y]);
+	}
+	else if(num === 3) {
+		return new Float32Array([this.x, this.y, this.z]);
+	}
+	else {
+		return new Float32Array([this.x, this.y, this.z, this.w]);
+	}
+};
+S3Vector.prototype.pushed = function(array, num) {
+	if(num === 1) {
+		array.push(this.x);
+	}
+	else if(num === 2) {
+		array.push(this.x);
+		array.push(this.y);
+	}
+	else if(num === 3) {
+		array.push(this.x);
+		array.push(this.y);
+		array.push(this.z);
+	}
+	else {
+		array.push(this.x);
+		array.push(this.y);
+		array.push(this.z);
+		array.push(this.w);
 	}
 };
 
@@ -535,6 +574,29 @@ S3Matrix.prototype.toString = function() {
 		" [" + this.m10 + " " + this.m11 + " " + this.m12 + " " + this.m13 + "]\n" + 
 		" [" + this.m20 + " " + this.m21 + " " + this.m22 + " " + this.m23 + "]\n" + 
 		" [" + this.m30 + " " + this.m31 + " " + this.m32 + " " + this.m33 + "]]";
+};
+S3Matrix.prototype.toFloat32Array = function(num) {
+	if(num === 1) {
+		return new Float32Array([this.m00]);
+	}
+	else if(num === 2) {
+		return new Float32Array(
+			[this.m00, this.m10,
+			 this.m01, this.m11]);
+	}
+	else if(num === 3) {
+		return new Float32Array(
+			[this.m00, this.m10, this.m20,
+			 this.m01, this.m11, this.m21,
+			 this.m02, this.m12, this.m22]);
+	}
+	else {
+		return new Float32Array(
+			[this.m00, this.m10, this.m20, this.m30,
+			 this.m01, this.m11, this.m21, this.m31,
+			 this.m02, this.m12, this.m22, this.m32,
+			 this.m03, this.m13, this.m23, this.m33]);
+	}
 };
 
 /**
