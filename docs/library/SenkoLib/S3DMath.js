@@ -160,12 +160,6 @@ S3Vector.prototype.setW = function(w) {
 S3Vector.prototype.dot = function(tgt) {
 	return this.x * tgt.x + this.y * tgt.y + this.z * tgt.z;
 };
-S3Vector.prototype.dot = function(tgt) {
-	return this.x * tgt.x + this.y * tgt.y + this.z * tgt.z;
-};
-S3Vector.prototype.dot = function(tgt) {
-	return this.x * tgt.x + this.y * tgt.y + this.z * tgt.z;
-};
 S3Vector.prototype.max = function(tgt) {
 	return new S3Vector(
 		Math.max(this.x, tgt.x),
@@ -226,10 +220,20 @@ S3Vector.prototype.negate = function() {
 		1.0
 	);
 };
-S3Vector.prototype.toString = function() {
-	return "[" + this.x + "," + this.y + "," + this.z + "," + this.w + "]T";
+S3Vector.prototype.toString = function(num) {
+	if(num === 1) {
+		return "[" + this.x + "]T";
+	}
+	else if(num === 2) {
+		return "[" + this.x + "," + this.y + "]T";
+	}
+	else if(num === 3) {
+		return "[" + this.x + "," + this.y + "," + this.z + "]T";
+	}
+	else {
+		return "[" + this.x + "," + this.y + "," + this.z + "," + this.w + "]T";
+	}
 };
-
 
 /**
  * tgt への方向ベクトルを取得する
@@ -310,6 +314,7 @@ S3Vector.isClockwise = function(A, B, C) {
  * 4x4行列  (immutable)
  * 引数は、MATLAB と同じように行で順番に定義していきます。
  * この理由は、行列を初期化する際に見た目が分かりやすいためです。
+ * 9個の引数なら3x3行列、16個の引数なら4x4行列として扱います。
  * @param {Number} m00
  * @param {Number} m01
  * @param {Number} m02
@@ -339,7 +344,15 @@ var S3Matrix = function(
 		this.m20 = 0.0;	this.m21 = 0.0;	this.m22 = 0.0;	this.m23 = 0.0;
 		this.m30 = 0.0;	this.m31 = 0.0;	this.m32 = 0.0;	this.m33 = 0.0;
 	}
+	else if(arguments.length === 9) {
+		// 3x3行列
+		this.m00 = m00;	this.m01 = m01;	this.m02 = m02;	this.m03 = 0.0;
+		this.m10 = m03;	this.m11 = m10;	this.m12 = m11;	this.m13 = 0.0;
+		this.m20 = m12;	this.m21 = m13;	this.m22 = m20;	this.m23 = 0.0;
+		this.m30 = 0.0;	this.m31 = 0.0;	this.m32 = 0.0;	this.m33 = 1.0;
+	}
 	else if(arguments.length === 16) {
+		// 4x4行列
 		this.m00 = m00;	this.m01 = m01;	this.m02 = m02;	this.m03 = m03;
 		this.m10 = m10;	this.m11 = m11;	this.m12 = m12;	this.m13 = m13;
 		this.m20 = m20;	this.m21 = m21;	this.m22 = m22;	this.m23 = m23;
@@ -461,7 +474,7 @@ S3Matrix.prototype.inverse3 = function() {
 	B.m22 = (A.m00 * A.m11 - A.m01 * A.m10) * id;
 	return B;
 };
-S3Matrix.prototype.det = function() {
+S3Matrix.prototype.det4 = function() {
 	var A = this;
 	var out;
 	out  = A.m00 * A.m11 * A.m22 * A.m33;
@@ -490,9 +503,9 @@ S3Matrix.prototype.det = function() {
 	out -= A.m03 * A.m12 * A.m20 * A.m31;
 	return out;
 };
-S3Matrix.prototype.inverse = function() {
+S3Matrix.prototype.inverse4 = function() {
 	var A = this;
-	var det = A.det();
+	var det = A.det4();
 	if(det === 0.0) {
 		return( null );
 	}
