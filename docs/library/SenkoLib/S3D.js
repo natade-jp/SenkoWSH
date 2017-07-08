@@ -131,33 +131,34 @@ S3System.prototype.setSystemMode = function(mode) {
 	}
 };
 
-S3System.prototype.setCanvas2D = function(canvas) {
-	var that = this;
-	this.canvas = canvas;
+S3System.prototype.setCanvas = function(canvas) {
+	var that		= this;
+	var ctx			= canvas.getContext("2d");
+	this.canvas		= canvas;
 	this.context2d = {
-		context : this.canvas.getContext("2d"),
+		context : ctx,
 		drawLine : function(v0, v1) {
-			this.context.beginPath();
-			this.context.moveTo( v0.x, v0.y );
-			this.context.lineTo( v1.x, v1.y );
-			this.context.stroke();
+			ctx.beginPath();
+			ctx.moveTo( v0.x, v0.y );
+			ctx.lineTo( v1.x, v1.y );
+			ctx.stroke();
 		},
 		drawLinePolygon : function(v0, v1, v2) {
-			this.context.beginPath();
-			this.context.moveTo( v0.x, v0.y );
-			this.context.lineTo( v1.x, v1.y );
-			this.context.lineTo( v2.x, v2.y );
-			this.context.closePath();
-			this.context.stroke();
+			ctx.beginPath();
+			ctx.moveTo( v0.x, v0.y );
+			ctx.lineTo( v1.x, v1.y );
+			ctx.lineTo( v2.x, v2.y );
+			ctx.closePath();
+			ctx.stroke();
 		},
 		setLineWidth : function(width) {
-			this.context.lineWidth = width;
+			ctx.lineWidth = width;
 		},
 		setLineColor : function(color) {
-			this.context.strokeStyle = color;
+			ctx.strokeStyle = color;
 		},
 		clear : function() {
-			this.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+			ctx.clearRect(0, 0, that.canvas.width, that.canvas.height);
 		}
 	};
 };
@@ -497,32 +498,23 @@ var S3TriangleIndex = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
  */
 S3TriangleIndex.prototype.init = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
 	if((indexlist instanceof Array) && (indexlist.length > 0)) {
-		this.i1 = indexlist[i1];
-		this.i2 = indexlist[i2];
-		this.i3 = indexlist[i3];
+		this.index = [indexlist[i1], indexlist[i2], indexlist[i3]];
 	}
 	if((uvlist instanceof Array) && (uvlist.length > 0) && (uvlist[0] instanceof S3Vector)) {
-		this.uv1 = uvlist[i1];
-		this.uv2 = uvlist[i2];
-		this.uv3 = uvlist[i3];
+		this.uv = [uvlist[i1], uvlist[i2], uvlist[i3]];
 	}
 	materialIndex = materialIndex      ? materialIndex : 0;
 	materialIndex = materialIndex >= 0 ? materialIndex : 0;
 	this.materialIndex = materialIndex;
 };
 S3TriangleIndex.prototype.clone = function() {
-	return new S3TriangleIndex(
-		0, 1, 2,
-		[this.i1, this.i2, this.i3],
-		this.materialIndex,
-		[this.uv1, this.uv2, this.uv3] );
+	return new S3TriangleIndex( 0, 1, 2, this.index, this.materialIndex, this.uv );
 };
 S3TriangleIndex.prototype.inverse = function() {
-	return new S3TriangleIndex(
-		2, 1, 0,
-		[this.i1, this.i2, this.i3],
-		this.materialIndex,
-		[this.uv1, this.uv2, this.uv3] );
+	return new S3TriangleIndex( 2, 1, 0, this.index, this.materialIndex, this.uv );
+};
+S3TriangleIndex.prototype.toStringFromList = function(number, vertexList, materialList) {
+
 };
 
 /**
@@ -536,33 +528,36 @@ var S3Material = function(name) {
 S3Material.prototype.clone = function() {
 	return new S3Material(this.name);
 };
+S3Material.prototype.toString = function() {
+	return this.name;
+};
 
 /**
  * 立体物 (mutable)
  * @param {Array} vertex
- * @param {Array} index
+ * @param {Array} triangleindex
  * @param {Array} material
  * @returns {S3Mesh}
  */
-var S3Mesh = function(vertex, index, material) {
-	this.init(vertex, index, material);
+var S3Mesh = function(vertex, triangleindex, material) {
+	this.init(vertex, triangleindex, material);
 };
-S3Mesh.prototype.init = function(vertex, index, material) {
+S3Mesh.prototype.init = function(vertex, triangleindex, material) {
 	this.cleanVertex();
 	this.cleanTriangleIndex();
 	this.cleanMaterial();
 	this.addVertex(vertex);
-	this.addTriangleIndex(index);
+	this.addTriangleIndex(triangleindex);
 	this.addMaterial(material);
 };
 S3Mesh.prototype.clone = function() {
-	return new S3Mesh(this.vertex, this.index);
+	return new S3Mesh(this.vertex, this.triangleindex);
 };
 S3Mesh.prototype.cleanVertex = function() {
 	this.vertex = [];
 };
 S3Mesh.prototype.cleanTriangleIndex = function() {
-	this.index		= [];
+	this.triangleindex = [];
 };
 S3Mesh.prototype.cleanMaterial = function() {
 	this.material	= [];
@@ -583,17 +578,17 @@ S3Mesh.prototype.addVertex = function(vertex) {
 		}
 	}
 };
-S3Mesh.prototype.addTriangleIndex = function(triangleindex) {
+S3Mesh.prototype.addTriangleIndex = function(ti) {
 	// 一応 immutable なのでそのままシャローコピー
-	if(triangleindex === undefined) {
+	if(ti === undefined) {
 	}
-	else if(triangleindex instanceof S3TriangleIndex) {
-		this.index[this.index.length] = triangleindex;
+	else if(ti instanceof S3TriangleIndex) {
+		this.triangleindex[this.triangleindex.length] = ti;
 	}
 	else {
 		var i = 0;
-		for(i = 0; i < triangleindex.length; i++) {
-			this.index[this.index.length] = triangleindex[i];
+		for(i = 0; i < ti.length; i++) {
+			this.triangleindex[this.triangleindex.length] = ti[i];
 		}
 	}
 };
@@ -671,9 +666,9 @@ S3Mesh.prototype.toJSON = function() {
 		};
 	}
 	// 材質名に合わせて、インデックスリストを取得
-	for(i = 0; i < this.index.length; i++) {
-		material_vertexlist[this.index[i].materialIndex].list.push(
-			[ this.index[i].i1, this.index[i].i2, this.index[i].i3 ]);
+	for(i = 0; i < this.triangleindex.length; i++) {
+		var ti = this.triangleindex[i];
+		material_vertexlist[ti.materialIndex].list.push( ti.index );
 	}
 	var output = [];
 	output.push("{");
@@ -967,35 +962,32 @@ S3System.prototype._calcVertexTransformation = function(vertexlist, M1, M2) {
 S3System.prototype._calcBaseMatrix = function(camera, canvas) {
 	var x = S3System.calcAspect(canvas.width, canvas.height);
 	// ビューイング変換行列を作成する
-	var L = this.getMatrixLookAt(camera.eye, camera.center);
+	var V = this.getMatrixLookAt(camera.eye, camera.center);
 	// 射影トランスフォーム行列
 	var P = this.getMatrixPerspectiveFov(camera.fovY, x, camera.near, camera.far );
 	// ビューポート行列
-	var V = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
-	return { LookAt : L, aspect : x, PerspectiveFov : P, Viewport :V };
+	var W = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
+	return { LookAt : V, aspect : x, PerspectiveFov : P, Viewport : W };
 };
 
-
-
-S3System.prototype._drawPolygon = function(vetexlist, indexlist) {
+S3System.prototype._drawPolygon = function(vetexlist, triangleindexlist) {
 	var i = 0;
 	
-	for(i = 0; i < indexlist.length; i++) {
-		var index = indexlist[i];
+	for(i = 0; i < triangleindexlist.length; i++) {
+		var ti = triangleindexlist[i];
 		if(this.testCull(
-			vetexlist[index.i1].position,
-			vetexlist[index.i2].position,
-			vetexlist[index.i3].position )) {
+			vetexlist[ti.index[0]].position,
+			vetexlist[ti.index[1]].position,
+			vetexlist[ti.index[2]].position )) {
 				continue;
 		}
 		this.context2d.drawLinePolygon(
-			vetexlist[index.i1].position,
-			vetexlist[index.i2].position,
-			vetexlist[index.i3].position
+			vetexlist[ti.index[0]].position,
+			vetexlist[ti.index[1]].position,
+			vetexlist[ti.index[2]].position
 		);
 	}
 };
-
 
 S3System.prototype.drawScene = function(scene) {
 	var ML = this._calcBaseMatrix(scene.camera, this.canvas);
@@ -1006,11 +998,9 @@ S3System.prototype.drawScene = function(scene) {
 	var i = 0;
 	for(i = 0; i < scene.model.length; i++) {
 		var model = scene.model[i];
-		var W = this.getMatrixWorldTransform(model);
-		var M = this.mulMatrix(this.mulMatrix(W, ML.LookAt), ML.PerspectiveFov);
-		var vlist = this._calcVertexTransformation(model.mesh.vertex, M, ML.Viewport);
-		this._drawPolygon(vlist, model.mesh.index);
+		var M = this.getMatrixWorldTransform(model);
+		var MVP = this.mulMatrix(this.mulMatrix(M, ML.LookAt), ML.PerspectiveFov);
+		var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, ML.Viewport);
+		this._drawPolygon(vlist, model.mesh.triangleindex);
 	}
 };
-
-

@@ -6,7 +6,7 @@
 	var controller = new CameraController();
 	var camera = new S3Camera();
 
-	s3.setCanvas2D(canvas);
+	s3.setCanvas(canvas);
 	controller.setCanvas(canvas);
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
@@ -44,6 +44,8 @@
 	model.setMesh(mesh);
 	model.setScale(5);
 	
+	console.log(model);
+	
 	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
 	controller.setCamera(camera);
@@ -62,6 +64,7 @@
 		s3.drawScene(scene);
 	};
 
+	//setTimeout(redraw, 50);
 	setInterval(redraw, 50);
 
 }

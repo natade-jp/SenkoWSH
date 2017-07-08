@@ -85,16 +85,16 @@ S3Mesh.prototype.toMQO = function() {
 		output.push("}");
 
 		// 面の定義
-		output.push("\tface " + this.index.length + " {");
-		for(i = 0; i < this.index.length; i++) {
-			var vi = this.index[i];
+		output.push("\tface " + this.triangleindex.length + " {");
+		for(i = 0; i < this.triangleindex.length; i++) {
+			var ti = this.triangleindex[i];
 			var line = "\t\t3";
 			// 座標と材質は必ずある
-			line += " V(" + vi.i1 + " " + vi.i2 + " " + vi.i3 + ")";
-			line += " M(" + vi.materialIndex + ")";
+			line += " V(" + ti.index[0] + " " + ti.index[1] + " " + ti.index[2] + ")";
+			line += " M(" + ti.materialIndex + ")";
 			// UVはないかもしれないので、条件を付ける
-			if(vi.uv1 !== undefined) {
-				line += " UV(" + vi.uv1 + " " + vi.uv2 + " " + vi.uv3 +")";
+			if(ti.uv !== undefined) {
+				line += " UV(" + ti.uv[0] + " " + ti.uv[1] + " " + ti.uv[2] +")";
 			}
 			output.push(line);
 		}
