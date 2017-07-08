@@ -721,7 +721,7 @@ var SCanvas = function() {
 	this.super._initComponent.call(this, "canvas");
 	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
 	this.canvas = this.super.getElement.call(this);
-	this.context = this.canvas.getContext("2d");
+	this.glmode = false;
 	this.setPixelSize(300, 150);	// canvas のデフォルト値を設定する
 };
 SCanvas.prototype = new SComponent();
@@ -743,6 +743,15 @@ SCanvas.prototype.setPixelSize = function(width, height) {
 	this.canvas.height = height;
 };
 SCanvas.prototype.getContext = function() {
+	// 一度でも GL で getContext すると使用できなくなります。
+	if(this.context === undefined) {
+		this.context = this.canvas.getContext("2d");
+		if(this.context === null) {
+			this.glmode = true;
+			this.gl = this.canvas.getContext("webgl") || this.canvas.getContext("experimental-webgl");
+			this.context = this.gl;
+		}
+	}
 	return this.context;
 };
 SCanvas.drawtype = {
@@ -752,13 +761,24 @@ SCanvas.drawtype = {
 	LETTER_BOX		: 3
 };
 SCanvas.prototype.clear = function() {
-	this.context.clearRect(0, 0,  this.canvas.width, this.canvas.height);
+	if(this.glmode) {
+		this.getContext().clear(this.gl.COLOR_BUFFER_BIT);
+	}
+	else {
+		this.getContext().clearRect(0, 0,  this.canvas.width, this.canvas.height);
+	}
 };
 SCanvas.prototype.getImageData = function() {
-	return this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+	if(this.glmode) {
+		return;
+	}
+	return this.getContext().getImageData(0, 0, this.canvas.width, this.canvas.height);
 };
 SCanvas.prototype.putImageData = function(imagedata) {
-	this.context.putImageData(imagedata, 0, 0);
+	if(this.glmode) {
+		return;
+	}
+	this.getContext().putImageData(imagedata, 0, 0);
 };
 SCanvas.prototype._putImage = function(image, isresizecanvas, drawsize) {
 	var pixelsize = this.canvas;
