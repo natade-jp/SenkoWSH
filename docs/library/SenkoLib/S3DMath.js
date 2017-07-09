@@ -239,18 +239,18 @@ S3Vector.prototype.toString = function(num) {
 		return "[" + this.x + "," + this.y + "," + this.z + "," + this.w + "]T";
 	}
 };
-S3Vector.prototype.toFloat32Array = function(num) {
-	if(num === 1) {
-		return new Float32Array([this.x]);
+S3Vector.prototype.toInstanceArray = function(Instance, dimension) {
+	if(dimension === 1) {
+		return new Instance([this.x]);
 	}
-	else if(num === 2) {
-		return new Float32Array([this.x, this.y]);
+	else if(dimension === 2) {
+		return new Instance([this.x, this.y]);
 	}
-	else if(num === 3) {
-		return new Float32Array([this.x, this.y, this.z]);
+	else if(dimension === 3) {
+		return new Instance([this.x, this.y, this.z]);
 	}
 	else {
-		return new Float32Array([this.x, this.y, this.z, this.w]);
+		return new Instance([this.x, this.y, this.z, this.w]);
 	}
 };
 S3Vector.prototype.pushed = function(array, num) {
@@ -575,23 +575,23 @@ S3Matrix.prototype.toString = function() {
 		" [" + this.m20 + " " + this.m21 + " " + this.m22 + " " + this.m23 + "]\n" + 
 		" [" + this.m30 + " " + this.m31 + " " + this.m32 + " " + this.m33 + "]]";
 };
-S3Matrix.prototype.toFloat32Array = function(num) {
-	if(num === 1) {
-		return new Float32Array([this.m00]);
+S3Matrix.prototype.toInstanceArray = function(Instance, dimension) {
+	if(dimension === 1) {
+		return new Instance([this.m00]);
 	}
-	else if(num === 2) {
-		return new Float32Array(
+	else if(dimension === 2) {
+		return new Instance(
 			[this.m00, this.m10,
 			 this.m01, this.m11]);
 	}
-	else if(num === 3) {
-		return new Float32Array(
+	else if(dimension === 3) {
+		return new Instance(
 			[this.m00, this.m10, this.m20,
 			 this.m01, this.m11, this.m21,
 			 this.m02, this.m12, this.m22]);
 	}
 	else {
-		return new Float32Array(
+		return new Instance(
 			[this.m00, this.m10, this.m20, this.m30,
 			 this.m01, this.m11, this.m21, this.m31,
 			 this.m02, this.m12, this.m22, this.m32,

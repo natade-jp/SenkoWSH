@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-/* global S3Math, S3Matrix, S3Vector */
+/* global S3Math, S3Matrix, S3Vector, Float32Array, Int32Array */
 
 ﻿/**
  * SenkoLib S3D.js
@@ -591,6 +591,37 @@ S3System.prototype.drawScene = function(scene) {
  */
 
 /**
+ * WebGL用の頂点 (immutable)
+ * @param {Object} data 数値／配列／S3Vector
+ * @param {Number} dimension 例えば3次元のベクトルなら、3
+ * @param {S3GLVertex.datatype} datatype 数値の型
+ * @returns {S3GLVertex}
+ */
+var S3GLVertex = function(data, dimension, datatype) {
+	if(data instanceof datatype.instance) {
+		this.data	= data;
+	}
+	else if(data instanceof S3Vector) {
+		this.data	= data.toInstanceArray(datatype.instance, dimension);
+	}
+	else if(data instanceof Array) {
+		this.data	= new datatype.instance(data);
+	}
+	else if(!isNaN(data)) {
+		this.data	= new datatype.instance([data]);
+	}
+	else {
+		throw "IllegalArgumentException";
+	}
+	this.dimension	= dimension;
+	this.datatype	= datatype;
+};
+S3GLVertex.datatype = {
+	"Float32Array"	: { instance	: Float32Array,	name	: "Float32Array"	},
+	"Int32Array"	: { instance	: Int32Array,	name	: "Int32Array"		}
+};
+
+/**
  * 頂点 (immutable)
  * @param {S3Vector} position 座標
  * @param {S3Vector} normal レンダリング前の法線値（計算して予め求める必要あり）
@@ -622,8 +653,8 @@ S3Vertex.prototype.getVertexHash = function() {
 S3Vertex.prototype.getVertexData = function() {
 	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
 	return {
-		position	: {data : this.position, size : 3 },
-		normal		: {data : ndata, size : 3}
+		position	: new S3GLVertex(this.position, 3, S3GLVertex.datatype.Float32Array),
+		normal		: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -643,7 +674,7 @@ S3Material.prototype.getVertexHash = function() {
 };
 S3Material.prototype.getVertexData = function() {
 	return {
-		color : { data : new S3Vector(1.0, 1.0, 1.0, 1.0), size : 4 }
+		color : new S3GLVertex([1.0, 1.0, 1.0, 1.0], 4, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -700,7 +731,7 @@ S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialL
 	var vertex		= vertexList[this.index[number]].getVertexData();
 	var material	= materialList[this.materialIndex].getVertexData();
 	vertex.color	= material.color;
-	vertex.uv		= { data : uvdata, size : 2 };
+	vertex.uv		= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
 	return vertex;
 };
 
@@ -794,10 +825,10 @@ S3Mesh.prototype.freezeMesh = function() {
 	var triangleindex_list	= this.triangleindex;
 	var i, j;
 	var hashlist = [];
-	var vnum = 0;
+	var vertex_length = 0;
 	
-	var triangle = [];
-	var tempdata = {};
+	var triangle			= [];
+	var vertextypelist	= {};
 	
 	// インデックスを再構築して、VBOとIBOを作る
 	for(i = 0; i < triangleindex_list.length; i++) {
@@ -805,38 +836,65 @@ S3Mesh.prototype.freezeMesh = function() {
 		var hash;
 		var indlist = [];
 		for(j = 0; j < 3; j++) {
+			// すでに以前と同一の頂点があるならば、その頂点を選択
 			hash = triangleindex.getVertexHash(j, vertex_list, material_list);
 			var hit = hashlist[hash];
-			indlist[j] = (hit !== undefined) ? hit : vnum;
+			indlist[j] = (hit !== undefined) ? hit : vertex_length;
 			if(hit === undefined) {
+				// 頂点がないので新規にリストに追加する
 				var vertexdata = triangleindex.getVertexData(j, vertex_list, material_list);
-				hashlist[hash]  = vnum;
+				hashlist[hash]  = vertex_length;
 				for(var key in vertexdata) {
-					var data = vertexdata[key].data;
-					var size = vertexdata[key].size;
-					if(tempdata[key] === undefined) {
-						tempdata[key] = [];
+					if(vertextypelist[key] === undefined) {
+						vertextypelist[key]		= [];
 					}
-					data.pushed(tempdata[key], size);
+					vertextypelist[key].push(vertexdata[key]);
 				}
-				vnum++;
+				vertex_length++;
 			}
 		}
 		triangle[i] = new Int16Array(indlist);
 	}
 	
 	// データ結合
-	this.freeze = {};
-	this.freeze.triangle	= new Int16Array(triangleindex_list.length * 3);
 	var pt = 0;
-	for(i = 0; i < triangleindex_list.length; i++) {
-		for(j = 0; j < 3; j++) {
-			this.freeze.triangle[pt++] = triangle[i][j];
+	var ibo = {};
+	{
+		// IBOの結合（インデックス）
+		ibo.array_length	= triangleindex_list.length * 3;
+		ibo.array			= new Int16Array(ibo.array_length);
+		pt = 0;
+		for(i = 0; i < triangleindex_list.length; i++) {
+			for(j = 0; j < 3; j++) {
+				ibo.array[pt++] = triangle[i][j];
+			}
 		}
 	}
-	for(var key in tempdata) {
-		this.freeze[key] = new Float32Array(tempdata[key]);
+	var vbo = {};
+	{
+		// VBOの結合（頂点）
+		for(var key in vertextypelist) {
+			var srcdata		= vertextypelist[key];
+			var dimension	= srcdata[0].dimension;
+			var dstdata	= {};
+			dstdata.name			= key;
+			dstdata.dimension		= srcdata[0].dimension;
+			dstdata.datatype		= srcdata[0].datatype;
+			dstdata.array_length	= dimension * vertex_length;
+			dstdata.array			= new dstdata.datatype.instance(dstdata.array_length);
+			pt = 0;
+			for(i = 0; i < vertex_length; i++) {
+				for(j = 0; j < dimension; j++) {
+					dstdata.array[pt++] = srcdata[i].data[j];
+				}
+			}
+			vbo[key] = dstdata;
+		}
 	}
+	
+	this.freeze = {};
+	this.freeze.ibo = ibo;
+	this.freeze.vbo = vbo;
 	this.isFreezed = true;
 };
 S3Mesh.prototype.getFreezedMesh = function() {

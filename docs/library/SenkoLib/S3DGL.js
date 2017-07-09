@@ -1,4 +1,4 @@
-/* global S3System, S3Mesh, S3Model, S3SystemMode */
+/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array */
 
 ﻿"use strict";
 
@@ -22,9 +22,11 @@
  */
 
 /**
- * 
- * @param {String} code
- * @param {Integer} sharder_type
+ * 頂点シェーダー／フラグメントシェーダ―用クラス
+ * ソースコード、コンパイル済みデータ、シェーダータイプを格納できる
+ * @param {S3SystemGL} s3systemgl
+ * @param {Integer} code
+ * @param {String} sharder_type
  * @returns {S3GLShader}
  */
 var S3GLShader = function(s3systemgl, code, sharder_type) {
@@ -44,6 +46,11 @@ S3GLShader.prototype.toHash = function() {
 S3GLShader.prototype.isCompiled = function() {
 	return (this.compileddata !== null);
 };
+
+/**
+ * シェーダーをコンパイルする
+ * @returns {Boolean} trueで成功
+ */
 S3GLShader.prototype.compileSharder = function() {
 	if(this.isCompiled()) {
 		return true;
@@ -61,6 +68,12 @@ S3GLShader.prototype.compileSharder = function() {
 	}
 };
 
+/**
+ * 頂点シェーダー、フラグメントシェーダーの2つを組み合わせたプログラム用のクラス
+ * 2種類のシェーダーと、リンクしたプログラムを格納できる
+ * @param {S3SystemGL} s3systemgl
+ * @returns {S3GLProgram}
+ */
 var S3GLProgram = function(s3systemgl) {
 	this.s3systemgl		= s3systemgl;
 	this.vertex			= null;
@@ -80,6 +93,13 @@ S3GLProgram.prototype.isSetShader = function() {
 S3GLProgram.prototype.isLinked = function() {
 	return (this.program !== null);
 };
+
+/**
+ * コンパイル済みの頂点シェーダー、フラグメントシェーダーをセットする
+ * セットするシェーダーの順番は順不同である
+ * @param {S3GLShader} shader
+ * @returns {Boolean}
+ */
 S3GLProgram.prototype.setShader = function(shader) {
 	if(this.isLinked()) {
 		return true;
@@ -98,6 +118,11 @@ S3GLProgram.prototype.setShader = function(shader) {
 		return false;
 	}
 };
+
+/**
+ * セットした2種類（頂点とフラグメント）のシェーダーをリンクさせて利用可能状態にする
+ * @returns {Boolean} trueで成功
+ */
 S3GLProgram.prototype.linkedSharder = function() {
 	if(!this.isSetShader()) {
 		return false;
@@ -119,13 +144,133 @@ S3GLProgram.prototype.linkedSharder = function() {
 		return false;
 	}
 };
-S3GLProgram.prototype.useProgram = function() {
-	if(!this.isLinked()) {
+
+/**
+ * WebGL用のプログラムに、JavaScript用の変数を橋渡しするクラス
+ * @param {S3SystemGL} s3systemgl
+ * @returns {S3GLBind}
+ */
+var S3GLBind = function(s3systemgl) {
+	this.s3systemgl		= s3systemgl;
+	
+	this.typelist = {
+		"int"	: {glsl : "int",	js : "Number",		size : 1, btype : "INT"},
+		"float"	: {glsl : "float",	js : "Number",		size : 1, btype : "INT"},
+		"bool"	: {glsl : "bool",	js : "Number",		size : 1, btype : "INT"},
+		"mat2"	: {glsl : "mat2",	js : "Float32Array",size : 4, btype : "FLOAT"},
+		"mat3"	: {glsl : "mat3",	js : "Float32Array",size : 9, btype : "FLOAT"},
+		"mat4"	: {glsl : "mat4",	js : "Float32Array",size : 16,btype : "FLOAT"},
+		"vec2"	: {glsl : "vec2",	js : "Float32Array",size : 2, btype : "FLOAT"},
+		"vec3"	: {glsl : "vec3",	js : "Float32Array",size : 3, btype : "FLOAT"},
+		"vec4"	: {glsl : "vec4",	js : "Float32Array",size : 4, btype : "FLOAT"},
+		"ivec2"	: {glsl : "ivec2",	js : "Int32Array",	size : 2, btype : "INT"},
+		"ivec3"	: {glsl : "ivec3",	js : "Int32Array",	size : 3, btype : "INT"},
+		"ivec4"	: {glsl : "ivec4",	js : "Int32Array",	size : 4, btype : "INT"},
+		"bvec2"	: {glsl : "bvec2",	js : "Int32Array",	size : 2, btype : "INT"},
+		"bvec3"	: {glsl : "bvec3",	js : "Int32Array",	size : 3, btype : "INT"},
+		"bvec4"	: {glsl : "bvec4",	js : "Int32Array",	size : 4, btype : "INT"},
+		"sampler2D"	: {glsl : "sampler2D",	js : "null", size : 1, btype : "INT"},
+		"samplerCube"	: {glsl : "samplerCube",js : "null", size : 1, btype : "INT"}
+	};
+	this.addType = function(obj) {
+		for(var key in this.typelist) {
+			obj[key] = [];
+		}
+	};
+	var variable = {};
+	variable.attribute	= {};
+	variable.uniform	= {};
+	this.variable = variable;
+	this.variable_modifiers	= [];
+	this.variable_datatype	= [];
+};
+
+/**
+ * リンク済みのプログラムをセットして、解析してから使用状態にする。
+ * @param {S3GLProgram} glprogram リンク済みのプログラム
+ * @returns {undefined}
+ */
+S3GLBind.prototype.setProgram = function(glprogram) {
+	if(!glprogram.isLinked()) {
 		return false;
 	}
 	var gl = this.s3systemgl.gl;
-	gl.useProgram(this.program);
+	var prg = glprogram.program;
+	gl.useProgram(prg);
+	// プログラムを解析して、attribute / uniform の変数について調べる
+	var code = glprogram.vertex.code;
+	var codelines = code.split("\n");
+	for(var i = 0; i < codelines.length; i++) {
+		var data = codelines[i].match(/(attribute|uniform)\s+(\w+)\s+(\w+)\s*;/);
+		if(data === null) {
+			continue;
+		}
+		// 見つけたら変数名や、型を記録しておく
+		this.variable_modifiers[data[3]]	= data[1];
+		this.variable_datatype[data[3]]		= data[2];
+		this.variable[data[1]][data[3]]		= this.typelist[data[2]];
+		// プログラム上のどの位置に配置すればいいかを調べておく
+		if(data[1] === "attribute") {
+			this.variable[data[1]][data[3]].location = gl.getAttribLocation(prg, data[3]);
+		}
+		else if(data[1] === "uniform") {
+			this.variable[data[1]][data[3]].location = gl.getUniformLocation(prg, data[3]);
+		}
+	}
 };
+
+/**
+ * プログラムにデータを結びつける
+ * @param {S3Mesh} mesh
+ * @returns {Integer}
+ */
+S3GLBind.prototype.bindMesh = function(mesh) {
+	var gl = this.s3systemgl.gl;
+	var gldata = mesh.getGLData(this.s3systemgl);
+	// インデックスをセット
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
+	var index_length = gldata.ibo.array_length;
+	// 頂点をセット(あらかじめコードから解析した attribute について埋める)
+	for(var key in this.variable_modifiers) {
+		if(this.variable_modifiers[key] === "uniform") {
+			// 現段階で未対応（おそらくカメラ用の行列などのため）
+			continue;
+		}
+		if(gldata.vbo[key] === undefined) {
+			// vboのリストにない場合は、カメラ用の行列など
+			continue;
+		}
+		var type	= this.variable[this.variable_modifiers[key]][key];
+		var vbodata	= gldata.vbo[key];
+		var location	= type.location;
+		var size		= type.size;
+		gl.bindBuffer(gl.ARRAY_BUFFER, vbodata.data);
+		gl.enableVertexAttribArray(location);
+		// 型は適当
+		gl.vertexAttribPointer(
+			location, size,
+			(type.btype === "FLOAT") ? gl.FLOAT : gl.SHORT,
+			false, 0, 0);
+	}
+	// 戻り値でインデックスの長さを返す
+	// この長さは、drawElementsで必要のため
+	return index_length;
+};
+
+/**
+ * プログラムに行列データを結びつける
+ * @param {type} mat
+ * @param {type} attribute_name
+ * @returns {undefined}
+ */
+S3GLBind.prototype.bindUniformMatrix = function(mat, attribute_name) {
+	var gl = this.s3systemgl.gl;
+	var type		= this.variable.uniform[attribute_name];
+	var location	= type.location;
+	gl.uniformMatrix4fv(location, false, mat);
+	return;
+};
+
 
 /**
  * /////////////////////////////////////////////////////////
@@ -184,7 +329,8 @@ var S3SystemGL = function() {
 	var program = {};
 	program.setting	= new S3GLProgram(this);
 	program.run		= new S3GLProgram(this);
-	this.program = program;
+	this.program	= program;
+	this.bind		= null;
 };
 S3SystemGL.prototype = new S3System();
 
@@ -220,14 +366,16 @@ S3SystemGL.prototype.setShader = function(shader) {
 	var hash = this.program.setting.toHash();
 	if(this.cash.program[hash] !== undefined) {
 		this.program.run = this.cash.program[hash];
-		this.program.run.useProgram();
 		this.program.setting	= new S3GLProgram(this);
+		this.bind = new S3GLBind(this);
+		this.bind.setProgram(this.program.run);
 	}
 	else if(this.program.setting.linkedSharder()){
 		this.cash.program[hash]	= this.program.setting;
 		this.program.run		= this.program.setting;
-		this.program.run.useProgram();
 		this.program.setting	= new S3GLProgram(this);
+		this.bind = new S3GLBind(this);
+		this.bind.setProgram(this.program.run);
 	}
 };
 
@@ -286,44 +434,6 @@ S3SystemGL.prototype.createIBO = function(data) {
 	return ibo;
 };
 
-S3SystemGL.prototype.bindVBO = function(vbo, attribute_name, size) {
-	if(!this.program.run.isLinked()) {
-		return;
-	}
-	var prg = this.program.run.program;
-	var location = this.gl.getAttribLocation(prg, attribute_name);
-	if(location === -1) {
-		console.log("bind error1 " + attribute_name);
-		return;
-	}
-	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
-	this.gl.enableVertexAttribArray(location);
-	this.gl.vertexAttribPointer(location, size, this.gl.FLOAT, false, 0, 0);
-	return;
-};
-
-S3SystemGL.prototype.bindIBO = function(ibo) {
-	if(!this.program.run.isLinked()) {
-		return;
-	}
-	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
-	return;
-};
-
-S3SystemGL.prototype.bindUniformMatrix = function(mat, attribute_name) {
-	if(!this.program.run.isLinked()) {
-		return;
-	}
-	var prg = this.program.run.program;
-	var location = this.gl.getUniformLocation(prg, attribute_name);
-	if(location === -1) {
-		console.log("bind error2 " + attribute_name);
-		return;
-	}
-	this.gl.uniformMatrix4fv(location, false, mat);
-	return;
-};
-
 S3SystemGL.prototype.drawElements = function(indexsize) {
 	if(!this.program.run.isLinked()) {
 		return;
@@ -337,7 +447,7 @@ S3SystemGL.prototype.deleteBuffer = function(data) {
 };
 
 S3SystemGL.prototype.drawScene = function(scene) {
-	if(!this.program.run.isLinked()) {
+	if(this.bind === null) {
 		return;
 	}
 	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
@@ -346,12 +456,10 @@ S3SystemGL.prototype.drawScene = function(scene) {
 		var model = scene.model[i];
 		var M = this.getMatrixWorldTransform(model);
 		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
-		var gldata = model.getGLData(this);
 		
-		this.bindVBO(gldata.position, "position", 3);
-		this.bindIBO(gldata.ibo);
-		this.bindUniformMatrix(MVP.toFloat32Array(), "mvpMatrix");
-		this.drawElements(gldata.ibosize);
+		var indexsize = this.bind.bindMesh(model.getMesh());
+		this.bind.bindUniformMatrix(MVP.toInstanceArray(Float32Array), "mvpMatrix");
+		this.drawElements(indexsize);
 	}
 };
 
@@ -363,34 +471,32 @@ S3SystemGL.prototype.drawScene = function(scene) {
  */
 
 S3Mesh.prototype.deleteGLData = function(s3system) {
-	if(this.gldata === undefined) {
+	if(this.gl === undefined) {
 		return;
 	}
-	for(var key in this.gldata) {
-		if(key !== "indexsize") {
-			s3system.deleteBuffer(this.gldata[key]);
-		}
+	s3system.deleteBuffer(this.gl.ibo.data);
+	for(var key in this.gldata.vbo) {
+		s3system.deleteBuffer(this.gl.vbo[key].data);
 	}
+	delete this.gl;
 };
 
 S3Mesh.prototype.initGLData = function(s3system) {
-	if((!this.isFreezed) && (!this.gldata === undefined)) {
+	if((!this.isFreezed) && (!this.gl === undefined)) {
 		return;
 	}
-	var freeze = this.getFreezedMesh();
-	this.gldata = {};
-	this.gldata.ibosize		= freeze.triangle.length;
-	this.gldata.ibo			= s3system.createIBO(freeze.triangle);
-	for(var key in freeze) {
-		if(key !== "triangle") {
-			this.gldata[key]	= s3system.createVBO(freeze[key]);
-		}
+	// フリーズデータ（固定データ）を取得する
+	this.gl = this.getFreezedMesh();
+	// 取得したデータを、IBO / VBO 用のオブジェクトに変換して、data へ格納
+	this.gl.ibo.data = s3system.createIBO(this.gl.ibo.array);
+	for(var key in this.gl.vbo) {
+		this.gl.vbo[key].data = s3system.createVBO(this.gl.vbo[key].array);
 	}
 };
 
 S3Mesh.prototype.getGLData = function(s3system) {
 	this.initGLData(s3system);
-	return this.gldata;
+	return this.gl;
 };
 
 S3Model.prototype.getGLData = function(s3system) {
