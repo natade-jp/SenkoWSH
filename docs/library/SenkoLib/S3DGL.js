@@ -1,4 +1,4 @@
-/* global S3System, S3Mesh, S3Model */
+/* global S3System, S3Mesh, S3Model, S3SystemMode */
 
 ﻿"use strict";
 
@@ -15,45 +15,98 @@
  *  S3D.js
  */
 
-S3System.download = function(url, callback) {
-	var dotlist = url.split(".");
-	var isImage = false;
-	var ext = "";
-	if(dotlist.length > 1) {
-		var ext = dotlist[dotlist.length - 1].toLocaleString();
-		isImage = (ext === "gif") || (ext === "jpg") || (ext === "png") || (ext === "bmp") || (ext === "svg") || (ext === "jpeg");
+/**
+ * 
+ * @param {String} code
+ * @param {Integer} sharder_type
+ * @returns {S3GLShader}
+ */
+var S3GLShader = function(code, sharder_type) {
+	this.compileddata	= null;
+	this.sharder_type	= sharder_type;
+	this.code			= code;
+};
+S3GLShader.prototype.toHash = function() {
+	var i = 0;
+	var hash = 0;
+	for(i = 0; i < this.code.length; i++) {
+		hash = (hash * 48271 + this.code.charCodeAt(i)) & 0xFFFFFFFF;
 	}
-	if(isImage) {
-		var image = new Image();
-		image.onload = function() {
-			callback(image, ext);
-		};
-		image.src = this.pathname;
-	}
-	var http = new XMLHttpRequest();
-	var handleHttpResponse = function (){
-		if(http.readyState === 4) { // DONE
-			if(http.status !== 200) {
-				console.log("error downloadText " + url);
-				return(null);
-			}
-			callback(http.responseText, ext);
-		}
-	};
-	http.onreadystatechange = handleHttpResponse;
-	http.open("GET", url, true);
-	http.send(null);
+	return hash;
 };
 
-S3System.prototype.setCanvasGL = function(canvas) {
+var S3GLProgram = function() {
+	this.vertex			= null;
+	this.fragment		= null;
+	this.program		= null;
+};
+S3GLProgram.prototype.toHash = function() {
+	var hash = (this.vertex.toHash() + this.fragment.toHash()) & 0xFFFFFFFF;
+	return hash;
+};
+
+var S3SystemGL = function() {
+	this.super = S3System.prototype;
+	this.super.setSystemMode.call(this, S3SystemMode.OPEN_GL);
+	this.myfunc = {};
+	this.myfunc.download = function(url, callback) {
+		var dotlist = url.split(".");
+		var isImage = false;
+		var ext = "";
+		if(dotlist.length > 1) {
+			var ext = dotlist[dotlist.length - 1].toLocaleString();
+			isImage = (ext === "gif") || (ext === "jpg") || (ext === "png") || (ext === "bmp") || (ext === "svg") || (ext === "jpeg");
+		}
+		if(isImage) {
+			var image = new Image();
+			image.onload = function() {
+				callback(image, ext);
+			};
+			image.src = this.pathname;
+		}
+		var http = new XMLHttpRequest();
+		var handleHttpResponse = function (){
+			if(http.readyState === 4) { // DONE
+				if(http.status !== 200) {
+					console.log("error downloadText " + url);
+					return(null);
+				}
+				callback(http.responseText, ext);
+			}
+		};
+		http.onreadystatechange = handleHttpResponse;
+		http.open("GET", url, true);
+		http.send(null);
+	};
+	this.myfunc.toHashFromString = function(text) {
+		var i = 0;
+		var hash = 0;
+		for(i = 0; i < text.length; i++) {
+			hash = (hash * 48271 + text.charCodeAt(i)) & 0xFFFFFFFF;
+		}
+		return hash;
+	};
+	
+	var shader = {};
+	shader.cash					= {};
+	shader.cash.url				= [];
+	shader.cash.complie			= [];
+	shader.cash.program			= [];
+	shader.setting	= new S3GLProgram();
+	shader.run		= new S3GLProgram();
+	this.shader = shader;
+};
+S3SystemGL.prototype = new S3System();
+
+S3SystemGL.prototype.setCanvas = function(canvas) {
 	// 初期化色
 	var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 	this.canvas = canvas;
-	this.gldata = new Object();
+	this.gldata = {};
 	this.gldata.gl = gl;
 };
 
-S3System.prototype.getShaderType = function(text) {
+S3SystemGL.prototype.getShaderType = function(text) {
 	var gl = this.gldata.gl;
 	var dotlist = text.split(".");
 	var ext = "";
@@ -71,7 +124,7 @@ S3System.prototype.getShaderType = function(text) {
 	}
 };
 
-S3System.prototype.compileShader = function(code, sharder_type) {
+S3SystemGL.prototype.compileShader = function(code, sharder_type) {
 	var gl = this.gldata.gl;
 	var shader = gl.createShader(sharder_type);
 	gl.shaderSource(shader, code);
@@ -84,55 +137,85 @@ S3System.prototype.compileShader = function(code, sharder_type) {
 	}
 };
 
-S3System.prototype.setShader = function(shader, sharder_type) {
+S3SystemGL.prototype.setShader = function(shader) {
 	var gl = this.gldata.gl;
-	if(sharder_type === gl.VERTEX_SHADER) {
-		this.gldata.vertex_shader = shader;
+	if(shader.sharder_type === gl.VERTEX_SHADER) {
+		this.shader.setting.vertex = shader;
 	}
-	else if(sharder_type === gl.FRAGMENT_SHADER) {
-		this.gldata.fragment_shader = shader;
+	else if(shader.sharder_type === gl.FRAGMENT_SHADER) {
+		this.shader.setting.fragment = shader;
 	}
-	if(!this.gldata.vertex_shader || !this.gldata.fragment_shader) {
+	if(this.shader.setting.vertex === null || this.shader.setting.fragment === null ) {
 		// 両方とも読み込まれていなかったらここで終了
 		return;
 	}
-	var program = gl.createProgram();
-    gl.attachShader(program, this.gldata.vertex_shader);
-    gl.attachShader(program, this.gldata.fragment_shader);
-	gl.linkProgram(program);
-	if(gl.getProgramParameter(program, gl.LINK_STATUS)){
-		gl.useProgram(program);
-		this.gldata.program = program;
+	var hash = this.shader.setting.toHash();
+	if(this.shader.cash.program[hash] !== undefined) {
+		this.shader.nowshader = this.shader.cash.program[hash];
+		gl.useProgram(this.shader.setting.program);
+		return;
 	}
-	else {
-		console.log("link error " + gl.getProgramInfoLog(program));
+	{
+		var program = gl.createProgram();
+		gl.attachShader(program, this.shader.setting.vertex.compileddata   );
+		gl.attachShader(program, this.shader.setting.fragment.compileddata );
+		gl.linkProgram(program);
+		if(gl.getProgramParameter(program, gl.LINK_STATUS)){
+			gl.useProgram(program);
+			this.shader.setting.program	= program;
+			this.shader.cash.program[hash]	= this.shader.setting;
+			this.shader.run					= this.shader.setting;
+			this.shader.setting				= new S3GLProgram();
+		}
+		else {
+			console.log("link error " + gl.getProgramInfoLog(program));
+		}
 	}
 };
 
-S3System.prototype.setShaderCode = function(code, sharder_type) {
-	var shader = this.compileShader(code, sharder_type);
-	if(shader !== null) {
-		this.setShader(shader, sharder_type);
+S3SystemGL.prototype.setShaderCode = function(code, sharder_type) {
+	// キャッシュがあれば、それを使う
+	var shader = new S3GLShader(code, sharder_type);
+	var hash = shader.toHash();
+	if(this.shader.cash.complie[hash] !== undefined) {
+		this.setShader(this.shader.cash.complie[hash]);
+		return;
 	}
+	var compileddata = this.compileShader(code, sharder_type);
+	if(compileddata !== null) {
+		shader.compileddata	= compileddata;
+		this.shader.cash.complie[hash] = shader;
+		this.setShaderCode(code);
+		return true;
+	}
+	return false;
 };
 
-S3System.prototype.setShaderURL = function(url) {
+S3SystemGL.prototype.setShaderURL = function(url) {
+	// キャッシュがあれば、それを使う
+	var shader = this.shader.cash.url[url];
+	if(shader !== undefined) {
+		this.setShaderCode( shader.code, shader.sharder_type );
+		return;
+	}
 	var that = this;
 	var sharder_type = this.getShaderType(url);
 	var downloadCallback = function(code) {
-		that.setShaderCode(code, sharder_type);
+		shader = new S3GLShader(code, sharder_type);
+		that.shader.cash.url[url] = shader;
+		that.setShaderURL(url);
 	};
-	S3System.download(url, downloadCallback);
+	this.myfunc.download(url, downloadCallback);
 };
 
-S3System.prototype.clearGL = function() {
+S3SystemGL.prototype.clear = function() {
 	var gl = this.gldata.gl;
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	gl.clearDepth(1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 };
 
-S3System.prototype.createVBO = function(data) {
+S3SystemGL.prototype.createVBO = function(data) {
 	var gl = this.gldata.gl;
 	var vbo = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
@@ -141,7 +224,7 @@ S3System.prototype.createVBO = function(data) {
 	return vbo;
 };
 
-S3System.prototype.createIBO = function(data) {
+S3SystemGL.prototype.createIBO = function(data) {
 	var gl = this.gldata.gl;
 	var ibo = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
@@ -150,9 +233,9 @@ S3System.prototype.createIBO = function(data) {
 	return ibo;
 };
 
-S3System.prototype.bindVBO = function(vbo, attribute_name, size) {
+S3SystemGL.prototype.bindVBO = function(vbo, attribute_name, size) {
 	var gl = this.gldata.gl;
-	var prg = this.gldata.program;
+	var prg = this.shader.run.program;
 	if(prg === undefined) {
 		return;
 	}
@@ -167,9 +250,9 @@ S3System.prototype.bindVBO = function(vbo, attribute_name, size) {
 	return;
 };
 
-S3System.prototype.bindIBO = function(ibo) {
+S3SystemGL.prototype.bindIBO = function(ibo) {
 	var gl = this.gldata.gl;
-	var prg = this.gldata.program;
+	var prg = this.shader.run.program;
 	if(prg === undefined) {
 		return;
 	}
@@ -177,9 +260,9 @@ S3System.prototype.bindIBO = function(ibo) {
 	return;
 };
 
-S3System.prototype.bindUniformMatrix = function(mat, attribute_name) {
+S3SystemGL.prototype.bindUniformMatrix = function(mat, attribute_name) {
 	var gl = this.gldata.gl;
-	var prg = this.gldata.program;
+	var prg = this.shader.run.program;
 	if(prg === undefined) {
 		return;
 	}
@@ -192,9 +275,9 @@ S3System.prototype.bindUniformMatrix = function(mat, attribute_name) {
 	return;
 };
 
-S3System.prototype.drawElements = function(indexsize) {
+S3SystemGL.prototype.drawElements = function(indexsize) {
 	var gl = this.gldata.gl;
-	var prg = this.gldata.program;
+	var prg = this.shader.run.program;
 	if(prg === undefined) {
 		return;
 	}
@@ -202,7 +285,7 @@ S3System.prototype.drawElements = function(indexsize) {
 	gl.flush();
 };
 
-S3System.prototype.deleteBuffer = function(data) {
+S3SystemGL.prototype.deleteBuffer = function(data) {
 	var gl = this.gldata.gl;
 	gl.deleteBuffer(data);
 };
@@ -242,8 +325,8 @@ S3Model.prototype.getGLData = function(s3system) {
 	return this.getMesh().getGLData(s3system);
 };
 
-S3System.prototype.drawSceneGL = function(scene) {
-	var prg = this.gldata.program;
+S3SystemGL.prototype.drawScene = function(scene) {
+	var prg = this.shader.run.program;
 	if(prg === undefined) {
 		return;
 	}

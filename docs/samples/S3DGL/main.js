@@ -2,11 +2,11 @@
 
 ﻿function test3D(canvas) {
 	
-	var s3 = new S3System();
+	var s3 = new S3SystemGL();
 	var controller = new CameraController();
 	var camera = new S3Camera();
 
-	s3.setCanvasGL(canvas);
+	s3.setCanvas(canvas);
 	controller.setCanvas(canvas);
 	
 	s3.setShaderURL("../../library/SenkoLib/S3DGL.fs");
@@ -47,13 +47,12 @@
 	var redraw = function() {
 		scene.setCamera(controller.getCamera());
 		
-		s3.clearGL();
+		s3.clear();
 		
 		model.addRotateY(5);
-		s3.drawSceneGL(scene);
+		s3.drawScene(scene);
 	};
 	
-
 	//setTimeout(redraw, 50);
 	setInterval(redraw, 50);
 
