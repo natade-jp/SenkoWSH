@@ -16,6 +16,12 @@
  */
 
 /**
+ * /////////////////////////////////////////////////////////
+ * WebGLのシェーダー情報
+ * /////////////////////////////////////////////////////////
+ */
+
+/**
  * 
  * @param {String} code
  * @param {Integer} sharder_type
@@ -44,6 +50,13 @@ S3GLProgram.prototype.toHash = function() {
 	var hash = (this.vertex.toHash() + this.fragment.toHash()) & 0xFFFFFFFF;
 	return hash;
 };
+
+/**
+ * /////////////////////////////////////////////////////////
+ * S3SystemGL
+ * S3SystemのWebGL拡張
+ * /////////////////////////////////////////////////////////
+ */
 
 var S3SystemGL = function() {
 	this.super = S3System.prototype;
@@ -290,6 +303,37 @@ S3SystemGL.prototype.deleteBuffer = function(data) {
 	gl.deleteBuffer(data);
 };
 
+S3SystemGL.prototype.drawScene = function(scene) {
+	var prg = this.shader.run.program;
+	if(prg === undefined) {
+		return;
+	}
+	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
+	
+	var i = 0;
+	for(i = 0; i < scene.model.length; i++) {
+		var model = scene.model[i];
+		var M = this.getMatrixWorldTransform(model);
+		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
+		var gldata = model.getGLData(this);
+		
+		this.bindVBO(gldata.position, "position", 3);
+		this.bindIBO(gldata.ibo);
+		this.bindUniformMatrix(MVP.toFloat32Array(), "mvpMatrix");
+		this.drawElements(gldata.ibosize);
+		
+	//	var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, VPS.Viewport);
+	//	this._drawPolygon(vlist, model.mesh.triangleindex);
+	}
+};
+
+/**
+ * /////////////////////////////////////////////////////////
+ * 既存の部品に WebGL 用の情報を記録するための拡張
+ * 主に、描写のための VBO と IBO を記録する
+ * /////////////////////////////////////////////////////////
+ */
+
 S3Mesh.prototype.deleteGLData = function(s3system) {
 	if(this.gldata === undefined) {
 		return;
@@ -323,28 +367,4 @@ S3Mesh.prototype.getGLData = function(s3system) {
 
 S3Model.prototype.getGLData = function(s3system) {
 	return this.getMesh().getGLData(s3system);
-};
-
-S3SystemGL.prototype.drawScene = function(scene) {
-	var prg = this.shader.run.program;
-	if(prg === undefined) {
-		return;
-	}
-	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
-	
-	var i = 0;
-	for(i = 0; i < scene.model.length; i++) {
-		var model = scene.model[i];
-		var M = this.getMatrixWorldTransform(model);
-		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
-		var gldata = model.getGLData(this);
-		
-		this.bindVBO(gldata.position, "position", 3);
-		this.bindIBO(gldata.ibo);
-		this.bindUniformMatrix(MVP.toFloat32Array(), "mvpMatrix");
-		this.drawElements(gldata.ibosize);
-		
-	//	var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, VPS.Viewport);
-	//	this._drawPolygon(vlist, model.mesh.triangleindex);
-	}
 };

@@ -23,6 +23,14 @@
 // ・描写用の行列作成
 // ・描写のための必要最低限の計算
 
+
+/**
+ * /////////////////////////////////////////////////////////
+ * S3System
+ * 3DCGを作成するための行列を準備したり、シーンの描写をしたりする
+ * /////////////////////////////////////////////////////////
+ */
+
 var S3SystemMode = {
 	OPEN_GL	: 0,
 	DIRECT_X	: 1
@@ -451,6 +459,137 @@ S3System.prototype.getMatrixRotateZXY = function(z, x, y) {
 	return this.mulMatrix(this.mulMatrix(Z, X), Y);
 };
 
+
+S3System.prototype.getMatrixWorldTransform = function(model) {
+	// 回転行列
+	var R = this.getMatrixRotateZXY(model.angles.roll, model.angles.pitch, model.angles.yaw);
+	// スケーリング
+	var S = this.getMatrixScale(model.scale.x, model.scale.y, model.scale.z);
+	// 移動行列
+	var T = this.getMatrixTranslate(model.position.x, model.position.y, model.position.z);
+	// ワールド変換行列を作成する
+	var W = this.mulMatrix(this.mulMatrix(S, R), T);
+	return W;
+};
+
+S3System.prototype.clear = function() {
+	this.context2d.clear();
+};
+
+S3System.prototype._calcVertexTransformation = function(vertexlist, MVP, Viewport) {
+	var i;
+	var newvertexlist = [];
+	
+	for(i = 0; i < vertexlist.length; i++) {
+		var p = vertexlist[i].position;
+		p = this.mulMatrix(MVP, p);
+		var rhw = p.w;
+		p = p.mul(1.0 / rhw);
+		p = this.mulMatrix(Viewport, p);
+		newvertexlist[i] = new S3Vertex(p, rhw);
+	}
+	return newvertexlist;
+};
+
+S3System.prototype.getVPSMatrix = function(camera, canvas) {
+	var x = S3System.calcAspect(canvas.width, canvas.height);
+	// ビューイング変換行列を作成する
+	var V = this.getMatrixLookAt(camera.eye, camera.center);
+	// 射影トランスフォーム行列
+	var P = this.getMatrixPerspectiveFov(camera.fovY, x, camera.near, camera.far );
+	// ビューポート行列
+	var S = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
+	return { LookAt : V, aspect : x, PerspectiveFov : P, Viewport : S };
+};
+
+S3System.prototype.drawAxis = function(scene) {
+	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
+	
+	var vertexvector = [];
+	vertexvector[0] = new S3Vector(0, 0, 0);
+	vertexvector[1] = new S3Vector(10, 0, 0);
+	vertexvector[2] = new S3Vector(0, 10, 0);
+	vertexvector[3] = new S3Vector(0, 0, 10);
+	
+	var newvector = [];
+	var i = 0;
+	var M = this.mulMatrix(VPS.LookAt, VPS.PerspectiveFov);
+	for(i = 0; i < vertexvector.length; i++) {
+		var p = vertexvector[i];
+		p = this.mulMatrix(M, p);
+		p = p.mul(1.0 / p.w);
+		p = this.mulMatrix(VPS.Viewport, p);
+		newvector[i] = p;
+	}
+	
+	this.context2d.setLineWidth(3.0);
+	this.context2d.setLineColor("rgb(255, 0, 0)");
+	this.context2d.drawLine(newvector[0], newvector[1]);
+	this.context2d.setLineColor("rgb(0, 255, 0)");
+	this.context2d.drawLine(newvector[0], newvector[2]);
+	this.context2d.setLineColor("rgb(0, 0, 255)");
+	this.context2d.drawLine(newvector[0], newvector[3]);
+};
+
+S3System.prototype._drawPolygon = function(vetexlist, triangleindexlist) {
+	var i = 0;
+	
+	for(i = 0; i < triangleindexlist.length; i++) {
+		var ti = triangleindexlist[i];
+		if(this.testCull(
+			vetexlist[ti.index[0]].position,
+			vetexlist[ti.index[1]].position,
+			vetexlist[ti.index[2]].position )) {
+				continue;
+		}
+		this.context2d.drawLinePolygon(
+			vetexlist[ti.index[0]].position,
+			vetexlist[ti.index[1]].position,
+			vetexlist[ti.index[2]].position
+		);
+	}
+};
+
+S3System.prototype.drawScene = function(scene) {
+	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
+	
+	this.context2d.setLineWidth(1.0);
+	this.context2d.setLineColor("rgb(0, 0, 0)");
+	
+	var i = 0;
+	for(i = 0; i < scene.model.length; i++) {
+		var model = scene.model[i];
+		var M = this.getMatrixWorldTransform(model);
+		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
+		var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, VPS.Viewport);
+		this._drawPolygon(vlist, model.mesh.triangleindex);
+	}
+};
+
+/**
+ * /////////////////////////////////////////////////////////
+ * 描写に使用するシーンを構成するクラス群
+ * 
+ * ポリゴン情報を構成部品
+ * S3Vertex			頂点
+ * S3Material		素材
+ * S3TriangleIndex	インデックス
+ * S3Mesh			頂点とインデックス情報と素材からなるメッシュ
+ * 
+ * ポリゴンの描写用構成部品
+ * S3Model			どの座標にどのように表示するかモデル
+ * S3Camera			映像をどのように映すか
+ * S3Scene			モデルとカメラを使用してシーン
+ * 
+ * /////////////////////////////////////////////////////////
+ */
+
+/**
+ * /////////////////////////////////////////////////////////
+ * ポリゴン情報を構成部品
+ * /////////////////////////////////////////////////////////
+ */
+
 /**
  * 頂点 (immutable)
  * @param {S3Vector} position 座標
@@ -794,6 +933,12 @@ S3Mesh.prototype.toJSON = function() {
 };
 
 /**
+ * /////////////////////////////////////////////////////////
+ * ポリゴンの描写用構成部品
+ * /////////////////////////////////////////////////////////
+ */
+
+/**
  * 色々な情報をいれたモデル (mutable)
  * @returns {S3Model}
  */
@@ -998,109 +1143,4 @@ S3Scene.prototype.setCamera = function(camera) {
 };
 S3Scene.prototype.addModel = function(model) {
 	this.model[this.model.length] = model;
-};
-
-S3System.prototype.getMatrixWorldTransform = function(model) {
-	// 回転行列
-	var R = this.getMatrixRotateZXY(model.angles.roll, model.angles.pitch, model.angles.yaw);
-	// スケーリング
-	var S = this.getMatrixScale(model.scale.x, model.scale.y, model.scale.z);
-	// 移動行列
-	var T = this.getMatrixTranslate(model.position.x, model.position.y, model.position.z);
-	// ワールド変換行列を作成する
-	var W = this.mulMatrix(this.mulMatrix(S, R), T);
-	return W;
-};
-
-S3System.prototype.clear = function() {
-	this.context2d.clear();
-};
-S3System.prototype.drawAxis = function(scene) {
-	var ML = this._calcBaseMatrix(scene.camera, this.canvas);
-	
-	var vertexvector = [];
-	vertexvector[0] = new S3Vector(0, 0, 0);
-	vertexvector[1] = new S3Vector(10, 0, 0);
-	vertexvector[2] = new S3Vector(0, 10, 0);
-	vertexvector[3] = new S3Vector(0, 0, 10);
-	
-	var newvector = [];
-	var i = 0;
-	var M = this.mulMatrix(ML.LookAt, ML.PerspectiveFov);
-	for(i = 0; i < vertexvector.length; i++) {
-		var p = vertexvector[i];
-		p = this.mulMatrix(M, p);
-		p = p.mul(1.0 / p.w);
-		p = this.mulMatrix(ML.Viewport, p);
-		newvector[i] = p;
-	}
-	
-	this.context2d.setLineWidth(3.0);
-	this.context2d.setLineColor("rgb(255, 0, 0)");
-	this.context2d.drawLine(newvector[0], newvector[1]);
-	this.context2d.setLineColor("rgb(0, 255, 0)");
-	this.context2d.drawLine(newvector[0], newvector[2]);
-	this.context2d.setLineColor("rgb(0, 0, 255)");
-	this.context2d.drawLine(newvector[0], newvector[3]);
-};
-
-S3System.prototype._calcVertexTransformation = function(vertexlist, MVP, Viewport) {
-	var i;
-	var newvertexlist = [];
-	
-	for(i = 0; i < vertexlist.length; i++) {
-		var p = vertexlist[i].position;
-		p = this.mulMatrix(MVP, p);
-		var rhw = p.w;
-		p = p.mul(1.0 / rhw);
-		p = this.mulMatrix(Viewport, p);
-		newvertexlist[i] = new S3Vertex(p, rhw);
-	}
-	return newvertexlist;
-};
-
-S3System.prototype.getVPSMatrix = function(camera, canvas) {
-	var x = S3System.calcAspect(canvas.width, canvas.height);
-	// ビューイング変換行列を作成する
-	var V = this.getMatrixLookAt(camera.eye, camera.center);
-	// 射影トランスフォーム行列
-	var P = this.getMatrixPerspectiveFov(camera.fovY, x, camera.near, camera.far );
-	// ビューポート行列
-	var S = this.getMatrixViewport(0, 0, canvas.width, canvas.height);
-	return { LookAt : V, aspect : x, PerspectiveFov : P, Viewport : S };
-};
-
-S3System.prototype._drawPolygon = function(vetexlist, triangleindexlist) {
-	var i = 0;
-	
-	for(i = 0; i < triangleindexlist.length; i++) {
-		var ti = triangleindexlist[i];
-		if(this.testCull(
-			vetexlist[ti.index[0]].position,
-			vetexlist[ti.index[1]].position,
-			vetexlist[ti.index[2]].position )) {
-				continue;
-		}
-		this.context2d.drawLinePolygon(
-			vetexlist[ti.index[0]].position,
-			vetexlist[ti.index[1]].position,
-			vetexlist[ti.index[2]].position
-		);
-	}
-};
-
-S3System.prototype.drawScene = function(scene) {
-	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
-	
-	this.context2d.setLineWidth(1.0);
-	this.context2d.setLineColor("rgb(0, 0, 0)");
-	
-	var i = 0;
-	for(i = 0; i < scene.model.length; i++) {
-		var model = scene.model[i];
-		var M = this.getMatrixWorldTransform(model);
-		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
-		var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, VPS.Viewport);
-		this._drawPolygon(vlist, model.mesh.triangleindex);
-	}
 };
