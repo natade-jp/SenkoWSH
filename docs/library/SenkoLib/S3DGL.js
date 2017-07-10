@@ -234,30 +234,21 @@ S3GLBind.prototype.setProgram = function(glprogram) {
 	this.analysisShader(gl, prg, glprogram.fragment.code, this.variable);
 };
 
+
 /**
  * プログラムにデータを結びつける
- * @param {S3Mesh} mesh
- * @returns {Integer}
+ * @param {String} name
+ * @param {Object} data
+ * @returns {undefined}
  */
-S3GLBind.prototype.bindMesh = function(mesh) {
+S3GLBind.prototype.set = function(name, data) {
 	var gl = this.s3systemgl.gl;
-	var gldata = mesh.getGLData(this.s3systemgl);
-	// インデックスをセット
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
-	var index_length = gldata.ibo.array_length;
-	// 頂点をセット(あらかじめコードから解析した attribute について埋める)
-	for(var key in this.variable) {
-		if(this.variable[key].modifiers === "uniform") {
-			// 現段階で未対応（おそらくカメラ用の行列などのため）
-			continue;
-		}
-		if(gldata.vbo[key] === undefined) {
-			// vboのリストにない場合は、カメラ用の行列など
-			continue;
-		}
-		var variable	= this.variable[key];
-		var vbodata		= gldata.vbo[key];
-		gl.bindBuffer(gl.ARRAY_BUFFER, vbodata.data);
+	var variable	= this.variable[name];
+	if(variable.modifiers === "uniform") {
+		variable.bind(variable.location, data);
+	}
+	else {
+		gl.bindBuffer(gl.ARRAY_BUFFER, data);
 		gl.enableVertexAttribArray(variable.location);
 		// 型は適当
 		gl.vertexAttribPointer(
@@ -266,24 +257,36 @@ S3GLBind.prototype.bindMesh = function(mesh) {
 			variable.btype === "FLOAT" ? gl.FLOAT : gl.SHORT,
 			false, 0, 0);
 	}
-	// 戻り値でインデックスの長さを返す
-	// この長さは、drawElementsで必要のため
-	return index_length;
+	return;
 };
 
 /**
- * プログラムに行列データを結びつける
- * @param {type} data
- * @param {type} attribute_name
- * @returns {undefined}
+ * プログラムにデータを結びつける
+ * @param {S3Mesh} mesh
+ * @returns {Integer}
  */
-S3GLBind.prototype.bindUniform = function(data, attribute_name) {
-	var variable	= this.variable[attribute_name];
-	if(variable.modifiers !== "uniform") {
-		throw "IllegalArgumentException";
+S3GLBind.prototype.setMesh = function(mesh) {
+	var gl = this.s3systemgl.gl;
+	var gldata = mesh.getGLData(this.s3systemgl);
+	// インデックスをセット
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
+	var index_length = gldata.ibo.array_length;
+	// 頂点をセット(あらかじめコードから解析した attribute について埋める)
+	for(var key in this.variable) {
+		
+		if(this.variable[key].modifiers === "uniform") {
+			// uniform は共通設定なので省略
+			continue;
+		}
+		// vboのリストにない場合は、カメラ用の行列など
+		if(gldata.vbo[key] === undefined) {
+			continue;
+		}
+		this.set(key, gldata.vbo[key].data);
 	}
-	variable.bind(variable.location, data);
-	return;
+	// 戻り値でインデックスの長さを返す
+	// この長さは、drawElementsで必要のため
+	return index_length;
 };
 
 /**
@@ -471,8 +474,8 @@ S3SystemGL.prototype.drawScene = function(scene) {
 		var M = this.getMatrixWorldTransform(model);
 		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
 		
-		var indexsize = this.bind.bindMesh(model.getMesh());
-		this.bind.bindUniform(MVP.toInstanceArray(Float32Array), "mvpMatrix");
+		var indexsize = this.bind.setMesh(model.getMesh());
+		this.bind.set("mvpMatrix", MVP.toInstanceArray(Float32Array));
 		this.drawElements(indexsize);
 	}
 };
