@@ -151,38 +151,70 @@ S3GLProgram.prototype.linkedSharder = function() {
  * @returns {S3GLBind}
  */
 var S3GLBind = function(s3systemgl) {
-	this.s3systemgl		= s3systemgl;
+	this.s3systemgl	= s3systemgl;
+	var gl			= this.s3systemgl.gl;
 	
-	this.typelist = {
-		"int"	: {glsl : "int",	js : "Number",		size : 1, btype : "INT"},
-		"float"	: {glsl : "float",	js : "Number",		size : 1, btype : "INT"},
-		"bool"	: {glsl : "bool",	js : "Number",		size : 1, btype : "INT"},
-		"mat2"	: {glsl : "mat2",	js : "Float32Array",size : 4, btype : "FLOAT"},
-		"mat3"	: {glsl : "mat3",	js : "Float32Array",size : 9, btype : "FLOAT"},
-		"mat4"	: {glsl : "mat4",	js : "Float32Array",size : 16,btype : "FLOAT"},
-		"vec2"	: {glsl : "vec2",	js : "Float32Array",size : 2, btype : "FLOAT"},
-		"vec3"	: {glsl : "vec3",	js : "Float32Array",size : 3, btype : "FLOAT"},
-		"vec4"	: {glsl : "vec4",	js : "Float32Array",size : 4, btype : "FLOAT"},
-		"ivec2"	: {glsl : "ivec2",	js : "Int32Array",	size : 2, btype : "INT"},
-		"ivec3"	: {glsl : "ivec3",	js : "Int32Array",	size : 3, btype : "INT"},
-		"ivec4"	: {glsl : "ivec4",	js : "Int32Array",	size : 4, btype : "INT"},
-		"bvec2"	: {glsl : "bvec2",	js : "Int32Array",	size : 2, btype : "INT"},
-		"bvec3"	: {glsl : "bvec3",	js : "Int32Array",	size : 3, btype : "INT"},
-		"bvec4"	: {glsl : "bvec4",	js : "Int32Array",	size : 4, btype : "INT"},
-		"sampler2D"	: {glsl : "sampler2D",	js : "null", size : 1, btype : "INT"},
-		"samplerCube"	: {glsl : "samplerCube",js : "null", size : 1, btype : "INT"}
-	};
-	this.addType = function(obj) {
-		for(var key in this.typelist) {
-			obj[key] = [];
-		}
-	};
 	var variable = {};
 	variable.attribute	= {};
 	variable.uniform	= {};
+	variable.modifiers	= [];
+	variable.datatype	= [];
 	this.variable = variable;
-	this.variable_modifiers	= [];
-	this.variable_datatype	= [];
+	
+	var g = {
+		uniform1iv: function(location, value) { gl.uniform1iv(location, value); },
+		uniform2iv: function(location, value) { gl.uniform2iv(location, value); },
+		uniform3iv: function(location, value) { gl.uniform3iv(location, value); },
+		uniform4iv: function(location, value) { gl.uniform4iv(location, value); },
+		uniform1fv: function(location, value) { gl.uniform1fv(location, value); },
+		uniform2fv: function(location, value) { gl.uniform2fv(location, value); },
+		uniform3fv: function(location, value) { gl.uniform3fv(location, value); },
+		uniform4fv: function(location, value) { gl.uniform4fv(location, value); },
+		uniformMatrix2fv: function(location, value) { gl.uniformMatrix2fv(location, false, value); },
+		uniformMatrix3fv: function(location, value) { gl.uniformMatrix3fv(location, false, value); },
+		uniformMatrix4fv: function(location, value) { gl.uniformMatrix4fv(location, false, value); }
+	};
+	
+	var info = {
+		int		: {glsl : "int",	js : "Int32Array",	size : 1, btype : "INT",	bind : g.uniform1iv},
+		float	: {glsl : "float",	js : "Float32Array",size : 1, btype : "INT",	bind : g.uniform1fv},
+		bool	: {glsl : "bool",	js : "Int32Array",	size : 1, btype : "INT",	bind : g.uniform1iv},
+		mat2	: {glsl : "mat2",	js : "Float32Array",size : 4, btype : "FLOAT",	bind : g.uniformMatrix2fv},
+		mat3	: {glsl : "mat3",	js : "Float32Array",size : 9, btype : "FLOAT",	bind : g.uniformMatrix3fv},
+		mat4	: {glsl : "mat4",	js : "Float32Array",size : 16,btype : "FLOAT",	bind : g.uniformMatrix4fv},
+		vec2	: {glsl : "vec2",	js : "Float32Array",size : 2, btype : "FLOAT",	bind : g.uniform2fv},
+		vec3	: {glsl : "vec3",	js : "Float32Array",size : 3, btype : "FLOAT",	bind : g.uniform3fv},
+		vec4	: {glsl : "vec4",	js : "Float32Array",size : 4, btype : "FLOAT",	bind : g.uniform4fv},
+		ivec2	: {glsl : "ivec2",	js : "Int32Array",	size : 2, btype : "INT",	bind : g.uniform2iv},
+		ivec3	: {glsl : "ivec3",	js : "Int32Array",	size : 3, btype : "INT",	bind : g.uniform3iv},
+		ivec4	: {glsl : "ivec4",	js : "Int32Array",	size : 4, btype : "INT",	bind : g.uniform4iv},
+		bvec2	: {glsl : "bvec2",	js : "Int32Array",	size : 2, btype : "INT",	bind : g.uniform2iv},
+		bvec3	: {glsl : "bvec3",	js : "Int32Array",	size : 3, btype : "INT",	bind : g.uniform3iv},
+		bvec4	: {glsl : "bvec4",	js : "Int32Array",	size : 4, btype : "INT",	bind : g.uniform4iv},
+		sampler2D		: {glsl : "sampler2D",	js : "Image", size : 1, btype : "TEXTURE",	bind : null},
+		samplerCube	: {glsl : "samplerCube",js : "Image", size : 1, btype : "TEXTURE",	bind : null}
+	};
+	
+	this.analysisShader = function(gl, prg, code, variable) {
+		var codelines = code.split("\n");
+		for(var i = 0; i < codelines.length; i++) {
+			var data = codelines[i].match(/(attribute|uniform)\s+(\w+)\s+(\w+)\s*;/);
+			if(data === null) {
+				continue;
+			}
+			// 見つけたら変数名や、型を記録しておく
+			// data[1] ... uniform, data[2] ... mat4, data[3] ... M
+			variable[data[3]]			= info[data[2]];	// glsl, js, size, bind
+			// さらに情報を保存しておく
+			variable[data[3]].name		= data[3];			// M
+			variable[data[3]].modifiers	= data[1];			// uniform
+			// プログラム上のどの位置に配置すればいいかを調べておく
+			variable[data[3]].location	= data[1] === "attribute" ?
+				gl.getAttribLocation(prg, data[3]) :
+				gl.getUniformLocation(prg, data[3]);
+		}
+		return;
+	};
 };
 
 /**
@@ -198,25 +230,8 @@ S3GLBind.prototype.setProgram = function(glprogram) {
 	var prg = glprogram.program;
 	gl.useProgram(prg);
 	// プログラムを解析して、attribute / uniform の変数について調べる
-	var code = glprogram.vertex.code;
-	var codelines = code.split("\n");
-	for(var i = 0; i < codelines.length; i++) {
-		var data = codelines[i].match(/(attribute|uniform)\s+(\w+)\s+(\w+)\s*;/);
-		if(data === null) {
-			continue;
-		}
-		// 見つけたら変数名や、型を記録しておく
-		this.variable_modifiers[data[3]]	= data[1];
-		this.variable_datatype[data[3]]		= data[2];
-		this.variable[data[1]][data[3]]		= this.typelist[data[2]];
-		// プログラム上のどの位置に配置すればいいかを調べておく
-		if(data[1] === "attribute") {
-			this.variable[data[1]][data[3]].location = gl.getAttribLocation(prg, data[3]);
-		}
-		else if(data[1] === "uniform") {
-			this.variable[data[1]][data[3]].location = gl.getUniformLocation(prg, data[3]);
-		}
-	}
+	this.analysisShader(gl, prg, glprogram.vertex.code, this.variable);
+	this.analysisShader(gl, prg, glprogram.fragment.code, this.variable);
 };
 
 /**
@@ -231,8 +246,8 @@ S3GLBind.prototype.bindMesh = function(mesh) {
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
 	var index_length = gldata.ibo.array_length;
 	// 頂点をセット(あらかじめコードから解析した attribute について埋める)
-	for(var key in this.variable_modifiers) {
-		if(this.variable_modifiers[key] === "uniform") {
+	for(var key in this.variable) {
+		if(this.variable[key].modifiers === "uniform") {
 			// 現段階で未対応（おそらくカメラ用の行列などのため）
 			continue;
 		}
@@ -240,16 +255,15 @@ S3GLBind.prototype.bindMesh = function(mesh) {
 			// vboのリストにない場合は、カメラ用の行列など
 			continue;
 		}
-		var type	= this.variable[this.variable_modifiers[key]][key];
-		var vbodata	= gldata.vbo[key];
-		var location	= type.location;
-		var size		= type.size;
+		var variable	= this.variable[key];
+		var vbodata		= gldata.vbo[key];
 		gl.bindBuffer(gl.ARRAY_BUFFER, vbodata.data);
-		gl.enableVertexAttribArray(location);
+		gl.enableVertexAttribArray(variable.location);
 		// 型は適当
 		gl.vertexAttribPointer(
-			location, size,
-			(type.btype === "FLOAT") ? gl.FLOAT : gl.SHORT,
+			variable.location,
+			variable.size,
+			variable.btype === "FLOAT" ? gl.FLOAT : gl.SHORT,
 			false, 0, 0);
 	}
 	// 戻り値でインデックスの長さを返す
@@ -259,18 +273,18 @@ S3GLBind.prototype.bindMesh = function(mesh) {
 
 /**
  * プログラムに行列データを結びつける
- * @param {type} mat
+ * @param {type} data
  * @param {type} attribute_name
  * @returns {undefined}
  */
-S3GLBind.prototype.bindUniformMatrix = function(mat, attribute_name) {
-	var gl = this.s3systemgl.gl;
-	var type		= this.variable.uniform[attribute_name];
-	var location	= type.location;
-	gl.uniformMatrix4fv(location, false, mat);
+S3GLBind.prototype.bindUniform = function(data, attribute_name) {
+	var variable	= this.variable[attribute_name];
+	if(variable.modifiers !== "uniform") {
+		throw "IllegalArgumentException";
+	}
+	variable.bind(variable.location, data);
 	return;
 };
-
 
 /**
  * /////////////////////////////////////////////////////////
@@ -458,7 +472,7 @@ S3SystemGL.prototype.drawScene = function(scene) {
 		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
 		
 		var indexsize = this.bind.bindMesh(model.getMesh());
-		this.bind.bindUniformMatrix(MVP.toInstanceArray(Float32Array), "mvpMatrix");
+		this.bind.bindUniform(MVP.toInstanceArray(Float32Array), "mvpMatrix");
 		this.drawElements(indexsize);
 	}
 };
