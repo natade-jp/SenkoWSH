@@ -20,8 +20,8 @@
 // 必ずしもなくてもよい
 
 var CameraController = function() {
-	this.mouse		= new IDMouse();
-	this.data		= new IDMouse();
+	this.mouse		= new IDTouch();
+	this.data		= new IDTouch();
 	this.moveDistance	= 4.0;
 	this.moveRotate		= 0.5;
 	this.moveTranslateRelative	= 0.1;

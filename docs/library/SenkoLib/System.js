@@ -300,7 +300,7 @@ var System = {
 				var childheight		= this.element.clientHeight;
 				// スクロールしないと見えない領域とマージン
 				var hideheight		= childheight - parentheight;
-				var margin			= parentheight * 0.5;
+				var margin			= parentheight * 1.0;
 				// スクロールしないと見えない領域が見えている状態ならオートスクロール
 				if(hideheight - margin <= this.root.scrollTop) {
 					this.root.scrollTop = childheight;
