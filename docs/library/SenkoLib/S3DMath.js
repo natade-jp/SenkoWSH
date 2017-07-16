@@ -90,6 +90,9 @@ var S3Vector = function(x, y, z, w) {
 S3Vector.prototype.clone = function() {
 	return new S3Vector(this.x, this.y, this.z, this.w);
 };
+S3Vector.prototype.negate = function() {
+	return new S3Vector(-this.x, -this.y, -this.z, this.w);
+};
 S3Vector.prototype.cross = function(tgt) {
 	return new S3Vector(
 		this.y * tgt.z - this.z * tgt.y,

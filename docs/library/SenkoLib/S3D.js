@@ -643,6 +643,14 @@ var S3Vertex = function(position, normal, rhw) {
 S3Vertex.prototype.clone = function() {
 	return new S3Vertex(this.position, this.normal, this.rhw);
 };
+S3Vertex.prototype.inverseTriangle = function() {
+	if(this.normal === undefined) {
+		return new S3Vertex(this.position, this.normal, this.rhw);
+	}
+	else {
+		return new S3Vertex(this.position, this.normal.negate(), this.rhw);
+	}
+};
 S3Vertex.prototype.isEnabledNormal = function() {
 	return this.normal !== undefined;
 };
@@ -714,7 +722,7 @@ S3TriangleIndex.prototype.init = function(i1, i2, i3, indexlist, materialIndex, 
 S3TriangleIndex.prototype.clone = function() {
 	return new S3TriangleIndex( 0, 1, 2, this.index, this.materialIndex, this.uv );
 };
-S3TriangleIndex.prototype.inverse = function() {
+S3TriangleIndex.prototype.inverseTriangle = function() {
 	return new S3TriangleIndex( 2, 1, 0, this.index, this.materialIndex, this.uv );
 };
 S3TriangleIndex.prototype.isEnabledTexture = function() {
@@ -770,6 +778,16 @@ S3Mesh.prototype.cleanMaterial = function() {
 	this.material[0] = new S3Material("s3default");
 	this.material_length = 0;
 	this.isFreezed = false;
+};
+S3Mesh.prototype.inverseTriangle = function() {
+	this.isFreezed = false;
+	var i = 0;
+	for(i = 0; i < this.vertex.length; i++) {
+		this.vertex[i] = this.vertex[i].inverseTriangle();
+	}
+	for(i = 0; i < this.triangleindex.length; i++) {
+		this.triangleindex[i] = this.triangleindex[i].inverseTriangle();
+	}
 };
 S3Mesh.prototype.addVertex = function(vertex) {
 	// 一応 immutable なのでそのままシャローコピー
