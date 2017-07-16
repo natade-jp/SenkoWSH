@@ -128,7 +128,7 @@ S3GLProgram.prototype._init = function(gl) {
 		samplerCube	: {glsl : "samplerCube",js : "Image", size : 1, btype : "TEXTURE",	bind : null}
 	};
 	
-	this.analysisShader = function(gl, prg, code, variable) {
+	this.analysisShader = function(code, variable) {
 		var codelines = code.split("\n");
 		for(var i = 0; i < codelines.length; i++) {
 			var data = codelines[i].match(/(attribute|uniform)\s+(\w+)\s+(\w+)\s*;/);
@@ -137,10 +137,15 @@ S3GLProgram.prototype._init = function(gl) {
 			}
 			// 見つけたら変数名や、型を記録しておく
 			// data[1] ... uniform, data[2] ... mat4, data[3] ... M
-			variable[data[3]]			= info[data[2]];	// glsl, js, size, bind
+			var targetinfo = info[data[2]];
+			variable[data[3]]			= {};
+			for(var key in targetinfo) {
+				variable[data[3]][key]	= targetinfo[key];	// glsl, js, size, bind
+			}
 			// さらに情報を保存しておく
 			variable[data[3]].name		= data[3];			// M
 			variable[data[3]].modifiers	= data[1];			// uniform
+			variable[data[3]].location	= null;
 		}
 		return;
 	};
@@ -203,8 +208,8 @@ S3GLProgram.prototype.linkedSharder = function() {
 	if(gl.getProgramParameter(program, gl.LINK_STATUS)){
 		// リンクが成功したらプログラムの解析しておく
 		this.program = program;
-		this.analysisShader(gl, program, this.vertex.code, this.variable);
-		this.analysisShader(gl, program, this.fragment.code, this.variable);
+		this.analysisShader(this.vertex.code, this.variable);
+		this.analysisShader(this.fragment.code, this.variable);
 		return true;
 	}
 	else {
@@ -230,16 +235,19 @@ S3GLProgram.prototype.bind = function(name, data) {
 	if(!this.isLinked()) {
 		return false;
 	}
-	
 	var gl	= this.gl;
 	var prg	= this.program;
 	var variable	= this.variable[name];
 	
 	// 位置が不明なら調査しておく
-	if(variable.location === undefined) {
+	if(variable.location === null) {
 		variable.location = variable.modifiers === "attribute" ?
 			gl.getAttribLocation(prg, name) :
 			gl.getUniformLocation(prg, name);
+	}
+	if(variable.location === -1) {
+		// 変数は宣言されているが、関数の中で使用していないと -1 がかえる
+		return;
 	}
 	// 装飾子によって bind する方法を変更する
 	if(variable.modifiers === "uniform") {
@@ -469,13 +477,21 @@ S3SystemGL.prototype.drawScene = function(scene) {
 	}
 	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
 	
+	var gl = this.gl;
+	gl.depthFunc(gl.LEQUAL);
+	gl.enable(gl.CULL_FACE);
+	gl.frontFace(gl.CW);
+	gl.cullFace(gl.BACK);
+	gl.enable(gl.DEPTH_TEST);
+	
 	for(var i = 0; i < scene.model.length; i++) {
 		var model = scene.model[i];
 		var M = this.getMatrixWorldTransform(model);
-		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
+		var MV = this.mulMatrix(M, VPS.LookAt);
+		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
+		prg.bind("mvpMatrix", MVP.toInstanceArray(Float32Array));
 		
 		var indexsize = prg.bindMesh(model.getGLData(this));
-		prg.bind("mvpMatrix", MVP.toInstanceArray(Float32Array));
 		this.drawElements(indexsize);
 	}
 };

@@ -303,14 +303,15 @@ S3Vector.prototype.getDistance = function(tgt) {
 
 /**
  * A, B, C の3点を通る平面の法線OUTを求めます。
+ * A, B, C の3点の時計回りが表だとした場合、表方向へ延びる法線となります。
  * @param {S3Vector} A
  * @param {S3Vector} B
  * @param {S3Vector} C
  * @returns {S3Vector}
  */
 S3Vector.getNormalVector = function(A, B, C) {
-	var v1 = A.getDirection(B);
-	var v2 = A.getDirection(C);
+	var v1 = A.getDirection(C);
+	var v2 = A.getDirection(B);
 	var normal = v1.cross(v2);
 	try {
 		return normal.normalize();
@@ -342,6 +343,13 @@ S3Vector.isClockwise = function(A, B, C) {
 		return false;
 	}
 };
+
+/**
+ * 0
+ * @type S3Vector
+ */
+S3Vector.ZERO = new S3Vector(0.0, 0.0, 0.0);
+
 
 /**
  * /////////////////////////////////////////////////////////

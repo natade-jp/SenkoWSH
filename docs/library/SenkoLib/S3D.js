@@ -486,7 +486,7 @@ S3System.prototype._calcVertexTransformation = function(vertexlist, MVP, Viewpor
 		var rhw = p.w;
 		p = p.mul(1.0 / rhw);
 		p = this.mulMatrix(Viewport, p);
-		newvertexlist[i] = new S3Vertex(p, rhw);
+		newvertexlist[i] = new S3Vertex(p, null, rhw);
 	}
 	return newvertexlist;
 };
@@ -630,7 +630,7 @@ S3GLVertex.datatype = {
  */
 var S3Vertex = function(position, normal, rhw) {
 	this.position	= position;
-	if(normal !== undefined) {
+	if(normal instanceof S3Vector) {
 		this.normal	= normal;
 	}
 	if(rhw !== undefined) {
@@ -653,8 +653,8 @@ S3Vertex.prototype.getVertexHash = function() {
 S3Vertex.prototype.getVertexData = function() {
 	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
 	return {
-		position	: new S3GLVertex(this.position, 3, S3GLVertex.datatype.Float32Array),
-		normal		: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array)
+		normal		: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array),
+		position	: new S3GLVertex(this.position, 3, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -674,7 +674,7 @@ S3Material.prototype.getVertexHash = function() {
 };
 S3Material.prototype.getVertexData = function() {
 	return {
-		color : new S3GLVertex([1.0, 1.0, 1.0, 1.0], 4, S3GLVertex.datatype.Float32Array)
+		color : new S3GLVertex([0, 1.0, 1.0, 1.0], 4, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -816,10 +816,60 @@ S3Mesh.prototype.addMaterial = function(material) {
 		}
 	}
 };
+S3Mesh.prototype._makeNormalMap = function() {
+	var i, j;
+	var vertex_list			= this.vertex;
+	var triangleindex_list	= this.triangleindex;
+	var normal_stacklist	= [];
+	
+	// 各面の法線を調べて、スタックへ配列へ保存していく
+	for(i = 0; i < vertex_list.length; i++) {
+		var triangleindex = triangleindex_list[i];
+		var indexlist = triangleindex.index;
+		// 3点を時計回りで通る平面が表のとき
+		var normal = S3Vector.getNormalVector(
+			vertex_list[indexlist[0]].position,
+			vertex_list[indexlist[1]].position,
+			vertex_list[indexlist[2]].position
+		);
+		// 頂点の位置が直行しているなどのエラー処理
+		if(!(normal instanceof S3Vector)) {
+			normal = new S3Vector(0.3333, 0.3333, 0.3333);
+		}
+		// 計算したノーマルマップを保存する
+		for(j = 0; j < 3; j++) {
+			var index = indexlist[j];
+			if(normal_stacklist[index] === undefined) {
+				normal_stacklist[index] = [];
+			}
+			normal_stacklist[index].push(normal);
+		}
+	}
+	
+	// 各頂点の法線は、法線の平均値とする
+	for(i = 0; i < vertex_list.length; i++) {
+		var normal;
+		if(normal_stacklist[i] === undefined) {
+			// インデックスとして未使用の頂点の場合は、法線の計算は存在しない
+			normal = new S3Vector(0.3333, 0.3333, 0.3333);
+		}
+		else {
+			normal = S3Vector.ZERO;
+			for(j = 0; j < normal_stacklist[i].length; j++) {
+				normal = normal.add(normal_stacklist[i][j]);
+			}
+			normal = normal.normalize();
+		}
+		vertex_list[i] = new S3Vertex(vertex_list[i].position, normal);
+	}
+};
+
 S3Mesh.prototype.freezeMesh = function() {
 	if(this.isFreezed) {
 		return;
 	}
+	this._makeNormalMap();
+	
 	var material_list		= this.material;
 	var vertex_list			= this.vertex;
 	var triangleindex_list	= this.triangleindex;
@@ -835,15 +885,20 @@ S3Mesh.prototype.freezeMesh = function() {
 		var triangleindex = triangleindex_list[i];
 		var hash;
 		var indlist = [];
+		// ポリゴンの各頂点を調べる
 		for(j = 0; j < 3; j++) {
-			// すでに以前と同一の頂点があるならば、その頂点を選択
+			// その頂点（面の情報（UVなど）も含めたデータ）のハッシュ値を求める
 			hash = triangleindex.getVertexHash(j, vertex_list, material_list);
+			// すでに以前と同一の頂点があるならば、その頂点アドレスを選択。ない場合は新しいアドレス
 			var hit = hashlist[hash];
 			indlist[j] = (hit !== undefined) ? hit : vertex_length;
+			// 頂点がもしヒットしていなかったら
 			if(hit === undefined) {
-				// 頂点がないので新規にリストに追加する
+				// 頂点データを作成して
 				var vertexdata = triangleindex.getVertexData(j, vertex_list, material_list);
 				hashlist[hash]  = vertex_length;
+				// 頂点にはどういった情報があるか分からないので、in を使用する。
+				// key には、position / normal / color / uv などがおそらく入っている
 				for(var key in vertexdata) {
 					if(vertextypelist[key] === undefined) {
 						vertextypelist[key]		= [];
@@ -853,10 +908,12 @@ S3Mesh.prototype.freezeMesh = function() {
 				vertex_length++;
 			}
 		}
+		// 3つの頂点のインデックスを記録
 		triangle[i] = new Int16Array(indlist);
 	}
 	
 	// データ結合
+	// 1つの指定した型の配列に全てをまとめる必要があるため
 	var pt = 0;
 	var ibo = {};
 	{
@@ -877,17 +934,24 @@ S3Mesh.prototype.freezeMesh = function() {
 			var srcdata		= vertextypelist[key];
 			var dimension	= srcdata[0].dimension;
 			var dstdata	= {};
+			// 情報の名前(position / uv / normal など)
 			dstdata.name			= key;
+			// 1つの頂点あたり、いくつの値が必要か。例えばUVなら2次元情報
 			dstdata.dimension		= srcdata[0].dimension;
+			// 型情報 Float32Array / Int32Array なのかどうか
 			dstdata.datatype		= srcdata[0].datatype;
+			// 配列の長さ
 			dstdata.array_length	= dimension * vertex_length;
+			// 型情報と、配列の長さから、メモリを確保する
 			dstdata.array			= new dstdata.datatype.instance(dstdata.array_length);
+			// data を1つの配列に結合する
 			pt = 0;
 			for(i = 0; i < vertex_length; i++) {
 				for(j = 0; j < dimension; j++) {
 					dstdata.array[pt++] = srcdata[i].data[j];
 				}
 			}
+			// VBOオブジェクトに格納
 			vbo[key] = dstdata;
 		}
 	}
