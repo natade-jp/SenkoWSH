@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
+﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File, S3FrontFace */
 
 ﻿function test3D(canvas) {
 	
@@ -13,6 +13,8 @@
 	s3.setShaderURL("../../library/SenkoLib/S3DGL.vs");
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
+	s3.setFrontMode(S3FrontFace.CLOCKWISE);
+	
 	camera.setSystemMode(S3SystemMode.OPEN_GL);
 	
 	var meshdata = {

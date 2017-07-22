@@ -1,4 +1,4 @@
-/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array */
+/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace */
 
 ﻿"use strict";
 
@@ -470,19 +470,47 @@ S3SystemGL.prototype.deleteBuffer = function(data) {
 	this.gl.deleteBuffer(data);
 };
 
+S3SystemGL.prototype._setDepthMode = function() {
+	var gl = this.gl;
+	gl.enable(gl.DEPTH_TEST);
+	gl.depthFunc(gl.LEQUAL);
+};
+
+S3SystemGL.prototype._setCullMode = function() {
+	var gl = this.gl;
+	if(this.cullmode === S3CullMode.NONE) {
+		gl.disable(gl.CULL_FACE);
+		return;
+	}
+	else {
+		gl.enable(gl.CULL_FACE);
+	}
+	if(this.frontface === S3FrontFace.CLOCKWISE) {
+		gl.frontFace(gl.CW);
+	}
+	else {
+		gl.frontFace(gl.CCW);
+	}
+	if(this.cullmode === S3CullMode.FRONT_AND_BACK) {
+		gl.cullFace(gl.FRONT_AND_BACK);
+	}
+	else if(this.cullmode === S3CullMode.BACK) {
+		gl.cullFace(gl.BACK);
+	}
+	else if(this.cullmode === S3CullMode.FRONT) {
+		gl.cullFace(gl.FRONT);
+	}
+};
+
 S3SystemGL.prototype.drawScene = function(scene) {
 	var prg = this.program.run;
 	if((prg === null) || (!prg.isLinked())) {
 		return;
 	}
-	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
+	this._setDepthMode();
+	this._setCullMode();
 	
-	var gl = this.gl;
-	gl.depthFunc(gl.LEQUAL);
-	gl.enable(gl.CULL_FACE);
-	gl.frontFace(gl.CW);
-	gl.cullFace(gl.BACK);
-	gl.enable(gl.DEPTH_TEST);
+	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
 	
 	for(var i = 0; i < scene.model.length; i++) {
 		var model = scene.model[i];

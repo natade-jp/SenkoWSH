@@ -139,6 +139,51 @@ S3System.prototype.setSystemMode = function(mode) {
 	}
 };
 
+/**
+ * ビューポート行列を作成する際に、Z値の範囲の範囲をどうするか
+ * @param {S3DepthMode} depthmode
+ * @returns {undefined}
+ */
+S3System.prototype.setDepthMode = function(depthmode) {
+	this.depthmode = depthmode;
+};
+
+/**
+ * 座標軸について左手系か、右手系か
+ * @param {S3DimensionMode} dimensionmode
+ * @returns {undefined}
+ */
+S3System.prototype.setDimensionMode = function(dimensionmode) {
+	this.dimensionmode = dimensionmode;
+};
+
+/**
+ * N次元の座標について、横ベクトルか、縦ベクトル、どちらで管理するか
+ * @param {S3VectorMode} vectormode
+ * @returns {undefined}
+ */
+S3System.prototype.setVectorMode = function(vectormode) {
+	this.vectormode = vectormode;
+};
+
+/**
+ * どのようなポリゴンの頂点の順序を表として定義するか
+ * @param {S3FrontFace} frontface
+ * @returns {undefined}
+ */
+S3System.prototype.setFrontMode = function(frontface) {
+	this.frontface = frontface;
+};
+
+/**
+ * どの方向を描写しないかを設定する。
+ * @param {S3CullMode} cullmode
+ * @returns {undefined}
+ */
+S3System.prototype.setCullMode = function(cullmode) {
+	this.cullmode = cullmode;
+};
+
 S3System.prototype.setCanvas = function(canvas) {
 	var that		= this;
 	var ctx			= canvas.getContext("2d");
