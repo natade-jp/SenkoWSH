@@ -455,7 +455,7 @@ IDTouch.prototype._MoveMultiTouch = function(touchevent) {
 			this.doubleposition[1] = newp2;
 			// そんなにずれていなかったら無視する
 			var r = (Math.abs(x) < 10) ? Math.abs(x) * 0.01 : 0.5;
-			this.wheelrotation += (x < 0 ? -1 : 1) * r;
+			this.wheelrotation += (x > 0 ? -1 : 1) * r;
 		}
 	}
 	else {
