@@ -1,4 +1,4 @@
-/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace */
+﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace */
 
 ﻿"use strict";
 
