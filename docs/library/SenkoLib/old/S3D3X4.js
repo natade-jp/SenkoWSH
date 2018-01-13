@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 ﻿/**
  * SenkoLib S3D.js
