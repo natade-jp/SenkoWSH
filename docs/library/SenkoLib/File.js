@@ -877,26 +877,30 @@ File.prototype.setByte = function(array_) {
 
 //static
 File.createTempFile = function(){
-	if(this.isJScript) {
+	var isJScript = (typeof WSH !== "undefined");
+	if(isJScript) {
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
 		return(new File(fso.GetTempName()));
 	}
 };
 File.getCurrentDirectory = function(){
-	if(this.isJScript) {
+	var isJScript = (typeof WSH !== "undefined");
+	if(isJScript) {
 		var shell = new ActiveXObject("WScript.Shell");
 		return(new File(shell.CurrentDirectory));
 	}
 };
 File.setCurrentDirectory = function(file) {
-	if(this.isJScript) {
+	var isJScript = (typeof WSH !== "undefined");
+	if(isJScript) {
 		var shell = WScript.CreateObject ("WScript.Shell");
 		var fso = new ActiveXObject('Scripting.FileSystemObject');
 		shell.CurrentDirectory = fso.getFolder(file.getAbsolutePath()).Name;
 	}
 };
 File.searchFile = function(file){
-	if(this.isJScript) {
+	var isJScript = (typeof WSH !== "undefined");
+	if(isJScript) {
 		var fso = new ActiveXObject('Scripting.FileSystemObject');
 		var path = [];
 		var collection = [];
@@ -962,7 +966,6 @@ File.searchFile = function(file){
 		return(null);
 	}
 };
-
 File.downloadFileList = function(files, callback) {
 	var downloadcount = 0;
 	var i;
