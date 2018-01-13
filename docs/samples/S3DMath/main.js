@@ -1,4 +1,4 @@
-/* global System */
+﻿/* global System */
 
 ﻿﻿function main(args) {
 	
