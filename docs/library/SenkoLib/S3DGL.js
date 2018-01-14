@@ -273,7 +273,7 @@ S3GLProgram.prototype.bind = function(name, data) {
 			}
 		}
 	}
-	if(variable.location === -1) {
+	if(variable.location[0] === -1) {
 		// 変数は宣言されているが、関数の中で使用していないと -1 がかえる
 		return;
 	}
@@ -295,7 +295,9 @@ S3GLProgram.prototype.bind = function(name, data) {
 		else {
 			// 配列の場合は、配列の数だけbindする
 			for(i = 0; i < variable.array_length; i++) {
-				variable.bind(variable.location[i], data[i]);
+				if(variable.location[i] !== -1) {
+					variable.bind(variable.location[i], data[i]);
+				}
 			}
 		}
 	}

@@ -722,10 +722,25 @@ S3Vertex.prototype.getVertexData = function() {
 /**
  * 素材
  * @param {String} name
+ * @param {Object} type
  * @returns {S3Material}
  */
-var S3Material = function(name) {
-	this.name	= name;
+var S3Material = function(name, type) {
+	this.name		= name;
+	this.color		= new S3Vector(1.0, 1.0, 1.0, 1.0);	// 色
+	this.diffuse	= 0.8;								// 拡散光
+	this.emission	= new S3Vector(0.0, 0.0, 0.0);		// 自己照明
+	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 鏡面反射
+	this.sppower	= 5.0;								// 鏡面反射の強さ
+	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 周囲光
+	if(type !== undefined) {
+		if(type.color !== undefined)	{ this.color = type.color;			}
+		if(type.diffuse !== undefined)	{ this.diffuse = type.diffused;		}
+		if(type.emission !== undefined) { this.emission = type.emission;	}
+		if(type.specular !== undefined) { this.specular = type.specular;	}
+		if(type.sppower !== undefined)	{ this.sppower = type.sppower;		}
+		if(type.ambient !== undefined)	{ this.color = type.ambient;		}
+	}
 };
 S3Material.prototype.clone = function() {
 	return new S3Material(this.name);
@@ -742,7 +757,12 @@ S3Material.prototype.getVertexHash = function() {
  */
 S3Material.prototype.getVertexData = function() {
 	return {
-		color : new S3GLVertex([0, 1.0, 1.0, 1.0], 4, S3GLVertex.datatype.Float32Array)
+		color		: new S3GLVertex(this.color		, 4, S3GLVertex.datatype.Float32Array),
+		diffuse		: new S3GLVertex(this.diffuse	, 1, S3GLVertex.datatype.Float32Array),
+		emission	: new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
+		specular	: new S3GLVertex(this.specular	, 3, S3GLVertex.datatype.Float32Array),
+		sppower		: new S3GLVertex(this.sppower	, 1, S3GLVertex.datatype.Float32Array),
+		ambient		: new S3GLVertex(this.ambient	, 3, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -805,10 +825,16 @@ S3TriangleIndex.prototype.getVertexHash = function(number, vertexList, materialL
  * @returns {頂点データ（座標、素材の色、UV値が入っている）}
  */
 S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialList) {
+	var vertex		= {};
+	var vertexlist	= vertexList[this.index[number]].getVertexData();
+	for(var key in vertexlist) {
+		vertex[key]	= vertexlist[key];
+	}
+	var materiallist= materialList[this.materialIndex].getVertexData();
+	for(var key in materiallist) {
+		vertex[key]	= materiallist[key];
+	}
 	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
-	var vertex		= vertexList[this.index[number]].getVertexData();
-	var material	= materialList[this.materialIndex].getVertexData();
-	vertex.color	= material.color;
 	vertex.uv		= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
 	return vertex;
 };
