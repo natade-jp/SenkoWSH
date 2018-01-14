@@ -131,21 +131,35 @@ S3GLProgram.prototype._init = function(gl) {
 	this.analysisShader = function(code, variable) {
 		var codelines = code.split("\n");
 		for(var i = 0; i < codelines.length; i++) {
+			// uniform vec4 lights[4]; とすると、 uniform,vec4,lights,[4]で区切られる
 			var data = codelines[i].match( /(attribute|uniform)\s+(\w+)\s+(\w+)\s*(\[\s*\d+\s*\])?;/);
 			if(data === null) {
 				continue;
 			}
 			// 見つけたら変数名や、型を記録しておく
+			var text_space			= data[1];
+			var text_type			= data[2];
+			var text_variable		= data[3];
+			var text_array			= data[4];
+			var array_length = 1;
+			if(text_array !== undefined) {
+				// 配列が存在する場合は、内部の数値部分を抜き出して配列数を調査
+				array_length = Number(text_array.match(/\[\s*(\d)+\s*\]/)[1]);
+			}
+			// 型に応じたテンプレートを取得する
 			// data[1] ... uniform, data[2] ... mat4, data[3] ... M
-			var targetinfo = info[data[2]];
-			variable[data[3]]			= {};
+			var targetinfo = info[text_type];
+			variable[text_variable]			= {};
+			// 参照元データを書き換えないようにディープコピーする
 			for(var key in targetinfo) {
-				variable[data[3]][key]	= targetinfo[key];	// glsl, js, size, bind
+				variable[text_variable][key]	= targetinfo[key];	// glsl, js, size, bind
 			}
 			// さらに情報を保存しておく
-			variable[data[3]].name		= data[3];			// M
-			variable[data[3]].modifiers	= data[1];			// uniform
-			variable[data[3]].location	= null;
+			variable[text_variable].name		= text_variable;		// M
+			variable[text_variable].modifiers	= text_space;			// uniform
+			variable[text_variable].size		= variable[text_variable].size * array_length;
+			variable[text_variable].location	= null;
+			
 		}
 		return;
 	};
