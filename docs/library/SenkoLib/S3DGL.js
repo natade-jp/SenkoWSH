@@ -157,8 +157,9 @@ S3GLProgram.prototype._init = function(gl) {
 			// さらに情報を保存しておく
 			variable[text_variable].name		= text_variable;		// M
 			variable[text_variable].modifiers	= text_space;			// uniform
+			variable[text_variable].is_array	= text_array !== undefined;
 			variable[text_variable].array_length = array_length;
-			variable[text_variable].location	 = null;
+			variable[text_variable].location	= null;
 			
 		}
 		return;
@@ -261,7 +262,7 @@ S3GLProgram.prototype.bind = function(name, data) {
 			variable.location[0] = gl.getAttribLocation(prg, name);
 		}
 		else {
-			if(variable.array_length === 1) {
+			if(!variable.is_array) {
 				variable.location[0] = gl.getUniformLocation(prg, name);
 			}
 			else {
@@ -288,7 +289,7 @@ S3GLProgram.prototype.bind = function(name, data) {
 			false, 0, 0);
 	}
 	else {
-		if(variable.array_length === 1) {
+		if(!variable.is_array) {
 			variable.bind(variable.location[0], data);
 		}
 		else {
