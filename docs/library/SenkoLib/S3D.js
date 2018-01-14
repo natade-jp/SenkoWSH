@@ -639,10 +639,12 @@ S3System.prototype.drawScene = function(scene) {
  * WebGL用の頂点 (immutable)
  * @param {Object} data 数値／配列／S3Vector
  * @param {Number} dimension 例えば3次元のベクトルなら、3
- * @param {S3GLVertex.datatype} datatype 数値の型
+ * @param {S3GLVertex.datatype} datatype
  * @returns {S3GLVertex}
  */
 var S3GLVertex = function(data, dimension, datatype) {
+	// 引数の情報(S3GLVertex.datatype.instance)を用いて、
+	// JS用配列を、WEBGL用配列に変換して保存する
 	if(data instanceof datatype.instance) {
 		this.data	= data;
 	}
@@ -703,6 +705,12 @@ S3Vertex.prototype.getVertexHash = function() {
 	var ndata = this.isEnabledNormal() ? this.normal.toString(3) : "";
 	return this.position.toString(3) + ndata;
 };
+/**
+ * 頂点データを作成して取得する
+ * 頂点データ内に含まれるデータは、S3GLVertex型となる。
+ * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
+ * @returns {頂点データ（座標、法線情報）}
+ */
 S3Vertex.prototype.getVertexData = function() {
 	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
 	return {
@@ -725,6 +733,13 @@ S3Material.prototype.clone = function() {
 S3Material.prototype.getVertexHash = function() {
 	return this.name;
 };
+
+/**
+ * 頂点データを作成して取得する
+ * 頂点データ内に含まれるデータは、S3GLVertex型となる。
+ * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
+ * @returns {頂点データ（色情報）}
+ */
 S3Material.prototype.getVertexData = function() {
 	return {
 		color : new S3GLVertex([0, 1.0, 1.0, 1.0], 4, S3GLVertex.datatype.Float32Array)
@@ -779,6 +794,16 @@ S3TriangleIndex.prototype.getVertexHash = function(number, vertexList, materialL
 	var material = materialList[this.materialIndex].getVertexHash();
 	return vertex + material + uvdata;
 };
+
+/**
+ * 頂点データを作成して取得する
+ * 頂点データ内に含まれるデータは、S3GLVertex型となる。
+ * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
+ * @param {Integer} number 三角形の何番目の頂点データを取得するか
+ * @param {S3Vertex[]} vertexList 頂点の配列
+ * @param {S3Material[]} materialList 材質の配列
+ * @returns {頂点データ（座標、素材の色、UV値が入っている）}
+ */
 S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialList) {
 	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
 	var vertex		= vertexList[this.index[number]].getVertexData();
@@ -944,6 +969,12 @@ S3Mesh.prototype.freezeMesh = function() {
 	var vertextypelist	= {};
 	
 	// インデックスを再構築して、VBOとIBOを作る
+	// 今の生データだと、頂点情報、素材情報がばらばらに保存されているので
+	// 1つの頂点情報（位置、色等）を1つのセットで保存する必要がある
+	// 面に素材が結びついているので、面が1つの頂点を共有していると
+	// それらの面の素材情報によって、別の頂点として扱う必要がある
+	// なので基本的には頂点情報を毎回作り直す必要があるが、
+	// 1度作ったものと等しいものが必要であれば、キャッシュを使用する
 	for(i = 0; i < triangleindex_list.length; i++) {
 		var triangleindex = triangleindex_list[i];
 		var hash;
@@ -975,8 +1006,10 @@ S3Mesh.prototype.freezeMesh = function() {
 		triangle[i] = new Int16Array(indlist);
 	}
 	
-	// データ結合
-	// 1つの指定した型の配列に全てをまとめる必要があるため
+	// データ結合処理
+	// これまでは複数の配列にデータが入ってしまっているので、
+	// 1つの指定した型の配列に全てをまとめる必要がある
+	
 	var pt = 0;
 	var ibo = {};
 	{
@@ -993,6 +1026,7 @@ S3Mesh.prototype.freezeMesh = function() {
 	var vbo = {};
 	{
 		// VBOの結合（頂点）
+		// 位置、法線、色などを、それぞれ1つの配列として記録する
 		for(var key in vertextypelist) {
 			var srcdata		= vertextypelist[key];
 			var dimension	= srcdata[0].dimension;
