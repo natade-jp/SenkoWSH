@@ -157,8 +157,8 @@ S3GLProgram.prototype._init = function(gl) {
 			// さらに情報を保存しておく
 			variable[text_variable].name		= text_variable;		// M
 			variable[text_variable].modifiers	= text_space;			// uniform
-			variable[text_variable].size		= variable[text_variable].size * array_length;
-			variable[text_variable].location	= null;
+			variable[text_variable].array_length = array_length;
+			variable[text_variable].location	 = null;
 			
 		}
 		return;
@@ -252,30 +252,51 @@ S3GLProgram.prototype.bind = function(name, data) {
 	var gl	= this.gl;
 	var prg	= this.program;
 	var variable	= this.variable[name];
+	var i = 0;
 	
 	// 位置が不明なら調査しておく
 	if(variable.location === null) {
-		variable.location = variable.modifiers === "attribute" ?
-			gl.getAttribLocation(prg, name) :
-			gl.getUniformLocation(prg, name);
+		variable.location = [];
+		if(variable.modifiers === "attribute") {
+			variable.location[0] = gl.getAttribLocation(prg, name);
+		}
+		else {
+			if(variable.array_length === 1) {
+				variable.location[0] = gl.getUniformLocation(prg, name);
+			}
+			else {
+				// 配列の場合は、配列の数だけlocationを調査する
+				for(i = 0; i < variable.array_length; i++) {
+					variable.location[i] = gl.getUniformLocation(prg, name + "[" + i + "]");
+				}
+			}
+		}
 	}
 	if(variable.location === -1) {
 		// 変数は宣言されているが、関数の中で使用していないと -1 がかえる
 		return;
 	}
 	// 装飾子によって bind する方法を変更する
-	if(variable.modifiers === "uniform") {
-		variable.bind(variable.location, data);
-	}
-	else {
+	if(variable.modifiers === "attribute") {
 		gl.bindBuffer(gl.ARRAY_BUFFER, data);
-		gl.enableVertexAttribArray(variable.location);
+		gl.enableVertexAttribArray(variable.location[0]);
 		// 型は適当
 		gl.vertexAttribPointer(
-			variable.location,
+			variable.location[0],
 			variable.size,
 			variable.btype === "FLOAT" ? gl.FLOAT : gl.SHORT,
 			false, 0, 0);
+	}
+	else {
+		if(variable.array_length === 1) {
+			variable.bind(variable.location[0], data);
+		}
+		else {
+			// 配列の場合は、配列の数だけbindする
+			for(i = 0; i < variable.array_length; i++) {
+				variable.bind(variable.location[i], data[i]);
+			}
+		}
 	}
 	
 	return true;
