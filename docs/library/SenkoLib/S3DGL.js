@@ -131,7 +131,7 @@ S3GLProgram.prototype._init = function(gl) {
 	this.analysisShader = function(code, variable) {
 		var codelines = code.split("\n");
 		for(var i = 0; i < codelines.length; i++) {
-			var data = codelines[i].match(/(attribute|uniform)\s+(\w+)\s+(\w+)\s*;/);
+			var data = codelines[i].match( /(attribute|uniform)\s+(\w+)\s+(\w+)\s*(\[\s*\d+\s*\])?;/);
 			if(data === null) {
 				continue;
 			}
@@ -288,7 +288,10 @@ S3GLProgram.prototype.bindMesh = function(gldata) {
 			// uniform は共通設定なので省略
 			continue;
 		}
-		// vboのリストにない場合は、カメラ用の行列など
+		// 例えば、vboのリストにあるが、gldata内に情報をもっていない場合がある
+		// それは、カメラ用の行列などがあげられる。
+		// 逆に、gldata内に情報をもっているが、vbo内に定義されていないのであれば、
+		// 使用しない。
 		if(gldata.vbo[key] === undefined) {
 			continue;
 		}
