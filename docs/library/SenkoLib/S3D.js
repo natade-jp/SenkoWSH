@@ -714,8 +714,8 @@ S3Vertex.prototype.getVertexHash = function() {
 S3Vertex.prototype.getVertexData = function() {
 	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
 	return {
-		normal		: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array),
-		position	: new S3GLVertex(this.position, 3, S3GLVertex.datatype.Float32Array)
+		vertexNormal	: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array),
+		vertexPosition	: new S3GLVertex(this.position, 3, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -728,24 +728,25 @@ S3Vertex.prototype.getVertexData = function() {
 var S3Material = function(name, type) {
 	this.name		= name;
 	this.color		= new S3Vector(1.0, 1.0, 1.0, 1.0);	// 色
-	this.diffuse	= 0.8;								// 拡散光
+	this.diffuse	 = 0.8;								// 拡散光
 	this.emission	= new S3Vector(0.0, 0.0, 0.0);		// 自己照明
-	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 鏡面反射
-	this.sppower	= 5.0;								// 鏡面反射の強さ
+	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 反射光
+	this.power		= 5.0;								// 反射の強さ
 	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 周囲光
 	if(type !== undefined) {
-		if(type.color !== undefined)	{ this.color = type.color;			}
-		if(type.diffuse !== undefined)	{ this.diffuse = type.diffused;		}
-		if(type.emission !== undefined) { this.emission = type.emission;	}
-		if(type.specular !== undefined) { this.specular = type.specular;	}
-		if(type.sppower !== undefined)	{ this.sppower = type.sppower;		}
-		if(type.ambient !== undefined)	{ this.color = type.ambient;		}
+		if(type.color !== undefined)	{ this.color	= type.color;			}
+		if(type.diffuse !== undefined)	{ this.diffuse	= type.diffuse;		}
+		if(type.emission !== undefined) { this.emission	= type.emission;	}
+		if(type.specular !== undefined) { this.specular	= type.specular;	}
+		if(type.power !== undefined)	{ this.power	= type.power;		}
+		if(type.ambient !== undefined)	{ this.ambient	= type.ambient;		}
 	}
 };
 S3Material.prototype.clone = function() {
-	return new S3Material(this.name);
+	return new S3Material(this.name, this);
 };
 S3Material.prototype.getVertexHash = function() {
+	// 名前は被らないので、ハッシュに使用する
 	return this.name;
 };
 
@@ -757,12 +758,12 @@ S3Material.prototype.getVertexHash = function() {
  */
 S3Material.prototype.getVertexData = function() {
 	return {
-		color		: new S3GLVertex(this.color		, 4, S3GLVertex.datatype.Float32Array),
-		diffuse		: new S3GLVertex(this.diffuse	, 1, S3GLVertex.datatype.Float32Array),
-		emission	: new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
-		specular	: new S3GLVertex(this.specular	, 3, S3GLVertex.datatype.Float32Array),
-		sppower		: new S3GLVertex(this.sppower	, 1, S3GLVertex.datatype.Float32Array),
-		ambient		: new S3GLVertex(this.ambient	, 3, S3GLVertex.datatype.Float32Array)
+		materialColor		: new S3GLVertex(this.color		, 4, S3GLVertex.datatype.Float32Array),
+		materialDiffuse		: new S3GLVertex(this.diffuse	, 1, S3GLVertex.datatype.Float32Array),
+		materialEmission	: new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
+		materialSpecular	: new S3GLVertex(this.specular	, 3, S3GLVertex.datatype.Float32Array),
+		materialPower		: new S3GLVertex(this.power		, 1, S3GLVertex.datatype.Float32Array),
+		materialAmbient		: new S3GLVertex(this.ambient	, 3, S3GLVertex.datatype.Float32Array)
 	};
 };
 
@@ -835,7 +836,7 @@ S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialL
 		vertex[key]	= materiallist[key];
 	}
 	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
-	vertex.uv		= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
+	vertex.vertexUV		= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
 	return vertex;
 };
 

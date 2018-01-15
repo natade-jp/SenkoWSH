@@ -1,7 +1,7 @@
 ﻿// 配列で渡す情報
-attribute vec3 normal;
-attribute vec3 position;
-attribute vec4 color;
+attribute vec3 vertexNormal;
+attribute vec3 vertexPosition;
+attribute vec4 materialColor;
 
 // 共通行列
 uniform mat4 mvpMatrix;
@@ -11,6 +11,6 @@ varying vec4 vColor;
 
 void main(void) {
 	
-	vColor = vec4(normal.xyz, 1.0);
-	gl_Position = mvpMatrix * vec4(position, 1.0);
+	vColor = vec4(vertexNormal.xyz, 1.0);
+	gl_Position = mvpMatrix * vec4(vertexPosition, 1.0);
 }
