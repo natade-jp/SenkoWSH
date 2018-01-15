@@ -69,6 +69,8 @@ S3Mesh.prototype.toMQO = function() {
 	output.push("Material " + this.material.length + " {");
 	for(i = 0; i < this.material.length; i++) {
 		var mv = this.material[i];
+		//  こんな感じにする必要がある・・・
+		// "mat" shader(3) col(1.000 1.000 1.000 0.138) dif(0.213) amb(0.884) emi(0.301) spc(0.141) power(38.75) amb_col(1.000 0.996 0.000) emi_col(1.000 0.000 0.016) spc_col(0.090 0.000 1.000) reflect(0.338) refract(2.450)
 		output.push("\t\"" + mv.name + "\" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)");
 	}
 	output.push("}");
@@ -164,8 +166,46 @@ S3Mesh.fromMQO = function(text) {
 			continue;
 		}
 		if(block_type === "Material") {
-			var material_name = first.replace("\"", "");
-			var material = new S3Material(material_name);
+			var material_name = first.replace(/\"/g, "");
+			var material_type = {};
+			var val;
+			val = getValueFromPrm(trim_line, "col");
+			if(val.length !== 0) {
+				material_type.color = new S3Vector(val[0], val[1], val[2], val[3]);
+			}
+			val = getValueFromPrm(trim_line, "dif");
+			if(val.length !== 0) {
+				material_type.diffuse = val[0];
+			}
+			val = getValueFromPrm(trim_line, "amb");
+			if(val.length !== 0) {
+				material_type.ambient = new S3Vector(val[0], val[0], val[0]);
+			}
+			val = getValueFromPrm(trim_line, "amb_col");
+			if(val.length !== 0) {
+				material_type.ambient = new S3Vector(val[0], val[1], val[2]);
+			}
+			val = getValueFromPrm(trim_line, "emi");
+			if(val.length !== 0) {
+				material_type.emission = new S3Vector(val[0], val[0], val[0]);
+			}
+			val = getValueFromPrm(trim_line, "emi_col");
+			if(val.length !== 0) {
+				material_type.emission = new S3Vector(val[0], val[1], val[2]);
+			}
+			val = getValueFromPrm(trim_line, "spc");
+			if(val.length !== 0) {
+				material_type.specular = new S3Vector(val[0], val[0], val[0]);
+			}
+			val = getValueFromPrm(trim_line, "spc_col");
+			if(val.length !== 0) {
+				material_type.specular = new S3Vector(val[0], val[1], val[2]);
+			}
+			val = getValueFromPrm(trim_line, "power");
+			if(val.length !== 0) {
+				material_type.power = val[0];
+			}
+			var material = new S3Material(material_name, material_type);
 			mesh.addMaterial(material);
 		}
 		else if(block_type === "vertex") {

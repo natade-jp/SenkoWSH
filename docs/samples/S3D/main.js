@@ -62,6 +62,8 @@
 		s3.drawScene(scene);
 	};
 
+	console.log(model);
+	
 	//setTimeout(redraw, 50);
 	setInterval(redraw, 50);
 
