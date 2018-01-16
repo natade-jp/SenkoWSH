@@ -590,12 +590,12 @@ S3Matrix.prototype.toInstanceArray = function(Instance, dimension) {
 	if(dimension === 1) {
 		return new Instance([this.m00]);
 	}
-	else if(dimension === 2) {
+	else if(dimension === 4) {
 		return new Instance(
 			[this.m00, this.m10,
 			 this.m01, this.m11]);
 	}
-	else if(dimension === 3) {
+	else if(dimension === 9) {
 		return new Instance(
 			[this.m00, this.m10, this.m20,
 			 this.m01, this.m11, this.m21,
