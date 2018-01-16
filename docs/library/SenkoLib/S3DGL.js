@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace */
+﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer */
 
 ﻿"use strict";
 
@@ -109,23 +109,23 @@ S3GLProgram.prototype._init = function(gl) {
 	};
 	
 	var info = {
-		int		: {glsl : "int",	js : "Int32Array",	size : 1, btype : "INT",	bind : g.uniform1iv},
-		float	: {glsl : "float",	js : "Float32Array",size : 1, btype : "INT",	bind : g.uniform1fv},
-		bool	: {glsl : "bool",	js : "Int32Array",	size : 1, btype : "INT",	bind : g.uniform1iv},
-		mat2	: {glsl : "mat2",	js : "Float32Array",size : 4, btype : "FLOAT",	bind : g.uniformMatrix2fv},
-		mat3	: {glsl : "mat3",	js : "Float32Array",size : 9, btype : "FLOAT",	bind : g.uniformMatrix3fv},
-		mat4	: {glsl : "mat4",	js : "Float32Array",size : 16,btype : "FLOAT",	bind : g.uniformMatrix4fv},
-		vec2	: {glsl : "vec2",	js : "Float32Array",size : 2, btype : "FLOAT",	bind : g.uniform2fv},
-		vec3	: {glsl : "vec3",	js : "Float32Array",size : 3, btype : "FLOAT",	bind : g.uniform3fv},
-		vec4	: {glsl : "vec4",	js : "Float32Array",size : 4, btype : "FLOAT",	bind : g.uniform4fv},
-		ivec2	: {glsl : "ivec2",	js : "Int32Array",	size : 2, btype : "INT",	bind : g.uniform2iv},
-		ivec3	: {glsl : "ivec3",	js : "Int32Array",	size : 3, btype : "INT",	bind : g.uniform3iv},
-		ivec4	: {glsl : "ivec4",	js : "Int32Array",	size : 4, btype : "INT",	bind : g.uniform4iv},
-		bvec2	: {glsl : "bvec2",	js : "Int32Array",	size : 2, btype : "INT",	bind : g.uniform2iv},
-		bvec3	: {glsl : "bvec3",	js : "Int32Array",	size : 3, btype : "INT",	bind : g.uniform3iv},
-		bvec4	: {glsl : "bvec4",	js : "Int32Array",	size : 4, btype : "INT",	bind : g.uniform4iv},
-		sampler2D		: {glsl : "sampler2D",	js : "Image", size : 1, btype : "TEXTURE",	bind : null},
-		samplerCube	: {glsl : "samplerCube",js : "Image", size : 1, btype : "TEXTURE",	bind : null}
+		int		: {glsltype : "int",	instance : Int32Array,		size : 1, btype : "INT",	bind : g.uniform1iv},
+		float	: {glsltype : "float",	instance : Float32Array,	size : 1, btype : "INT",	bind : g.uniform1fv},
+		bool	: {glsltype : "bool",	instance : Int32Array,		size : 1, btype : "INT",	bind : g.uniform1iv},
+		mat2	: {glsltype : "mat2",	instance : Float32Array,	size : 4, btype : "FLOAT",	bind : g.uniformMatrix2fv},
+		mat3	: {glsltype : "mat3",	instance : Float32Array,	size : 9, btype : "FLOAT",	bind : g.uniformMatrix3fv},
+		mat4	: {glsltype : "mat4",	instance : Float32Array,	size : 16,btype : "FLOAT",	bind : g.uniformMatrix4fv},
+		vec2	: {glsltype : "vec2",	instance : Float32Array,	size : 2, btype : "FLOAT",	bind : g.uniform2fv},
+		vec3	: {glsltype : "vec3",	instance : Float32Array,	size : 3, btype : "FLOAT",	bind : g.uniform3fv},
+		vec4	: {glsltype : "vec4",	instance : Float32Array,	size : 4, btype : "FLOAT",	bind : g.uniform4fv},
+		ivec2	: {glsltype : "ivec2",	instance : Int32Array,		size : 2, btype : "INT",	bind : g.uniform2iv},
+		ivec3	: {glsltype : "ivec3",	instance : Int32Array,		size : 3, btype : "INT",	bind : g.uniform3iv},
+		ivec4	: {glsltype : "ivec4",	instance : Int32Array,		size : 4, btype : "INT",	bind : g.uniform4iv},
+		bvec2	: {glsltype : "bvec2",	instance : Int32Array,		size : 2, btype : "INT",	bind : g.uniform2iv},
+		bvec3	: {glsltype : "bvec3",	instance : Int32Array,		size : 3, btype : "INT",	bind : g.uniform3iv},
+		bvec4	: {glsltype : "bvec4",	instance : Int32Array,		size : 4, btype : "INT",	bind : g.uniform4iv},
+		sampler2D		: {glsltype : "sampler2D",	instance : Image, size : 1, btype : "TEXTURE",	bind : null},
+		samplerCube	: {glsltype : "samplerCube",instance : Image, size : 1, btype : "TEXTURE",	bind : null}
 	};
 	
 	this.analysisShader = function(code, variable) {
@@ -277,6 +277,62 @@ S3GLProgram.prototype.bind = function(name, data) {
 		// 変数は宣言されているが、関数の中で使用していないと -1 がかえる
 		return;
 	}
+	
+	// data が bind できる形になっているか調査する
+	
+	// glslの型をチェックして自動型変換する
+	var toArraydata = function(data) {
+		if(data instanceof WebGLBuffer) {
+			// IBO型は、無視する
+			return data;
+		}
+		if(data instanceof variable.instance) {
+			// 型と同じインスタンスであるため問題なし
+			return data;
+		}
+		// 入力型が行列型であり、GLSLも行列であれば
+		if(data instanceof S3Matrix) {
+			if(	(variable.glsltype === "mat2") ||
+				(variable.glsltype === "mat3") ||
+				(variable.glsltype === "mat4") ){
+				return data.toInstanceArray(variable.instance, variable.size);
+			}
+		}
+		// 入力型がベクトル型であり、GLSLも数値であれば
+		if(data instanceof S3Vector) {
+			if(	(variable.glsltype === "vec2") ||
+				(variable.glsltype === "vec3") ||
+				(variable.glsltype === "vec4") ||
+				(variable.glsltype === "ivec2") ||
+				(variable.glsltype === "ivec3") ||
+				(variable.glsltype === "ivec4") ||
+				(variable.glsltype === "bvec2") ||
+				(variable.glsltype === "bvec3") ||
+				(variable.glsltype === "bvec4") ) {
+				return data.toInstanceArray(variable.instance, variable.size);
+			}
+		}
+		// 入力型が数値型であり、GLSLも数値であれば
+		if((typeof data === "number")||(data instanceof Number)) {
+			if(	(variable.glsltype === "int") ||
+				(variable.glsltype === "float") ||
+				(variable.glsltype === "bool") ) {
+				return new variable.instance([data]);
+			}
+		}
+		throw "not toArraydata";
+	};
+	if(!variable.is_array) {
+		data = toArraydata(data);
+	}
+	else {
+		for(i = 0; i < variable.array_length; i++) {
+			if(variable.location[i] !== -1) {
+				data[i] = toArraydata(data[i]);
+			}
+		}
+	}	
+	
 	// 装飾子によって bind する方法を変更する
 	if(variable.modifiers === "attribute") {
 		gl.bindBuffer(gl.ARRAY_BUFFER, data);
@@ -548,17 +604,59 @@ S3SystemGL.prototype.drawScene = function(scene) {
 	if((prg === null) || (!prg.isLinked())) {
 		return;
 	}
+	
+	// 画面の初期化
 	this._setDepthMode();
 	this._setCullMode();
 	
+	// カメラの行列を取得する
 	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
 	
+	// ライト設定
+	/*
+	{
+		var LIGHTS_MAX		= 4;
+		var lightsMode		= [];
+		var lightsPower		= [];
+		var lightsRange		= [];
+		var lightsPosition	= [];
+		var lightsDirection	= [];
+		var lightsColor		= [];
+		for(var i = 0; i < LIGHTS_MAX; i++) {
+			var lightMode		= S3LightMode.NONE;
+			var lightPower		= 0.0;
+			var lightRange		= 0.0;
+			var lightPosition	= new S3Vector(0.0, 0.0, 0.0);
+			var lightDirection	= new S3Vector(1.0, 0.0, 0.0);
+			var lightColor		= new S3Vector(0.0, 0.0, 0.0);
+			if(i < scene.light.length) {
+				lightMode		= scene.light[i].mode;
+				lightPower		= scene.light[i].power;
+				lightRange		= scene.light[i].range;
+				lightPosition	= scene.light[i].position;
+				lightDirection	= scene.light[i].direction;
+				lightColor		= scene.light[i].color;
+			}
+		}
+		lightsMode.push(new Int32Array([lightMode]));
+		lightsPower.push(new Float32Array([lightPower]));
+		lightsRange.push(new Float32Array([lightRange]));
+		lightsPosition.push(lightPosition.toInstanceArray(Float32Array, 3));
+		lightsDirection.push(lightDirection.toInstanceArray(Float32Array, 3));
+		lightsColor.push(lightColor.toInstanceArray(Float32Array, 3));
+	}
+	*/
+	
+	// モデル描写
 	for(var i = 0; i < scene.model.length; i++) {
 		var model = scene.model[i];
+		
+		// モデル用のBIND
 		var M = this.getMatrixWorldTransform(model);
 		var MV = this.mulMatrix(M, VPS.LookAt);
 		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
-		prg.bind("mvpMatrix", MVP.toInstanceArray(Float32Array));
+		prg.bind("mMatrix", M);
+		prg.bind("mvpMatrix", MVP);
 		
 		var indexsize = prg.bindMesh(model.getGLData(this));
 		this.drawElements(indexsize);

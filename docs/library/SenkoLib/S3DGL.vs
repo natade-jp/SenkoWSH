@@ -4,13 +4,23 @@ attribute vec3 vertexPosition;
 attribute vec4 materialColor;
 
 // 共通行列
+uniform mat4 mMatrix;
 uniform mat4 mvpMatrix;
+
+// ライト
+#define LIGHTS_MAX 4
+uniform int lightsMode[LIGHTS_MAX];
+uniform float lightsPower[LIGHTS_MAX];
+uniform float lightsRange[LIGHTS_MAX];
+uniform vec3 lightsPosition[LIGHTS_MAX];
+uniform vec3 lightsDirection[LIGHTS_MAX];
+uniform vec3 lightsColor[LIGHTS_MAX];
 
 // フラグメントシェーダへ渡す情報
 varying vec4 vColor;
 
 void main(void) {
-	
-	vColor = vec4(vertexNormal.xyz, 1.0);
+	vec3 tNormal = normalize(mMatrix * vec4(vertexNormal, 0.0)).xyz;
+	vColor = vec4(tNormal.xyz, 1.0);
 	gl_Position = mvpMatrix * vec4(vertexPosition, 1.0);
 }

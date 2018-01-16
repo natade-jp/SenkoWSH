@@ -1373,20 +1373,71 @@ S3Camera.prototype.toString = function() {
 			"fovY  :" + this.fovY + "]";
 };
 
+var S3LightMode = {
+	NONE				: 0,
+	AMBIENT_LIGHT		: 1,
+	DIRECTIONAL_LIGHT	: 2,
+	POINT_LIGHT			: 3
+};
+var S3Light = function() {
+	this.init();
+};
+S3Light.prototype.clone = function() {
+	var light = new S3Light();
+	light.mode		= this.mode;
+	light.power		= this.power;
+	light.range		= this.range;
+	light.position	= this.position;
+	light.direction	= this.direction;
+	light.color		= this.color;
+	return light;
+};
+S3Light.prototype.init = function() {
+	this.mode		= S3LightMode.DIRECTIONAL_LIGHT;
+	this.power		= 10.0;
+	this.range		= 1000.0;
+	this.position	= new S3Vector(0.0, 0.0, 0.0);
+	this.direction	= new S3Vector(0.0, 0.0, -1.0);
+	this.color		= new S3Vector(1.0, 1.0, 1.0);
+};
+S3Light.prototype.setMode = function(mode) {
+	this.mode = mode;
+};
+S3Light.prototype.setPower = function(power) {
+	this.power = power;
+};
+S3Light.prototype.setRange = function(range) {
+	this.range = range;
+};
+S3Light.prototype.setPosition = function(position) {
+	this.position = position;
+};
+S3Light.prototype.setDirection = function(direction) {
+	this.direction = direction;
+};
+S3Light.prototype.setColor = function(color) {
+	this.color = color;
+};
+
 /**
  * 描写するときのシーン (mutable)
  * @returns {S3Scene}
  */
 var S3Scene = function() {
-	this.camera		= new S3Camera();
-	this.model		= [];
+	this.camera			= new S3Camera();
+	this.model			= [];
+	this.light			= [];
 };
 S3Scene.prototype.empty = function() {
 	this.model		= [];
+	this.light		= [];
 };
 S3Scene.prototype.setCamera = function(camera) {
 	this.camera = camera.clone();
 };
 S3Scene.prototype.addModel = function(model) {
 	this.model[this.model.length] = model;
+};
+S3Scene.prototype.addLight = function(light) {
+	this.light[this.light.length] = light;
 };
