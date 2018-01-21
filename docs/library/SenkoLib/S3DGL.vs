@@ -9,6 +9,7 @@ uniform mat4 matrixLocalToPerspective;
 
 // ライト
 #define LIGHTS_MAX 4
+uniform int lightsLength;
 uniform int lightsMode[LIGHTS_MAX];
 uniform float lightsPower[LIGHTS_MAX];
 uniform float lightsRange[LIGHTS_MAX];

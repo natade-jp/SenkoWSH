@@ -246,7 +246,7 @@ S3GLProgram.prototype.useProgram = function() {
  * @param {Object} data
  * @returns {undefined}
  */
-S3GLProgram.prototype.bind = function(name, data) {
+S3GLProgram.prototype.bindData = function(name, data) {
 	if(!this.isLinked()) {
 		return false;
 	}
@@ -363,14 +363,14 @@ S3GLProgram.prototype.bind = function(name, data) {
 
 /**
  * プログラムにデータを結びつける
- * @param {Object} gldata
- * @returns {Integer}
+ * @param {Object} freezedMesh
+ * @returns {Integer} IBOのインデックス数
  */
-S3GLProgram.prototype.bindMesh = function(gldata) {
+S3GLProgram.prototype.bindFreezedMesh = function(freezedMesh) {
 	if(!this.isLinked()) {
 		return false;
 	}
-	
+	var gldata = freezedMesh;
 	var gl = this.gl;
 	// インデックスをセット
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
@@ -389,7 +389,7 @@ S3GLProgram.prototype.bindMesh = function(gldata) {
 		if(gldata.vbo[key] === undefined) {
 			continue;
 		}
-		this.bind(key, gldata.vbo[key].data);
+		this.bindData(key, gldata.vbo[key].data);
 	}
 	// 戻り値でインデックスの長さを返す
 	// この長さは、drawElementsで必要のため
@@ -500,6 +500,11 @@ S3SystemGL.prototype.setShader = function(shader) {
 	}
 };
 
+S3SystemGL.prototype.isSetShader = function() {
+	var prg = this.program.run;
+	return ((prg !== null) && (prg.isLinked()));
+};
+
 S3SystemGL.prototype.setShaderCode = function(code, sharder_type) {
 	// キャッシュがあれば、それを使う
 	var shader = new S3GLShader(this.gl, code, sharder_type);
@@ -599,53 +604,36 @@ S3SystemGL.prototype._setCullMode = function() {
 	}
 };
 
-S3SystemGL.prototype.drawScene = function(scene) {
+S3SystemGL.prototype.bind = function(p1, p2) {
+	if(!this.isSetShader()) {
+		return 0;
+	}
 	var prg = this.program.run;
-	if((prg === null) || (!prg.isLinked())) {
-		return;
+	var index_lenght = 0;
+	// p1が文字列、p2がデータの場合、データとして結びつける
+	if((arguments.length === 2) && ((typeof p1 === "string")||(p1 instanceof String))) {
+		prg.bindData(p1, p2);
+	}
+	// 引数がモデルであれば、モデルとして紐づける
+	else if((arguments.length === 1) && (p1 instanceof S3Model)) {
+		index_lenght = prg.bindFreezedMesh(p1.getFreezedMeshData(this));
+	}
+	return index_lenght;
+};
+
+S3SystemGL.prototype.drawScene = function(scene) {
+	if(!this.isSetShader()) {
+		return 0;
 	}
 	
 	// 画面の初期化
 	this._setDepthMode();
 	this._setCullMode();
 	
+	// ライト設定
+	
 	// カメラの行列を取得する
 	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
-	
-	// ライト設定
-	/*
-	{
-		var LIGHTS_MAX		= 4;
-		var lightsMode		= [];
-		var lightsPower		= [];
-		var lightsRange		= [];
-		var lightsPosition	= [];
-		var lightsDirection	= [];
-		var lightsColor		= [];
-		for(var i = 0; i < LIGHTS_MAX; i++) {
-			var lightMode		= S3LightMode.NONE;
-			var lightPower		= 0.0;
-			var lightRange		= 0.0;
-			var lightPosition	= new S3Vector(0.0, 0.0, 0.0);
-			var lightDirection	= new S3Vector(1.0, 0.0, 0.0);
-			var lightColor		= new S3Vector(0.0, 0.0, 0.0);
-			if(i < scene.light.length) {
-				lightMode		= scene.light[i].mode;
-				lightPower		= scene.light[i].power;
-				lightRange		= scene.light[i].range;
-				lightPosition	= scene.light[i].position;
-				lightDirection	= scene.light[i].direction;
-				lightColor		= scene.light[i].color;
-			}
-		}
-		lightsMode.push(new Int32Array([lightMode]));
-		lightsPower.push(new Float32Array([lightPower]));
-		lightsRange.push(new Float32Array([lightRange]));
-		lightsPosition.push(lightPosition.toInstanceArray(Float32Array, 3));
-		lightsDirection.push(lightDirection.toInstanceArray(Float32Array, 3));
-		lightsColor.push(lightColor.toInstanceArray(Float32Array, 3));
-	}
-	*/
 	
 	// モデル描写
 	for(var i = 0; i < scene.model.length; i++) {
@@ -655,10 +643,10 @@ S3SystemGL.prototype.drawScene = function(scene) {
 		var M = this.getMatrixWorldTransform(model);
 		var MV = this.mulMatrix(M, VPS.LookAt);
 		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
-		prg.bind("matrixLocalToWorld", M);
-		prg.bind("matrixLocalToPerspective", MVP);
+		this.bind("matrixLocalToWorld", M);
+		this.bind("matrixLocalToPerspective", MVP);
 		
-		var indexsize = prg.bindMesh(model.getGLData(this));
+		var indexsize = this.bind(model);
 		this.drawElements(indexsize);
 	}
 };

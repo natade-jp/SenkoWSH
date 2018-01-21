@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3SystemGL */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3SystemGL, S3Scene, S3LightMode */
 
 ﻿"use strict";
 
@@ -325,21 +325,38 @@ S3Mesh.prototype.freezeMesh = function() {
 		}
 	}
 	
-	this.freeze = {};
-	this.freeze.ibo = ibo;
-	this.freeze.vbo = vbo;
+	this.freezedMesh = {};
+	this.freezedMesh.ibo = ibo;
+	this.freezedMesh.vbo = vbo;
 	this.isFreezed = true;
 };
 
-/**
- * WebGLで扱うIBO/VBO形式が入ったデータを取得する
- * @returns {S3Mesh.freeze}
- */
-S3Mesh.prototype.getFreezedMesh = function() {
-	if(!this.isFreezed) {
-		this.freezeMesh();
+S3Mesh.prototype.deleteIBO = function(s3system) {
+	if(!(s3system instanceof S3SystemGL)) {
+		throw "not S3SystemGL";
 	}
-	return this.freeze;
+	if(this.freezedMesh === undefined) {
+		return;
+	}
+	if(this.freezedMesh.ibo.data !== undefined) {
+		s3system.deleteBuffer(this.freezedMesh.ibo.data);
+		delete this.freezedMesh.ibo.data;
+	}
+};
+
+S3Mesh.prototype.deleteVBO = function(s3system) {
+	if(!(s3system instanceof S3SystemGL)) {
+		throw "not S3SystemGL";
+	}
+	if(this.freezedMesh === undefined) {
+		return;
+	}
+	for(var key in this.freezedMesh.vbo) {
+		if(this.freezedMesh.vbo[key].data !== undefined) {
+			s3system.deleteBuffer(this.freezedMesh.vbo[key].data);
+			delete this.freezedMesh.vbo[key].data;
+		}
+	}
 };
 
 /**
@@ -347,18 +364,17 @@ S3Mesh.prototype.getFreezedMesh = function() {
  * @param {S3SystemGL} s3system
  * @returns {undefined}
  */
-S3Mesh.prototype.deleteGLData = function(s3system) {
+S3Mesh.prototype.deleteFreezedMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	if(this.gldata === undefined) {
+	if(this.freezedMesh === undefined) {
 		return;
 	}
-	s3system.deleteBuffer(this.gldata.ibo.data);
-	for(var key in this.gldata.vbo) {
-		s3system.deleteBuffer(this.gldata.vbo[key].data);
-	}
-	delete this.gldata;
+	this.deleteIBO(s3system);
+	this.deleteVBO(s3system);
+	delete this.freezedMesh;
+	this.isFreezed = false;
 };
 
 /**
@@ -366,19 +382,21 @@ S3Mesh.prototype.deleteGLData = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {undefined}
  */
-S3Mesh.prototype.initGLData = function(s3system) {
+S3Mesh.prototype.initFreezedMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	if((!this.isFreezed) && (!this.gldata === undefined)) {
+	if((!this.isFreezed) && (!this.freezedMesh === undefined)) {
 		return;
 	}
 	// フリーズデータ（固定データ）を取得する
-	this.gldata = this.getFreezedMesh();
-	// 取得したデータを、IBO / VBO 用のオブジェクトに変換して、data へ格納
-	this.gldata.ibo.data = s3system.createIBO(this.gldata.ibo.array);
-	for(var key in this.gldata.vbo) {
-		this.gldata.vbo[key].data = s3system.createVBO(this.gldata.vbo[key].array);
+	this.freezeMesh();
+	// IBO / VBO 用のオブジェクトを作成しなおす
+	this.deleteIBO(s3system);
+	this.deleteVBO(s3system);
+	this.freezedMesh.ibo.data = s3system.createIBO(this.freezedMesh.ibo.array);
+	for(var key in this.freezedMesh.vbo) {
+		this.freezedMesh.vbo[key].data = s3system.createVBO(this.freezedMesh.vbo[key].array);
 	}
 };
 
@@ -387,12 +405,12 @@ S3Mesh.prototype.initGLData = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {S3Mesh.freeze}
  */
-S3Mesh.prototype.getGLData = function(s3system) {
+S3Mesh.prototype.getFreezedMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	this.initGLData(s3system);
-	return this.gldata;
+	this.initFreezedMeshData(s3system);
+	return this.freezedMesh;
 };
 
 /**
@@ -400,9 +418,43 @@ S3Mesh.prototype.getGLData = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {S3Model.prototype@call;getMesh@call;getGLData}
  */
-S3Model.prototype.getGLData = function(s3system) {
+S3Model.prototype.getFreezedMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	return this.getMesh().getGLData(s3system);
+	return this.getMesh().getFreezedMeshData(s3system);
+};
+
+S3Scene.prototype.getLightsGLData = function() {
+	var LIGHTS_MAX		= 4;
+	var lights			= {};
+	lights.lightsLength		= new Int32Array([this.light.length]);
+	lights.lightsMode		= [];
+	lights.lightsPower		= [];
+	lights.lightsRange		= [];
+	lights.lightsPosition	= [];
+	lights.lightsDirection	= [];
+	lights.lightsColor		= [];
+	for(var i = 0; i < LIGHTS_MAX; i++) {
+		var lightMode		= S3LightMode.NONE;
+		var lightPower		= 0.0;
+		var lightRange		= 0.0;
+		var lightPosition	= new S3Vector(0.0, 0.0, 0.0);
+		var lightDirection	= new S3Vector(1.0, 0.0, 0.0);
+		var lightColor		= new S3Vector(0.0, 0.0, 0.0);
+		if(i < this.light.length) {
+			lightMode		= this.light[i].mode;
+			lightPower		= this.light[i].power;
+			lightRange		= this.light[i].range;
+			lightPosition	= this.light[i].position;
+			lightDirection	= this.light[i].direction;
+			lightColor		= this.light[i].color;
+		}
+		lights.lightsMode.push(new Int32Array([lightMode]));
+		lights.lightsPower.push(new Float32Array([lightPower]));
+		lights.lightsRange.push(new Float32Array([lightRange]));
+		lights.lightsPosition.push(lightPosition.toInstanceArray(Float32Array, 3));
+		lights.lightsDirection.push(lightDirection.toInstanceArray(Float32Array, 3));
+		lights.lightsColor.push(lightColor.toInstanceArray(Float32Array, 3));
+	}
 };
