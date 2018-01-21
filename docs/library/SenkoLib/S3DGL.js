@@ -12,7 +12,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
  * DEPENDENT LIBRARIES:
- *  S3D.js
+ *  S3D.js, S3DGLData.js
  */
 
 /**
@@ -655,50 +655,10 @@ S3SystemGL.prototype.drawScene = function(scene) {
 		var M = this.getMatrixWorldTransform(model);
 		var MV = this.mulMatrix(M, VPS.LookAt);
 		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
-		prg.bind("mMatrix", M);
-		prg.bind("mvpMatrix", MVP);
+		prg.bind("matrixLocalToWorld", M);
+		prg.bind("matrixLocalToPerspective", MVP);
 		
 		var indexsize = prg.bindMesh(model.getGLData(this));
 		this.drawElements(indexsize);
 	}
-};
-
-/**
- * /////////////////////////////////////////////////////////
- * 既存の部品に WebGL 用の情報を記録するための拡張
- * 主に、描写のための VBO と IBO を記録する
- * /////////////////////////////////////////////////////////
- */
-
-S3Mesh.prototype.deleteGLData = function(s3system) {
-	if(this.gldata === undefined) {
-		return;
-	}
-	s3system.deleteBuffer(this.gldata.ibo.data);
-	for(var key in this.gldata.vbo) {
-		s3system.deleteBuffer(this.gldata.vbo[key].data);
-	}
-	delete this.gldata;
-};
-
-S3Mesh.prototype.initGLData = function(s3system) {
-	if((!this.isFreezed) && (!this.gldata === undefined)) {
-		return;
-	}
-	// フリーズデータ（固定データ）を取得する
-	this.gldata = this.getFreezedMesh();
-	// 取得したデータを、IBO / VBO 用のオブジェクトに変換して、data へ格納
-	this.gldata.ibo.data = s3system.createIBO(this.gldata.ibo.array);
-	for(var key in this.gldata.vbo) {
-		this.gldata.vbo[key].data = s3system.createVBO(this.gldata.vbo[key].array);
-	}
-};
-
-S3Mesh.prototype.getGLData = function(s3system) {
-	this.initGLData(s3system);
-	return this.gldata;
-};
-
-S3Model.prototype.getGLData = function(s3system) {
-	return this.getMesh().getGLData(s3system);
 };

@@ -4,8 +4,8 @@ attribute vec3 vertexPosition;
 attribute vec4 materialColor;
 
 // 共通行列
-uniform mat4 mMatrix;
-uniform mat4 mvpMatrix;
+uniform mat4 matrixLocalToWorld;
+uniform mat4 matrixLocalToPerspective;
 
 // ライト
 #define LIGHTS_MAX 4
@@ -20,7 +20,7 @@ uniform vec3 lightsColor[LIGHTS_MAX];
 varying vec4 vColor;
 
 void main(void) {
-	vec3 tNormal = normalize(mMatrix * vec4(vertexNormal, 0.0)).xyz;
+	vec3 tNormal = normalize(matrixLocalToWorld * vec4(vertexNormal, 0.0)).xyz;
 	vColor = vec4(tNormal.xyz, 1.0);
-	gl_Position = mvpMatrix * vec4(vertexPosition, 1.0);
+	gl_Position = matrixLocalToPerspective * vec4(vertexPosition, 1.0);
 }
