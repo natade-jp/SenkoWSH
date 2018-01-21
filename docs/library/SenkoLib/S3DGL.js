@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer */
+﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight */
 
 ﻿"use strict";
 
@@ -132,7 +132,7 @@ S3GLProgram.prototype._init = function(gl) {
 		var codelines = code.split("\n");
 		for(var i = 0; i < codelines.length; i++) {
 			// uniform vec4 lights[4]; とすると、 uniform,vec4,lights,[4]で区切られる
-			var data = codelines[i].match( /(attribute|uniform)\s+(\w+)\s+(\w+)\s*(\[\s*\d+\s*\])?;/);
+			var data = codelines[i].match( /(attribute|uniform)\s+(\w+)\s+(\w+)\s*(\[\s*\w+\s*\])?;/);
 			if(data === null) {
 				continue;
 			}
@@ -141,11 +141,7 @@ S3GLProgram.prototype._init = function(gl) {
 			var text_type			= data[2];
 			var text_variable		= data[3];
 			var text_array			= data[4];
-			var array_length = 1;
-			if(text_array !== undefined) {
-				// 配列が存在する場合は、内部の数値部分を抜き出して配列数を調査
-				array_length = Number(text_array.match(/\[\s*(\d)+\s*\]/)[1]);
-			}
+			var is_array			= text_array !== undefined;
 			// 型に応じたテンプレートを取得する
 			// data[1] ... uniform, data[2] ... mat4, data[3] ... M
 			var targetinfo = info[text_type];
@@ -157,8 +153,7 @@ S3GLProgram.prototype._init = function(gl) {
 			// さらに情報を保存しておく
 			variable[text_variable].name		= text_variable;		// M
 			variable[text_variable].modifiers	= text_space;			// uniform
-			variable[text_variable].is_array	= text_array !== undefined;
-			variable[text_variable].array_length = array_length;
+			variable[text_variable].is_array	= is_array;
 			variable[text_variable].location	= null;
 			
 		}
@@ -267,7 +262,8 @@ S3GLProgram.prototype.bindData = function(name, data) {
 			}
 			else {
 				// 配列の場合は、配列の数だけlocationを調査する
-				for(i = 0; i < variable.array_length; i++) {
+				// 予め、シェーダー内の配列数と一致させておくこと
+				for(i = 0; i < data.length; i++) {
 					variable.location[i] = gl.getUniformLocation(prg, name + "[" + i + "]");
 				}
 			}
@@ -326,7 +322,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 		data = toArraydata(data);
 	}
 	else {
-		for(i = 0; i < variable.array_length; i++) {
+		for(i = 0; i < data.length; i++) {
 			if(variable.location[i] !== -1) {
 				data[i] = toArraydata(data[i]);
 			}
@@ -350,7 +346,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 		}
 		else {
 			// 配列の場合は、配列の数だけbindする
-			for(i = 0; i < variable.array_length; i++) {
+			for(i = 0; i < data.length; i++) {
 				if(variable.location[i] !== -1) {
 					variable.bind(variable.location[i], data[i]);
 				}
@@ -618,6 +614,14 @@ S3SystemGL.prototype.bind = function(p1, p2) {
 	else if((arguments.length === 1) && (p1 instanceof S3Model)) {
 		index_lenght = prg.bindFreezedMesh(p1.getFreezedMeshData(this));
 	}
+	// 引数がライトであれば、ライトとして紐づける
+	else if((arguments.length === 1) && (p1 instanceof S3GLLight)) {
+		var lights = p1.getLights();
+		prg.bindData("lightsLength", lights.lightsLength);
+		for(var key in lights) {
+			prg.bindData(key, lights[key]);
+		}
+	}
 	return index_lenght;
 };
 
@@ -631,6 +635,8 @@ S3SystemGL.prototype.drawScene = function(scene) {
 	this._setCullMode();
 	
 	// ライト設定
+	var lights = new S3GLLight(scene);
+	this.bind(lights);
 	
 	// カメラの行列を取得する
 	var VPS = this.getVPSMatrix(scene.camera, this.canvas);

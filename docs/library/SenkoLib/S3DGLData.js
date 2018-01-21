@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3SystemGL, S3Scene, S3LightMode */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3SystemGL, S3Scene, S3LightMode, Float32Array */
 
 ﻿"use strict";
 
@@ -53,6 +53,54 @@ S3GLVertex.datatype = {
 	"Float32Array"	: { instance	: Float32Array,	name	: "Float32Array"	},
 	"Int32Array"	: { instance	: Int32Array,	name	: "Int32Array"		}
 };
+
+/**
+ * WebGL用のライト (immutable)
+ * @param {S3Scene} scene
+ * @returns {S3GLLight}
+ */
+var S3GLLight = function(scene) {
+	if(!(scene instanceof S3Scene)) {
+		throw "not S3Scene";
+	}
+	var LIGHTS_MAX				= S3GLLight.LIGHTS_MAX;
+	var light_array				= scene.light;
+	var lightsLength			= Math.min([light_array.length, LIGHTS_MAX]);
+	this.lights					= {};
+	this.lights.lightsLength	= new Int32Array([lightsLength]);
+	this.lights.lightsMode		= [];
+	this.lights.lightsPower		= [];
+	this.lights.lightsRange		= [];
+	this.lights.lightsPosition	= [];
+	this.lights.lightsDirection	= [];
+	this.lights.lightsColor		= [];
+	for(var i = 0; i < LIGHTS_MAX; i++) {
+		var lightMode		= S3LightMode.NONE;
+		var lightPower		= 0.0;
+		var lightRange		= 0.0;
+		var lightPosition	= new S3Vector(0.0, 0.0, 0.0);
+		var lightDirection	= new S3Vector(1.0, 0.0, 0.0);
+		var lightColor		= new S3Vector(0.0, 0.0, 0.0);
+		if(i < lightsLength) {
+			lightMode		= light_array[i].mode;
+			lightPower		= light_array[i].power;
+			lightRange		= light_array[i].range;
+			lightPosition	= light_array[i].position;
+			lightDirection	= light_array[i].direction;
+			lightColor		= light_array[i].color;
+		}
+		this.lights.lightsMode.push(new Int32Array([lightMode]));
+		this.lights.lightsPower.push(new Float32Array([lightPower]));
+		this.lights.lightsRange.push(new Float32Array([lightRange]));
+		this.lights.lightsPosition.push(lightPosition.toInstanceArray(Float32Array, 3));
+		this.lights.lightsDirection.push(lightDirection.toInstanceArray(Float32Array, 3));
+		this.lights.lightsColor.push(lightColor.toInstanceArray(Float32Array, 3));
+	}
+};
+S3GLLight.prototype.getLights = function() {
+	return this.lights;
+};
+S3GLLight.LIGHTS_MAX = 4;
 
 /**
  * /////////////////////////////////////////////////////////
@@ -423,38 +471,4 @@ S3Model.prototype.getFreezedMeshData = function(s3system) {
 		throw "not S3SystemGL";
 	}
 	return this.getMesh().getFreezedMeshData(s3system);
-};
-
-S3Scene.prototype.getLightsGLData = function() {
-	var LIGHTS_MAX		= 4;
-	var lights			= {};
-	lights.lightsLength		= new Int32Array([this.light.length]);
-	lights.lightsMode		= [];
-	lights.lightsPower		= [];
-	lights.lightsRange		= [];
-	lights.lightsPosition	= [];
-	lights.lightsDirection	= [];
-	lights.lightsColor		= [];
-	for(var i = 0; i < LIGHTS_MAX; i++) {
-		var lightMode		= S3LightMode.NONE;
-		var lightPower		= 0.0;
-		var lightRange		= 0.0;
-		var lightPosition	= new S3Vector(0.0, 0.0, 0.0);
-		var lightDirection	= new S3Vector(1.0, 0.0, 0.0);
-		var lightColor		= new S3Vector(0.0, 0.0, 0.0);
-		if(i < this.light.length) {
-			lightMode		= this.light[i].mode;
-			lightPower		= this.light[i].power;
-			lightRange		= this.light[i].range;
-			lightPosition	= this.light[i].position;
-			lightDirection	= this.light[i].direction;
-			lightColor		= this.light[i].color;
-		}
-		lights.lightsMode.push(new Int32Array([lightMode]));
-		lights.lightsPower.push(new Float32Array([lightPower]));
-		lights.lightsRange.push(new Float32Array([lightRange]));
-		lights.lightsPosition.push(lightPosition.toInstanceArray(Float32Array, 3));
-		lights.lightsDirection.push(lightDirection.toInstanceArray(Float32Array, 3));
-		lights.lightsColor.push(lightColor.toInstanceArray(Float32Array, 3));
-	}
 };
