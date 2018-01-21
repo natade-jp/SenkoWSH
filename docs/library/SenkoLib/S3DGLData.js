@@ -54,6 +54,11 @@ S3GLVertex.datatype = {
 	"Int32Array"	: { instance	: Int32Array,	name	: "Int32Array"		}
 };
 
+/**
+ * /////////////////////////////////////////////////////////
+ * 素材にメソッドを拡張
+ * /////////////////////////////////////////////////////////
+ */
 
 S3Material.prototype.getVertexHash = function() {
 	// 名前は被らないので、ハッシュに使用する
@@ -78,6 +83,16 @@ S3Material.prototype.getVertexData = function() {
 };
 
 
+/**
+ * /////////////////////////////////////////////////////////
+ * 3つの頂点を持つポリゴン情報にデータ取得用のメソッドを拡張
+ * /////////////////////////////////////////////////////////
+ */
+
+/**
+ * テクスチャで利用するUV情報を持つか持たないか
+ * @returns {Boolean}
+ */
 S3TriangleIndex.prototype.isEnabledTexture = function() {
 	return !(this.uv === undefined);
 };
@@ -114,6 +129,16 @@ S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialL
 };
 
 
+/**
+ * /////////////////////////////////////////////////////////
+ * 頂点にデータ取得用のメソッドを拡張
+ * /////////////////////////////////////////////////////////
+ */
+
+/**
+ * 法線情報が定義済みかどうか
+ * @returns {Boolean}
+ */
 S3Vertex.prototype.isEnabledNormal = function() {
 	return this.normal !== undefined;
 };
@@ -142,6 +167,10 @@ S3Vertex.prototype.getVertexData = function() {
  * /////////////////////////////////////////////////////////
  */
 
+/**
+ * 自分が持っている頂点情報に、メッシュの形から自動計算した法線情報を付け加える
+ * @returns {undefined}
+ */
 S3Mesh.prototype._makeNormalMap = function() {
 	var i, j;
 	var vertex_list			= this.vertex;
@@ -190,6 +219,11 @@ S3Mesh.prototype._makeNormalMap = function() {
 	}
 };
 
+/**
+ * メッシュの頂点情報やインデックス情報を、WebGLで扱うIBO/VBO形式に計算して変換する
+ * 一度計算を終えた場合は使いまわします。
+ * @returns {undefined}
+ */
 S3Mesh.prototype.freezeMesh = function() {
 	if(this.isFreezed) {
 		return;
@@ -297,6 +331,10 @@ S3Mesh.prototype.freezeMesh = function() {
 	this.isFreezed = true;
 };
 
+/**
+ * WebGLで扱うIBO/VBO形式が入ったデータを取得する
+ * @returns {S3Mesh.freeze}
+ */
 S3Mesh.prototype.getFreezedMesh = function() {
 	if(!this.isFreezed) {
 		this.freezeMesh();
@@ -304,6 +342,11 @@ S3Mesh.prototype.getFreezedMesh = function() {
 	return this.freeze;
 };
 
+/**
+ * VBO/IBOを作成したときに使用したWebGLで、作成したデータを解放する
+ * @param {S3SystemGL} s3system
+ * @returns {undefined}
+ */
 S3Mesh.prototype.deleteGLData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
@@ -318,6 +361,11 @@ S3Mesh.prototype.deleteGLData = function(s3system) {
 	delete this.gldata;
 };
 
+/**
+ * VBO/IBOを作成するため、使用中のWEBGL情報を設定し、データを作成する
+ * @param {S3SystemGL} s3system
+ * @returns {undefined}
+ */
 S3Mesh.prototype.initGLData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
@@ -336,7 +384,7 @@ S3Mesh.prototype.initGLData = function(s3system) {
 
 /**
  * WEBGL用のVBO/IBOデータを取得する
- * @param {type} s3system
+ * @param {S3SystemGL} s3system
  * @returns {S3Mesh.freeze}
  */
 S3Mesh.prototype.getGLData = function(s3system) {
@@ -349,7 +397,7 @@ S3Mesh.prototype.getGLData = function(s3system) {
 
 /**
  * WEBGL用のVBO/IBOデータを取得する
- * @param {type} s3system
+ * @param {S3SystemGL} s3system
  * @returns {S3Model.prototype@call;getMesh@call;getGLData}
  */
 S3Model.prototype.getGLData = function(s3system) {
