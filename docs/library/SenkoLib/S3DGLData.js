@@ -273,7 +273,7 @@ S3Mesh.prototype._makeNormalMap = function() {
  * @returns {undefined}
  */
 S3Mesh.prototype.freezeMesh = function() {
-	if(this.isFreezed) {
+	if(this.isFrozen) {
 		return;
 	}
 	this._makeNormalMap();
@@ -373,22 +373,22 @@ S3Mesh.prototype.freezeMesh = function() {
 		}
 	}
 	
-	this.freezedMesh = {};
-	this.freezedMesh.ibo = ibo;
-	this.freezedMesh.vbo = vbo;
-	this.isFreezed = true;
+	this.frozenMesh = {};
+	this.frozenMesh.ibo = ibo;
+	this.frozenMesh.vbo = vbo;
+	this.isFrozen = true;
 };
 
 S3Mesh.prototype.deleteIBO = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	if(this.freezedMesh === undefined) {
+	if(this.frozenMesh === undefined) {
 		return;
 	}
-	if(this.freezedMesh.ibo.data !== undefined) {
-		s3system.deleteBuffer(this.freezedMesh.ibo.data);
-		delete this.freezedMesh.ibo.data;
+	if(this.frozenMesh.ibo.data !== undefined) {
+		s3system.deleteBuffer(this.frozenMesh.ibo.data);
+		delete this.frozenMesh.ibo.data;
 	}
 };
 
@@ -396,13 +396,13 @@ S3Mesh.prototype.deleteVBO = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	if(this.freezedMesh === undefined) {
+	if(this.frozenMesh === undefined) {
 		return;
 	}
-	for(var key in this.freezedMesh.vbo) {
-		if(this.freezedMesh.vbo[key].data !== undefined) {
-			s3system.deleteBuffer(this.freezedMesh.vbo[key].data);
-			delete this.freezedMesh.vbo[key].data;
+	for(var key in this.frozenMesh.vbo) {
+		if(this.frozenMesh.vbo[key].data !== undefined) {
+			s3system.deleteBuffer(this.frozenMesh.vbo[key].data);
+			delete this.frozenMesh.vbo[key].data;
 		}
 	}
 };
@@ -412,17 +412,17 @@ S3Mesh.prototype.deleteVBO = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {undefined}
  */
-S3Mesh.prototype.deleteFreezedMeshData = function(s3system) {
+S3Mesh.prototype.deleteFrozenMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	if(this.freezedMesh === undefined) {
+	if(this.frozenMesh === undefined) {
 		return;
 	}
 	this.deleteIBO(s3system);
 	this.deleteVBO(s3system);
-	delete this.freezedMesh;
-	this.isFreezed = false;
+	delete this.frozenMesh;
+	this.isFrozen = false;
 };
 
 /**
@@ -430,11 +430,11 @@ S3Mesh.prototype.deleteFreezedMeshData = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {undefined}
  */
-S3Mesh.prototype.initFreezedMeshData = function(s3system) {
+S3Mesh.prototype.initFrozenMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	if((!this.isFreezed) && (!this.freezedMesh === undefined)) {
+	if((!this.isFrozen) && (!this.frozenMesh === undefined)) {
 		return;
 	}
 	// フリーズデータ（固定データ）を取得する
@@ -442,9 +442,9 @@ S3Mesh.prototype.initFreezedMeshData = function(s3system) {
 	// IBO / VBO 用のオブジェクトを作成しなおす
 	this.deleteIBO(s3system);
 	this.deleteVBO(s3system);
-	this.freezedMesh.ibo.data = s3system.createIBO(this.freezedMesh.ibo.array);
-	for(var key in this.freezedMesh.vbo) {
-		this.freezedMesh.vbo[key].data = s3system.createVBO(this.freezedMesh.vbo[key].array);
+	this.frozenMesh.ibo.data = s3system.createIBO(this.frozenMesh.ibo.array);
+	for(var key in this.frozenMesh.vbo) {
+		this.frozenMesh.vbo[key].data = s3system.createVBO(this.frozenMesh.vbo[key].array);
 	}
 };
 
@@ -453,12 +453,12 @@ S3Mesh.prototype.initFreezedMeshData = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {S3Mesh.freeze}
  */
-S3Mesh.prototype.getFreezedMeshData = function(s3system) {
+S3Mesh.prototype.getFrozenMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	this.initFreezedMeshData(s3system);
-	return this.freezedMesh;
+	this.initFrozenMeshData(s3system);
+	return this.frozenMesh;
 };
 
 /**
@@ -466,9 +466,9 @@ S3Mesh.prototype.getFreezedMeshData = function(s3system) {
  * @param {S3SystemGL} s3system
  * @returns {S3Model.prototype@call;getMesh@call;getGLData}
  */
-S3Model.prototype.getFreezedMeshData = function(s3system) {
+S3Model.prototype.getFrozenMeshData = function(s3system) {
 	if(!(s3system instanceof S3SystemGL)) {
 		throw "not S3SystemGL";
 	}
-	return this.getMesh().getFreezedMeshData(s3system);
+	return this.getMesh().getFrozenMeshData(s3system);
 };

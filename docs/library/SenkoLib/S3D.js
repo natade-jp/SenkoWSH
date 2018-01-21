@@ -744,7 +744,7 @@ var S3Mesh = function(vertex, triangleindex, material) {
 	this.init(vertex, triangleindex, material);
 };
 S3Mesh.prototype.init = function(vertex, triangleindex, material) {
-	this.isFreezed = false;
+	this.isFrozen = false;
 	this.cleanVertex();
 	this.cleanTriangleIndex();
 	this.cleanMaterial();
@@ -757,20 +757,20 @@ S3Mesh.prototype.clone = function() {
 };
 S3Mesh.prototype.cleanVertex = function() {
 	this.vertex = [];
-	this.isFreezed = false;
+	this.isFrozen = false;
 };
 S3Mesh.prototype.cleanTriangleIndex = function() {
 	this.triangleindex = [];
-	this.isFreezed = false;
+	this.isFrozen = false;
 };
 S3Mesh.prototype.cleanMaterial = function() {
 	this.material	= [];
 	this.material[0] = new S3Material("s3default");
 	this.material_length = 0;
-	this.isFreezed = false;
+	this.isFrozen = false;
 };
 S3Mesh.prototype.inverseTriangle = function() {
-	this.isFreezed = false;
+	this.isFrozen = false;
 	var i = 0;
 	for(i = 0; i < this.vertex.length; i++) {
 		this.vertex[i] = this.vertex[i].inverseTriangle();
@@ -781,7 +781,7 @@ S3Mesh.prototype.inverseTriangle = function() {
 };
 S3Mesh.prototype.addVertex = function(vertex) {
 	// 一応 immutable なのでそのままシャローコピー
-	this.isFreezed = false;
+	this.isFrozen = false;
 	if(vertex === undefined) {
 	}
 	else if(vertex instanceof S3Vertex) {
@@ -796,7 +796,7 @@ S3Mesh.prototype.addVertex = function(vertex) {
 };
 S3Mesh.prototype.addTriangleIndex = function(ti) {
 	// 一応 immutable なのでそのままシャローコピー
-	this.isFreezed = false;
+	this.isFrozen = false;
 	if(ti === undefined) {
 	}
 	else if(ti instanceof S3TriangleIndex) {
@@ -811,7 +811,7 @@ S3Mesh.prototype.addTriangleIndex = function(ti) {
 };
 S3Mesh.prototype.addMaterial = function(material) {
 	// 一応 immutable なのでそのままシャローコピー
-	this.isFreezed = false;
+	this.isFrozen = false;
 	if(material === undefined) {
 	}
 	else if(material instanceof S3Material) {

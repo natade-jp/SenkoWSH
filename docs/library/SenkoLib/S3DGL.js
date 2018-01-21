@@ -137,6 +137,8 @@ S3GLProgram.prototype._init = function(gl) {
 				continue;
 			}
 			// 見つけたら変数名や、型を記録しておく
+			// 配列数の調査は、定数などを使用されると簡単に調べられないため取得できない
+			// そのため自動でテストできないため、bindする際に、正しい配列数の配列をbindすること
 			var text_space			= data[1];
 			var text_type			= data[2];
 			var text_variable		= data[3];
@@ -359,14 +361,14 @@ S3GLProgram.prototype.bindData = function(name, data) {
 
 /**
  * プログラムにデータを結びつける
- * @param {Object} freezedMesh
+ * @param {Object} frozenMesh
  * @returns {Integer} IBOのインデックス数
  */
-S3GLProgram.prototype.bindFreezedMesh = function(freezedMesh) {
+S3GLProgram.prototype.bindFrozenMesh = function(frozenMesh) {
 	if(!this.isLinked()) {
 		return false;
 	}
-	var gldata = freezedMesh;
+	var gldata = frozenMesh;
 	var gl = this.gl;
 	// インデックスをセット
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
@@ -612,7 +614,7 @@ S3SystemGL.prototype.bind = function(p1, p2) {
 	}
 	// 引数がモデルであれば、モデルとして紐づける
 	else if((arguments.length === 1) && (p1 instanceof S3Model)) {
-		index_lenght = prg.bindFreezedMesh(p1.getFreezedMeshData(this));
+		index_lenght = prg.bindFrozenMesh(p1.getFrozenMeshData(this));
 	}
 	// 引数がライトであれば、ライトとして紐づける
 	else if((arguments.length === 1) && (p1 instanceof S3GLLight)) {
