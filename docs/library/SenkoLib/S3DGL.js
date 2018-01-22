@@ -538,7 +538,7 @@ S3SystemGL.prototype.setShaderURL = function(url) {
 
 S3SystemGL.prototype.clear = function() {
 	this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	this.gl.clearDepth(1.0);
+	this.gl.clearDepth(-1.0); // OpenGLは右手座標系＝手前がプラスなので、奥で初期化
 	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 };
 
@@ -573,7 +573,7 @@ S3SystemGL.prototype.deleteBuffer = function(data) {
 S3SystemGL.prototype._setDepthMode = function() {
 	var gl = this.gl;
 	gl.enable(gl.DEPTH_TEST);
-	gl.depthFunc(gl.LEQUAL);
+	gl.depthFunc(gl.GREATER); // OpenGLは右手座標系＝手前がプラスなので、近いほど大きい
 };
 
 S3SystemGL.prototype._setCullMode = function() {

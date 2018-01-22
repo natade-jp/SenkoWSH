@@ -226,7 +226,7 @@ S3Mesh.prototype._makeNormalMap = function() {
 	var normal_stacklist	= [];
 	
 	// 各面の法線を調べて、スタックへ配列へ保存していく
-	for(i = 0; i < vertex_list.length; i++) {
+	for(i = 0; i < triangleindex_list.length; i++) {
 		var triangleindex = triangleindex_list[i];
 		var indexlist = triangleindex.index;
 		// 3点を時計回りで通る平面が表のとき

@@ -21,7 +21,6 @@ uniform vec3 lightsColor[LIGHTS_MAX];
 varying vec4 vColor;
 
 void main(void) {
-	vec3 tNormal = normalize(matrixLocalToWorld * vec4(vertexNormal, 0.0)).xyz;
-	vColor = vec4(tNormal.xyz, 1.0);
+	vColor = vec4(vec3(0.5, 0.5, 0.5) + vertexNormal * 0.5, 1.0);
 	gl_Position = matrixLocalToPerspective * vec4(vertexPosition, 1.0);
 }
