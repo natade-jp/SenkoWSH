@@ -143,6 +143,6 @@
 	
 	var imagepanel = new SImagePanel();
 	slider.put(imagepanel, SComponent.putype.NEWLINE);
-	imagepanel.putImage("./img/image_test1.jpg");
+	imagepanel.putImage("../resource/image_test1.jpg");
 	
 }

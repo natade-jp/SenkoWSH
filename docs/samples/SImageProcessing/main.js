@@ -178,11 +178,11 @@ function testBlending(panel) {
 	canvas_src1.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src1.setUnit(SComponent.unittype.PX);
 	canvas_src1.setSize(canvasWidth, canvasHeight);
-	canvas_src1.putImage("./img/image_x.png");
+	canvas_src1.putImage("../resource/image_x.png");
 	canvas_src2.setPixelSize(canvasWidth, canvasHeight);
 	canvas_src2.setUnit(SComponent.unittype.PX);
 	canvas_src2.setSize(canvasWidth, canvasHeight);
-	canvas_src2.putImage("./img/image_y.png");
+	canvas_src2.putImage("../resource/image_y.png");
 	canvas_dst.setPixelSize(canvasWidth, canvasHeight);
 	canvas_dst.setUnit(SComponent.unittype.PX);
 	canvas_dst.setSize(canvasWidth, canvasHeight);
@@ -257,9 +257,9 @@ function testEtc(panel) {
 	var label1 = new SLabel("使用画像");
 	panel.put(label1, SComponent.putype.IN);
 	var picturetype = [
-		"./img/image_test1.jpg",
-		"./img/image_test2.png",
-		"./img/image_wg.png"
+		"../resource/image_test1.jpg",
+		"../resource/image_test2.png",
+		"../resource/image_wg.png"
 	];
 	var cb_picturetype = new SComboBox(picturetype);
 	cb_picturetype.setWidth(32);

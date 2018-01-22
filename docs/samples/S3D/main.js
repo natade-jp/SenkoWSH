@@ -85,7 +85,7 @@
 	panel.setSize(640, 480);
 	
 	// ファイルロード
-	var fModel = new File("./teapod.mqo");
+	var fModel = new File("../resource/teapod.mqo");
 	File.downloadFileList([fModel], function() {
 		test3D(panel.getCanvas(), fModel.getText());
 	});

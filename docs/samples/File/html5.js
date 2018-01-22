@@ -23,8 +23,8 @@
 		System.out.println(file.getText());
 	});
 	
-	var fText = new File("./sampletext.txt");
-	var fImage = new File("./sampleimage.png");
+	var fText = new File("../resource/sampletext.txt");
+	var fImage = new File("../resource/sampleimage.png");
 	File.downloadFileList([fText, fImage], function() {
 		System.out.println("[" + fText.getName() + "] ダウンロード完了");
 		System.out.println("[" + fImage.getName() + "] ダウンロード完了");
