@@ -311,11 +311,11 @@ S3System.calcAspect = function(width, height) {
  * パースペクティブ射影行列を作成する
  * @param {Number} fovY 視体積の上下方向の視野角（0度から180度）
  * @param {Number} Aspect 近平面、遠平面のアスペクト比（Width / Height）
- * @param {Number} Far カメラから遠平面までの距離（ファークリッピング平面）
  * @param {Number} Near カメラから近平面までの距離（ニアークリッピング平面）
+ * @param {Number} Far カメラから遠平面までの距離（ファークリッピング平面）
  * @returns {S3Matrix}
  */
-S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Far, Near) {
+S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Near, Far) {
 	var arc = S3Math.radius(fovY);
 	var zoomY = 1.0 / Math.tan(arc / 2.0);
 	var zoomX = zoomY / Aspect;
@@ -323,7 +323,7 @@ S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Far, Near) {
 	M.m00 =zoomX; M.m01 =  0.0; M.m02 = 0.0; M.m03 = 0.0;
 	M.m10 =  0.0; M.m11 =zoomY; M.m12 = 0.0; M.m13 = 0.0;
 	M.m20 =  0.0; M.m21 =  0.0; M.m22 = 1.0; M.m23 = 1.0;
-	M.m30 =  0.0; M.m31 =  0.0; M.m32 = 0.0; M.m33 = 1.0;
+	M.m30 =  0.0; M.m31 =  0.0; M.m32 = 0.0; M.m33 = 0.0;
 	var Delta = Far - Near;
 	if(Delta === 0.0) {
 		throw "divide error";
@@ -521,12 +521,19 @@ S3System.prototype.clear = function() {
 	this.context2d.clear();
 };
 
+
 S3System.prototype._calcVertexTransformation = function(vertexlist, MVP, Viewport) {
 	var i;
 	var newvertexlist = [];
 	
 	for(i = 0; i < vertexlist.length; i++) {
 		var p = vertexlist[i].position;
+		
+//	console.log("1 " + p);
+//	console.log("2 " + this.mulMatrix(VPS.LookAt, p));
+//	console.log("3 " + this.mulMatrix(VPS.PerspectiveFov, this.mulMatrix(VPS.LookAt, p)));
+//	console.log("4 " + this.mulMatrix(MVP, p));
+		
 		p = this.mulMatrix(MVP, p);
 		var rhw = p.w;
 		p = p.mul(1.0 / rhw);
@@ -1005,7 +1012,7 @@ S3Camera.prototype.init = function() {
 	this.fovY		= 45;
 	this.eye		= new S3Vector(0, 0, 0);
 	this.center		= new S3Vector(0, 0, 1);
-	this.near		= 0;
+	this.near		= 1;
 	this.far		= 1000;
 	this.setSystemMode(S3SystemMode.OPEN_GL);
 };

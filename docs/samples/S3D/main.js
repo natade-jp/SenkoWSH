@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
+/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File */
 
 ﻿function test3D(canvas, mqodata) {
 	
@@ -11,6 +11,9 @@
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
 	camera.setSystemMode(S3SystemMode.OPEN_GL);
+	
+//	s3.setSystemMode(S3SystemMode.DIRECT_X);
+//	camera.setSystemMode(S3SystemMode.DIRECT_X);
 	
 	System.out.println("json形式での読み書きのテスト");
 	var meshdata = {
