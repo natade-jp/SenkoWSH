@@ -65,7 +65,7 @@ var S3GLLight = function(scene) {
 	}
 	var LIGHTS_MAX				= S3GLLight.LIGHTS_MAX;
 	var light_array				= scene.light;
-	var lightsLength			= Math.min([light_array.length, LIGHTS_MAX]);
+	var lightsLength			= Math.min(light_array.length, LIGHTS_MAX);
 	this.lights					= {};
 	this.lights.lightsLength	= new Int32Array([lightsLength]);
 	this.lights.lightsMode		= [];
