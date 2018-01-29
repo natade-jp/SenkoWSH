@@ -4,7 +4,7 @@
 	
 	var s3 = new S3SystemGL();
 	var controller = new CameraController();
-	var camera = new S3Camera();
+	var camera = s3.createCamera();
 
 	s3.setCanvas(canvas);
 	controller.setCanvas(canvas);
@@ -14,8 +14,6 @@
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
 	s3.setFrontMode(S3FrontFace.CLOCKWISE);
-	
-	camera.setSystemMode(S3SystemMode.OPEN_GL);
 	
 	var model = new S3Model();
 	var mesh = S3Mesh.fromMQO(mqodata);
@@ -47,8 +45,8 @@
 	
 	console.log(model);
 	
-	setTimeout(redraw, 50);
-	//setInterval(redraw, 50);
+	//setTimeout(redraw, 50);
+	setInterval(redraw, 50);
 
 }
 

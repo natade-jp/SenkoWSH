@@ -4,13 +4,12 @@
 	
 	var s3 = new S3System();
 	var controller = new CameraController();
-	var camera = new S3Camera();
+	var camera = s3.createCamera();
 
 	s3.setCanvas(canvas);
 	controller.setCanvas(canvas);
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
-	camera.setSystemMode(S3SystemMode.OPEN_GL);
 	
 //	s3.setSystemMode(S3SystemMode.DIRECT_X);
 //	camera.setSystemMode(S3SystemMode.DIRECT_X);

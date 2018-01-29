@@ -997,19 +997,16 @@ S3Model.prototype.setRotateZ = function(z) {
 
 /**
  * カメラ (mutable)
+ * @param {type} s3system
  * @returns {S3Camera}
  */
-var S3Camera = function() {
+var S3Camera = function(s3system) {
+	this.s3system = s3system;
 	this.init();
 };
-S3Camera.prototype.setSystemMode = function(mode) {
-	this.systemmode = mode;
-	if(this.systemmode === S3SystemMode.OPEN_GL) {
-		this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
-	}
-	else {
-		this.dimensionmode	= S3DimensionMode.LEFT_HAND;
-	}
+S3System.prototype.createCamera = function() {
+	var camera = new S3Camera(this);
+	return camera;
 };
 S3Camera.prototype.init = function() {
 	this.fovY		= 45;
@@ -1017,16 +1014,14 @@ S3Camera.prototype.init = function() {
 	this.center		= new S3Vector(0, 0, 1);
 	this.near		= 1;
 	this.far		= 1000;
-	this.setSystemMode(S3SystemMode.OPEN_GL);
 };
 S3Camera.prototype.clone = function() {
-	var camera = new S3Camera();
+	var camera = new S3Camera(this.s3system);
 	camera.fovY		= this.fovY;
 	camera.eye		= this.eye;
 	camera.center	= this.center;
 	camera.near		= this.near;
 	camera.far		= this.far;
-	camera.setSystemMode(this.systemmode);
 	return camera;
 };
 S3Camera.prototype.setDrawRange = function(near, far) {
@@ -1099,7 +1094,9 @@ S3Camera.prototype.translateRelative = function(v) {
 	var up = new S3Vector(0.0, 1.0, 0.0);
 	// Z ベクトルの作成
 	Z = this.eye.getDirectionNormalized(this.center);
-	if(this.dimensionmode === S3DimensionMode.RIGHT_HAND) {
+	
+	// 座標系に合わせて計算
+	if(this.s3system.dimensionmode === S3DimensionMode.RIGHT_HAND) {
 		// 右手系なら反転
 		Z = Z.negate();
 	}
