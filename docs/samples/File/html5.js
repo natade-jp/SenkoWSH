@@ -12,7 +12,7 @@
 	slCanvas.putMe(slLabel, SComponent.putype.NEWLINE);
 	
 	System.out.println("ファイルの情報");
-	var file = new File("./sampletext.txt");
+	var file = new File("../resource/sampletext.txt");
 	System.out.println(file.getAbsolutePath());
 	System.out.println(file.getName());
 	System.out.println(file.getParent());
