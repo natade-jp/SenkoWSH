@@ -325,7 +325,10 @@ S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Near, Far) {
 	M.m20 =  0.0; M.m21 =  0.0; M.m22 = 1.0; M.m23 = 1.0;
 	M.m30 =  0.0; M.m31 =  0.0; M.m32 = 0.0; M.m33 = 0.0;
 	var Delta = Far - Near;
-	if(Delta === 0.0) {
+	if(Near > Far) {
+		throw "Near > Far error";
+	}
+	else if(Delta === 0.0) {
 		throw "divide error";
 	}
 	if(this.depthmode === S3DepthMode.DIRECT_X) {
@@ -1038,6 +1041,9 @@ S3Camera.prototype.setEye = function(eye) {
 };
 S3Camera.prototype.setCenter = function(center) {
 	this.center = center.clone();
+};
+S3Camera.prototype.getDirection = function() {
+	return this.eye.getDirectionNormalized(this.center);
 };
 S3Camera.prototype.getDistance = function() {
 	return this.center.getDistance(this.eye);
