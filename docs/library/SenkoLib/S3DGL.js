@@ -110,7 +110,7 @@ S3GLProgram.prototype._init = function(gl) {
 	
 	var info = {
 		int		: {glsltype : "int",	instance : Int32Array,		size : 1, btype : "INT",	bind : g.uniform1iv},
-		float	: {glsltype : "float",	instance : Float32Array,	size : 1, btype : "INT",	bind : g.uniform1fv},
+		float	: {glsltype : "float",	instance : Float32Array,	size : 1, btype : "FLOAT",	bind : g.uniform1fv},
 		bool	: {glsltype : "bool",	instance : Int32Array,		size : 1, btype : "INT",	bind : g.uniform1iv},
 		mat2	: {glsltype : "mat2",	instance : Float32Array,	size : 4, btype : "FLOAT",	bind : g.uniformMatrix2fv},
 		mat3	: {glsltype : "mat3",	instance : Float32Array,	size : 9, btype : "FLOAT",	bind : g.uniformMatrix3fv},
@@ -275,7 +275,6 @@ S3GLProgram.prototype.bindData = function(name, data) {
 		// 変数は宣言されているが、関数の中で使用していないと -1 がかえる
 		return;
 	}
-	
 	// data が bind できる形になっているか調査する
 	
 	// glslの型をチェックして自動型変換する
@@ -329,11 +328,14 @@ S3GLProgram.prototype.bindData = function(name, data) {
 				data[i] = toArraydata(data[i]);
 			}
 		}
-	}	
+	}
 	
 	// 装飾子によって bind する方法を変更する
 	if(variable.modifiers === "attribute") {
 		gl.bindBuffer(gl.ARRAY_BUFFER, data);
+		// 変数を有効化するが、もしWEBGLオブジェクトで別のシェーダーを利用したい場合は、
+		// disableVertexAttribArray が必要である。
+		// getActiveAttrib で有効化したものかは確認が可能
 		gl.enableVertexAttribArray(variable.location[0]);
 		// 型は適当
 		gl.vertexAttribPointer(
@@ -619,7 +621,6 @@ S3SystemGL.prototype.bind = function(p1, p2) {
 	// 引数がライトであれば、ライトとして紐づける
 	else if((arguments.length === 1) && (p1 instanceof S3GLLight)) {
 		var lights = p1.getLights();
-		prg.bindData("lightsLength", lights.lightsLength);
 		for(var key in lights) {
 			prg.bindData(key, lights[key]);
 		}

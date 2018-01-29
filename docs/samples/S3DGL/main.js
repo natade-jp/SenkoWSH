@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File, S3FrontFace */
+﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File, S3FrontFace, S3LightMode */
 
 ﻿function test3D(canvas, mqodata) {
 	
@@ -29,7 +29,13 @@
 	var scene = new S3Scene();
 	scene.setCamera(camera);
 	scene.addModel(model);
-
+	
+	var light_down = new S3Light();
+	light_down.setMode(S3LightMode.DIRECTIONAL_LIGHT);
+	light_down.setDirection(new S3Vector( 0,  -1,  0));
+	scene.addLight(light_down);
+	
+	
 	var redraw = function() {
 		scene.setCamera(controller.getCamera());
 		
@@ -41,8 +47,8 @@
 	
 	console.log(model);
 	
-	//setTimeout(redraw, 50);
-	setInterval(redraw, 50);
+	setTimeout(redraw, 50);
+	//setInterval(redraw, 50);
 
 }
 
