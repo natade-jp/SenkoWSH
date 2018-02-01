@@ -24,19 +24,20 @@
 /**
  * 頂点シェーダー／フラグメントシェーダ―用クラス
  * ソースコード、コンパイル済みデータ、シェーダータイプを格納できる
- * @param {WebGL} gl
+ * S3GLProgram 内部で利用するもので、一般的にこれ単体では使用しない
+ * @param {S3SystemGL} sys
  * @param {String} code
- * @param {Integer} sharder_type
  * @returns {S3GLShader}
  */
-var S3GLShader = function(gl, code, sharder_type) {
-	this._init(gl, code, sharder_type);
+var S3GLShader = function(sys, code) {
+	this._init(sys, code);
 };
-S3GLShader.prototype._init = function(gl, code, sharder_type) {
-	this.gl				= gl;
+S3GLShader.prototype._init = function(sys, code) {
+	this.sys			= sys;
 	this.code			= code;
-	this.compileddata	= null;
-	this.sharder_type	= sharder_type;
+	this.shader			= null;
+	this.sharder_type	= -1;
+	this.is_error		= false;
 };
 S3GLShader.prototype.toHash = function() {
 	var i = 0;
@@ -46,46 +47,101 @@ S3GLShader.prototype.toHash = function() {
 	}
 	return hash;
 };
-S3GLShader.prototype.isCompiled = function() {
-	return (this.compileddata !== null);
+S3GLShader.prototype.isError = function() {
+	return this.is_error;
+};
+S3GLShader.prototype.getCode = function() {
+	return this.code;
+};
+S3GLShader.prototype.getShader = function() {
+	var gl = this.sys.getGL();
+	if((gl === null) || this.is_error) {
+		return null;
+	}
+	if(this.shader !== null) {
+		return this.shader;
+	}
+	var code = this.code;
+	// コメントを除去する
+	code = code.replace(/\/\/.*/g,"");
+	code = code.replace(/\/\*([^*]|\*[^\/])*\*\//g,"");
+	var sharder_type = 0;
+	// フラグメントシェーダである
+	if(code.indexOf("gl_FragColor") !== -1) {
+		sharder_type = gl.FRAGMENT_SHADER;
+	}
+	else {
+		// バーテックスシェーダである
+		sharder_type = gl.VERTEX_SHADER;
+	}
+	var shader = gl.createShader(sharder_type);
+	gl.shaderSource(shader, code);
+	gl.compileShader(shader);
+	if(gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		this.shader			= shader;
+		this.sharder_type	= sharder_type;
+		return this.shader;
+	}
+	else {
+		console.log("compile error " + gl.getShaderInfoLog(shader));
+		this.is_error = true;
+		return null;
+	}
+};
+S3GLShader.prototype.getShaderType = function() {
+	if(this.sharder_type !== -1) {
+		return this.sharder_type;
+	}
+	if(this.getShader() !== null) {
+		return this.sharder_type;
+	}
+	return null;
+};
+S3GLShader.prototype.dispose = function() {
+	var gl = this.sys.getGL();
+	if(gl === null) {
+		return null;
+	}
+	if(this.shader === null) {
+		return true;
+	}
+	if(!this.is_error) {
+		var gl = this.gl;
+		gl.deleteShader(shader);
+	}
+	this.shader	= null;
+	this.sharder_type = -1;
+	return true;
 };
 
 /**
- * シェーダーをコンパイルする
- * @returns {Boolean} trueで成功
+ * /////////////////////////////////////////////////////////
+ * WebGLのプログラム情報
+ * /////////////////////////////////////////////////////////
  */
-S3GLShader.prototype.compileSharder = function() {
-	if(this.isCompiled()) {
-		return true;
-	}
-	var gl = this.gl;
-	var shader = gl.createShader(this.sharder_type);
-	gl.shaderSource(shader, this.code);
-	gl.compileShader(shader);
-	if(gl.getShaderParameter(shader, gl.COMPILE_STATUS)){
-		this.compileddata = shader;
-		return true;
-	}else{
-		console.log("compile error " + gl.getShaderInfoLog(shader));
-		return false;
-	}
-};
 
 /**
  * 頂点シェーダー、フラグメントシェーダーの2つを組み合わせたプログラム用のクラス
  * 2種類のシェーダーと、リンクしたプログラムを格納できる
  * またプログラムをセットしたり、セットした後は変数とのバインドができる。
- * @param {WebGL} gl
+ * @param {S3SystemGL} sys
+ * @param {Integer} id
  * @returns {S3GLProgram}
  */
-var S3GLProgram = function(gl) {
-	this._init(gl);
+var S3GLProgram = function(sys, id) {
+	this._init(sys, id);
 };
-S3GLProgram.prototype._init = function(gl) {
-	this.gl				= gl;
+S3GLProgram.prototype._init = function(sys, id) {
+	this.id				= id;
+	this.sys			= sys;
 	this.vertex			= null;
 	this.fragment		= null;
+	this.isDLVertex		= false;
+	this.isDLFragment	= false;
 	this.program		= null;
+	this.is_linked		= false;
+	this.is_error		= false;
+	this.enable_vertex_number = {};
 	
 	var variable = {};
 	variable.attribute	= {};
@@ -95,17 +151,17 @@ S3GLProgram.prototype._init = function(gl) {
 	this.variable = variable;
 	
 	var g = {
-		uniform1iv: function(location, value) { gl.uniform1iv(location, value); },
-		uniform2iv: function(location, value) { gl.uniform2iv(location, value); },
-		uniform3iv: function(location, value) { gl.uniform3iv(location, value); },
-		uniform4iv: function(location, value) { gl.uniform4iv(location, value); },
-		uniform1fv: function(location, value) { gl.uniform1fv(location, value); },
-		uniform2fv: function(location, value) { gl.uniform2fv(location, value); },
-		uniform3fv: function(location, value) { gl.uniform3fv(location, value); },
-		uniform4fv: function(location, value) { gl.uniform4fv(location, value); },
-		uniformMatrix2fv: function(location, value) { gl.uniformMatrix2fv(location, false, value); },
-		uniformMatrix3fv: function(location, value) { gl.uniformMatrix3fv(location, false, value); },
-		uniformMatrix4fv: function(location, value) { gl.uniformMatrix4fv(location, false, value); }
+		uniform1iv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform1iv(location, value); }},
+		uniform2iv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform2iv(location, value); }},
+		uniform3iv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform3iv(location, value); }},
+		uniform4iv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform4iv(location, value); }},
+		uniform1fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform1fv(location, value); }},
+		uniform2fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform2fv(location, value); }},
+		uniform3fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform3fv(location, value); }},
+		uniform4fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform4fv(location, value); }},
+		uniformMatrix2fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix2fv(location, false, value); }},
+		uniformMatrix3fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix3fv(location, false, value); }},
+		uniformMatrix4fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix4fv(location, false, value); }}
 	};
 	
 	var info = {
@@ -129,6 +185,10 @@ S3GLProgram.prototype._init = function(gl) {
 	};
 	
 	this.analysisShader = function(code, variable) {
+		// コメントを除去する
+		code = code.replace(/\/\/.*/g,"");
+		code = code.replace(/\/\*([^*]|\*[^\/])*\*\//g,"");
+		// 1行ずつ解析
 		var codelines = code.split("\n");
 		for(var i = 0; i < codelines.length; i++) {
 			// uniform vec4 lights[4]; とすると、 uniform,vec4,lights,[4]で区切られる
@@ -156,7 +216,7 @@ S3GLProgram.prototype._init = function(gl) {
 			variable[text_variable].name		= text_variable;		// M
 			variable[text_variable].modifiers	= text_space;			// uniform
 			variable[text_variable].is_array	= is_array;
-			variable[text_variable].location	= null;
+			variable[text_variable].location	= [];
 			
 		}
 		return;
@@ -166,75 +226,178 @@ S3GLProgram.prototype.toHash = function() {
 	var hash = (this.vertex.toHash() + this.fragment.toHash()) & 0xFFFFFFFF;
 	return hash;
 };
-S3GLProgram.prototype.isSetShader = function() {
-	if(this.vertex === null || this.fragment === null ) {
+S3GLProgram.prototype.isLinked = function() {
+	return this.is_linked;
+};
+S3GLProgram.prototype.dispose = function() {
+	var gl = this.sys.getGL();
+	if(gl === null) {
 		return false;
 	}
+	if(this.is_linked) {
+		this.disuseProgram();
+		gl.detachShader(this.program, this.vertex.getShader()   );
+		gl.detachShader(this.program, this.fragment.getShader() );
+		gl.deleteProgram(this.program);
+		this.program		= null;
+		this.is_linked		= false;
+	}
+	if(this.vertex !== null) {
+		this.vertex.dispose();
+		this.vertex = null;
+	}
+	if(this.fragment !== null) {
+		this.fragment.dispose();
+		this.fragment = null;
+	}
+	this._init(this.sys, this.id);
 	return true;
 };
-S3GLProgram.prototype.isLinked = function() {
-	return (this.program !== null);
+S3GLProgram.prototype.setVertexShader = function(shader_code) {
+	if(this.isLinked()) {
+		return false;
+	}
+	if(this.vertex !== null) {
+		this.vertex.dispose();
+		this.vertex = null;
+	}
+	this.vertex = new S3GLShader(this.sys, shader_code);
+	this.is_error = false;
+	return true;
+};
+S3GLProgram.prototype.setFragmentShader = function(shader_code) {
+	if(this.isLinked()) {
+		return false;
+	}
+	if(this.fragment !== null) {
+		this.fragment.dispose();
+		this.fragment = null;
+	}
+	this.fragment = new S3GLShader(this.sys, shader_code);
+	this.is_error = false;
+	return true;
 };
 
-/**
- * コンパイル済みの頂点シェーダー、フラグメントシェーダーをセットする
- * セットするシェーダーの順番は順不同である
- * @param {S3GLShader} shader
- * @returns {Boolean}
- */
-S3GLProgram.prototype.setShader = function(shader) {
+S3GLProgram.prototype.setVertexShaderURL = function(url) {
 	if(this.isLinked()) {
-		return true;
-	}
-	var gl = this.gl;
-	if(shader.sharder_type === gl.VERTEX_SHADER) {
-		this.vertex = shader;
-	}
-	else if(shader.sharder_type === gl.FRAGMENT_SHADER) {
-		this.fragment = shader;
-	}
-	if(this.isSetShader()) {
-		return true;
-	}
-	else {
 		return false;
 	}
+	var that = this;
+	var downloadCallback = function(code) {
+		that.setVertexShader(code);
+		that.isDLVertex = false;
+	};
+	this.isDLVertex = true;
+	this.sys._download(url, downloadCallback);
+	return true;
 };
 
-/**
- * セットした2種類（頂点とフラグメント）のシェーダーをリンクさせて利用可能状態にする
- * @returns {Boolean} trueで成功
- */
-S3GLProgram.prototype.linkedSharder = function() {
-	if(!this.isSetShader()) {
-		return false;
-	}
+S3GLProgram.prototype.setFragmentShaderURL = function(url) {
 	if(this.isLinked()) {
-		return true;
-	}
-	var gl = this.gl;
-	var program = gl.createProgram();
-	gl.attachShader(program, this.vertex.compileddata   );
-	gl.attachShader(program, this.fragment.compileddata );
-	gl.linkProgram(program);
-	if(gl.getProgramParameter(program, gl.LINK_STATUS)){
-		// リンクが成功したらプログラムの解析しておく
-		this.program = program;
-		this.analysisShader(this.vertex.code, this.variable);
-		this.analysisShader(this.fragment.code, this.variable);
-		return true;
-	}
-	else {
-		console.log("link error " + gl.getProgramInfoLog(program));
 		return false;
 	}
+	var that = this;
+	var downloadCallback = function(code) {
+		that.setFragmentShader(code);
+		that.isDLFragment = false;
+	};
+	this.isDLFragment = true;
+	this.sys._download(url, downloadCallback);
+	return true;
 };
 
 S3GLProgram.prototype.useProgram = function() {
 	if(!this.isLinked()) {
 		return false;
 	}
-	this.gl.useProgram(this.program);
+	var program = this.getProgram();
+	if(program && this.sys.getGL()) {
+		this.sys.getGL().useProgram(program);
+	}
+	return true;
+};
+S3GLProgram.prototype.disuseProgram = function() {
+	if(!this.isLinked()) {
+		return false;
+	}
+	var gl = this.sys.getGL();
+	if(gl) {
+		// enable化したデータを解放する
+		for(var key in this.enable_vertex_number) {
+			gl.disableVertexAttribArray(key);
+		}
+		this.enable_vertex_number = {};
+	}
+	return true;
+};
+S3GLProgram.prototype.getProgram = function() {
+	var gl = this.sys.getGL();
+	// 1度でもエラーが発生したか、glキャンバスの設定をしていない場合
+	if((gl === null) || this.is_error) {
+		return null;
+	}
+	// ダウンロード中なら無視する
+	if(this.isDLVertex || this.isDLFragment) {
+		return null;
+	}
+	// すでにリンク済みのがあれば返す
+	if(this.isLinked()) {
+		return this.program;
+	}
+	// シェーダーを取得する
+	if(this.vertex === null) {
+		console.log("do not set VERTEX_SHADER");
+		this.is_error = true;
+		return null;
+	}
+	if(this.fragment === null) {
+		console.log("do not set FRAGMENT_SHADER");
+		this.is_error = true;
+		return null;
+	}
+	var is_error_vertex		= this.vertex.isError();
+	var is_error_fragment	= this.fragment.isError();
+	if(is_error_vertex || is_error_fragment) {
+		console.log("shader compile error");
+		this.is_error = true;
+		return null;
+	}
+	var shader_vertex	= this.vertex.getShader();
+	var shader_fragment	= this.fragment.getShader();
+	if((shader_vertex === null) || (shader_fragment === null)) {
+		// まだロードが終わってない可能性あり
+		return null;
+	}
+	if(this.vertex.getShaderType() !== gl.VERTEX_SHADER) {
+		console.log("VERTEX_SHADER is not VERTEX_SHADER");
+		this.is_error = true;
+		return null;
+	}
+	if(this.fragment.getShaderType() !== gl.FRAGMENT_SHADER) {
+		console.log("FRAGMENT_SHADER is not FRAGMENT_SHADER");
+		this.is_error = true;
+		return null;
+	}
+	// 取得したシェーダーを用いてプログラムをリンクする
+	var program			= gl.createProgram();
+	gl.attachShader(program, shader_vertex   );
+	gl.attachShader(program, shader_fragment );
+	gl.linkProgram(program);
+	if(!gl.getProgramParameter(program, gl.LINK_STATUS)){
+		// リンクのエラー発生時
+		console.log("link error " + gl.getProgramInfoLog(program));
+		this.is_error = true;
+		gl.detachShader(program, this.vertex.getShader()   );
+		gl.detachShader(program, this.fragment.getShader() );
+		gl.deleteProgram(program);
+		return null;
+	}
+	// リンクが成功したらプログラムの解析しておく
+	this.is_linked = true;
+	this.program = program;
+	this.analysisShader(this.vertex.getCode(), this.variable);
+	this.analysisShader(this.fragment.getCode(), this.variable);
+	return this.program;
 };
 
 /**
@@ -247,14 +410,13 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	if(!this.isLinked()) {
 		return false;
 	}
-	var gl	= this.gl;
-	var prg	= this.program;
+	var gl	= this.sys.getGL();
+	var prg	= this.getProgram();
 	var variable	= this.variable[name];
 	var i = 0;
 	
-	// 位置が不明なら調査しておく
-	if(variable.location === null) {
-		variable.location = [];
+	// 長さが0なら位置が未調査なので調査する
+	if(variable.location.length === 0) {
 		if(variable.modifiers === "attribute") {
 			variable.location[0] = gl.getAttribLocation(prg, name);
 		}
@@ -273,7 +435,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	}
 	if(variable.location[0] === -1) {
 		// 変数は宣言されているが、関数の中で使用していないと -1 がかえる
-		return;
+		return false;
 	}
 	// data が bind できる形になっているか調査する
 	
@@ -319,6 +481,8 @@ S3GLProgram.prototype.bindData = function(name, data) {
 		}
 		throw "not toArraydata";
 	};
+	
+	// 引数の値をArray型に統一化する
 	if(!variable.is_array) {
 		data = toArraydata(data);
 	}
@@ -332,12 +496,14 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	
 	// 装飾子によって bind する方法を変更する
 	if(variable.modifiers === "attribute") {
+		// bindしたいデータ
 		gl.bindBuffer(gl.ARRAY_BUFFER, data);
-		// 変数を有効化するが、もしWEBGLオブジェクトで別のシェーダーを利用したい場合は、
-		// disableVertexAttribArray が必要である。
-		// getActiveAttrib で有効化したものかは確認が可能
-		gl.enableVertexAttribArray(variable.location[0]);
-		// 型は適当
+		// 有効化していない場合は有効化する
+		if(!this.enable_vertex_number[variable.location[0]]) {
+			gl.enableVertexAttribArray(variable.location[0]);
+			this.enable_vertex_number[variable.location[0]] = true;
+		}
+		// bind。型は適当に設定
 		gl.vertexAttribPointer(
 			variable.location[0],
 			variable.size,
@@ -345,6 +511,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 			false, 0, 0);
 	}
 	else {
+		// uniform の設定
 		if(!variable.is_array) {
 			variable.bind(variable.location[0], data);
 		}
@@ -367,11 +534,20 @@ S3GLProgram.prototype.bindData = function(name, data) {
  * @returns {Integer} IBOのインデックス数
  */
 S3GLProgram.prototype.bindFrozenMesh = function(frozenMesh) {
+	if(frozenMesh === null) {
+		// 入力値が用意されていない
+		return 0;
+	}
 	if(!this.isLinked()) {
-		return false;
+		// programが未作成
+		return 0;
+	}
+	var gl = this.sys.getGL();
+	if(gl === null) {
+		// glが用意されていない
+		return 0;
 	}
 	var gldata = frozenMesh;
-	var gl = this.gl;
 	// インデックスをセット
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
 	var index_length = gldata.ibo.array_length;
@@ -406,145 +582,114 @@ S3GLProgram.prototype.bindFrozenMesh = function(frozenMesh) {
 var S3SystemGL = function() {
 	this.super = S3System.prototype;
 	this.super.setSystemMode.call(this, S3SystemMode.OPEN_GL);
-	this.myfunc = {};
-	this.myfunc.download = function(url, callback) {
-		var dotlist = url.split(".");
-		var isImage = false;
-		var ext = "";
-		if(dotlist.length > 1) {
-			var ext = dotlist[dotlist.length - 1].toLocaleString();
-			isImage = (ext === "gif") || (ext === "jpg") || (ext === "png") || (ext === "bmp") || (ext === "svg") || (ext === "jpeg");
-		}
-		if(isImage) {
-			var image = new Image();
-			image.onload = function() {
-				callback(image, ext);
-			};
-			image.src = this.pathname;
-		}
-		var http = new XMLHttpRequest();
-		var handleHttpResponse = function (){
-			if(http.readyState === 4) { // DONE
-				if(http.status !== 200) {
-					console.log("error downloadText " + url);
-					return(null);
-				}
-				callback(http.responseText, ext);
-			}
-		};
-		http.onreadystatechange = handleHttpResponse;
-		http.open("GET", url, true);
-		http.send(null);
-	};
-	this.myfunc.toHashFromString = function(text) {
-		var i = 0;
-		var hash = 0;
-		for(i = 0; i < text.length; i++) {
-			hash = (hash * 48271 + text.charCodeAt(i)) & 0xFFFFFFFF;
-		}
-		return hash;
-	};
-	
-	var cash = {};
-	cash.url		= [];
-	cash.complie	= [];
-	cash.program	= [];
-	this.cash = cash;
-	var program = {};
-	this.program	= program;
+	this.program		= null;
+	this.gl				= null;
+	this.is_set			= false;
+	this.program_list	= [];
+	this.program_listId	= 0;
 };
 S3SystemGL.prototype = new S3System();
+
+S3SystemGL.prototype._download = function(url, callback) {
+	var dotlist = url.split(".");
+	var isImage = false;
+	var ext = "";
+	if(dotlist.length > 1) {
+		var ext = dotlist[dotlist.length - 1].toLocaleString();
+		isImage = (ext === "gif") || (ext === "jpg") || (ext === "png") || (ext === "bmp") || (ext === "svg") || (ext === "jpeg");
+	}
+	if(isImage) {
+		var image = new Image();
+		image.onload = function() {
+			callback(image, ext);
+		};
+		image.src = this.pathname;
+	}
+	var http = new XMLHttpRequest();
+	var handleHttpResponse = function (){
+		if(http.readyState === 4) { // DONE
+			if(http.status !== 200) {
+				console.log("error downloadText " + url);
+				return(null);
+			}
+			callback(http.responseText, ext);
+		}
+	};
+	http.onreadystatechange = handleHttpResponse;
+	http.open("GET", url, true);
+	http.send(null);
+};
+
+S3SystemGL.prototype.getGL = function() {
+	return this.gl;
+};
 
 S3SystemGL.prototype.setCanvas = function(canvas) {
 	// 初期化色
 	var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 	this.canvas = canvas;
 	this.gl = gl;
-	this.program.setting	= new S3GLProgram(this.gl);
-	this.program.run		= new S3GLProgram(this.gl);
 };
 
-S3SystemGL.prototype.getShaderType = function(text) {
-	var dotlist = text.split(".");
-	var ext = "";
-	if(dotlist.length > 1) {
-		ext = dotlist[dotlist.length - 1].toLocaleString();
-	}
-	if((ext==="vert") || (ext==="vs") || (text==="x-shader/x-vertex")) {
-		return this.gl.VERTEX_SHADER;
-	}
-	else if((ext==="frag") || (ext==="fs") || (text==="x-shader/x-fragment")) {
-		return this.gl.FRAGMENT_SHADER;
-	}
-	else {
-		throw "IllegalArgumentException";
+S3SystemGL.prototype.createProgram = function() {
+	var program = new S3GLProgram(this, this.program_listId);
+	this.program_list[this.program_listId] = program;
+	this.program_listId++;
+	return program;
+};
+
+S3SystemGL.prototype.disposeProgram = function() {
+	for(var key in this.program_list) {
+		this.program_list[key].dispose();
+		delete this.program_list[key];
 	}
 };
 
-S3SystemGL.prototype.setShader = function(shader) {
-	if(!this.program.setting.setShader(shader)) {
-		return;
+S3SystemGL.prototype.setProgram = function(glprogram) {
+	// nullの場合はエラーも無視
+	if(glprogram === null) {
+		return false;
 	}
-	// キャッシュがあれば、それを使う
-	var hash = this.program.setting.toHash();
-	if(this.cash.program[hash] !== undefined) {
-		this.program.run = this.cash.program[hash];
-		this.program.setting	= new S3GLProgram(this.gl);
-		this.program.run.useProgram();
+	// 明確な入力の誤り
+	if(!(glprogram instanceof S3GLProgram)) {
+		throw "not S3GLProgram";
 	}
-	else if(this.program.setting.linkedSharder()){
-		this.cash.program[hash]	= this.program.setting;
-		this.program.run		= this.program.setting;
-		this.program.setting	= new S3GLProgram(this.gl);
-		this.program.run.useProgram();
+	// 新規のプログラムなら保持しておく
+	if(this.program === null) {
+		this.program = glprogram;
 	}
-};
-
-S3SystemGL.prototype.isSetShader = function() {
-	var prg = this.program.run;
-	return ((prg !== null) && (prg.isLinked()));
-};
-
-S3SystemGL.prototype.setShaderCode = function(code, sharder_type) {
-	// キャッシュがあれば、それを使う
-	var shader = new S3GLShader(this.gl, code, sharder_type);
-	var hash = shader.toHash();
-	if(this.cash.complie[hash] !== undefined) {
-		this.setShader(this.cash.complie[hash]);
-		return;
+	// プログラムが取得できない場合は、ダウンロード中の可能性あり無視する
+	var new_program = glprogram.getProgram();
+	if(null === new_program) {
+		return false;
 	}
-	if(shader.compileSharder()) {
-		this.cash.complie[hash] = shader;
-		this.setShaderCode(code);
+	// すでに動作中で、設定されているものと同一なら無視する
+	if((this.program === glprogram) && this.is_set) {
 		return true;
 	}
-	return false;
-};
-
-S3SystemGL.prototype.setShaderURL = function(url) {
-	// キャッシュがあれば、それを使う
-	var shader = this.cash.url[url];
-	if(shader !== undefined) {
-		this.setShaderCode( shader.code, shader.sharder_type );
-		return;
+	// 新しいプログラムなのでセットする
+	if(this.program !== null) {
+		this.program.disuseProgram();
 	}
-	var that = this;
-	var sharder_type = this.getShaderType(url);
-	var downloadCallback = function(code) {
-		shader = new S3GLShader(that.gl, code, sharder_type);
-		that.cash.url[url] = shader;
-		that.setShaderURL(url);
-	};
-	this.myfunc.download(url, downloadCallback);
+	this.program = glprogram;
+	this.gl.useProgram(new_program);
+	this.is_set = true;
 };
 
 S3SystemGL.prototype.clear = function() {
+	if(this.gl === null) {
+		return false;
+	}
 	this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	this.gl.clearDepth(1.0);
 	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+	return true;
 };
 
 S3SystemGL.prototype.createVBO = function(data) {
+	if(this.gl === null) {
+		return null;
+	}
 	var vbo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
 	this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
@@ -553,6 +698,9 @@ S3SystemGL.prototype.createVBO = function(data) {
 };
 
 S3SystemGL.prototype.createIBO = function(data) {
+	if(this.gl === null) {
+		return null;
+	}
 	var ibo = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
 	this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
@@ -561,7 +709,7 @@ S3SystemGL.prototype.createIBO = function(data) {
 };
 
 S3SystemGL.prototype.drawElements = function(indexsize) {
-	if(!this.program.run.isLinked()) {
+	if(!this.is_set) {
 		return;
 	}
 	this.gl.drawElements(this.gl.TRIANGLES, indexsize, this.gl.UNSIGNED_SHORT, 0);
@@ -569,16 +717,25 @@ S3SystemGL.prototype.drawElements = function(indexsize) {
 };
 
 S3SystemGL.prototype.deleteBuffer = function(data) {
+	if(this.gl === null) {
+		return null;
+	}
 	this.gl.deleteBuffer(data);
 };
 
 S3SystemGL.prototype._setDepthMode = function() {
+	if(this.gl === null) {
+		return null;
+	}
 	var gl = this.gl;
 	gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LEQUAL);
 };
 
 S3SystemGL.prototype._setCullMode = function() {
+	if(this.gl === null) {
+		return null;
+	}
 	var gl = this.gl;
 	if(this.cullmode === S3CullMode.NONE) {
 		gl.disable(gl.CULL_FACE);
@@ -605,10 +762,10 @@ S3SystemGL.prototype._setCullMode = function() {
 };
 
 S3SystemGL.prototype.bind = function(p1, p2) {
-	if(!this.isSetShader()) {
-		return 0;
+	if(!this.is_set) {
+		return;
 	}
-	var prg = this.program.run;
+	var prg = this.program;
 	var index_lenght = 0;
 	// p1が文字列、p2がデータの場合、データとして結びつける
 	if((arguments.length === 2) && ((typeof p1 === "string")||(p1 instanceof String))) {
@@ -629,8 +786,13 @@ S3SystemGL.prototype.bind = function(p1, p2) {
 };
 
 S3SystemGL.prototype.drawScene = function(scene) {
-	if(!this.isSetShader()) {
-		return 0;
+	// プログラムを再設定
+	
+	this.setProgram(this.program);
+	
+	// まだ設定できていない場合は、この先へいかせない
+	if(!this.is_set) {
+		return;
 	}
 	
 	// 画面の初期化
@@ -656,6 +818,8 @@ S3SystemGL.prototype.drawScene = function(scene) {
 		this.bind("matrixLocalToPerspective", MVP);
 		
 		var indexsize = this.bind(model);
-		this.drawElements(indexsize);
+		if(indexsize) {
+			this.drawElements(indexsize);
+		}
 	}
 };
