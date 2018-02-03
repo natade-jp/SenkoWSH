@@ -34,18 +34,21 @@ var S3GLShader = function(sys, code) {
 };
 S3GLShader.prototype._init = function(sys, code) {
 	this.sys			= sys;
-	this.code			= code;
+	this.code			= null;
 	this.shader			= null;
 	this.sharder_type	= -1;
 	this.is_error		= false;
-};
-S3GLShader.prototype.toHash = function() {
-	var i = 0;
-	var hash = 0;
-	for(i = 0; i < this.code.length; i++) {
-		hash = (hash * 48271 + this.code.charCodeAt(i)) & 0xFFFFFFFF;
+	var that = this;
+	var downloadCallback = function(code) {
+		that.code = code;
+	};
+	if(code.split("\n").length === 1) {
+		// 1行の場合はURLとみなす（雑）
+		this.sys._download(code, downloadCallback);
 	}
-	return hash;
+	else {
+		this.code = code;
+	}
 };
 S3GLShader.prototype.isError = function() {
 	return this.is_error;
@@ -55,19 +58,22 @@ S3GLShader.prototype.getCode = function() {
 };
 S3GLShader.prototype.getShader = function() {
 	var gl = this.sys.getGL();
-	if((gl === null) || this.is_error) {
+	if((gl === null) || this.is_error || (this.code === null)) {
+		// まだ準備ができていないのでエラーを発生させない
 		return null;
 	}
 	if(this.shader !== null) {
+		// すでにコンパイル済みであれば返す
 		return this.shader;
 	}
 	var code = this.code;
 	// コメントを除去する
 	code = code.replace(/\/\/.*/g,"");
 	code = code.replace(/\/\*([^*]|\*[^\/])*\*\//g,"");
+	// コード内を判定して種別を自動判断する（雑）
 	var sharder_type = 0;
-	// フラグメントシェーダである
 	if(code.indexOf("gl_FragColor") !== -1) {
+	// フラグメントシェーダである
 		sharder_type = gl.FRAGMENT_SHADER;
 	}
 	else {
@@ -222,10 +228,6 @@ S3GLProgram.prototype._init = function(sys, id) {
 		return;
 	};
 };
-S3GLProgram.prototype.toHash = function() {
-	var hash = (this.vertex.toHash() + this.fragment.toHash()) & 0xFFFFFFFF;
-	return hash;
-};
 S3GLProgram.prototype.isLinked = function() {
 	return this.is_linked;
 };
@@ -275,34 +277,6 @@ S3GLProgram.prototype.setFragmentShader = function(shader_code) {
 	}
 	this.fragment = new S3GLShader(this.sys, shader_code);
 	this.is_error = false;
-	return true;
-};
-
-S3GLProgram.prototype.setVertexShaderURL = function(url) {
-	if(this.isLinked()) {
-		return false;
-	}
-	var that = this;
-	var downloadCallback = function(code) {
-		that.setVertexShader(code);
-		that.isDLVertex = false;
-	};
-	this.isDLVertex = true;
-	this.sys._download(url, downloadCallback);
-	return true;
-};
-
-S3GLProgram.prototype.setFragmentShaderURL = function(url) {
-	if(this.isLinked()) {
-		return false;
-	}
-	var that = this;
-	var downloadCallback = function(code) {
-		that.setFragmentShader(code);
-		that.isDLFragment = false;
-	};
-	this.isDLFragment = true;
-	this.sys._download(url, downloadCallback);
 	return true;
 };
 
@@ -609,7 +583,7 @@ S3SystemGL.prototype._download = function(url, callback) {
 	var handleHttpResponse = function (){
 		if(http.readyState === 4) { // DONE
 			if(http.status !== 200) {
-				console.log("error downloadText " + url);
+				console.log("error download [" + url + "]");
 				return(null);
 			}
 			callback(http.responseText, ext);

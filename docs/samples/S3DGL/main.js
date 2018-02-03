@@ -10,8 +10,8 @@
 	controller.setCanvas(canvas);
 	
 	var program = s3.createProgram();
-	program.setFragmentShaderURL("../../library/SenkoLib/S3DGL.fs");
-	program.setVertexShaderURL("../../library/SenkoLib/S3DGL.vs");
+	program.setFragmentShader("../../library/SenkoLib/S3DGL.fs");
+	program.setVertexShader("../../library/SenkoLib/S3DGL.vs");
 	
 	s3.setProgram(program);
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
