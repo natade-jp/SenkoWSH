@@ -1,8 +1,8 @@
 ﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File, S3FrontFace, S3LightMode */
 
-﻿function test3D(canvas, mqodata) {
+﻿function test3D(canvas) {
 	
-	var s3 = new S3SystemGL();
+	var s3 = new S3GLSystem();
 	var controller = new CameraController();
 	var camera = s3.createCamera();
 
@@ -18,7 +18,8 @@
 	s3.setFrontMode(S3FrontFace.CLOCKWISE);
 	
 	var model = new S3Model();
-	var mesh = S3Mesh.fromMQO(mqodata);
+	var mesh = s3.createMesh();
+	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
 	model.setMesh(mesh);
 	model.setScale(5);
 
@@ -34,7 +35,6 @@
 	light_down.setMode(S3LightMode.DIRECTIONAL_LIGHT);
 	light_down.setDirection(new S3Vector( 0,  -1,  0));
 	scene.addLight(light_down);
-	
 	
 	var redraw = function() {
 		scene.setCamera(controller.getCamera());
@@ -69,12 +69,7 @@
 	panel.setPixelSize(640, 480);
 	panel.setSize(640, 480);
 	
-	// ファイルロード
-	var fModel = new File("../resource/teapod.mqo");
-//	File.downloadFileList([fModel], function() {
-//		test3D(panel.getCanvas(), fModel.getText());
-//	});
-	
+	test3D(panel.getCanvas());
 	
 }
 

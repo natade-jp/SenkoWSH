@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3SystemGL, S3Scene, S3LightMode, Float32Array */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3GLSystem, S3Scene, S3LightMode, Float32Array */
 
 ﻿"use strict";
 
@@ -221,14 +221,56 @@ S3Vertex.prototype.getVertexData = function() {
  * /////////////////////////////////////////////////////////
  */
 
+var S3GLMesh = function(sys) {
+	this.sys = sys;
+	this.super = S3GLMesh.prototype;
+	this.super.init.call(this);
+	
+	var that = this;
+	
+	this.glfunc = {
+		createVBO : function(data) {
+			var gl = that.sys.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var vbo = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+			gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+			return vbo;
+		},
+
+		createIBO : function(data) {
+			var gl = that.sys.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var ibo = gl.createBuffer();
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+			return ibo;
+		},
+		
+		deleteBuffer : function(data) {
+			var gl = that.sys.getGL();
+			if(gl !== null) {
+				gl.deleteBuffer(data);;
+			}
+		}
+	};
+};
+S3GLMesh.prototype = new S3Mesh();
+
 /**
  * 自分が持っている頂点情報に、メッシュの形から自動計算した法線情報を付け加える
  * @returns {undefined}
  */
-S3Mesh.prototype._makeNormalMap = function() {
+S3GLMesh.prototype._makeNormalMap = function() {
 	var i, j;
-	var vertex_list			= this.vertex;
-	var triangleindex_list	= this.triangleindex;
+	var vertex_list			= this.getVertexArray();
+	var triangleindex_list	= this.getTriangleIndexArray();
 	var normal_stacklist	= [];
 	
 	// 各面の法線を調べて、スタックへ配列へ保存していく
@@ -275,18 +317,13 @@ S3Mesh.prototype._makeNormalMap = function() {
 
 /**
  * メッシュの頂点情報やインデックス情報を、WebGLで扱うIBO/VBO形式に計算して変換する
- * 一度計算を終えた場合は使いまわします。
  * @returns {undefined}
  */
-S3Mesh.prototype.freezeMesh = function() {
-	if(this.isFrozen) {
-		return;
-	}
-	this._makeNormalMap();
+S3GLMesh.prototype._getGLArrayData = function() {
 	
-	var material_list		= this.material;
-	var vertex_list			= this.vertex;
-	var triangleindex_list	= this.triangleindex;
+	var material_list		= this.getMaterialArray();
+	var vertex_list			= this.getVertexArray();
+	var triangleindex_list	= this.getTriangleIndexArray();
 	var i, j;
 	var hashlist = [];
 	var vertex_length = 0;
@@ -379,102 +416,74 @@ S3Mesh.prototype.freezeMesh = function() {
 		}
 	}
 	
-	this.frozenMesh = {};
-	this.frozenMesh.ibo = ibo;
-	this.frozenMesh.vbo = vbo;
-	this.isFrozen = true;
+	var arraydata = {};
+	arraydata.ibo = ibo;
+	arraydata.vbo = vbo;
+	return arraydata;
 };
 
-S3Mesh.prototype.deleteIBO = function(s3system) {
-	if(!(s3system instanceof S3SystemGL)) {
-		throw "not S3SystemGL";
-	}
-	if(this.frozenMesh === undefined) {
+S3GLMesh.prototype.disposeGLData = function() {
+	// コンパイルしていなかったら抜ける
+	if(!this.isCompileGL()) {
 		return;
 	}
-	if(this.frozenMesh.ibo.data !== undefined) {
-		s3system.deleteBuffer(this.frozenMesh.ibo.data);
-		delete this.frozenMesh.ibo.data;
-	}
-};
-
-S3Mesh.prototype.deleteVBO = function(s3system) {
-	if(!(s3system instanceof S3SystemGL)) {
-		throw "not S3SystemGL";
-	}
-	if(this.frozenMesh === undefined) {
-		return;
-	}
-	for(var key in this.frozenMesh.vbo) {
-		if(this.frozenMesh.vbo[key].data !== undefined) {
-			s3system.deleteBuffer(this.frozenMesh.vbo[key].data);
-			delete this.frozenMesh.vbo[key].data;
+	var gldata = this.getGLData();
+	if(gldata !== null) {
+		if(gldata.ibo !== undefined) {
+			if(gldata.ibo.data !== undefined) {
+				this.glfunc.deleteBuffer(gldata.ibo.data);
+			}
+		}
+		if(gldata.vbo !== undefined) {
+			for(var key in this.frozenMesh.vbo) {
+				if(this.frozenMesh.vbo[key].data !== undefined) {
+					this.glfunc.deleteBuffer(this.frozenMesh.vbo[key].data);
+				}
+			}
 		}
 	}
-};
-
-/**
- * VBO/IBOを作成したときに使用したWebGLで、作成したデータを解放する
- * @param {S3SystemGL} s3system
- * @returns {undefined}
- */
-S3Mesh.prototype.deleteFrozenMeshData = function(s3system) {
-	if(!(s3system instanceof S3SystemGL)) {
-		throw "not S3SystemGL";
-	}
-	if(this.frozenMesh === undefined) {
-		return;
-	}
-	this.deleteIBO(s3system);
-	this.deleteVBO(s3system);
-	delete this.frozenMesh;
-	this.isFrozen = false;
+	delete this.gldata;
+	this.gldata = {};
+	this.is_compile_gl	= false;
 };
 
 /**
  * VBO/IBOを作成するため、使用中のWEBGL情報を設定し、データを作成する
- * @param {S3SystemGL} s3system
- * @returns {undefined}
+ * @returns {S3GLMesh.gldata}
  */
-S3Mesh.prototype.initFrozenMeshData = function(s3system) {
-	if(!(s3system instanceof S3SystemGL)) {
-		throw "not S3SystemGL";
+S3GLMesh.prototype.getGLData = function() {
+	// すでに存在している場合は、返す
+	
+	if(this.isCompileGL()) {
+		return this.gldata;
 	}
-	if((!this.isFrozen) && (!this.frozenMesh === undefined)) {
-		return;
+	// 完成していない場合は null
+	if(this.isComplete() === false) {
+		return null;
 	}
-	// フリーズデータ（固定データ）を取得する
-	this.freezeMesh();
-	// IBO / VBO 用のオブジェクトを作成しなおす
-	this.deleteIBO(s3system);
-	this.deleteVBO(s3system);
-	this.frozenMesh.ibo.data = s3system.createIBO(this.frozenMesh.ibo.array);
-	for(var key in this.frozenMesh.vbo) {
-		this.frozenMesh.vbo[key].data = s3system.createVBO(this.frozenMesh.vbo[key].array);
+	// GLを取得できない場合も、この時点で終了させる
+	if(this.sys.getGL() === null) {
+		return null;
 	}
+	// 作成
+	this._makeNormalMap(); // ノーマルマップを作成して
+	var gldata = this._getGLArrayData(); // GL用の配列データを作成
+	// IBO / VBO 用のオブジェクトを作成
+	gldata.ibo.data = this.glfunc.createIBO(gldata.ibo.array);
+	for(var key in gldata.vbo) {
+		gldata.vbo[key].data = this.glfunc.createVBO(gldata.vbo[key].array);
+	}
+	// 代入
+	this.gldata = gldata;
+	return this.gldata;
 };
 
-/**
- * WEBGL用のVBO/IBOデータを取得する
- * @param {S3SystemGL} s3system
- * @returns {S3Mesh.freeze}
- */
-S3Mesh.prototype.getFrozenMeshData = function(s3system) {
-	if(!(s3system instanceof S3SystemGL)) {
-		throw "not S3SystemGL";
+S3GLMesh.prototype.test = function() {
+	console.log("test 1");
+	if(this instanceof S3Mesh) {
+		console.log("test 2");
 	}
-	this.initFrozenMeshData(s3system);
-	return this.frozenMesh;
-};
-
-/**
- * WEBGL用のVBO/IBOデータを取得する
- * @param {S3SystemGL} s3system
- * @returns {S3Model.prototype@call;getMesh@call;getGLData}
- */
-S3Model.prototype.getFrozenMeshData = function(s3system) {
-	if(!(s3system instanceof S3SystemGL)) {
-		throw "not S3SystemGL";
+	if(this instanceof S3GLMesh) {
+		console.log("test 3");
 	}
-	return this.getMesh().getFrozenMeshData(s3system);
 };

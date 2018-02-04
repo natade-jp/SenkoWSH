@@ -39,7 +39,7 @@
 	System.out.println(mesh.outputData(S3Mesh.DATA_MQO));
 	
 	System.out.println("MQOでの入力テスト");
-	mesh.inputData(mqodata, S3Mesh.DATA_MQO);
+	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
 
 	var model = new S3Model();
 	model.setMesh(mesh);

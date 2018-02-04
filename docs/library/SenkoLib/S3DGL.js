@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight */
+﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh */
 
 ﻿"use strict";
 
@@ -25,7 +25,7 @@
  * 頂点シェーダー／フラグメントシェーダ―用クラス
  * ソースコード、コンパイル済みデータ、シェーダータイプを格納できる
  * S3GLProgram 内部で利用するもので、一般的にこれ単体では使用しない
- * @param {S3SystemGL} sys
+ * @param {S3GLSystem} sys
  * @param {String} code
  * @returns {S3GLShader}
  */
@@ -42,7 +42,7 @@ S3GLShader.prototype._init = function(sys, code) {
 	var downloadCallback = function(code) {
 		that.code = code;
 	};
-	if(code.split("\n").length === 1) {
+	if(code.indexOf("\n") === -1) {
 		// 1行の場合はURLとみなす（雑）
 		this.sys._download(code, downloadCallback);
 	}
@@ -130,7 +130,7 @@ S3GLShader.prototype.dispose = function() {
  * 頂点シェーダー、フラグメントシェーダーの2つを組み合わせたプログラム用のクラス
  * 2種類のシェーダーと、リンクしたプログラムを格納できる
  * またプログラムをセットしたり、セットした後は変数とのバインドができる。
- * @param {S3SystemGL} sys
+ * @param {S3GLSystem} sys
  * @param {Integer} id
  * @returns {S3GLProgram}
  */
@@ -504,14 +504,10 @@ S3GLProgram.prototype.bindData = function(name, data) {
 
 /**
  * プログラムにデータを結びつける
- * @param {Object} frozenMesh
+ * @param {Object} s3mesh
  * @returns {Integer} IBOのインデックス数
  */
-S3GLProgram.prototype.bindFrozenMesh = function(frozenMesh) {
-	if(frozenMesh === null) {
-		// 入力値が用意されていない
-		return 0;
-	}
+S3GLProgram.prototype.bindMesh = function(s3mesh) {
 	if(!this.isLinked()) {
 		// programが未作成
 		return 0;
@@ -521,7 +517,11 @@ S3GLProgram.prototype.bindFrozenMesh = function(frozenMesh) {
 		// glが用意されていない
 		return 0;
 	}
-	var gldata = frozenMesh;
+	var gldata = s3mesh.getGLData();
+	if(gldata === null) {
+		// 入力値が用意されていない
+		return 0;
+	}
 	// インデックスをセット
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gldata.ibo.data );
 	var index_length = gldata.ibo.array_length;
@@ -548,12 +548,12 @@ S3GLProgram.prototype.bindFrozenMesh = function(frozenMesh) {
 
 /**
  * /////////////////////////////////////////////////////////
- * S3SystemGL
+ * S3GLSystem
  * S3SystemのWebGL拡張
  * /////////////////////////////////////////////////////////
  */
 
-var S3SystemGL = function() {
+var S3GLSystem = function() {
 	this.super = S3System.prototype;
 	this.super.setSystemMode.call(this, S3SystemMode.OPEN_GL);
 	this.program		= null;
@@ -562,9 +562,11 @@ var S3SystemGL = function() {
 	this.program_list	= [];
 	this.program_listId	= 0;
 };
-S3SystemGL.prototype = new S3System();
-
-S3SystemGL.prototype._download = function(url, callback) {
+S3GLSystem.prototype = new S3System();
+S3GLSystem.prototype.createMesh = function() {
+	return new S3GLMesh(this);
+};
+S3GLSystem.prototype._download = function(url, callback) {
 	var dotlist = url.split(".");
 	var isImage = false;
 	var ext = "";
@@ -594,32 +596,32 @@ S3SystemGL.prototype._download = function(url, callback) {
 	http.send(null);
 };
 
-S3SystemGL.prototype.getGL = function() {
+S3GLSystem.prototype.getGL = function() {
 	return this.gl;
 };
 
-S3SystemGL.prototype.setCanvas = function(canvas) {
+S3GLSystem.prototype.setCanvas = function(canvas) {
 	// 初期化色
 	var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
 	this.canvas = canvas;
 	this.gl = gl;
 };
 
-S3SystemGL.prototype.createProgram = function() {
+S3GLSystem.prototype.createProgram = function() {
 	var program = new S3GLProgram(this, this.program_listId);
 	this.program_list[this.program_listId] = program;
 	this.program_listId++;
 	return program;
 };
 
-S3SystemGL.prototype.disposeProgram = function() {
+S3GLSystem.prototype.disposeProgram = function() {
 	for(var key in this.program_list) {
 		this.program_list[key].dispose();
 		delete this.program_list[key];
 	}
 };
 
-S3SystemGL.prototype.setProgram = function(glprogram) {
+S3GLSystem.prototype.setProgram = function(glprogram) {
 	// nullの場合はエラーも無視
 	if(glprogram === null) {
 		return false;
@@ -650,7 +652,7 @@ S3SystemGL.prototype.setProgram = function(glprogram) {
 	this.is_set = true;
 };
 
-S3SystemGL.prototype.clear = function() {
+S3GLSystem.prototype.clear = function() {
 	if(this.gl === null) {
 		return false;
 	}
@@ -660,29 +662,7 @@ S3SystemGL.prototype.clear = function() {
 	return true;
 };
 
-S3SystemGL.prototype.createVBO = function(data) {
-	if(this.gl === null) {
-		return null;
-	}
-	var vbo = this.gl.createBuffer();
-	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
-	this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
-	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-	return vbo;
-};
-
-S3SystemGL.prototype.createIBO = function(data) {
-	if(this.gl === null) {
-		return null;
-	}
-	var ibo = this.gl.createBuffer();
-	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
-	this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
-	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
-	return ibo;
-};
-
-S3SystemGL.prototype.drawElements = function(indexsize) {
+S3GLSystem.prototype.drawElements = function(indexsize) {
 	if(!this.is_set) {
 		return;
 	}
@@ -690,14 +670,14 @@ S3SystemGL.prototype.drawElements = function(indexsize) {
 	this.gl.flush();
 };
 
-S3SystemGL.prototype.deleteBuffer = function(data) {
+S3GLSystem.prototype.deleteBuffer = function(data) {
 	if(this.gl === null) {
 		return null;
 	}
 	this.gl.deleteBuffer(data);
 };
 
-S3SystemGL.prototype._setDepthMode = function() {
+S3GLSystem.prototype._setDepthMode = function() {
 	if(this.gl === null) {
 		return null;
 	}
@@ -706,7 +686,7 @@ S3SystemGL.prototype._setDepthMode = function() {
 	gl.depthFunc(gl.LEQUAL);
 };
 
-S3SystemGL.prototype._setCullMode = function() {
+S3GLSystem.prototype._setCullMode = function() {
 	if(this.gl === null) {
 		return null;
 	}
@@ -735,7 +715,7 @@ S3SystemGL.prototype._setCullMode = function() {
 	}
 };
 
-S3SystemGL.prototype.bind = function(p1, p2) {
+S3GLSystem.prototype.bind = function(p1, p2) {
 	if(!this.is_set) {
 		return;
 	}
@@ -747,7 +727,10 @@ S3SystemGL.prototype.bind = function(p1, p2) {
 	}
 	// 引数がモデルであれば、モデルとして紐づける
 	else if((arguments.length === 1) && (p1 instanceof S3Model)) {
-		index_lenght = prg.bindFrozenMesh(p1.getFrozenMeshData(this));
+		var mesh = p1.getMesh();
+		if(mesh instanceof S3GLMesh) {
+			index_lenght = prg.bindMesh(mesh);
+		}
 	}
 	// 引数がライトであれば、ライトとして紐づける
 	else if((arguments.length === 1) && (p1 instanceof S3GLLight)) {
@@ -759,7 +742,7 @@ S3SystemGL.prototype.bind = function(p1, p2) {
 	return index_lenght;
 };
 
-S3SystemGL.prototype.drawScene = function(scene) {
+S3GLSystem.prototype.drawScene = function(scene) {
 	// プログラムを再設定
 	
 	this.setProgram(this.program);
@@ -782,7 +765,11 @@ S3SystemGL.prototype.drawScene = function(scene) {
 	
 	// モデル描写
 	for(var i = 0; i < scene.model.length; i++) {
-		var model = scene.model[i];
+		var model	= scene.model[i];
+		var mesh	= model.getMesh();
+		if(mesh.isComplete() === false) {
+			continue;
+		}
 		
 		// モデル用のBIND
 		var M = this.getMatrixWorldTransform(model);

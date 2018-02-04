@@ -750,27 +750,26 @@ S3TriangleIndex.prototype.inverseTriangle = function() {
 
 /**
  * 立体物 (mutable)
- * @param {Array} vertex
- * @param {Array} triangleindex
- * @param {Array} material
+ * @param {S3System} sys
  * @returns {S3Mesh}
  */
-var S3Mesh = function(vertex, triangleindex, material) {
-	this.init(vertex, triangleindex, material);
+var S3Mesh = function(sys) {
+	this.sys = sys;
+	this.init();
 };
-S3Mesh.prototype.init = function(vertex, triangleindex, material) {
+S3System.prototype.createMesh = function() {
+	return new S3Mesh(this);
+};
+S3Mesh.prototype.init = function() {
 	// 変数の準備
-	var src = {};
-	src.vertex			= [];
-	src.triangleindex	= [];
-	src.material		= [];
-	this.src = src;
+	this.src = {};
+	this.src.vertex			= [];
+	this.src.triangleindex	= [];
+	this.src.material		= [];
 	this.is_complete	= false;
+	// webgl用
+	this.gldata = {};
 	this.is_compile_gl	= false;
-	// 素材だけ初期値をもっている。
-	this.addVertex(vertex);
-	this.addTriangleIndex(triangleindex);
-	this.addMaterial(material);
 };
 S3Mesh.prototype.isComplete = function() {
 	return this.is_complete;
@@ -779,7 +778,11 @@ S3Mesh.prototype.isCompileGL = function() {
 	return this.is_compile_gl;
 };
 S3Mesh.prototype.clone = function() {
-	return new S3Mesh(this.src.vertex, this.src.triangleindex, this.src.material);
+	var mesh = new S3Mesh(this.sys);
+	mesh.addVertex(this.getVertexArray());
+	mesh.addTriangleIndex(this.getTriangleIndexArray());
+	mesh.addMaterial(this.getMaterialArray());
+	return mesh;
 };
 S3Mesh.prototype.setComplete = function(is_complete) {
 	this.is_complete = is_complete;
@@ -860,9 +863,22 @@ S3Mesh.prototype.addMaterial = function(material) {
 
 // 他のファイルの読み書きの拡張用
 S3Mesh.prototype.inputData = function(data, type) {
-	this.init();
-	S3Mesh.DATA_INPUT_FUNCTION[type](this, data);
-	this.setComplete(true);
+	var that = this;
+	var load = function(ldata, ltype) {
+		that.init();
+		S3Mesh.DATA_INPUT_FUNCTION[ltype](that, ldata);
+		that.setComplete(true);
+	};
+	if(((typeof data === "string")||(data instanceof String))&&((data.indexOf("\n") === -1))) {
+		// 1行の場合はURLとみなす（雑）
+		var downloadCallback = function(text) {
+			load(text, type);
+		};
+		this.sys._download(data, downloadCallback);
+	}
+	else {
+		load(data, type);
+	}
 };
 S3Mesh.prototype.outputData = function(type) {
 	return S3Mesh.DATA_OUTPUT_FUNCTION[type](this);

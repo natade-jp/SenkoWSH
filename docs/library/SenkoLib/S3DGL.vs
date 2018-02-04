@@ -29,6 +29,6 @@ varying vec4 vColor;
 
 void main(void) {
 	vColor = vec4(vec3(0.5, 0.5, 0.5) + vertexNormal * 0.5, 1.0);
-	vColor = vec4( materialAmbient , materialDiffuse);
+//	vColor = vec4( materialAmbient , materialDiffuse);
 	gl_Position = matrixLocalToPerspective * vec4(vertexPosition, 1.0);
 }
