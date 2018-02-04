@@ -10,9 +10,7 @@
 	controller.setCanvas(canvas);
 	
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
-	
 //	s3.setSystemMode(S3SystemMode.DIRECT_X);
-//	camera.setSystemMode(S3SystemMode.DIRECT_X);
 	
 	System.out.println("json形式での読み書きのテスト");
 	var meshdata = {
@@ -31,17 +29,18 @@
 			[  0,  0, -20]
 		]
 	};
-	var mesh = S3Mesh.fromJSON(meshdata);
+	var mesh = new S3Mesh();
 	System.out.println(".json");
-	System.out.println(mesh.toJSON());
+	mesh.inputData(meshdata, S3Mesh.DATA_JSON);
+	System.out.println(mesh.outputData(S3Mesh.DATA_JSON));
 
 	System.out.println("MQOでの出力テスト");
 	System.out.println(".mqo");
-	System.out.println(mesh.toMQO());
+	System.out.println(mesh.outputData(S3Mesh.DATA_MQO));
 	
 	System.out.println("MQOでの入力テスト");
-	mesh = S3Mesh.fromMQO(mqodata);
-	
+	mesh.inputData(mqodata, S3Mesh.DATA_MQO);
+
 	var model = new S3Model();
 	model.setMesh(mesh);
 	model.setScale(5);

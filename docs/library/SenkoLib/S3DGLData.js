@@ -163,13 +163,19 @@ S3TriangleIndex.prototype.getVertexHash = function(number, vertexList, materialL
  */
 S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialList) {
 	var vertex		= {};
-	var vertexlist	= vertexList[this.index[number]].getVertexData();
-	for(var key in vertexlist) {
-		vertex[key]	= vertexlist[key];
+	var vertexdata_list = null;
+	vertexdata_list	= vertexList[this.index[number]].getVertexData();
+	for(var key in vertexdata_list) {
+		vertex[key]	= vertexdata_list[key];
 	}
-	var materiallist= materialList[this.materialIndex].getVertexData();
-	for(var key in materiallist) {
-		vertex[key]	= materiallist[key];
+	// 材質が無効の場合は、デフォルトの材質を使用する
+	var material = materialList[this.materialIndex];
+	if(!!material) {
+		material = S3Material.DEFAULT_MATERIAL;
+	}
+	vertexdata_list = material.getVertexData();
+	for(var key in vertexdata_list) {
+		vertex[key]	= vertexdata_list[key];
 	}
 	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
 	vertex.vertexUV		= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);

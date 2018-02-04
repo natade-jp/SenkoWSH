@@ -56,70 +56,21 @@ CameraController.prototype.getCamera = function() {
 	return this.camera;
 };
 
-/**
- * メタセコイア形式で出力
- * ただしある程度手動で修正しないといけません。
- * @returns {String}
- */
-S3Mesh.prototype.toMQO = function() {
-	var i;
-	var output = [];
-	
-	// 材質の出力
-	output.push("Material " + this.material.length + " {");
-	for(i = 0; i < this.material.length; i++) {
-		var mv = this.material[i];
-		//  こんな感じにする必要がある・・・
-		// "mat" shader(3) col(1.000 1.000 1.000 0.138) dif(0.213) amb(0.884) emi(0.301) spc(0.141) power(38.75) amb_col(1.000 0.996 0.000) emi_col(1.000 0.000 0.016) spc_col(0.090 0.000 1.000) reflect(0.338) refract(2.450)
-		output.push("\t\"" + mv.name + "\" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)");
-	}
-	output.push("}");
-	
-	// オブジェクトの出力
-	output.push("Object \"obj1\" {");
-	{
-		// 頂点の出力
-		output.push("\tvertex " + this.vertex.length + " {");
-		for(i = 0; i < this.vertex.length; i++) {
-			var vp = this.vertex[i].position;
-			output.push("\t\t" + vp.x + " " + vp.y + " " + vp.z);
-		}
-		output.push("}");
-
-		// 面の定義
-		output.push("\tface " + this.triangleindex.length + " {");
-		for(i = 0; i < this.triangleindex.length; i++) {
-			var ti = this.triangleindex[i];
-			var line = "\t\t3";
-			// 座標と材質は必ずある
-			line += " V(" + ti.index[0] + " " + ti.index[1] + " " + ti.index[2] + ")";
-			line += " M(" + ti.materialIndex + ")";
-			// UVはないかもしれないので、条件を付ける
-			if(ti.uv !== undefined) {
-				line += " UV(" + ti.uv[0] + " " + ti.uv[1] + " " + ti.uv[2] +")";
-			}
-			output.push(line);
-		}
-	}
-	output.push("\t}");
-	
-	output.push("}");
-	return output.join("\n");
-};
+S3Mesh.DATA_MQO = "MQO";
 
 /**
  * メタセコイア形式で入力
  * ただしある程度手動で修正しないといけません。
+ * @param {S3Mesh} mesh
  * @param {String} text
- * @returns {S3Mesh}
+ * @returns {unresolved}
  */
-S3Mesh.fromMQO = function(text) {
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 	var lines = text.split("\n");
 	var i;
 	var block_stack = [];
 	var block_type  = "none";
 	var block_level = 0;
-	var mesh = new S3Mesh();
 	var vertex_offset	= 0;
 	var vertex_point	= 0;
 	var face_offset		= 0;
@@ -238,4 +189,59 @@ S3Mesh.fromMQO = function(text) {
 		}
 	}
 	return mesh;
+};
+
+/**
+ * メタセコイア形式で出力
+ * ただしある程度手動で修正しないといけません。
+ * @param {S3Mesh} mesh
+ * @returns {String}
+ */
+S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh) {
+	var i;
+	var output = [];
+	var vertex			= mesh.getVertexArray(); 
+	var triangleindex	= mesh.getTriangleIndexArray(); 
+	var material		= mesh.getMaterialArray();
+	
+	// 材質の出力
+	output.push("Material " + material.length + " {");
+	for(i = 0; i < material.length; i++) {
+		var mv = material[i];
+		//  こんな感じにする必要がある・・・
+		// "mat" shader(3) col(1.000 1.000 1.000 0.138) dif(0.213) amb(0.884) emi(0.301) spc(0.141) power(38.75) amb_col(1.000 0.996 0.000) emi_col(1.000 0.000 0.016) spc_col(0.090 0.000 1.000) reflect(0.338) refract(2.450)
+		output.push("\t\"" + mv.name + "\" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)");
+	}
+	output.push("}");
+	
+	// オブジェクトの出力
+	output.push("Object \"obj1\" {");
+	{
+		// 頂点の出力
+		output.push("\tvertex " + vertex.length + " {");
+		for(i = 0; i < vertex.length; i++) {
+			var vp = vertex[i].position;
+			output.push("\t\t" + vp.x + " " + vp.y + " " + vp.z);
+		}
+		output.push("}");
+
+		// 面の定義
+		output.push("\tface " + triangleindex.length + " {");
+		for(i = 0; i < triangleindex.length; i++) {
+			var ti = triangleindex[i];
+			var line = "\t\t3";
+			// 座標と材質は必ずある
+			line += " V(" + ti.index[0] + " " + ti.index[1] + " " + ti.index[2] + ")";
+			line += " M(" + ti.materialIndex + ")";
+			// UVはないかもしれないので、条件を付ける
+			if(ti.uv !== undefined) {
+				line += " UV(" + ti.uv[0] + " " + ti.uv[1] + " " + ti.uv[2] +")";
+			}
+			output.push(line);
+		}
+	}
+	output.push("\t}");
+	
+	output.push("}");
+	return output.join("\n");
 };

@@ -613,11 +613,15 @@ S3System.prototype.drawScene = function(scene) {
 	
 	var i = 0;
 	for(i = 0; i < scene.model.length; i++) {
-		var model = scene.model[i];
+		var model	= scene.model[i];
+		var mesh	= model.getMesh();
+		if(mesh.isComplete() === false) {
+			continue;
+		}
 		var M = this.getMatrixWorldTransform(model);
 		var MVP = this.mulMatrix(this.mulMatrix(M, VPS.LookAt), VPS.PerspectiveFov);
-		var vlist = this._calcVertexTransformation(model.mesh.vertex, MVP, VPS.Viewport);
-		this._drawPolygon(vlist, model.mesh.triangleindex);
+		var vlist = this._calcVertexTransformation(mesh.src.vertex, MVP, VPS.Viewport);
+		this._drawPolygon(vlist, mesh.src.triangleindex);
 	}
 };
 
@@ -702,6 +706,7 @@ var S3Material = function(name, type) {
 S3Material.prototype.clone = function() {
 	return new S3Material(this.name, this);
 };
+S3Material.DEFAULT_MATERIAL = new S3Material("s3default");
 
 /**
  * ABCの頂点を囲む3角ポリゴン (immutable)
@@ -754,86 +759,116 @@ var S3Mesh = function(vertex, triangleindex, material) {
 	this.init(vertex, triangleindex, material);
 };
 S3Mesh.prototype.init = function(vertex, triangleindex, material) {
-	this.isFrozen = false;
-	this.cleanVertex();
-	this.cleanTriangleIndex();
-	this.cleanMaterial();
+	// 変数の準備
+	var src = {};
+	src.vertex			= [];
+	src.triangleindex	= [];
+	src.material		= [];
+	this.src = src;
+	this.is_complete	= false;
+	this.is_compile_gl	= false;
+	// 素材だけ初期値をもっている。
 	this.addVertex(vertex);
 	this.addTriangleIndex(triangleindex);
 	this.addMaterial(material);
 };
+S3Mesh.prototype.isComplete = function() {
+	return this.is_complete;
+};
+S3Mesh.prototype.isCompileGL = function() {
+	return this.is_compile_gl;
+};
 S3Mesh.prototype.clone = function() {
-	return new S3Mesh(this.vertex, this.triangleindex);
+	return new S3Mesh(this.src.vertex, this.src.triangleindex, this.src.material);
 };
-S3Mesh.prototype.cleanVertex = function() {
-	this.vertex = [];
-	this.isFrozen = false;
+S3Mesh.prototype.setComplete = function(is_complete) {
+	this.is_complete = is_complete;
 };
-S3Mesh.prototype.cleanTriangleIndex = function() {
-	this.triangleindex = [];
-	this.isFrozen = false;
-};
-S3Mesh.prototype.cleanMaterial = function() {
-	this.material	= [];
-	this.material[0] = new S3Material("s3default");
-	this.material_length = 0;
-	this.isFrozen = false;
+S3Mesh.prototype.setCompileGL = function(is_compile_gl) {
+	this.is_compile_gl = is_compile_gl;
 };
 S3Mesh.prototype.inverseTriangle = function() {
-	this.isFrozen = false;
+	this.setComplete(false);
 	var i = 0;
-	for(i = 0; i < this.vertex.length; i++) {
-		this.vertex[i] = this.vertex[i].inverseTriangle();
+	for(i = 0; i < this.src.vertex.length; i++) {
+		this.src.vertex[i] = this.src.vertex[i].inverseTriangle();
 	}
 	for(i = 0; i < this.triangleindex.length; i++) {
-		this.triangleindex[i] = this.triangleindex[i].inverseTriangle();
+		this.src.triangleindex[i] = this.src.triangleindex[i].inverseTriangle();
 	}
+};
+S3Mesh.prototype.getVertexArray = function() {
+	return this.src.vertex;
+};
+S3Mesh.prototype.getTriangleIndexArray = function() {
+	return this.src.triangleindex;
+};
+S3Mesh.prototype.getMaterialArray = function() {
+	return this.src.material;
 };
 S3Mesh.prototype.addVertex = function(vertex) {
 	// 一応 immutable なのでそのままシャローコピー
-	this.isFrozen = false;
+	this.setComplete(false);
+	var meshvertex = this.getVertexArray(); 
 	if(vertex === undefined) {
+		// _init から呼ばれたときに引数がない場合はなにもせず終わる
 	}
 	else if(vertex instanceof S3Vertex) {
-		this.vertex[this.vertex.length] = vertex;
+		meshvertex[meshvertex.length] = vertex;
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < vertex.length; i++) {
-			this.vertex[this.vertex.length] = vertex[i];
+			meshvertex[meshvertex.length] = vertex[i];
 		}
 	}
 };
 S3Mesh.prototype.addTriangleIndex = function(ti) {
 	// 一応 immutable なのでそのままシャローコピー
-	this.isFrozen = false;
+	this.setComplete(false);
+	var meshtri = this.getTriangleIndexArray(); 
 	if(ti === undefined) {
+		// _init から呼ばれたときに引数がない場合はなにもせず終わる
 	}
 	else if(ti instanceof S3TriangleIndex) {
-		this.triangleindex[this.triangleindex.length] = ti;
+		meshtri[meshtri.length] = ti;
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < ti.length; i++) {
-			this.triangleindex[this.triangleindex.length] = ti[i];
+			meshtri[meshtri.length] = ti[i];
 		}
 	}
 };
 S3Mesh.prototype.addMaterial = function(material) {
 	// 一応 immutable なのでそのままシャローコピー
-	this.isFrozen = false;
+	this.setComplete(false);
+	var meshmat = this.getMaterialArray();
 	if(material === undefined) {
+		// _init から呼ばれたときに引数がない場合はなにもせず終わる
 	}
 	else if(material instanceof S3Material) {
-		this.material[this.material_length++] = material;
+		meshmat[meshmat.length] = material;
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < material.length; i++) {
-			this.material[this.material_length++] = material[i];
+			meshmat[meshmat.length] = material[i];
 		}
 	}
 };
+
+// 他のファイルの読み書きの拡張用
+S3Mesh.prototype.inputData = function(data, type) {
+	this.init();
+	S3Mesh.DATA_INPUT_FUNCTION[type](this, data);
+	this.setComplete(true);
+};
+S3Mesh.prototype.outputData = function(type) {
+	return S3Mesh.DATA_OUTPUT_FUNCTION[type](this);
+};
+S3Mesh.DATA_INPUT_FUNCTION	= {};
+S3Mesh.DATA_OUTPUT_FUNCTION	= {};
 
 /*
 	次のようなデータを入出力できます。
@@ -855,8 +890,15 @@ S3Mesh.prototype.addMaterial = function(material) {
 	};
 */
 
-S3Mesh.fromJSON = function(meshdata) {
-	var mesh = new S3Mesh();
+S3Mesh.DATA_JSON = "JSON";
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh, json) {
+	var meshdata;
+	if((typeof json === "string")||(json instanceof String)) {
+		meshdata = eval(json);
+	}
+	else {
+		meshdata = json;
+	}
 	var i, j;
 	var material = 0;
 	// 材質名とインデックスを取得
@@ -881,21 +923,25 @@ S3Mesh.fromJSON = function(meshdata) {
 		var vertex = new S3Vertex(vector);
 		mesh.addVertex(vertex);
 	}
-	return mesh;
+	return;
 };
-S3Mesh.prototype.toJSON = function() {
+S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh) {
 	var i, j;
+	var vertex			= mesh.getVertexArray(); 
+	var triangleindex	= mesh.getTriangleIndexArray(); 
+	var material		= mesh.getMaterialArray();
 	var material_vertexlist = [];
+	var material_length = material.length !== 0 ? material.length : 1;
 	// 材質リストを取得
-	for(i = 0; i < this.material.length; i++) {
+	for(i = 0; i < material_length; i++) {
 		material_vertexlist[i] = {
-			material: this.material[i],
+			material: material[i] ? material[i] : S3Material.DEFAULT_MATERIAL ,
 			list:[]
 		};
 	}
 	// 材質名に合わせて、インデックスリストを取得
-	for(i = 0; i < this.triangleindex.length; i++) {
-		var ti = this.triangleindex[i];
+	for(i = 0; i < triangleindex.length; i++) {
+		var ti = triangleindex[i];
 		material_vertexlist[ti.materialIndex].list.push( ti.index );
 	}
 	var output = [];
@@ -912,9 +958,9 @@ S3Mesh.prototype.toJSON = function() {
 	}
 	output.push("\t},");
 	output.push("\tVertices:[");
-	for(i = 0; i < this.vertex.length; i++) {
-		var vp = this.vertex[i].position;
-		output.push("\t\t[" + vp.x + " " + vp.y + " " + vp.z + "]" + ((vp === this.vertex.length - 1) ? "" : ",") );
+	for(i = 0; i < vertex.length; i++) {
+		var vp = vertex[i].position;
+		output.push("\t\t[" + vp.x + " " + vp.y + " " + vp.z + "]" + ((vp === vertex.length - 1) ? "" : ",") );
 	}
 	output.push("\t]");
 	output.push("}");

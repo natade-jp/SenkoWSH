@@ -71,9 +71,9 @@
 	
 	// ファイルロード
 	var fModel = new File("../resource/teapod.mqo");
-	File.downloadFileList([fModel], function() {
-		test3D(panel.getCanvas(), fModel.getText());
-	});
+//	File.downloadFileList([fModel], function() {
+//		test3D(panel.getCanvas(), fModel.getText());
+//	});
 	
 	
 }
