@@ -29,7 +29,7 @@
 			[  0,  0, -20]
 		]
 	};
-	var mesh = new S3Mesh();
+	var mesh = s3.createMesh();
 	System.out.println(".json");
 	mesh.inputData(meshdata, S3Mesh.DATA_JSON);
 	System.out.println(mesh.outputData(S3Mesh.DATA_JSON));
@@ -39,7 +39,7 @@
 	System.out.println(mesh.outputData(S3Mesh.DATA_MQO));
 	
 	System.out.println("MQOでの入力テスト");
-	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
+	mesh.inputData(mqodata, S3Mesh.DATA_MQO);
 
 	var model = new S3Model();
 	model.setMesh(mesh);

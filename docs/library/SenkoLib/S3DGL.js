@@ -566,35 +566,6 @@ S3GLSystem.prototype = new S3System();
 S3GLSystem.prototype.createMesh = function() {
 	return new S3GLMesh(this);
 };
-S3GLSystem.prototype._download = function(url, callback) {
-	var dotlist = url.split(".");
-	var isImage = false;
-	var ext = "";
-	if(dotlist.length > 1) {
-		var ext = dotlist[dotlist.length - 1].toLocaleString();
-		isImage = (ext === "gif") || (ext === "jpg") || (ext === "png") || (ext === "bmp") || (ext === "svg") || (ext === "jpeg");
-	}
-	if(isImage) {
-		var image = new Image();
-		image.onload = function() {
-			callback(image, ext);
-		};
-		image.src = this.pathname;
-	}
-	var http = new XMLHttpRequest();
-	var handleHttpResponse = function (){
-		if(http.readyState === 4) { // DONE
-			if(http.status !== 200) {
-				console.log("error download [" + url + "]");
-				return(null);
-			}
-			callback(http.responseText, ext);
-		}
-	};
-	http.onreadystatechange = handleHttpResponse;
-	http.open("GET", url, true);
-	http.send(null);
-};
 
 S3GLSystem.prototype.getGL = function() {
 	return this.gl;
