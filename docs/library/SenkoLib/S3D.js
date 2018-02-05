@@ -1093,7 +1093,7 @@ S3Model.prototype.setRotateZ = function(z) {
  * @returns {S3Camera}
  */
 var S3Camera = function(s3system) {
-	this.s3system = s3system;
+	this.sys = s3system;
 	this.init();
 };
 S3System.prototype.createCamera = function() {
@@ -1108,7 +1108,7 @@ S3Camera.prototype.init = function() {
 	this.far		= 1000;
 };
 S3Camera.prototype.clone = function() {
-	var camera = new S3Camera(this.s3system);
+	var camera = new S3Camera(this.sys);
 	camera.fovY		= this.fovY;
 	camera.eye		= this.eye;
 	camera.center	= this.center;
@@ -1188,7 +1188,7 @@ S3Camera.prototype.translateRelative = function(v) {
 	Z = this.eye.getDirectionNormalized(this.center);
 	
 	// 座標系に合わせて計算
-	if(this.s3system.dimensionmode === S3DimensionMode.RIGHT_HAND) {
+	if(this.sys.dimensionmode === S3DimensionMode.RIGHT_HAND) {
 		// 右手系なら反転
 		Z = Z.negate();
 	}

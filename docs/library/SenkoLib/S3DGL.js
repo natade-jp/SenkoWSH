@@ -731,6 +731,9 @@ S3GLSystem.prototype.drawScene = function(scene) {
 	var lights = new S3GLLight(scene);
 	this.bind(lights);
 	
+	// カメラ設定
+	this.bind("eyeWorldDirection", scene.camera.getDirection());
+	
 	// カメラの行列を取得する
 	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
 	
@@ -746,7 +749,7 @@ S3GLSystem.prototype.drawScene = function(scene) {
 		var M = this.getMatrixWorldTransform(model);
 		var MV = this.mulMatrix(M, VPS.LookAt);
 		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
-		this.bind("matrixLocalToWorld", M);
+		this.bind("matrixWorldToLocal", M.inverse4());
 		this.bind("matrixLocalToPerspective", MVP);
 		
 		var indexsize = this.bind(model);

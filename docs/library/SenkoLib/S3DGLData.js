@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3GLSystem, S3Scene, S3LightMode, Float32Array */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3GLSystem, S3Scene, S3LightMode, Float32Array, S3DimensionMode */
 
 ﻿"use strict";
 
@@ -277,12 +277,22 @@ S3GLMesh.prototype._makeNormalMap = function() {
 	for(i = 0; i < triangleindex_list.length; i++) {
 		var triangleindex = triangleindex_list[i];
 		var indexlist = triangleindex.index;
+		var normal = null;
 		// 3点を時計回りで通る平面が表のとき
-		var normal = S3Vector.getNormalVector(
-			vertex_list[indexlist[0]].position,
-			vertex_list[indexlist[1]].position,
-			vertex_list[indexlist[2]].position
-		);
+		if(this.sys.dimensionmode === S3DimensionMode.LEFT_HAND) {
+			normal = S3Vector.getNormalVector(
+				vertex_list[indexlist[0]].position,
+				vertex_list[indexlist[1]].position,
+				vertex_list[indexlist[2]].position
+			);
+		}
+		else {
+			normal = S3Vector.getNormalVector(
+				vertex_list[indexlist[2]].position,
+				vertex_list[indexlist[1]].position,
+				vertex_list[indexlist[0]].position
+			);
+		}
 		// 頂点の位置が直行しているなどのエラー処理
 		if(!(normal instanceof S3Vector)) {
 			normal = new S3Vector(0.3333, 0.3333, 0.3333);
