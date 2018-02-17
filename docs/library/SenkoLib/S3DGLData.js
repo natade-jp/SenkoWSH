@@ -153,7 +153,7 @@ var S3GLMatelial = function(model) {
 S3GLMatelial.prototype.getMaterials = function() {
 	return this.materials;
 };
-S3GLMatelial.MATELIAL_MAX = 6;
+S3GLMatelial.MATELIAL_MAX = 4;
 
 var S3GLScene = function() {
 	this.super = S3Scene.prototype;
