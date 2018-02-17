@@ -41,7 +41,7 @@
 	System.out.println("MQOでの入力テスト");
 	mesh.inputData(mqodata, S3Mesh.DATA_MQO);
 
-	var model = new S3Model();
+	var model = s3.createModel();
 	model.setMesh(mesh);
 	model.setScale(5);
 	
@@ -49,7 +49,7 @@
 	camera.setCenter(new S3Vector( 0,  0,  0));
 	controller.setCamera(camera);
 	
-	var scene = new S3Scene();
+	var scene = s3.createScene();
 	scene.setCamera(camera);
 	scene.addModel(model);
 

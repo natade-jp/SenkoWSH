@@ -156,6 +156,10 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 			if(val.length !== 0) {
 				material_type.power = val[0];
 			}
+			val = getValueFromPrm(trim_line, "reflect");
+			if(val.length !== 0) {
+				material_type.reflect = val[0];
+			}
 			var material = new S3Material(material_name, material_type);
 			mesh.addMaterial(material);
 		}

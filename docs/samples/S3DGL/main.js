@@ -17,7 +17,7 @@
 	s3.setSystemMode(S3SystemMode.OPEN_GL);
 	s3.setFrontMode(S3FrontFace.CLOCKWISE);
 	
-	var model = new S3Model();
+	var model = s3.createModel();
 	var mesh = s3.createMesh();
 	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
 	model.setMesh(mesh);
@@ -27,11 +27,11 @@
 	camera.setCenter(new S3Vector( 0,  0,  0));
 	controller.setCamera(camera);
 	
-	var scene = new S3Scene();
+	var scene = s3.createScene();
 	scene.setCamera(camera);
 	scene.addModel(model);
 	
-	var light_down = new S3Light();
+	var light_down = s3.createLight();
 	light_down.setMode(S3LightMode.DIRECTIONAL_LIGHT);
 	light_down.setDirection(new S3Vector( 0,  -1,  0));
 	scene.addLight(light_down);

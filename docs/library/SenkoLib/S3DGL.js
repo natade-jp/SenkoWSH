@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh */
+﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial */
 
 ﻿"use strict";
 
@@ -389,6 +389,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	var variable	= this.variable[name];
 	var i = 0;
 	
+	// ---- check Location ----
 	// 長さが0なら位置が未調査なので調査する
 	if(variable.location.length === 0) {
 		if(variable.modifiers === "attribute") {
@@ -413,6 +414,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	}
 	// data が bind できる形になっているか調査する
 	
+	// ---- check Type ----
 	// glslの型をチェックして自動型変換する
 	var toArraydata = function(data) {
 		if(data instanceof WebGLBuffer) {
@@ -422,6 +424,12 @@ S3GLProgram.prototype.bindData = function(name, data) {
 		if(data instanceof variable.instance) {
 			// 型と同じインスタンスであるため問題なし
 			return data;
+		}
+		// GL用の型
+		if(data instanceof S3GLVertex) {
+			if(variable.glsltype === data.glsltype) {
+				return data.data;
+			}
 		}
 		// 入力型が行列型であり、GLSLも行列であれば
 		if(data instanceof S3Matrix) {
@@ -468,6 +476,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 		}
 	}
 	
+	// ---- bind Data ----
 	// 装飾子によって bind する方法を変更する
 	if(variable.modifiers === "attribute") {
 		// bindしたいデータ
@@ -565,6 +574,9 @@ var S3GLSystem = function() {
 S3GLSystem.prototype = new S3System();
 S3GLSystem.prototype.createMesh = function() {
 	return new S3GLMesh(this);
+};
+S3GLSystem.prototype.createScene = function() {
+	return new S3GLScene();
 };
 
 S3GLSystem.prototype.getGL = function() {
@@ -710,6 +722,13 @@ S3GLSystem.prototype.bind = function(p1, p2) {
 			prg.bindData(key, lights[key]);
 		}
 	}
+	// 引数が材質であれば、材質として紐づける
+	else if((arguments.length === 1) && (p1 instanceof S3GLMatelial)) {
+		var materials = p1.getMaterials();
+		for(var key in materials) {
+			prg.bindData(key, materials[key]);
+		}
+	}
 	return index_lenght;
 };
 
@@ -744,6 +763,9 @@ S3GLSystem.prototype.drawScene = function(scene) {
 		if(mesh.isComplete() === false) {
 			continue;
 		}
+		
+		var materials = new S3GLMatelial(model);
+		this.bind(materials);
 		
 		// モデル用のBIND
 		var M = this.getMatrixWorldTransform(model);

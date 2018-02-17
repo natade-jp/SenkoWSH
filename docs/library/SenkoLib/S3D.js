@@ -698,6 +698,9 @@ var S3Vertex = function(position, normal, rhw) {
 		this.rhw		= 1.0;
 	}
 };
+S3System.prototype.createVertex = function(position, normal, rhw) {
+	return new S3Vertex(position, normal, rhw);
+};
 S3Vertex.prototype.clone = function() {
 	return new S3Vertex(this.position, this.normal, this.rhw);
 };
@@ -718,20 +721,26 @@ S3Vertex.prototype.inverseTriangle = function() {
  */
 var S3Material = function(name, type) {
 	this.name		= name;
-	this.color		= new S3Vector(1.0, 1.0, 1.0, 1.0);	// 色
-	this.diffuse	 = 0.8;								// 拡散光
-	this.emission	= new S3Vector(0.0, 0.0, 0.0);		// 自己照明
-	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 反射光
-	this.power		= 5.0;								// 反射の強さ
-	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 周囲光
+	this.color		= new S3Vector(1.0, 1.0, 1.0, 1.0);	// 拡散反射の色
+	this.diffuse	= 0.8;								// 拡散反射の強さ
+	this.emission	= new S3Vector(0.0, 0.0, 0.0);		// 自己照明（輝き）
+	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 鏡面反射の色
+	this.power		= 5.0;								// 鏡面反射の強さ
+	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 光によらない初期色
+	this.reflect	= 0.0;								// 環境マッピングによる反射の強さ
+	
 	if(type !== undefined) {
-		if(type.color !== undefined)	{ this.color	= type.color;			}
+		if(type.color !== undefined)	{ this.color	= type.color;		}
 		if(type.diffuse !== undefined)	{ this.diffuse	= type.diffuse;		}
 		if(type.emission !== undefined) { this.emission	= type.emission;	}
 		if(type.specular !== undefined) { this.specular	= type.specular;	}
 		if(type.power !== undefined)	{ this.power	= type.power;		}
 		if(type.ambient !== undefined)	{ this.ambient	= type.ambient;		}
+		if(type.reflect !== undefined)	{ this.reflect	= type.reflect;		}
 	}
+};
+S3System.prototype.createMaterial = function(name, type) {
+	return new S3Material(name, type);
 };
 S3Material.prototype.clone = function() {
 	return new S3Material(this.name, this);
@@ -749,6 +758,9 @@ S3Material.DEFAULT_MATERIAL = new S3Material("s3default");
  */
 var S3TriangleIndex = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
 	this.init(i1, i2, i3, indexlist, materialIndex, uvlist);
+};
+S3System.prototype.createTriangleIndex = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
+	return new S3TriangleIndex(i1, i2, i3, indexlist, materialIndex, uvlist);
 };
 
 /**
@@ -1029,6 +1041,9 @@ var S3Model = function() {
 	this.position		= new S3Vector(0, 0, 0);
 	this.mesh			= new S3Mesh();
 };
+S3System.prototype.createModel = function() {
+	return new S3Model();
+};
 S3Model.prototype.setMesh = function(mesh) {
 	this.mesh			= mesh;
 };
@@ -1217,6 +1232,9 @@ var S3LightMode = {
 var S3Light = function() {
 	this.init();
 };
+S3System.prototype.createLight = function() {
+	return new S3Light();
+};
 S3Light.prototype.clone = function() {
 	var light = new S3Light();
 	light.mode		= this.mode;
@@ -1259,9 +1277,15 @@ S3Light.prototype.setColor = function(color) {
  * @returns {S3Scene}
  */
 var S3Scene = function() {
-	this.camera			= new S3Camera();
-	this.model			= [];
-	this.light			= [];
+	this._init();
+};
+S3Scene.prototype._init = function() {
+	this.camera		= new S3Camera();
+	this.model		= [];
+	this.light		= [];
+};
+S3System.prototype.createScene = function() {
+	return new S3Scene();
 };
 S3Scene.prototype.empty = function() {
 	this.model		= [];

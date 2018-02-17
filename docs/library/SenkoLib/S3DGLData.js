@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3GLSystem, S3Scene, S3LightMode, Float32Array, S3DimensionMode */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3DimensionMode, S3System, S3Matrix, S3Light */
 
 ﻿"use strict";
 
@@ -23,7 +23,7 @@
 
 /**
  * WebGL用の頂点 (immutable)
- * @param {Object} data 数値／配列／S3Vector
+ * @param {Object} data 数値／配列／S3Vector/S3Matrix
  * @param {Number} dimension 例えば3次元のベクトルなら、3
  * @param {S3GLVertex.datatype} datatype
  * @returns {S3GLVertex}
@@ -34,7 +34,7 @@ var S3GLVertex = function(data, dimension, datatype) {
 	if(data instanceof datatype.instance) {
 		this.data	= data;
 	}
-	else if(data instanceof S3Vector) {
+	else if((data instanceof S3Vector) || (data instanceof S3Matrix)) {
 		this.data	= data.toInstanceArray(datatype.instance, dimension);
 	}
 	else if(data instanceof Array) {
@@ -48,11 +48,60 @@ var S3GLVertex = function(data, dimension, datatype) {
 	}
 	this.dimension	= dimension;
 	this.datatype	= datatype;
+	
+	var instance = "";
+	if(data instanceof S3Vector) {
+		instance = "S3Vector";
+	}
+	else if(data instanceof S3Matrix) {
+		instance = "S3Matrix";
+	}
+	else {
+		instance = "Number";
+	}
+	
+	this.glsltype = S3GLVertex.gltypetable[datatype.name][instance][dimension];
+	
 };
+// Int32Array を一応定義してあるが、整数型は補間できないため、Attributeには使用できない。
 S3GLVertex.datatype = {
 	"Float32Array"	: { instance	: Float32Array,	name	: "Float32Array"	},
 	"Int32Array"	: { instance	: Int32Array,	name	: "Int32Array"		}
 };
+S3GLVertex.gltypetable = {
+	"Float32Array"	: {
+		"Number"	:	{
+			1	:	"float",
+			2	:	"vec2",
+			3	:	"vec3",
+			4	:	"vec4"
+		},
+		"S3Vector"	:	{
+			2	:	"vec2",
+			3	:	"vec3",
+			4	:	"vec4"
+		},
+		"S3Matrix"	:	{
+			4	:	"mat2",
+			9	:	"mat3",
+			16	:	"mat4"
+		}
+	},
+	"Int32Array"	: {
+		"Number"	:	{
+			1	:	"int",
+			2	:	"ivec2",
+			3	:	"ivec3",
+			4	:	"ivec4"
+		},
+		"S3Vector"	:	{
+			2	:	"ivec2",
+			3	:	"ivec3",
+			4	:	"ivec4"
+		}
+	}
+};
+
 
 /**
  * WebGL用のライト (immutable)
@@ -67,34 +116,15 @@ var S3GLLight = function(scene) {
 	var light_array				= scene.light;
 	var lightsLength			= Math.min(light_array.length, LIGHTS_MAX);
 	this.lights					= {};
-	this.lights.lightsLength	= new Int32Array([lightsLength]);
-	this.lights.lightsMode		= [];
-	this.lights.lightsPower		= [];
-	this.lights.lightsRange		= [];
-	this.lights.lightsPosition	= [];
-	this.lights.lightsDirection	= [];
-	this.lights.lightsColor		= [];
-	for(var i = 0; i < LIGHTS_MAX; i++) {
-		var lightMode		= S3LightMode.NONE;
-		var lightPower		= 0.0;
-		var lightRange		= 0.0;
-		var lightPosition	= new S3Vector(0.0, 0.0, 0.0);
-		var lightDirection	= new S3Vector(1.0, 0.0, 0.0);
-		var lightColor		= new S3Vector(0.0, 0.0, 0.0);
-		if(i < lightsLength) {
-			lightMode		= light_array[i].mode;
-			lightPower		= light_array[i].power;
-			lightRange		= light_array[i].range;
-			lightPosition	= light_array[i].position;
-			lightDirection	= light_array[i].direction;
-			lightColor		= light_array[i].color;
+	this.lights.lightsLength	= new S3GLVertex(lightsLength, 1, S3GLVertex.datatype.Int32Array);
+	for(var i = 0; i < lightsLength; i++) {
+		var data = light_array[i].getGLData();
+		for(var key in data) {
+			if(!this.lights[key]) {
+				this.lights[key] = [];
+			}
+			this.lights[key].push(data[key]);
 		}
-		this.lights.lightsMode.push(new Int32Array([lightMode]));
-		this.lights.lightsPower.push(new Float32Array([lightPower]));
-		this.lights.lightsRange.push(new Float32Array([lightRange]));
-		this.lights.lightsPosition.push(lightPosition.toInstanceArray(Float32Array, 3));
-		this.lights.lightsDirection.push(lightDirection.toInstanceArray(Float32Array, 3));
-		this.lights.lightsColor.push(lightColor.toInstanceArray(Float32Array, 3));
 	}
 };
 S3GLLight.prototype.getLights = function() {
@@ -102,13 +132,43 @@ S3GLLight.prototype.getLights = function() {
 };
 S3GLLight.LIGHTS_MAX = 4;
 
+var S3GLMatelial = function(model) {
+	if(!(model instanceof S3Model)) {
+		throw "not S3Model";
+	}
+	var LIGHTS_MAX				= S3GLMatelial.MATELIAL_MAX;
+	var material_array			= model.getMesh().getMaterialArray();
+	var materialLength			= Math.min(material_array.length, LIGHTS_MAX);
+	this.materials				= {};
+	for(var i = 0; i < materialLength; i++) {
+		var data = material_array[i].getGLData();
+		for(var key in data) {
+			if(!this.materials[key]) {
+				this.materials[key] = [];
+			}
+			this.materials[key].push(data[key]);
+		}
+	}
+};
+S3GLMatelial.prototype.getMaterials = function() {
+	return this.materials;
+};
+S3GLMatelial.MATELIAL_MAX = 6;
+
+var S3GLScene = function() {
+	this.super = S3Scene.prototype;
+	this.super._init.call(this);
+};
+S3GLScene.prototype = new S3Scene();
+
+
 /**
  * /////////////////////////////////////////////////////////
  * 素材にメソッドを拡張
  * /////////////////////////////////////////////////////////
  */
 
-S3Material.prototype.getVertexHash = function() {
+S3Material.prototype.getGLHash = function() {
 	// 名前は被らないので、ハッシュに使用する
 	return this.name;
 };
@@ -119,17 +179,39 @@ S3Material.prototype.getVertexHash = function() {
  * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
  * @returns {頂点データ（色情報）}
  */
-S3Material.prototype.getVertexData = function() {
+S3Material.prototype.getGLData = function() {
 	return {
-		materialColor		: new S3GLVertex(this.color		, 4, S3GLVertex.datatype.Float32Array),
-		materialDiffuse		: new S3GLVertex(this.diffuse	, 1, S3GLVertex.datatype.Float32Array),
-		materialEmission	: new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
-		materialSpecular	: new S3GLVertex(this.specular	, 3, S3GLVertex.datatype.Float32Array),
-		materialPower		: new S3GLVertex(this.power		, 1, S3GLVertex.datatype.Float32Array),
-		materialAmbient		: new S3GLVertex(this.ambient	, 3, S3GLVertex.datatype.Float32Array)
+		materialsColor		: new S3GLVertex(this.color		, 4, S3GLVertex.datatype.Float32Array),
+		materialsDiffuse	: new S3GLVertex(this.diffuse	, 1, S3GLVertex.datatype.Float32Array),
+		materialsEmission	: new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
+		materialsSpecular	: new S3GLVertex(this.specular	, 3, S3GLVertex.datatype.Float32Array),
+		materialsPower		: new S3GLVertex(this.power		, 1, S3GLVertex.datatype.Float32Array),
+		materialsAmbient	: new S3GLVertex(this.ambient	, 3, S3GLVertex.datatype.Float32Array),
+		materialsReflect	: new S3GLVertex(this.reflect	, 1, S3GLVertex.datatype.Float32Array)
 	};
 };
 
+
+/**
+ * /////////////////////////////////////////////////////////
+ * ライト情報にデータ取得用のメソッドを拡張
+ * /////////////////////////////////////////////////////////
+ */
+
+S3Light.prototype.getGLHash = function() {
+	return "" + this.mode + this.power + this.range + this.position.toString() + this.direction.toString() + this.color.toString();
+};
+
+S3Light.prototype.getGLData = function() {
+	return {
+		lightsMode		: new S3GLVertex(this.mode,			1, S3GLVertex.datatype.Int32Array),
+		lightsPower		: new S3GLVertex(this.power,		1, S3GLVertex.datatype.Float32Array),
+		lightsRange		: new S3GLVertex(this.range,		1, S3GLVertex.datatype.Float32Array),
+		lightsPosition	: new S3GLVertex(this.position,		3, S3GLVertex.datatype.Float32Array),
+		lightsDirection	: new S3GLVertex(this.direction,	3, S3GLVertex.datatype.Float32Array),
+		lightsColor		: new S3GLVertex(this.color,		3, S3GLVertex.datatype.Float32Array)
+	};
+};
 
 /**
  * /////////////////////////////////////////////////////////
@@ -145,11 +227,10 @@ S3TriangleIndex.prototype.isEnabledTexture = function() {
 	return !(this.uv === undefined);
 };
 
-S3TriangleIndex.prototype.getVertexHash = function(number, vertexList, materialList) {
+S3TriangleIndex.prototype.getGLHash = function(number, vertexList) {
 	var uvdata = this.isEnabledTexture() ? this.uv[number].toString(2) : "";
-	var vertex   = vertexList[this.index[number]].getVertexHash();
-	var material = materialList[this.materialIndex].getVertexHash();
-	return vertex + material + uvdata;
+	var vertex   = vertexList[this.index[number]].getGLHash();
+	return vertex + this.materialIndex + uvdata;
 };
 
 /**
@@ -158,30 +239,20 @@ S3TriangleIndex.prototype.getVertexHash = function(number, vertexList, materialL
  * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
  * @param {Integer} number 三角形の何番目の頂点データを取得するか
  * @param {S3Vertex[]} vertexList 頂点の配列
- * @param {S3Material[]} materialList 材質の配列
- * @returns {頂点データ（座標、素材の色、UV値が入っている）}
+ * @returns {頂点データ（座標、素材番号、UV値が入っている）}
  */
-S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialList) {
+S3TriangleIndex.prototype.getGLData = function(number, vertexList) {
 	var vertex		= {};
 	var vertexdata_list = null;
-	vertexdata_list	= vertexList[this.index[number]].getVertexData();
-	for(var key in vertexdata_list) {
-		vertex[key]	= vertexdata_list[key];
-	}
-	// 材質が無効の場合は、デフォルトの材質を使用する
-	var material = materialList[this.materialIndex];
-	if(!!material) {
-		material = S3Material.DEFAULT_MATERIAL;
-	}
-	vertexdata_list = material.getVertexData();
+	vertexdata_list	= vertexList[this.index[number]].getGLData();
 	for(var key in vertexdata_list) {
 		vertex[key]	= vertexdata_list[key];
 	}
 	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
-	vertex.vertexUV		= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
+	vertex.vertexUV				= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
+	vertex.vertexMaterialFloat	= new S3GLVertex(this.materialIndex, 1, S3GLVertex.datatype.Float32Array);
 	return vertex;
 };
-
 
 /**
  * /////////////////////////////////////////////////////////
@@ -196,7 +267,7 @@ S3TriangleIndex.prototype.getVertexData = function(number, vertexList, materialL
 S3Vertex.prototype.isEnabledNormal = function() {
 	return this.normal !== undefined;
 };
-S3Vertex.prototype.getVertexHash = function() {
+S3Vertex.prototype.getGLHash = function() {
 	var ndata = this.isEnabledNormal() ? this.normal.toString(3) : "";
 	return this.position.toString(3) + ndata;
 };
@@ -206,7 +277,7 @@ S3Vertex.prototype.getVertexHash = function() {
  * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
  * @returns {頂点データ（座標、法線情報）}
  */
-S3Vertex.prototype.getVertexData = function() {
+S3Vertex.prototype.getGLData = function() {
 	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
 	return {
 		vertexNormal	: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array),
@@ -223,7 +294,7 @@ S3Vertex.prototype.getVertexData = function() {
 
 var S3GLMesh = function(sys) {
 	this.sys = sys;
-	this.super = S3GLMesh.prototype;
+	this.super = S3Mesh.prototype;
 	this.super.init.call(this);
 	
 	var that = this;
@@ -331,7 +402,6 @@ S3GLMesh.prototype._makeNormalMap = function() {
  */
 S3GLMesh.prototype._getGLArrayData = function() {
 	
-	var material_list		= this.getMaterialArray();
 	var vertex_list			= this.getVertexArray();
 	var triangleindex_list	= this.getTriangleIndexArray();
 	var i, j;
@@ -355,14 +425,14 @@ S3GLMesh.prototype._getGLArrayData = function() {
 		// ポリゴンの各頂点を調べる
 		for(j = 0; j < 3; j++) {
 			// その頂点（面の情報（UVなど）も含めたデータ）のハッシュ値を求める
-			hash = triangleindex.getVertexHash(j, vertex_list, material_list);
+			hash = triangleindex.getGLHash(j, vertex_list);
 			// すでに以前と同一の頂点があるならば、その頂点アドレスを選択。ない場合は新しいアドレス
 			var hit = hashlist[hash];
 			indlist[j] = (hit !== undefined) ? hit : vertex_length;
 			// 頂点がもしヒットしていなかったら
 			if(hit === undefined) {
 				// 頂点データを作成して
-				var vertexdata = triangleindex.getVertexData(j, vertex_list, material_list);
+				var vertexdata = triangleindex.getGLData(j, vertex_list);
 				hashlist[hash]  = vertex_length;
 				// 頂点にはどういった情報があるか分からないので、in を使用する。
 				// key には、position / normal / color / uv などがおそらく入っている
@@ -445,9 +515,9 @@ S3GLMesh.prototype.disposeGLData = function() {
 			}
 		}
 		if(gldata.vbo !== undefined) {
-			for(var key in this.frozenMesh.vbo) {
-				if(this.frozenMesh.vbo[key].data !== undefined) {
-					this.glfunc.deleteBuffer(this.frozenMesh.vbo[key].data);
+			for(var key in this.arraydata.vbo) {
+				if(this.arraydata.vbo[key].data !== undefined) {
+					this.glfunc.deleteBuffer(this.arraydata.vbo[key].data);
 				}
 			}
 		}
