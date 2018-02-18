@@ -58,7 +58,7 @@
 		
 		s3.clear();
 		
-		model.addRotateY(5);
+		model.addRotateY(3);
 		s3.drawAxis(scene);
 		s3.drawScene(scene);
 	};

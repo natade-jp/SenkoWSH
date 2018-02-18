@@ -34,10 +34,12 @@ uniform vec3 eyeWorldDirection;
 // シェーダー間情報
 varying float interpolationMaterialFloat;
 varying vec3 interpolationNormal;
+varying vec3 interpolationPosition;
 
 void main(void) {
 
-	int		vertexMaterial = int(interpolationMaterialFloat);
+	int		vertexMaterial	= int(interpolationMaterialFloat);
+	vec3	vertexNormal	= normalize(interpolationNormal);
 
 	vec4	materialColor;
 	float	materialDiffuse;
@@ -93,14 +95,40 @@ void main(void) {
 	}
 
 	vec3	eyeDirection = normalize(matrixWorldToLocal * vec4(eyeWorldDirection, 0.0)).xyz;
-	vec3	destColor = materialEmission;
+	vec3	destColor = materialEmission + materialAmbient * 0.2;
 
 	{
 		for(int i = 0; i < LIGHTS_MAX; i++) {
-			vec3 lightDirection = normalize(matrixWorldToLocal * vec4(lightsDirection[i], 0.0)).xyz;
 			if(lightsMode[i] == LIGHT_MODE_DIRECTIONAL) {
-				float diffuse	= clamp(dot(interpolationNormal, lightDirection), 0.1, 1.0);
-				destColor		+= materialColor.xyz * diffuse;
+				vec3 lightDirection = normalize(matrixWorldToLocal * vec4(lightsDirection[i], 0.0)).xyz;
+				{
+					float diffuse	= clamp(dot(vertexNormal, lightDirection) * materialDiffuse, 0.0, 1.0);
+					destColor		+= lightsColor[i].xyz * materialColor.xyz * diffuse;
+				}
+				{
+					vec3  halfLightEye	= normalize(lightDirection + eyeDirection);
+					float specular = pow(clamp(dot(vertexNormal, halfLightEye), 0.0, 1.0), materialPower);
+					destColor		+= materialSpecular.xyz * specular;
+				}
+			}
+			else if(lightsMode[i] == LIGHT_MODE_POINT) {
+				vec3  lightDirection = normalize(matrixWorldToLocal * vec4(interpolationPosition - lightsPosition[i], 0.0)).xyz;
+				float d = length(lightsPosition[i] - interpolationPosition);
+				if(d < lightsRange[i]) {
+					float rate = pow(1.0 - (d / lightsRange[i]), 0.5);
+					{
+						float diffuse	= clamp(dot(vertexNormal, lightDirection) * materialDiffuse, 0.0, 1.0);
+						destColor		+= lightsColor[i].xyz * materialColor.xyz * diffuse * rate;
+					}
+					{
+						vec3  halfLightEye	= normalize(lightDirection + eyeDirection);
+						float specular = pow(clamp(dot(vertexNormal, halfLightEye), 0.0, 1.0), materialPower);
+						destColor		+= materialSpecular.xyz * specular;
+					}
+				}
+			}
+			else if(lightsMode[i] == LIGHT_MODE_AMBIENT) {
+				destColor		+= lightsColor[i].xyz * materialColor.xyz;
 			}
 			if(i == lightsLength) {
 				break;

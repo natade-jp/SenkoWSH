@@ -772,6 +772,7 @@ S3GLSystem.prototype.drawScene = function(scene) {
 		var MV = this.mulMatrix(M, VPS.LookAt);
 		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
 		this.bind("matrixWorldToLocal", M.inverse4());
+		this.bind("matrixLocalToWorld", M);
 		this.bind("matrixLocalToPerspective", MVP);
 		
 		var indexsize = this.bind(model);

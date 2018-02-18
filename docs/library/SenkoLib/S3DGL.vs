@@ -5,14 +5,17 @@ attribute float vertexMaterialFloat;
 
 // 頂点移動
 uniform mat4 matrixLocalToPerspective;
+uniform mat4 matrixLocalToWorld;
 
 // シェーダー間情報
 varying float interpolationMaterialFloat;
 varying vec3 interpolationNormal;
+varying vec3 interpolationPosition;
 
 void main(void) {
 	
 	interpolationMaterialFloat = vertexMaterialFloat;
 	interpolationNormal = vertexNormal;
+	interpolationPosition = (matrixLocalToWorld * vec4(vertexPosition, 1.0)).xyz;
 	gl_Position = matrixLocalToPerspective * vec4(vertexPosition, 1.0);
 }

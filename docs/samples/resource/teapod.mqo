@@ -4,14 +4,14 @@ Format Text Ver 1.0
 Scene {
 	pos -0.34499037 -1.5385034 8.5265121
 	lookat 0 0 0
-	head 9.5092
-	pich 0.5708
-	ortho 1
+	head 8.7892
+	pich 0.2308
+	ortho 0
 	zoom2 247.1349
 	amb 0.250 0.250 0.250
 }
 Material 1 {
-	"mat" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"mat" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(1.000) power(50.00)
 }
 Object "body" {
 	visible 15
