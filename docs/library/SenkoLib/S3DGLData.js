@@ -524,7 +524,7 @@ S3GLMesh.prototype.disposeGLData = function() {
 	}
 	delete this.gldata;
 	this.gldata = {};
-	this.is_compile_gl	= false;
+	this.setCompileGL(false);
 };
 
 /**
@@ -533,7 +533,6 @@ S3GLMesh.prototype.disposeGLData = function() {
  */
 S3GLMesh.prototype.getGLData = function() {
 	// すでに存在している場合は、返す
-	
 	if(this.isCompileGL()) {
 		return this.gldata;
 	}
@@ -555,6 +554,7 @@ S3GLMesh.prototype.getGLData = function() {
 	}
 	// 代入
 	this.gldata = gldata;
+	this.setCompileGL(true);
 	return this.gldata;
 };
 
