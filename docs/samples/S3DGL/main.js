@@ -19,7 +19,7 @@
 	
 	var model = s3.createModel();
 	var mesh = s3.createMesh();
-	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
+	mesh.inputData("../resource/teapod_HQ.mqo", S3Mesh.DATA_MQO);
 	model.setMesh(mesh);
 	model.setScale(5);
 
@@ -33,20 +33,26 @@
 	
 	var light_ambient = s3.createLight();
 	light_ambient.setMode(S3LightMode.AMBIENT_LIGHT);
-	light_ambient.setColor(new S3Vector( 0.0,  0.0,  0.1));
+	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.1));
 	scene.addLight(light_ambient);
 	
 	var light_down = s3.createLight();
 	light_down.setMode(S3LightMode.DIRECTIONAL_LIGHT);
-	light_down.setColor(new S3Vector( 0.9,  0.5,  0.5));
+	light_down.setColor(new S3Vector( 0.6,  0.6,  1.0));
 	light_down.setDirection(new S3Vector( 0,  -1,  0));
 	scene.addLight(light_down);
 	
+	var light_up = s3.createLight();
+	light_up.setMode(S3LightMode.DIRECTIONAL_LIGHT);
+	light_up.setColor(new S3Vector( 0.0,  0.05,  0.0));
+	light_up.setDirection(new S3Vector( 0,  1,  0));
+	scene.addLight(light_up);
+	
 	var light_point = s3.createLight();
 	light_point.setMode(S3LightMode.POINT_LIGHT);
-	light_point.setColor(new S3Vector( 0.0,  0.0,  1.0));
+	light_point.setColor(new S3Vector( 1.0,  1.0,  1.0));
 	light_point.setPosition(new S3Vector( 100,  0,  0));
-	light_point.setRange(100);
+	light_point.setRange(200);
 	scene.addLight(light_point);
 	
 	var redraw = function() {
