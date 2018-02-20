@@ -102,66 +102,6 @@ S3GLVertex.gltypetable = {
 	}
 };
 
-
-/**
- * WebGL用のライト (immutable)
- * @param {S3Scene} scene
- * @returns {S3GLLight}
- */
-var S3GLLight = function(scene) {
-	if(!(scene instanceof S3Scene)) {
-		throw "not S3Scene";
-	}
-	var LIGHTS_MAX				= S3GLLight.LIGHTS_MAX;
-	var light_array				= scene.light;
-	var lightsLength			= Math.min(light_array.length, LIGHTS_MAX);
-	this.lights					= {};
-	this.lights.lightsLength	= new S3GLVertex(lightsLength, 1, S3GLVertex.datatype.Int32Array);
-	for(var i = 0; i < lightsLength; i++) {
-		var data = light_array[i].getGLData();
-		for(var key in data) {
-			if(!this.lights[key]) {
-				this.lights[key] = [];
-			}
-			this.lights[key].push(data[key]);
-		}
-	}
-};
-S3GLLight.prototype.getLights = function() {
-	return this.lights;
-};
-S3GLLight.LIGHTS_MAX = 4;
-
-var S3GLMatelial = function(model) {
-	if(!(model instanceof S3Model)) {
-		throw "not S3Model";
-	}
-	var LIGHTS_MAX				= S3GLMatelial.MATELIAL_MAX;
-	var material_array			= model.getMesh().getMaterialArray();
-	var materialLength			= Math.min(material_array.length, LIGHTS_MAX);
-	this.materials				= {};
-	for(var i = 0; i < materialLength; i++) {
-		var data = material_array[i].getGLData();
-		for(var key in data) {
-			if(!this.materials[key]) {
-				this.materials[key] = [];
-			}
-			this.materials[key].push(data[key]);
-		}
-	}
-};
-S3GLMatelial.prototype.getMaterials = function() {
-	return this.materials;
-};
-S3GLMatelial.MATELIAL_MAX = 4;
-
-var S3GLScene = function() {
-	this.super = S3Scene.prototype;
-	this.super._init.call(this);
-};
-S3GLScene.prototype = new S3Scene();
-
-
 /**
  * /////////////////////////////////////////////////////////
  * 素材にメソッドを拡張
@@ -295,7 +235,7 @@ S3Vertex.prototype.getGLData = function() {
 var S3GLMesh = function(sys) {
 	this.sys = sys;
 	this.super = S3Mesh.prototype;
-	this.super.init.call(this);
+	this.super._init.call(this);
 	
 	var that = this;
 	
@@ -558,12 +498,67 @@ S3GLMesh.prototype.getGLData = function() {
 	return this.gldata;
 };
 
-S3GLMesh.prototype.test = function() {
-	console.log("test 1");
-	if(this instanceof S3Mesh) {
-		console.log("test 2");
-	}
-	if(this instanceof S3GLMesh) {
-		console.log("test 3");
-	}
+/**
+ * /////////////////////////////////////////////////////////
+ * Uniform系
+ * /////////////////////////////////////////////////////////
+ */
+
+var S3GLModel = function() {
+	this.super = S3Model.prototype;
+	this.super._init.call(this);
 };
+S3GLModel.prototype = new S3Model();
+S3GLModel.prototype.getUniforms = function() {
+	var uniforms				= {};
+	{
+		var MATELIAL_MAX			= 4;
+		var material_array			= this.getMesh().getMaterialArray();
+		var materialLength			= Math.min(material_array.length, MATELIAL_MAX);
+		for(var i = 0; i < materialLength; i++) {
+			var data = material_array[i].getGLData();
+			for(var key in data) {
+				if(!uniforms[key]) {
+					uniforms[key] = [];
+				}
+				uniforms[key].push(data[key]);
+			}
+		}
+	}
+	var ret = [];
+	ret.uniforms = uniforms;
+	return ret;
+};
+
+var S3GLScene = function() {
+	this.super = S3Scene.prototype;
+	this.super._init.call(this);
+};
+S3GLScene.prototype = new S3Scene();
+S3GLScene.prototype.getUniforms = function() {
+	var uniforms			= {};
+	// カメラ情報もUniformで送る
+	{
+		uniforms.eyeWorldDirection = this.getCamera().getDirection();
+	}
+	// ライト情報はUniformで送る
+	{
+		var LIGHTS_MAX			= 4;
+		var light_array			= this.getLights();
+		var lightsLength		= Math.min(light_array.length, LIGHTS_MAX);
+		uniforms.lightsLength	= new S3GLVertex(lightsLength, 1, S3GLVertex.datatype.Int32Array);
+		for(var i = 0; i < lightsLength; i++) {
+			var data = light_array[i].getGLData();
+			for(var key in data) {
+				if(!uniforms[key]) {
+					uniforms[key] = [];
+				}
+				uniforms[key].push(data[key]);
+			}
+		}
+	}
+	var ret = [];
+	ret.uniforms = uniforms;
+	return ret;
+};
+

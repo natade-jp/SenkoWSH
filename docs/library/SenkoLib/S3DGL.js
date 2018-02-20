@@ -564,7 +564,7 @@ S3GLProgram.prototype.bindMesh = function(s3mesh) {
 
 var S3GLSystem = function() {
 	this.super = S3System.prototype;
-	this.super.setSystemMode.call(this, S3SystemMode.OPEN_GL);
+	this.super._init.call(this, S3SystemMode.OPEN_GL);
 	this.program		= null;
 	this.gl				= null;
 	this.is_set			= false;
@@ -577,6 +577,9 @@ S3GLSystem.prototype.createMesh = function() {
 };
 S3GLSystem.prototype.createScene = function() {
 	return new S3GLScene();
+};
+S3GLSystem.prototype.createModel = function() {
+	return new S3GLModel();
 };
 
 S3GLSystem.prototype.getGL = function() {
@@ -639,7 +642,8 @@ S3GLSystem.prototype.clear = function() {
 	if(this.gl === null) {
 		return false;
 	}
-	this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
+	var color = this.getBackgroundColor();
+	this.gl.clearColor(color.x, color.y, color.z, color.w);
 	this.gl.clearDepth(1.0);
 	this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 	return true;
@@ -715,18 +719,11 @@ S3GLSystem.prototype.bind = function(p1, p2) {
 			index_lenght = prg.bindMesh(mesh);
 		}
 	}
-	// 引数がライトであれば、ライトとして紐づける
-	else if((arguments.length === 1) && (p1 instanceof S3GLLight)) {
-		var lights = p1.getLights();
-		for(var key in lights) {
-			prg.bindData(key, lights[key]);
-		}
-	}
-	// 引数が材質であれば、材質として紐づける
-	else if((arguments.length === 1) && (p1 instanceof S3GLMatelial)) {
-		var materials = p1.getMaterials();
-		for(var key in materials) {
-			prg.bindData(key, materials[key]);
+	// uniformsデータであれば、内部のデータを全て割り当てる
+	else if((arguments.length === 1) && (p1.uniforms)) {
+		var uniforms = p1.uniforms;
+		for(var key in uniforms) {
+			prg.bindData(key, uniforms[key]);
 		}
 	}
 	return index_lenght;
@@ -734,7 +731,6 @@ S3GLSystem.prototype.bind = function(p1, p2) {
 
 S3GLSystem.prototype.drawScene = function(scene) {
 	// プログラムを再設定
-	
 	this.setProgram(this.program);
 	
 	// まだ設定できていない場合は、この先へいかせない
@@ -746,26 +742,23 @@ S3GLSystem.prototype.drawScene = function(scene) {
 	this._setDepthMode();
 	this._setCullMode();
 	
-	// ライト設定
-	var lights = new S3GLLight(scene);
-	this.bind(lights);
-	
-	// カメラ設定
-	this.bind("eyeWorldDirection", scene.camera.getDirection());
+	// Sceneに関するUniform設定（カメラやライト設定など）
+	this.bind(scene.getUniforms());
 	
 	// カメラの行列を取得する
-	var VPS = this.getVPSMatrix(scene.camera, this.canvas);
+	var VPS = scene.getCamera().getVPSMatrix(this.canvas);
 	
 	// モデル描写
-	for(var i = 0; i < scene.model.length; i++) {
-		var model	= scene.model[i];
+	var models = scene.getModels();
+	for(var i = 0; i < models.length; i++) {
+		var model	= models[i];
 		var mesh	= model.getMesh();
 		if(mesh.isComplete() === false) {
 			continue;
 		}
 		
-		var materials = new S3GLMatelial(model);
-		this.bind(materials);
+		// モデルに関するUniform設定（材質の設定など）
+		this.bind(model.getUniforms());
 		
 		// モデル用のBIND
 		var M = this.getMatrixWorldTransform(model);
