@@ -312,7 +312,9 @@ IDMouse.prototype.mouseMoved = function(mouseevent) {
 };
 
 IDMouse.prototype.mouseWheelMoved = function(event) {
-	this.wheelrotation += event.wheelDelta < 0 ? -1 : 1;
+	if(event.wheelDelta !== 0) {
+		this.wheelrotation += event.deltaY > 0 ? -1 : 1;
+	}
 };
 
 IDMouse.prototype.focusLost = function() {
