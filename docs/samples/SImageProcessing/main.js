@@ -257,11 +257,13 @@ function testEtc(panel) {
 	var label1 = new SLabel("使用画像");
 	panel.put(label1, SComponent.putype.IN);
 	var picturetype = [
-		"../resource/image_parrots.png",
-		"../resource/image_mandrill.png",
-		"../resource/image_girl.png",
-		"../resource/image_lenna.png",
-		"../resource/image_wg.png"
+		"../resource/image_parrots.jpg",
+		"../resource/image_mandrill.jpg",
+		"../resource/image_girl.jpg",
+		"../resource/image_lenna.jpg",
+		"../resource/image_test1.jpg",
+		"../resource/sampleimage.png",
+		"../resource/image_wg.png",
 	];
 	var cb_picturetype = new SComboBox(picturetype);
 	cb_picturetype.setWidth(32);

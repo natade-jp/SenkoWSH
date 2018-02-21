@@ -19,7 +19,7 @@
 	
 	var model = s3.createModel();
 	var mesh = s3.createMesh();
-	mesh.inputData("../resource/teapod_HQ.mqo", S3Mesh.DATA_MQO);
+	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
 	model.setMesh(mesh);
 	model.setScale(5);
 
