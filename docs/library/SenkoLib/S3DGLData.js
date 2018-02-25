@@ -236,41 +236,6 @@ var S3GLMesh = function(sys) {
 	this.sys = sys;
 	this.super = S3Mesh.prototype;
 	this.super._init.call(this);
-	
-	var that = this;
-	
-	this.glfunc = {
-		createVBO : function(data) {
-			var gl = that.sys.getGL();
-			if(gl === null) {
-				return null;
-			}
-			var vbo = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-			gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-			gl.bindBuffer(gl.ARRAY_BUFFER, null);
-			return vbo;
-		},
-
-		createIBO : function(data) {
-			var gl = that.sys.getGL();
-			if(gl === null) {
-				return null;
-			}
-			var ibo = gl.createBuffer();
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW);
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-			return ibo;
-		},
-		
-		deleteBuffer : function(data) {
-			var gl = that.sys.getGL();
-			if(gl !== null) {
-				gl.deleteBuffer(data);;
-			}
-		}
-	};
 };
 S3GLMesh.prototype = new S3Mesh();
 
@@ -451,13 +416,13 @@ S3GLMesh.prototype.disposeGLData = function() {
 	if(gldata !== null) {
 		if(gldata.ibo !== undefined) {
 			if(gldata.ibo.data !== undefined) {
-				this.glfunc.deleteBuffer(gldata.ibo.data);
+				this.sys.glfunc.deleteBuffer(gldata.ibo.data);
 			}
 		}
 		if(gldata.vbo !== undefined) {
 			for(var key in this.arraydata.vbo) {
 				if(this.arraydata.vbo[key].data !== undefined) {
-					this.glfunc.deleteBuffer(this.arraydata.vbo[key].data);
+					this.sys.glfunc.deleteBuffer(this.arraydata.vbo[key].data);
 				}
 			}
 		}
@@ -481,16 +446,16 @@ S3GLMesh.prototype.getGLData = function() {
 		return null;
 	}
 	// GLを取得できない場合も、この時点で終了させる
-	if(this.sys.getGL() === null) {
+	if(!this.sys.isSetGL()) {
 		return null;
 	}
 	// 作成
 	this._makeNormalMap(); // ノーマルマップを作成して
 	var gldata = this._getGLArrayData(); // GL用の配列データを作成
 	// IBO / VBO 用のオブジェクトを作成
-	gldata.ibo.data = this.glfunc.createIBO(gldata.ibo.array);
+	gldata.ibo.data = this.sys.glfunc.createIBO(gldata.ibo.array);
 	for(var key in gldata.vbo) {
-		gldata.vbo[key].data = this.glfunc.createVBO(gldata.vbo[key].array);
+		gldata.vbo[key].data = this.sys.glfunc.createVBO(gldata.vbo[key].array);
 	}
 	// 代入
 	this.gldata = gldata;

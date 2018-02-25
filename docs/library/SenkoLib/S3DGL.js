@@ -80,19 +80,15 @@ S3GLShader.prototype.getShader = function() {
 		// バーテックスシェーダである
 		sharder_type = gl.VERTEX_SHADER;
 	}
-	var shader = gl.createShader(sharder_type);
-	gl.shaderSource(shader, code);
-	gl.compileShader(shader);
-	if(gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		this.shader			= shader;
-		this.sharder_type	= sharder_type;
-		return this.shader;
-	}
-	else {
-		console.log("compile error " + gl.getShaderInfoLog(shader));
+	var data = this.sys.glfunc.createShader(sharder_type, code);
+	if(data.is_error) {
 		this.is_error = true;
 		return null;
 	}
+	this.shader			= data.shader;
+	this.sharder_type	= sharder_type;
+	return this.shader;
+	
 };
 S3GLShader.prototype.getShaderType = function() {
 	if(this.sharder_type !== -1) {
@@ -111,10 +107,7 @@ S3GLShader.prototype.dispose = function() {
 	if(this.shader === null) {
 		return true;
 	}
-	if(!this.is_error) {
-		var gl = this.gl;
-		gl.deleteShader(shader);
-	}
+	this.sys.glfunc.deleteShader(this.shader);
 	this.shader	= null;
 	this.sharder_type = -1;
 	return true;
@@ -238,9 +231,9 @@ S3GLProgram.prototype.dispose = function() {
 	}
 	if(this.is_linked) {
 		this.disuseProgram();
-		gl.detachShader(this.program, this.vertex.getShader()   );
-		gl.detachShader(this.program, this.fragment.getShader() );
-		gl.deleteProgram(this.program);
+		this.sys.glfunc.deleteProgram(this.program,
+			this.vertex.getShader(), this.fragment.getShader()
+		);
 		this.program		= null;
 		this.is_linked		= false;
 	}
@@ -353,22 +346,14 @@ S3GLProgram.prototype.getProgram = function() {
 		return null;
 	}
 	// 取得したシェーダーを用いてプログラムをリンクする
-	var program			= gl.createProgram();
-	gl.attachShader(program, shader_vertex   );
-	gl.attachShader(program, shader_fragment );
-	gl.linkProgram(program);
-	if(!gl.getProgramParameter(program, gl.LINK_STATUS)){
-		// リンクのエラー発生時
-		console.log("link error " + gl.getProgramInfoLog(program));
+	var data = this.sys.glfunc.createProgram(shader_vertex, shader_fragment);
+	if(data.is_error) {
 		this.is_error = true;
-		gl.detachShader(program, this.vertex.getShader()   );
-		gl.detachShader(program, this.fragment.getShader() );
-		gl.deleteProgram(program);
 		return null;
 	}
 	// リンクが成功したらプログラムの解析しておく
 	this.is_linked = true;
-	this.program = program;
+	this.program = data.program;
 	this.analysisShader(this.vertex.getCode(), this.variable);
 	this.analysisShader(this.fragment.getCode(), this.variable);
 	return this.program;
@@ -570,7 +555,109 @@ var S3GLSystem = function() {
 	this.is_set			= false;
 	this.program_list	= [];
 	this.program_listId	= 0;
+	var that = this;
+	
+	this.glfunc = {
+		
+		createVBO : function(data) {
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var vbo = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+			gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+			return vbo;
+		},
+
+		createIBO : function(data) {
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var ibo = gl.createBuffer();
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+			return ibo;
+		},
+		
+		deleteBuffer : function(data) {
+			var gl = that.getGL();
+			if(gl !== null) {
+				gl.deleteBuffer(data);
+			}
+		},
+		
+		createProgram : function(shader_vertex, shader_fragment) {
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var program		= gl.createProgram();
+			var is_error	= false;
+			gl.attachShader(program, shader_vertex   );
+			gl.attachShader(program, shader_fragment );
+			gl.linkProgram(program);
+			if(!gl.getProgramParameter(program, gl.LINK_STATUS)){
+				console.log("link error " + gl.getProgramInfoLog(program));
+				gl.detachShader(program, shader_vertex   );
+				gl.detachShader(program, shader_fragment );
+				gl.deleteProgram(program);
+				program		= null;
+				is_error	= true;
+			}
+			return {
+				program		: program,
+				is_error	: is_error
+			};
+		},
+		
+		deleteProgram : function(program, shader_vertex, shader_fragment) {
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			gl.detachShader(program, shader_vertex   );
+			gl.detachShader(program, shader_fragment );
+			gl.deleteProgram(program);
+		},
+		
+		createShader : function(sharder_type, code) {
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var shader		= gl.createShader(sharder_type);
+			var is_error	= false;
+			gl.shaderSource(shader, code);
+			gl.compileShader(shader);
+			if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+				console.log("compile error " + gl.getShaderInfoLog(shader));
+				gl.deleteShader(shader);
+				shader		= null;
+				is_error	= true;
+			}
+			return {
+				shader		: shader,
+				is_error	: is_error
+			};
+		},
+		
+		deleteShader : function(shader) {
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			gl.deleteShader(shader);
+		}
+		
+	};
 };
+
+
+
 S3GLSystem.prototype = new S3System();
 S3GLSystem.prototype.createMesh = function() {
 	return new S3GLMesh(this);
@@ -586,6 +673,9 @@ S3GLSystem.prototype.getGL = function() {
 	return this.gl;
 };
 
+S3GLSystem.prototype.isSetGL = function() {
+	return this.gl !== null;
+};
 S3GLSystem.prototype.setCanvas = function(canvas) {
 	// 初期化色
 	var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -634,7 +724,7 @@ S3GLSystem.prototype.setProgram = function(glprogram) {
 		this.program.disuseProgram();
 	}
 	this.program = glprogram;
-	this.gl.useProgram(new_program);
+	this.program.useProgram();
 	this.is_set = true;
 };
 
