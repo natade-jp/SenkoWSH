@@ -1266,7 +1266,7 @@ S3Light.prototype.clone = function() {
 };
 S3Light.prototype.init = function() {
 	this.mode		= S3LightMode.DIRECTIONAL_LIGHT;
-	this.power		= 1.5;
+	this.power		= 1.0;
 	this.range		= 1000.0;
 	this.position	= new S3Vector(0.0, 0.0, 0.0);
 	this.direction	= new S3Vector(0.0, 0.0, -1.0);

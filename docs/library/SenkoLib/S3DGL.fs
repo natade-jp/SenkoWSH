@@ -4,10 +4,7 @@ precision mediump float;
 // 材質
 #define MATERIALS_MAX			4
 uniform vec4	materialsColor[MATERIALS_MAX];
-uniform float	materialsDiffuse[MATERIALS_MAX];
-uniform vec3	materialsEmission[MATERIALS_MAX];
-uniform vec3	materialsSpecular[MATERIALS_MAX];
-uniform float	materialsPower[MATERIALS_MAX];
+uniform vec4	materialsSpecular[MATERIALS_MAX];
 uniform vec3	materialsAmbient[MATERIALS_MAX];
 uniform float	materialsReflect[MATERIALS_MAX];
 
@@ -22,10 +19,8 @@ uniform mat4 matrixWorldToLocal;
 #define LIGHT_MODE_POINT		3
 uniform int		lightsLength;
 uniform int		lightsMode[LIGHTS_MAX];
-uniform float	lightsPower[LIGHTS_MAX];
 uniform float	lightsRange[LIGHTS_MAX];
-uniform vec3	lightsPosition[LIGHTS_MAX];
-uniform vec3	lightsDirection[LIGHTS_MAX];
+uniform vec3	lightsVector[LIGHTS_MAX];
 uniform vec3	lightsColor[LIGHTS_MAX];
 
 // 視線
@@ -43,9 +38,8 @@ void main(void) {
 	vec3	vertexNormal	= normalize(interpolationNormal);
 
 	// 材質を取得
-	vec4	materialColor;
+	vec3	materialColor;
 	float	materialDiffuse;
-	vec3	materialEmission;
 	vec3	materialSpecular;
 	float	materialPower;
 	vec3	materialAmbient;
@@ -53,40 +47,36 @@ void main(void) {
 	if(vertexMaterial < 4) {
 		if(vertexMaterial < 2) {
 			if(vertexMaterial == 0) {
-				materialColor		= materialsColor[0];
-				materialDiffuse		= materialsDiffuse[0];
-				materialEmission	= materialsEmission[0];
-				materialSpecular	= materialsSpecular[0];
-				materialPower		= materialsPower[0];
+				materialColor		= materialsColor[0].xyz;
+				materialDiffuse		= materialsColor[0].z;
+				materialSpecular	= materialsSpecular[0].xyz;
+				materialPower		= materialsSpecular[0].w;
 				materialAmbient		= materialsAmbient[0];
 				materialReflect		= materialsReflect[0];
 			}
 			else {
-				materialColor		= materialsColor[1];
-				materialDiffuse		= materialsDiffuse[1];
-				materialEmission	= materialsEmission[1];
-				materialSpecular	= materialsSpecular[1];
-				materialPower		= materialsPower[1];
+				materialColor		= materialsColor[1].xyz;
+				materialDiffuse		= materialsColor[1].z;
+				materialSpecular	= materialsSpecular[1].xyz;
+				materialPower		= materialsSpecular[1].w;
 				materialAmbient		= materialsAmbient[1];
 				materialReflect		= materialsReflect[1];
 			}
 		}
 		else {
 			if(vertexMaterial == 2) {
-				materialColor		= materialsColor[2];
-				materialDiffuse		= materialsDiffuse[2];
-				materialEmission	= materialsEmission[2];
-				materialSpecular	= materialsSpecular[2];
-				materialPower		= materialsPower[2];
+				materialColor		= materialsColor[2].xyz;
+				materialDiffuse		= materialsColor[2].z;
+				materialSpecular	= materialsSpecular[2].xyz;
+				materialPower		= materialsSpecular[2].w;
 				materialAmbient		= materialsAmbient[2];
 				materialReflect		= materialsReflect[2];
 			}
 			else {
-				materialColor		= materialsColor[3];
-				materialDiffuse		= materialsDiffuse[3];
-				materialEmission	= materialsEmission[3];
-				materialSpecular	= materialsSpecular[3];
-				materialPower		= materialsPower[3];
+				materialColor		= materialsColor[3].xyz;
+				materialDiffuse		= materialsColor[3].z;
+				materialSpecular	= materialsSpecular[3].xyz;
+				materialPower		= materialsSpecular[3].w;
 				materialAmbient		= materialsAmbient[3];
 				materialReflect		= materialsReflect[3];
 			}
@@ -97,7 +87,7 @@ void main(void) {
 	vec3	eyeDirection = normalize(matrixWorldToLocal * vec4(eyeWorldDirection, 0.0)).xyz;
 	
 	// 物質の色の初期値
-	vec3	destColor = materialEmission + materialAmbient * 0.2;
+	vec3	destColor = materialAmbient * 0.2;
 
 	// 光の数だけ繰り返す
 	for(int i = 0; i < LIGHTS_MAX; i++) {
@@ -106,10 +96,11 @@ void main(void) {
 		if((lightsMode[i] == LIGHT_MODE_DIRECTIONAL)||(lightsMode[i] == LIGHT_MODE_POINT)) {
 			bool is_direction = lightsMode[i] == LIGHT_MODE_DIRECTIONAL;
 			// 光源の種類によって、ピクセルと光への方向ベクトルの計算を変える
+			// lightsVector は、点光源なら位置を、平行光源なら方向を指す値
 			vec3 lightDirection = is_direction ?
-				normalize(matrixWorldToLocal * vec4(lightsDirection[i], 0.0)).xyz :
-				normalize(matrixWorldToLocal * vec4(interpolationPosition - lightsPosition[i], 0.0)).xyz;
-			float d = is_direction ? -1.0 : length(lightsPosition[i] - interpolationPosition);
+				normalize(matrixWorldToLocal * vec4(lightsVector[i], 0.0)).xyz :
+				normalize(matrixWorldToLocal * vec4(interpolationPosition - lightsVector[i], 0.0)).xyz;
+			float d = is_direction ? -1.0 : length(lightsVector[i] - interpolationPosition);
 			if(d < lightsRange[i]) {
 				// 点光源の場合は遠いほど暗くする
 				float rate = is_direction ? 1.0 : pow(1.0 - (d / lightsRange[i]), 0.5);

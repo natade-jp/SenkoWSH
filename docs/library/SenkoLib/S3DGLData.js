@@ -117,15 +117,13 @@ S3Material.prototype.getGLHash = function() {
  * 頂点データを作成して取得する
  * 頂点データ内に含まれるデータは、S3GLVertex型となる。
  * なお、ここでつけているメンバの名前は、そのままバーテックスシェーダで使用する変数名となる
+ * uniform の数がハードウェア上限られているため、送る情報は選定すること
  * @returns {頂点データ（色情報）}
  */
 S3Material.prototype.getGLData = function() {
 	return {
-		materialsColor		: new S3GLVertex(this.color		, 4, S3GLVertex.datatype.Float32Array),
-		materialsDiffuse	: new S3GLVertex(this.diffuse	, 1, S3GLVertex.datatype.Float32Array),
-		materialsEmission	: new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
-		materialsSpecular	: new S3GLVertex(this.specular	, 3, S3GLVertex.datatype.Float32Array),
-		materialsPower		: new S3GLVertex(this.power		, 1, S3GLVertex.datatype.Float32Array),
+		materialsColor		: new S3GLVertex([this.color.x, this.color.y, this.color.z, this.diffuse]			, 4, S3GLVertex.datatype.Float32Array),
+		materialsSpecular	: new S3GLVertex([this.specular.x, this.specular.y, this.specular.z, this.power]	, 4, S3GLVertex.datatype.Float32Array),
 		materialsAmbient	: new S3GLVertex(this.ambient	, 3, S3GLVertex.datatype.Float32Array),
 		materialsReflect	: new S3GLVertex(this.reflect	, 1, S3GLVertex.datatype.Float32Array)
 	};
@@ -143,13 +141,19 @@ S3Light.prototype.getGLHash = function() {
 };
 
 S3Light.prototype.getGLData = function() {
+	var lightsColor = this.color.mul(this.power);
+	var lightsVector = new S3Vector();
+	if(this.mode === S3LightMode.DIRECTIONAL_LIGHT) {
+		lightsVector = this.direction;
+	}
+	else if(this.mode === S3LightMode.POINT_LIGHT) {
+		lightsVector = this.position;
+	}
 	return {
 		lightsMode		: new S3GLVertex(this.mode,			1, S3GLVertex.datatype.Int32Array),
-		lightsPower		: new S3GLVertex(this.power,		1, S3GLVertex.datatype.Float32Array),
 		lightsRange		: new S3GLVertex(this.range,		1, S3GLVertex.datatype.Float32Array),
-		lightsPosition	: new S3GLVertex(this.position,		3, S3GLVertex.datatype.Float32Array),
-		lightsDirection	: new S3GLVertex(this.direction,	3, S3GLVertex.datatype.Float32Array),
-		lightsColor		: new S3GLVertex(this.color,		3, S3GLVertex.datatype.Float32Array)
+		lightsVector	: new S3GLVertex(lightsVector,		3, S3GLVertex.datatype.Float32Array),
+		lightsColor		: new S3GLVertex(lightsColor,		3, S3GLVertex.datatype.Float32Array)
 	};
 };
 
