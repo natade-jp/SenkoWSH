@@ -5,8 +5,8 @@ precision mediump float;
 #define MATERIALS_MAX			4
 uniform vec4	materialsColor[MATERIALS_MAX];
 uniform vec4	materialsSpecular[MATERIALS_MAX];
-uniform vec3	materialsAmbient[MATERIALS_MAX];
-uniform float	materialsReflect[MATERIALS_MAX];
+uniform vec3	materialsEmission[MATERIALS_MAX];
+uniform vec4	materialsAmbientAndReflect[MATERIALS_MAX];
 
 // 頂点移動
 uniform mat4 matrixWorldToLocal;
@@ -42,6 +42,7 @@ void main(void) {
 	float	materialDiffuse;
 	vec3	materialSpecular;
 	float	materialPower;
+	vec3	materialEmission;
 	vec3	materialAmbient;
 	float	materialReflect;
 	if(vertexMaterial < 4) {
@@ -51,16 +52,18 @@ void main(void) {
 				materialDiffuse		= materialsColor[0].z;
 				materialSpecular	= materialsSpecular[0].xyz;
 				materialPower		= materialsSpecular[0].w;
-				materialAmbient		= materialsAmbient[0];
-				materialReflect		= materialsReflect[0];
+				materialEmission	= materialsEmission[0];
+				materialAmbient		= materialsAmbientAndReflect[0].xyz;
+				materialReflect		= materialsAmbientAndReflect[0].w;
 			}
 			else {
 				materialColor		= materialsColor[1].xyz;
 				materialDiffuse		= materialsColor[1].z;
 				materialSpecular	= materialsSpecular[1].xyz;
 				materialPower		= materialsSpecular[1].w;
-				materialAmbient		= materialsAmbient[1];
-				materialReflect		= materialsReflect[1];
+				materialEmission	= materialsEmission[1];
+				materialAmbient		= materialsAmbientAndReflect[1].xyz;
+				materialReflect		= materialsAmbientAndReflect[1].w;
 			}
 		}
 		else {
@@ -69,16 +72,18 @@ void main(void) {
 				materialDiffuse		= materialsColor[2].z;
 				materialSpecular	= materialsSpecular[2].xyz;
 				materialPower		= materialsSpecular[2].w;
-				materialAmbient		= materialsAmbient[2];
-				materialReflect		= materialsReflect[2];
+				materialEmission	= materialsEmission[2];
+				materialAmbient		= materialsAmbientAndReflect[2].xyz;
+				materialReflect		= materialsAmbientAndReflect[2].w;
 			}
 			else {
 				materialColor		= materialsColor[3].xyz;
 				materialDiffuse		= materialsColor[3].z;
 				materialSpecular	= materialsSpecular[3].xyz;
 				materialPower		= materialsSpecular[3].w;
-				materialAmbient		= materialsAmbient[3];
-				materialReflect		= materialsReflect[3];
+				materialEmission	= materialsEmission[3];
+				materialAmbient		= materialsAmbientAndReflect[3].xyz;
+				materialReflect		= materialsAmbientAndReflect[3].w;
 			}
 		}
 	}
@@ -87,7 +92,9 @@ void main(void) {
 	vec3	eyeDirection = normalize(matrixWorldToLocal * vec4(eyeWorldDirection, 0.0)).xyz;
 	
 	// 物質の色の初期値
-	vec3	destColor = materialAmbient * 0.2;
+	vec3	destDiffuse		= materialEmission;
+	vec3	destSpecular	= vec3(0.0, 0.0, 0.0);
+	vec3	destAmbient		= materialAmbient * 0.2;
 
 	// 光の数だけ繰り返す
 	for(int i = 0; i < LIGHTS_MAX; i++) {
@@ -105,21 +112,22 @@ void main(void) {
 				// 点光源の場合は遠いほど暗くする
 				float rate = is_direction ? 1.0 : pow(1.0 - (d / lightsRange[i]), 0.5);
 				// 拡散反射
-				float diffuse	= clamp(dot(vertexNormal, lightDirection) * materialDiffuse, 0.0, 1.0);
-				destColor		+= lightsColor[i].xyz * materialColor.xyz * diffuse * rate;
+				float diffuse	= clamp(((dot(vertexNormal, lightDirection) * 0.9) + 0.1) * materialDiffuse, 0.0, 1.0);
+				destDiffuse		+= lightsColor[i].xyz * materialColor.xyz * diffuse * rate;
 				// 鏡面反射
 				vec3  halfLightEye	= normalize(lightDirection + eyeDirection);
 				float specular = pow(clamp(dot(vertexNormal, halfLightEye), 0.0, 1.0), materialPower);
-				destColor		+= materialSpecular.xyz * specular * rate;
+				destSpecular	+= lightsColor[i].xyz * materialSpecular.xyz * specular * rate;
 			}
 		}
 		else if(lightsMode[i] == LIGHT_MODE_AMBIENT) {
-			destColor		+= lightsColor[i].xyz * materialColor.xyz;
+			destDiffuse		+= lightsColor[i].xyz * materialColor.xyz;
+			destAmbient		+= lightsColor[i].xyz * materialAmbient.xyz;
 		}
 		if(i == lightsLength) {
 			break;
 		}
 	}
-
-	gl_FragColor = vec4(destColor, 1.0);
+	
+	gl_FragColor = vec4(destAmbient + clamp(destDiffuse, 0.0, 1.0) + destSpecular, 1.0);
 }
