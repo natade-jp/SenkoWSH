@@ -76,20 +76,40 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 	var face_offset		= 0;
 	var face_point		= 0;
 	// 半角スペース区切りにの文字列数値を、数値型配列にする
-	var toValueArray = function(text) {
+	var toNumberArray = function(text) {
 		var x = text.split(" "), out = [],i = 0;
 		for(i = 0; i < x.length; i++) {
 			out[i] = parseFloat(x[i]);
 		}
 		return out;
 	};
-	// func(XXX) のXXXの中を抜き出す
+	// func(XXX) のXXXの中身を抜き出す
 	var getValueFromPrm = function(text, parameter) {
 		var x = text.split(" " + parameter + "(");
 		if(x.length === 1) {
 			return [];
 		}
-		return toValueArray(x[1].split(")")[0]);
+		return x[1].split(")")[0];
+	};
+	// func(XXX) のXXXの中を抜き出して数値化
+	var getNumberFromPrm = function(text, parameter) {
+		var value = getValueFromPrm(text, parameter);
+		if(value.length === 0) {
+			return [];
+		}
+		return toNumberArray(value);
+	};
+	// func(XXX) のXXXの中を抜き出して文字列取得
+	var getURLFromPrm = function(text, parameter) {
+		var value = getValueFromPrm(text, parameter);
+		if(value.length === 0) {
+			return null;
+		}
+		var x = value.split("\"");
+		if(x.length !== 3) {
+			return null;
+		}
+		return x[1];
 	};
 	for(i = 0;i < lines.length; i++) {
 		var trim_line = lines[i].replace(/^\s+|\s+$/g, "");
@@ -120,51 +140,54 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 			var material_name = first.replace(/\"/g, "");
 			var material_type = {};
 			var val;
-			val = getValueFromPrm(trim_line, "col");
+			val = getNumberFromPrm(trim_line, "col");
 			if(val.length !== 0) {
 				material_type.color = new S3Vector(val[0], val[1], val[2], val[3]);
 			}
-			val = getValueFromPrm(trim_line, "dif");
+			val = getNumberFromPrm(trim_line, "dif");
 			if(val.length !== 0) {
 				material_type.diffuse = val[0];
 			}
-			val = getValueFromPrm(trim_line, "amb");
+			val = getNumberFromPrm(trim_line, "amb");
 			if(val.length !== 0) {
 				material_type.ambient = new S3Vector(val[0], val[0], val[0]);
 			}
-			val = getValueFromPrm(trim_line, "amb_col");
+			val = getNumberFromPrm(trim_line, "amb_col");
 			if(val.length !== 0) {
 				material_type.ambient = new S3Vector(val[0], val[1], val[2]);
 			}
-			val = getValueFromPrm(trim_line, "emi");
+			val = getNumberFromPrm(trim_line, "emi");
 			if(val.length !== 0) {
 				material_type.emission = new S3Vector(val[0], val[0], val[0]);
 			}
-			val = getValueFromPrm(trim_line, "emi_col");
+			val = getNumberFromPrm(trim_line, "emi_col");
 			if(val.length !== 0) {
 				material_type.emission = new S3Vector(val[0], val[1], val[2]);
 			}
-			val = getValueFromPrm(trim_line, "spc");
+			val = getNumberFromPrm(trim_line, "spc");
 			if(val.length !== 0) {
 				material_type.specular = new S3Vector(val[0], val[0], val[0]);
 			}
-			val = getValueFromPrm(trim_line, "spc_col");
+			val = getNumberFromPrm(trim_line, "spc_col");
 			if(val.length !== 0) {
 				material_type.specular = new S3Vector(val[0], val[1], val[2]);
 			}
-			val = getValueFromPrm(trim_line, "power");
+			val = getNumberFromPrm(trim_line, "power");
 			if(val.length !== 0) {
 				material_type.power = val[0];
 			}
-			val = getValueFromPrm(trim_line, "reflect");
+			val = getNumberFromPrm(trim_line, "reflect");
 			if(val.length !== 0) {
 				material_type.reflect = val[0];
+			}
+			val = getURLFromPrm(trim_line, "tex");
+			if(val) {
 			}
 			var material = new S3Material(material_name, material_type);
 			mesh.addMaterial(material);
 		}
 		else if(block_type === "vertex") {
-			var words = toValueArray(trim_line);
+			var words = toNumberArray(trim_line);
 			var vector = new S3Vector(words[0], words[1], words[2]);
 			var vertex = new S3Vertex(vector);
 			mesh.addVertex(vertex);
@@ -172,10 +195,10 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 		}
 		else if(block_type === "face") {
 			var facenum = parseInt(first);
-			var v		= getValueFromPrm(trim_line, "V");
-			var uv_a	= getValueFromPrm(trim_line, "UV");
+			var v		= getNumberFromPrm(trim_line, "V");
+			var uv_a	= getNumberFromPrm(trim_line, "UV");
 			var uv		= [];
-			var material= getValueFromPrm(trim_line, "M");
+			var material= getNumberFromPrm(trim_line, "M");
 			material = (material.length === 0) ? 0 : material[0];
 			var j = 0;
 			if(uv_a.length !== 0) {

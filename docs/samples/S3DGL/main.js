@@ -31,16 +31,16 @@
 	scene.setCamera(camera);
 	scene.addModel(model);
 	
-	var light_ambient = s3.createLight();
-	light_ambient.setMode(S3LightMode.AMBIENT_LIGHT);
-	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.1));
-	scene.addLight(light_ambient);
-	
 	var light_down = s3.createLight();
 	light_down.setMode(S3LightMode.DIRECTIONAL_LIGHT);
 	light_down.setColor(new S3Vector( 0.6,  0.6,  1.0));
 	light_down.setDirection(new S3Vector( 0,  -1,  0));
 	scene.addLight(light_down);
+	
+	var light_ambient = s3.createLight();
+	light_ambient.setMode(S3LightMode.AMBIENT_LIGHT);
+	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.1));
+	scene.addLight(light_ambient);
 	
 	var light_up = s3.createLight();
 	light_up.setMode(S3LightMode.DIRECTIONAL_LIGHT);

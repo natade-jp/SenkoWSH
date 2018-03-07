@@ -129,5 +129,6 @@ void main(void) {
 		}
 	}
 	
+	//gl_FragColor = vec4(vertexNormal * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
 	gl_FragColor = vec4(destAmbient + clamp(destDiffuse, 0.0, 1.0) + destSpecular, 1.0);
 }

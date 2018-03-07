@@ -257,6 +257,25 @@ S3GLMesh.prototype._makeNormalMap = function() {
 	var triangleindex_list	= this.getTriangleIndexArray();
 	var normal_stacklist	= [];
 	
+	// ノーマルベクトルを収集するクラス
+	var VectorList = function() {
+		this.vector_list = [];
+	};
+	VectorList.prototype.add = function(vector) {
+		this.vector_list.push(vector);
+	};
+	// 近いベクトルがあるかないか
+	VectorList.prototype.isNearVector = function(vector) {
+		var i;
+		for(i = 0;i < this.vector_list.length; i++) {
+			var inner_product = this.vector_list[i].dot(vector);
+			if(inner_product >= 0.999) {
+				return true;
+			}
+		}
+		return false;
+	};
+	
 	// 各面の法線を調べて、スタックへ配列へ保存していく
 	for(i = 0; i < triangleindex_list.length; i++) {
 		var triangleindex = triangleindex_list[i];
@@ -299,9 +318,15 @@ S3GLMesh.prototype._makeNormalMap = function() {
 			normal = new S3Vector(0.3333, 0.3333, 0.3333);
 		}
 		else {
+			var vlist = new VectorList();
 			normal = S3Vector.ZERO;
 			for(j = 0; j < normal_stacklist[i].length; j++) {
-				normal = normal.add(normal_stacklist[i][j]);
+				var normalvector = normal_stacklist[i][j];
+				// 同じ方向を向いている法線は1つとしてカウント
+				if(!vlist.isNearVector(normalvector)) {
+					normal = normal.add(normalvector);
+					vlist.add(normalvector);
+				}
 			}
 			normal = normal.normalize();
 		}
