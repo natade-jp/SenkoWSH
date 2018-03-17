@@ -228,6 +228,13 @@ S3Vector.prototype.negate = function() {
 		1.0
 	);
 };
+S3Vector.prototype.equals = function(num) {
+	var epsilon = 1e-5;
+	return	(Math.abs(this.x - num.x) < epsilon) &&
+			(Math.abs(this.y - num.y) < epsilon) &&
+			(Math.abs(this.z - num.z) < epsilon) &&
+			(Math.abs(this.w - num.w) < epsilon);
+};
 S3Vector.prototype.toString = function(num) {
 	if(num === 1) {
 		return "[" + this.x + "]T";
@@ -578,6 +585,25 @@ S3Matrix.prototype.inverse4 = function() {
 	B.m32 = (A.m00*A.m12*A.m31 + A.m01*A.m10*A.m32 + A.m02*A.m11*A.m30 - A.m00*A.m11*A.m32 - A.m01*A.m12*A.m30 - A.m02*A.m10*A.m31) * id;
 	B.m33 = (A.m00*A.m11*A.m22 + A.m01*A.m12*A.m20 + A.m02*A.m10*A.m21 - A.m00*A.m12*A.m21 - A.m01*A.m10*A.m22 - A.m02*A.m11*A.m20) * id;
 	return B;
+};
+S3Matrix.prototype.equals = function(num) {
+	var epsilon = 1e-5;
+	return	(Math.abs(this.m00 - num.m00) < epsilon) &&
+			(Math.abs(this.m01 - num.m01) < epsilon) &&
+			(Math.abs(this.m02 - num.m02) < epsilon) &&
+			(Math.abs(this.m03 - num.m03) < epsilon) &&
+			(Math.abs(this.m10 - num.m10) < epsilon) &&
+			(Math.abs(this.m11 - num.m11) < epsilon) &&
+			(Math.abs(this.m12 - num.m12) < epsilon) &&
+			(Math.abs(this.m13 - num.m13) < epsilon) &&
+			(Math.abs(this.m20 - num.m20) < epsilon) &&
+			(Math.abs(this.m21 - num.m21) < epsilon) &&
+			(Math.abs(this.m22 - num.m22) < epsilon) &&
+			(Math.abs(this.m23 - num.m23) < epsilon) &&
+			(Math.abs(this.m30 - num.m30) < epsilon) &&
+			(Math.abs(this.m31 - num.m31) < epsilon) &&
+			(Math.abs(this.m32 - num.m32) < epsilon) &&
+			(Math.abs(this.m33 - num.m33) < epsilon);
 };
 S3Matrix.prototype.toString = function() {
 	return "[" +
