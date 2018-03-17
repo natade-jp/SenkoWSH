@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3SystemMode, Float32Array, S3CullMode, S3FrontFace, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial */
+﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial */
 
 ﻿"use strict";
 
@@ -549,7 +549,7 @@ S3GLProgram.prototype.bindMesh = function(s3mesh) {
 
 var S3GLSystem = function() {
 	this.super = S3System.prototype;
-	this.super._init.call(this, S3SystemMode.OPEN_GL);
+	this.super._init.call(this, S3System.SYSTEM_MODE.OPEN_GL);
 	this.program		= null;
 	this.gl				= null;
 	this.is_set			= false;
@@ -768,26 +768,26 @@ S3GLSystem.prototype._setCullMode = function() {
 		return null;
 	}
 	var gl = this.gl;
-	if(this.cullmode === S3CullMode.NONE) {
+	if(this.cullmode === S3System.CULL_MODE.NONE) {
 		gl.disable(gl.CULL_FACE);
 		return;
 	}
 	else {
 		gl.enable(gl.CULL_FACE);
 	}
-	if(this.frontface === S3FrontFace.CLOCKWISE) {
+	if(this.frontface === S3System.FRONT_FACE.CLOCKWISE) {
 		gl.frontFace(gl.CW);
 	}
 	else {
 		gl.frontFace(gl.CCW);
 	}
-	if(this.cullmode === S3CullMode.FRONT_AND_BACK) {
+	if(this.cullmode === S3System.CULL_MODE.FRONT_AND_BACK) {
 		gl.cullFace(gl.FRONT_AND_BACK);
 	}
-	else if(this.cullmode === S3CullMode.BACK) {
+	else if(this.cullmode === S3System.CULL_MODE.BACK) {
 		gl.cullFace(gl.BACK);
 	}
-	else if(this.cullmode === S3CullMode.FRONT) {
+	else if(this.cullmode === S3System.CULL_MODE.FRONT) {
 		gl.cullFace(gl.FRONT);
 	}
 };

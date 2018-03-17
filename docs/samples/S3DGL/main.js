@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, S3SystemMode, IDTools, S3Mesh, File, S3FrontFace, S3LightMode */
+﻿/* global System, SComponent, S3System.SYSTEM_MODE, IDTools, S3Mesh, File, S3System.FRONT_FACE, S3LightMode */
 
 ﻿function test3D(canvas) {
 	
@@ -14,8 +14,8 @@
 	program.setVertexShader("../../library/SenkoLib/S3DGL.vs");
 	
 	s3.setProgram(program);
-	s3.setSystemMode(S3SystemMode.OPEN_GL);
-	s3.setFrontMode(S3FrontFace.CLOCKWISE);
+	s3.setSystemMode(S3System.SYSTEM_MODE.OPEN_GL);
+	s3.setFrontMode(S3System.FRONT_FACE.CLOCKWISE);
 	
 	var model = s3.createModel();
 	var mesh = s3.createMesh();

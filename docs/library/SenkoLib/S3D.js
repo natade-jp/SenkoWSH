@@ -31,12 +31,17 @@
  * /////////////////////////////////////////////////////////
  */
 
-var S3SystemMode = {
+
+var S3System = function() {
+	this._init();
+};
+
+S3System.SYSTEM_MODE = {
 	OPEN_GL	: 0,
 	DIRECT_X	: 1
 };
 
-var S3DepthMode = {
+S3System.DEPTH_MODE = {
 	/**
 	 * Z値の範囲などの依存関係をOpenGL準拠
 	 * @type Number
@@ -49,7 +54,7 @@ var S3DepthMode = {
 	DIRECT_X	: 1
 };
 
-var S3DimensionMode = {
+S3System.DIMENSION_MODE = {
 	/**
 	 * 右手系
 	 * @type Number
@@ -62,7 +67,7 @@ var S3DimensionMode = {
 	LEFT_HAND	: 1
 };
 
-var S3VectorMode = {
+S3System.VECTOR_MODE = {
 	/**
 	 * 値を保持するベクトルを縦ベクトルとみなす
 	 * @type Number
@@ -75,7 +80,7 @@ var S3VectorMode = {
 	VECTOR1x4	: 1
 };
 
-var S3FrontFace = {
+S3System.FRONT_FACE = {
 	/**
 	 * 反時計回りを前面とする
 	 * @type Number
@@ -89,7 +94,7 @@ var S3FrontFace = {
 	CLOCKWISE : 1
 };
 
-var S3CullMode = {
+S3System.CULL_MODE = {
 	
 	/**
 	 * 常にすべての三角形を描画します。
@@ -116,13 +121,8 @@ var S3CullMode = {
 	FRONT_AND_BACK : 3
 };
 
-
-var S3System = function() {
-	this._init();
-};
-
 S3System.prototype._init = function() {
-	this.setSystemMode(S3SystemMode.OPEN_GL);
+	this.setSystemMode(S3System.SYSTEM_MODE.OPEN_GL);
 	this.setBackgroundColor(new S3Vector(1.0, 1.0, 1.0, 1.0));
 };
 
@@ -166,25 +166,25 @@ S3System.prototype.getBackgroundColor = function() {
 
 S3System.prototype.setSystemMode = function(mode) {
 	this.systemmode = mode;
-	if(this.systemmode === S3SystemMode.OPEN_GL) {
-		this.depthmode		= S3DepthMode.OPEN_GL;
-		this.dimensionmode	= S3DimensionMode.RIGHT_HAND;
-		this.vectormode		= S3VectorMode.VECTOR4x1;
-		this.frontface		= S3FrontFace.COUNTER_CLOCKWISE;
-		this.cullmode		= S3CullMode.BACK;
+	if(this.systemmode === S3System.SYSTEM_MODE.OPEN_GL) {
+		this.depthmode		= S3System.DEPTH_MODE.OPEN_GL;
+		this.dimensionmode	= S3System.DIMENSION_MODE.RIGHT_HAND;
+		this.vectormode		= S3System.VECTOR_MODE.VECTOR4x1;
+		this.frontface		= S3System.FRONT_FACE.COUNTER_CLOCKWISE;
+		this.cullmode		= S3System.CULL_MODE.BACK;
 	}
 	else {
-		this.depthmode		= S3DepthMode.DIRECT_X;
-		this.dimensionmode	= S3DimensionMode.LEFT_HAND;
-		this.vectormode		= S3VectorMode.VECTOR1x4;
-		this.frontface		= S3FrontFace.CLOCKWISE;
-		this.cullmode		= S3CullMode.BACK;
+		this.depthmode		= S3System.DEPTH_MODE.DIRECT_X;
+		this.dimensionmode	= S3System.DIMENSION_MODE.LEFT_HAND;
+		this.vectormode		= S3System.VECTOR_MODE.VECTOR1x4;
+		this.frontface		= S3System.FRONT_FACE.CLOCKWISE;
+		this.cullmode		= S3System.CULL_MODE.BACK;
 	}
 };
 
 /**
  * ビューポート行列を作成する際に、Z値の範囲の範囲をどうするか
- * @param {S3DepthMode} depthmode
+ * @param {S3System.DEPTH_MODE} depthmode
  * @returns {undefined}
  */
 S3System.prototype.setDepthMode = function(depthmode) {
@@ -193,7 +193,7 @@ S3System.prototype.setDepthMode = function(depthmode) {
 
 /**
  * 座標軸について左手系か、右手系か
- * @param {S3DimensionMode} dimensionmode
+ * @param {S3System.DIMENSION_MODE} dimensionmode
  * @returns {undefined}
  */
 S3System.prototype.setDimensionMode = function(dimensionmode) {
@@ -202,7 +202,7 @@ S3System.prototype.setDimensionMode = function(dimensionmode) {
 
 /**
  * N次元の座標について、横ベクトルか、縦ベクトル、どちらで管理するか
- * @param {S3VectorMode} vectormode
+ * @param {S3System.VECTOR_MODE} vectormode
  * @returns {undefined}
  */
 S3System.prototype.setVectorMode = function(vectormode) {
@@ -211,7 +211,7 @@ S3System.prototype.setVectorMode = function(vectormode) {
 
 /**
  * どのようなポリゴンの頂点の順序を表として定義するか
- * @param {S3FrontFace} frontface
+ * @param {S3System.FRONT_FACE} frontface
  * @returns {undefined}
  */
 S3System.prototype.setFrontMode = function(frontface) {
@@ -220,7 +220,7 @@ S3System.prototype.setFrontMode = function(frontface) {
 
 /**
  * どの方向を描写しないかを設定する。
- * @param {S3CullMode} cullmode
+ * @param {S3System.CULL_MODE} cullmode
  * @returns {undefined}
  */
 S3System.prototype.setCullMode = function(cullmode) {
@@ -270,10 +270,10 @@ S3System.prototype.setCanvas = function(canvas) {
  * @returns {Boolean} true で描写しない
  */
 S3System.prototype.testCull = function(p1, p2, p3) {
-	if(this.cullmode === S3CullMode.NONE) {
+	if(this.cullmode === S3System.CULL_MODE.NONE) {
 		return false;
 	}
-	if(this.cullmode === S3CullMode.FRONT_AND_BACK) {
+	if(this.cullmode === S3System.CULL_MODE.FRONT_AND_BACK) {
 		return true;
 	}
 	var isclock = S3Vector.isClockwise(p1, p2, p3);
@@ -281,19 +281,19 @@ S3System.prototype.testCull = function(p1, p2, p3) {
 		return true;
 	}
 	else if(!isclock) {
-		if(this.frontface === S3FrontFace.CLOCKWISE) {
-			return this.cullmode !== S3CullMode.BACK;
+		if(this.frontface === S3System.FRONT_FACE.CLOCKWISE) {
+			return this.cullmode !== S3System.CULL_MODE.BACK;
 		}
 		else {
-			return this.cullmode !== S3CullMode.FRONT;
+			return this.cullmode !== S3System.CULL_MODE.FRONT;
 		}
 	}
 	else {
-		if(this.frontface === S3FrontFace.CLOCKWISE) {
-			return this.cullmode === S3CullMode.BACK;
+		if(this.frontface === S3System.FRONT_FACE.CLOCKWISE) {
+			return this.cullmode === S3System.CULL_MODE.BACK;
 		}
 		else {
-			return this.cullmode === S3CullMode.FRONT;
+			return this.cullmode === S3System.CULL_MODE.FRONT;
 		}
 	}
 };
@@ -323,15 +323,15 @@ S3System.prototype.getMatrixViewport = function(x, y, Width, Height, MinZ, MaxZ)
 	M.m20 =      0.0; M.m21 =       0.0; M.m22 = 1.0; M.m23 = 1.0;
 	M.m30 =x+Width/2; M.m31 =y+Height/2; M.m32 = 0.0; M.m33 = 1.0;
 	
-	if(this.depthmode === S3DepthMode.DIRECT_X) {
+	if(this.depthmode === S3System.DEPTH_MODE.DIRECT_X) {
 		M.m22 = MinZ - MaxZ;
 		M.m32 = MinZ;
 	}
-	else if(this.depthmode === S3DepthMode.OPEN_GL) {
+	else if(this.depthmode === S3System.DEPTH_MODE.OPEN_GL) {
 		M.m22 = (MinZ - MaxZ) / 2;
 		M.m32 = (MinZ + MaxZ) / 2;
 	}
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -377,19 +377,19 @@ S3System.prototype.getMatrixPerspectiveFov = function(fovY, Aspect, Near, Far) {
 	else if(Delta === 0.0) {
 		throw "divide error";
 	}
-	if(this.depthmode === S3DepthMode.DIRECT_X) {
+	if(this.depthmode === S3System.DEPTH_MODE.DIRECT_X) {
 		M.m22 = Far / Delta;
 		M.m32 = - Far * Near / Delta;
 	}
-	else if(this.depthmode === S3DepthMode.OPEN_GL) {
+	else if(this.depthmode === S3System.DEPTH_MODE.OPEN_GL) {
 		M.m22 = (Far + Near) / Delta;
 		M.m32 = - 2.0 * Far * Near / Delta;
 	}
-	if(this.dimensionmode === S3DimensionMode.RIGHT_HAND) {
+	if(this.dimensionmode === S3System.DIMENSION_MODE.RIGHT_HAND) {
 		M.m22 = - M.m22;
 		M.m23 = - M.m23;
 	}
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -406,7 +406,7 @@ S3System.prototype.getMatrixLookAt = function(eye, at, up) {
 	}
 	// Z ベクトルの作成
 	Z = eye.getDirectionNormalized(at);
-	if(this.dimensionmode === S3DimensionMode.RIGHT_HAND) {
+	if(this.dimensionmode === S3System.DIMENSION_MODE.RIGHT_HAND) {
 		// 右手系なら反転
 		Z = Z.negate();
 	}
@@ -418,7 +418,7 @@ S3System.prototype.getMatrixLookAt = function(eye, at, up) {
 	M.m10 = X.y; M.m11 = Y.y; M.m12 = Z.y; M.m13 = 0.0;
 	M.m20 = X.z; M.m21 = Y.z; M.m22 = Z.z; M.m23 = 0.0;
 	M.m30 = -X.dot(eye); M.m31 = -Y.dot(eye); M.m32 = -Z.dot(eye); M.m33 = 1.0;
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -447,7 +447,7 @@ S3System.prototype.getMatrixTranslate = function(x, y, z) {
 	M.m10 = 0.0; M.m11 = 1.0; M.m12 = 0.0; M.m13 = 0.0;
 	M.m20 = 0.0; M.m21 = 0.0; M.m22 = 1.0; M.m23 = 0.0;
 	M.m30 =   x; M.m31 =   y; M.m32 =   z; M.m33 = 1.0;
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -463,7 +463,7 @@ S3System.prototype.getMatrixScale = function(x, y, z) {
 	M.m10 = 0.0; M.m11 =   y; M.m12 = 0.0; M.m13 = 0.0;
 	M.m20 = 0.0; M.m21 = 0.0; M.m22 =   z; M.m23 = 0.0;
 	M.m30 = 0.0; M.m31 = 0.0; M.m32 = 0.0; M.m33 = 1.0;
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -480,7 +480,7 @@ S3System.prototype.getMatrixRotateX = function(degree) {
 	M.m10 = 0.0; M.m11 = cos; M.m12 = sin; M.m13 = 0.0;
 	M.m20 = 0.0; M.m21 =-sin; M.m22 = cos; M.m23 = 0.0;
 	M.m30 = 0.0; M.m31 = 0.0; M.m32 = 0.0; M.m33 = 1.0;
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -497,7 +497,7 @@ S3System.prototype.getMatrixRotateY = function(degree) {
 	M.m10 = 0.0; M.m11 = 1.0; M.m12 = 0.0; M.m13 = 0.0;
 	M.m20 = sin; M.m21 = 0.0; M.m22 = cos; M.m23 = 0.0;
 	M.m30 = 0.0; M.m31 = 0.0; M.m32 = 0.0; M.m33 = 1.0;
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -514,7 +514,7 @@ S3System.prototype.getMatrixRotateZ = function(degree) {
 	M.m10 =-sin; M.m11 = cos; M.m12 = 0.0; M.m13 = 0.0;
 	M.m20 = 0.0; M.m21 = 0.0; M.m22 = 1.0; M.m23 = 0.0;
 	M.m30 = 0.0; M.m31 = 0.0; M.m32 = 0.0; M.m33 = 1.0;
-	return this.vectormode === S3VectorMode.VECTOR4x1 ? M.transposed() : M;
+	return this.vectormode === S3System.VECTOR_MODE.VECTOR4x1 ? M.transposed() : M;
 };
 
 /**
@@ -527,12 +527,12 @@ S3System.prototype.mulMatrix = function(A, B) {
 	if(B instanceof S3Matrix) {
 		// 横型の場合は、v[AB]=u
 		// 縦型の場合は、[BA]v=u
-		return (this.vectormode === S3VectorMode.VECTOR4x1) ? B.mul(A) : A.mul(B);
+		return (this.vectormode === S3System.VECTOR_MODE.VECTOR4x1) ? B.mul(A) : A.mul(B);
 	}
 	else if(B instanceof S3Vector) {
 		// 横型の場合は、[vA]=u
 		// 縦型の場合は、[Av]=u
-		return (this.vectormode === S3VectorMode.VECTOR4x1) ? A.mul(B) : B.mul(A);
+		return (this.vectormode === S3System.VECTOR_MODE.VECTOR4x1) ? A.mul(B) : B.mul(A);
 	}
 	else {
 		throw "IllegalArgumentException";
@@ -719,6 +719,13 @@ S3Vertex.prototype.inverseTriangle = function() {
 	}
 };
 
+var S3Texture = function() {
+	
+};
+
+
+
+
 /**
  * 素材
  * @param {String} name
@@ -734,7 +741,8 @@ var S3Material = function(name, type) {
 	this.power		= 5.0;								// 鏡面反射の強さ
 	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 光によらない初期色
 	this.reflect	= 0.0;								// 環境マッピングによる反射の強さ
-	
+	this.textureDiffuse	= null;
+	this.textureNormal	= null;
 	if(type !== undefined) {
 		if(type.color !== undefined)	{ this.color	= type.color;		}
 		if(type.diffuse !== undefined)	{ this.diffuse	= type.diffuse;		}
@@ -1222,7 +1230,7 @@ S3Camera.prototype.translateRelative = function(v) {
 	Z = this.eye.getDirectionNormalized(this.center);
 	
 	// 座標系に合わせて計算
-	if(this.sys.dimensionmode === S3DimensionMode.RIGHT_HAND) {
+	if(this.sys.dimensionmode === S3System.DIMENSION_MODE.RIGHT_HAND) {
 		// 右手系なら反転
 		Z = Z.negate();
 	}

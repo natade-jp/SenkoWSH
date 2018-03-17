@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3DimensionMode, S3System, S3Matrix, S3Light */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light */
 
 ﻿"use strict";
 
@@ -268,8 +268,7 @@ S3GLMesh.prototype._makeNormalMap = function() {
 	VectorList.prototype.isNearVector = function(vector) {
 		var i;
 		for(i = 0;i < this.vector_list.length; i++) {
-			var inner_product = this.vector_list[i].dot(vector);
-			if(inner_product >= 0.999) {
+			if(this.vector_list[i].equals(vector)) {
 				return true;
 			}
 		}
@@ -282,7 +281,7 @@ S3GLMesh.prototype._makeNormalMap = function() {
 		var indexlist = triangleindex.index;
 		var normal = null;
 		// 3点を時計回りで通る平面が表のとき
-		if(this.sys.dimensionmode === S3DimensionMode.LEFT_HAND) {
+		if(this.sys.dimensionmode === S3System.DIMENSION_MODE.LEFT_HAND) {
 			normal = S3Vector.getNormalVector(
 				vertex_list[indexlist[0]].position,
 				vertex_list[indexlist[1]].position,
