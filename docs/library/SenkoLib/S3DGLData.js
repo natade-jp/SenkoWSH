@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ImageBitmap */
 
 ﻿"use strict";
 
@@ -197,7 +197,7 @@ S3TriangleIndex.prototype.getGLData = function(number, vertexList) {
 		vertex[key]	= vertexdata_list[key];
 	}
 	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
-	vertex.vertexUV				= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
+	vertex.vertexTextureCoord	= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
 	vertex.vertexMaterialFloat	= new S3GLVertex(this.materialIndex, 1, S3GLVertex.datatype.Float32Array);
 	return vertex;
 };
@@ -239,6 +239,83 @@ S3Vertex.prototype.getGLData = function() {
  * 主に、描写のための VBO と IBO を記録する
  * /////////////////////////////////////////////////////////
  */
+
+var S3GLTexture = function(s3system, data) {
+	this.sys	= s3system;
+	this._init();
+	if(arguments.length === 2) {
+		this.setImage(data);
+	}
+};
+S3GLTexture.prototype._init = function() {
+	this.url			= null;
+	this.image			= null;
+	this.is_loadimage	= false;
+	this.is_dispose		= false;
+};
+S3GLTexture.prototype.dispose = function() {
+	this.is_dispose = true;
+};
+S3GLTexture.prototype.setImage = function(image) {
+	if((image === null) || this.is_dispose){
+		return;
+	}
+	if(	(image instanceof HTMLImageElement) ||
+		(image instanceof HTMLCanvasElement)) {
+		var original_width  = image.width;
+		var original_height = image.height;
+		var ceil_power_of_2 = function(x) {
+			var a = Math.log2(x);
+			if ((a - Math.floor(a)) < 1e-10) {
+				return x;
+			}
+			else {
+				return 1 << Math.ceil(a);
+			}
+		};
+		var ceil_width  = ceil_power_of_2(original_width);
+		var ceil_height = ceil_power_of_2(original_height);
+		if((original_width !== ceil_width) || (original_height !== ceil_height)) {
+			// 2の累乗ではない場合は、2の累乗のサイズにしてやりなおし
+			var ceil_image = document.createElement("canvas");
+			ceil_image.width	= ceil_width;
+			ceil_image.height	= ceil_height;
+			ceil_image.getContext("2d").drawImage(
+				image,
+				0, 0, original_width, original_height,
+				0, 0, ceil_width, ceil_height
+			);
+			this.setImage(ceil_image);
+			return;
+		} 
+	}
+	if(	(image instanceof ArrayBufferView) ||
+		(image instanceof ImageData) ||
+		(image instanceof HTMLImageElement) ||
+		(image instanceof HTMLCanvasElement) ||
+		(image instanceof HTMLVideoElement) ||
+		(image instanceof ImageBitmap)) {
+		if(this.url === null) {
+			// 直接設定した場合はIDをURLとして設定する
+			this.url		= this.sys._createID();
+		}
+		this.image			= image;
+		this.is_loadimage	= true;
+		return;
+	}
+	else if((typeof image === "string")||(image instanceof String)) {
+		this.url = image;
+		var that = this;
+		this.sys._download(this.url, function (image, ext){
+			that.setImage(image);
+		});
+		return;
+	}
+	else {
+		console.log("not setImage");
+		console.log(image);
+	}
+};
 
 var S3GLMesh = function(sys) {
 	this.sys = sys;
@@ -341,6 +418,7 @@ S3GLMesh.prototype._getGLArrayData = function() {
 	
 	var vertex_list			= this.getVertexArray();
 	var triangleindex_list	= this.getTriangleIndexArray();
+	var material_list		= this.getMaterialArray();
 	var i, j;
 	var hashlist = [];
 	var vertex_length = 0;
@@ -433,9 +511,21 @@ S3GLMesh.prototype._getGLArrayData = function() {
 		}
 	}
 	
+	// テクスチャについてはロードもあるので、別管理
+	var texture = {};
+	{
+		var diffuse	= {};
+		var normal		= {};
+		for(i = 0; i < material_list.length; i++) {
+			diffuse	= this.sys.createTexture(material_list[i].textureDiffuse);
+			normal	= this.sys.createTexture(material_list[i].textureNormal);
+		}
+	}
+	
 	var arraydata = {};
-	arraydata.ibo = ibo;
-	arraydata.vbo = vbo;
+	arraydata.ibo		= ibo;
+	arraydata.vbo		= vbo;
+	arraydata.texture	= texture;
 	return arraydata;
 };
 
@@ -485,9 +575,9 @@ S3GLMesh.prototype.getGLData = function() {
 	this._makeNormalMap(); // ノーマルマップを作成して
 	var gldata = this._getGLArrayData(); // GL用の配列データを作成
 	// IBO / VBO 用のオブジェクトを作成
-	gldata.ibo.data = this.sys.glfunc.createIBO(gldata.ibo.array);
+	gldata.ibo.data = this.sys.glfunc.createBufferIBO(gldata.ibo.array);
 	for(var key in gldata.vbo) {
-		gldata.vbo[key].data = this.sys.glfunc.createVBO(gldata.vbo[key].array);
+		gldata.vbo[key].data = this.sys.glfunc.createBufferVBO(gldata.vbo[key].array);
 	}
 	// 代入
 	this.gldata = gldata;

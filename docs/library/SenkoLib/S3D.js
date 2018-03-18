@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-/* global S3Math, S3Matrix, S3Vector, Float32Array, Int32Array */
+/* global S3Math, S3Matrix, S3Vector, Float32Array, Int32Array, ImageBitmap, HTMLVideoElement, HTMLCanvasElement, HTMLImageElement, ImageData, ArrayBufferView */
 
 ﻿/**
  * SenkoLib S3D.js
@@ -124,6 +124,38 @@ S3System.CULL_MODE = {
 S3System.prototype._init = function() {
 	this.setSystemMode(S3System.SYSTEM_MODE.OPEN_GL);
 	this.setBackgroundColor(new S3Vector(1.0, 1.0, 1.0, 1.0));
+};
+
+S3System.prototype._createID = function() {
+	if(typeof this._CREATE_ID1 === "undefined") {
+		this._CREATE_ID1 = 0;
+		this._CREATE_ID2 = 0;
+		this._CREATE_ID3 = 0;
+		this._CREATE_ID4 = 0;
+	}
+	var id = ""+
+		this._CREATE_ID4.toString(16)+":"+
+		this._CREATE_ID3.toString(16)+":"+
+		this._CREATE_ID2.toString(16)+":"+
+		this._CREATE_ID1.toString(16);
+	this._CREATE_ID1++;
+	if(this._CREATE_ID1 === 0x100000000) {
+		this._CREATE_ID1 = 0;
+		this._CREATE_ID2++;
+		if(this._CREATE_ID2 === 0x100000000) {
+			this._CREATE_ID2 = 0;
+			this._CREATE_ID3++;
+			if(this._CREATE_ID3 === 0x100000000) {
+				this._CREATE_ID3 = 0;
+				this._CREATE_ID4++;
+				if(this._CREATE_ID4 === 0x100000000) {
+					this._CREATE_ID4 = 0;
+					throw "createID";
+				}
+			}
+		}
+	}
+	return id;
 };
 
 S3System.prototype._download = function(url, callback) {
@@ -719,17 +751,10 @@ S3Vertex.prototype.inverseTriangle = function() {
 	}
 };
 
-var S3Texture = function() {
-	
-};
-
-
-
-
 /**
  * 素材
  * @param {String} name
- * @param {Object} type
+ * @param {S3Material} type
  * @returns {S3Material}
  */
 var S3Material = function(name, type) {
@@ -751,13 +776,12 @@ var S3Material = function(name, type) {
 		if(type.power !== undefined)	{ this.power	= type.power;		}
 		if(type.ambient !== undefined)	{ this.ambient	= type.ambient;		}
 		if(type.reflect !== undefined)	{ this.reflect	= type.reflect;		}
+		if(type.textureDiffuse !== undefined)	{ this.textureDiffuse	= type.textureDiffuse;		}
+		if(type.textureNormal !== undefined)	{ this.textureNormal	= type.textureNormal;		}
 	}
 };
 S3System.prototype.createMaterial = function(name, type) {
 	return new S3Material(name, type);
-};
-S3Material.prototype.clone = function() {
-	return new S3Material(this.name, this);
 };
 S3Material.DEFAULT_MATERIAL = new S3Material("s3default");
 

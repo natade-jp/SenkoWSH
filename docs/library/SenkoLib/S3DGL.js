@@ -559,7 +559,7 @@ var S3GLSystem = function() {
 	
 	this.glfunc = {
 		
-		createVBO : function(data) {
+		createBufferVBO : function(data) {
 			var gl = that.getGL();
 			if(gl === null) {
 				return null;
@@ -571,7 +571,7 @@ var S3GLSystem = function() {
 			return vbo;
 		},
 
-		createIBO : function(data) {
+		createBufferIBO : function(data) {
 			var gl = that.getGL();
 			if(gl === null) {
 				return null;
@@ -656,8 +656,6 @@ var S3GLSystem = function() {
 	};
 };
 
-
-
 S3GLSystem.prototype = new S3System();
 S3GLSystem.prototype.createMesh = function() {
 	return new S3GLMesh(this);
@@ -667,6 +665,9 @@ S3GLSystem.prototype.createScene = function() {
 };
 S3GLSystem.prototype.createModel = function() {
 	return new S3GLModel();
+};
+S3GLSystem.prototype.createTexture = function(data) {
+	return new S3GLTexture(this, data);
 };
 
 S3GLSystem.prototype.getGL = function() {

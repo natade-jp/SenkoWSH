@@ -29,13 +29,16 @@ uniform vec3 eyeWorldDirection;
 // シェーダー間情報
 varying float interpolationMaterialFloat;
 varying vec3 interpolationNormal;
+varying vec3 interpolationReflectNormal;
 varying vec3 interpolationPosition;
+varying vec2 interpolationTextureCoord;
 
 void main(void) {
 
 	// 頂点シェーダーから受け取った情報
-	int		vertexMaterial	= int(interpolationMaterialFloat);
-	vec3	vertexNormal	= normalize(interpolationNormal);
+	int		vertexMaterial		= int(interpolationMaterialFloat);
+	vec3	vertexNormal		= normalize(interpolationNormal);
+	vec3	vertexReflectNormal	= normalize(interpolationReflectNormal);
 
 	// 材質を取得
 	vec3	materialColor;
@@ -129,6 +132,6 @@ void main(void) {
 		}
 	}
 	
-	//gl_FragColor = vec4(vertexNormal * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
+	//gl_FragColor = vec4(vertexReflectNormal, 1.0);
 	gl_FragColor = vec4(destAmbient + clamp(destDiffuse, 0.0, 1.0) + destSpecular, 1.0);
 }
