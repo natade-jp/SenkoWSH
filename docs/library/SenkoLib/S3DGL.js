@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial */
+﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial, ImageData, ArrayBufferView, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ImageBitmap, ArrayBuffer, SharedArrayBuffer, WebGLTexture */
 
 ﻿"use strict";
 
@@ -149,6 +149,9 @@ S3GLProgram.prototype._init = function(sys, id) {
 	variable.datatype	= [];
 	this.variable = variable;
 	
+	var _this = this;
+	this.activeTextureId = 0;
+	
 	var g = {
 		uniform1iv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform1iv(location, value); }},
 		uniform2iv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform2iv(location, value); }},
@@ -160,7 +163,16 @@ S3GLProgram.prototype._init = function(sys, id) {
 		uniform4fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniform4fv(location, value); }},
 		uniformMatrix2fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix2fv(location, false, value); }},
 		uniformMatrix3fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix3fv(location, false, value); }},
-		uniformMatrix4fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix4fv(location, false, value); }}
+		uniformMatrix4fv: function(location, value) { if(sys.getGL()){ sys.getGL().uniformMatrix4fv(location, false, value); }},
+		uniformSampler2D: function(location, value) {
+			var gl = sys.getGL();
+			if(gl){
+				gl.activeTexture(gl.TEXTURE0 + _this.activeTextureId);
+				gl.bindTexture(gl.TEXTURE_2D, value);
+				gl.uniform1i(location, _this.activeTextureId);
+				_this.activeTextureId++;
+			}
+		}
 	};
 	
 	var info = {
@@ -179,7 +191,7 @@ S3GLProgram.prototype._init = function(sys, id) {
 		bvec2	: {glsltype : "bvec2",	instance : Int32Array,		size : 2, btype : "INT",	bind : g.uniform2iv},
 		bvec3	: {glsltype : "bvec3",	instance : Int32Array,		size : 3, btype : "INT",	bind : g.uniform3iv},
 		bvec4	: {glsltype : "bvec4",	instance : Int32Array,		size : 4, btype : "INT",	bind : g.uniform4iv},
-		sampler2D		: {glsltype : "sampler2D",	instance : Image, size : 1, btype : "TEXTURE",	bind : null},
+		sampler2D		: {glsltype : "sampler2D",	instance : Image, size : 1, btype : "TEXTURE",	bind : g.uniformSampler2D},
 		samplerCube	: {glsltype : "samplerCube",instance : Image, size : 1, btype : "TEXTURE",	bind : null}
 	};
 	
@@ -220,6 +232,9 @@ S3GLProgram.prototype._init = function(sys, id) {
 		}
 		return;
 	};
+};
+S3GLProgram.prototype.resetActiveTextureId = function() {
+	this.activeTextureId = 0;
 };
 S3GLProgram.prototype.isLinked = function() {
 	return this.is_linked;
@@ -403,8 +418,16 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	// glslの型をチェックして自動型変換する
 	var toArraydata = function(data) {
 		if(data instanceof WebGLBuffer) {
-			// IBO型は、無視する
-			return data;
+			// VBO型は、無視する
+			if(variable.modifiers === "attribute"){
+				return data;
+			}
+		}
+		if(data instanceof WebGLTexture) {
+			// テクスチャ型なら無視する
+			if(variable.glsltype === "sampler2D") {
+				return data;
+			}
 		}
 		if(data instanceof variable.instance) {
 			// 型と同じインスタンスであるため問題なし
@@ -557,6 +580,8 @@ var S3GLSystem = function() {
 	this.program_listId	= 0;
 	var that = this;
 	
+	var glfunc_texture_cash = {};
+	
 	this.glfunc = {
 		
 		createBufferVBO : function(data) {
@@ -587,6 +612,48 @@ var S3GLSystem = function() {
 			var gl = that.getGL();
 			if(gl !== null) {
 				gl.deleteBuffer(data);
+			}
+		},
+		
+		createTexture : function(id, image) {
+			if(	!(image instanceof ImageData) &&
+				!(image instanceof HTMLImageElement) &&
+				!(image instanceof HTMLCanvasElement) &&
+				!(image instanceof HTMLVideoElement) &&
+				!(image instanceof ImageBitmap)) {
+				throw "createBufferTexture";
+			}
+			var gl = that.getGL();
+			if(gl === null) {
+				return null;
+			}
+			var texture = null;
+			if(!glfunc_texture_cash[id]) {
+				texture = gl.createTexture();
+				gl.bindTexture(gl.TEXTURE_2D, texture);
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+				gl.generateMipmap(gl.TEXTURE_2D);
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+				var cash = {};
+				cash.texture	= texture;
+				cash.count		= 0;
+				glfunc_texture_cash[id] = cash;
+			}
+			texture = glfunc_texture_cash[id].texture;
+			glfunc_texture_cash[id].count++;
+			return texture;
+		},
+		
+		deleteTexture : function(id) {
+			var gl = that.getGL();
+			if(gl !== null) {
+				if(glfunc_texture_cash[id]) {
+					glfunc_texture_cash[id].count--;
+					if(glfunc_texture_cash[id].count === 0) {
+						gl.deleteBuffer(glfunc_texture_cash[id].texture);
+						delete glfunc_texture_cash[id];
+					}
+				}
 			}
 		},
 		
@@ -793,7 +860,15 @@ S3GLSystem.prototype._setCullMode = function() {
 	}
 };
 
-S3GLSystem.prototype.bind = function(p1, p2) {
+S3GLSystem.prototype._bindStart = function() {
+	this.program.resetActiveTextureId();
+};
+
+S3GLSystem.prototype._bindEnd = function() {
+	
+};
+
+S3GLSystem.prototype._bind = function(p1, p2) {
 	if(!this.is_set) {
 		return;
 	}
@@ -833,8 +908,11 @@ S3GLSystem.prototype.drawScene = function(scene) {
 	this._setDepthMode();
 	this._setCullMode();
 	
+	// 描写開始
+	this._bindStart();
+	
 	// Sceneに関するUniform設定（カメラやライト設定など）
-	this.bind(scene.getUniforms());
+	this._bind(scene.getUniforms());
 	
 	// カメラの行列を取得する
 	var VPS = scene.getCamera().getVPSMatrix(this.canvas);
@@ -849,19 +927,22 @@ S3GLSystem.prototype.drawScene = function(scene) {
 		}
 		
 		// モデルに関するUniform設定（材質の設定など）
-		this.bind(model.getUniforms());
+		this._bind(model.getUniforms());
 		
 		// モデル用のBIND
 		var M = this.getMatrixWorldTransform(model);
 		var MV = this.mulMatrix(M, VPS.LookAt);
 		var MVP = this.mulMatrix(MV, VPS.PerspectiveFov);
-		this.bind("matrixWorldToLocal", M.inverse4());
-		this.bind("matrixLocalToWorld", M);
-		this.bind("matrixLocalToPerspective", MVP);
+		this._bind("matrixWorldToLocal", M.inverse4());
+		this._bind("matrixLocalToWorld", M);
+		this._bind("matrixLocalToPerspective", MVP);
 		
-		var indexsize = this.bind(model);
+		var indexsize = this._bind(model);
 		if(indexsize) {
 			this.drawElements(indexsize);
 		}
 	}
+	
+	// 描写終了
+	this._bindEnd();
 };

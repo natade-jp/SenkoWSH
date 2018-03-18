@@ -128,7 +128,7 @@ S3Material.prototype.getGLData = function() {
 			new S3GLVertex([this.specular.x, this.specular.y, this.specular.z, this.power]	, 4, S3GLVertex.datatype.Float32Array),
 		materialsEmission	:
 			new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
-		materialsAmbientAndReflect	:
+		materialsAmbientAndMetallic	:
 			new S3GLVertex([this.ambient.x, this.ambient.y, this.ambient.z, this.reflect]	, 4, S3GLVertex.datatype.Float32Array)
 	};
 };
@@ -276,7 +276,7 @@ S3GLTexture.prototype.setImage = function(image) {
 		var ceil_width  = ceil_power_of_2(original_width);
 		var ceil_height = ceil_power_of_2(original_height);
 		if((original_width !== ceil_width) || (original_height !== ceil_height)) {
-			// 2の累乗ではない場合は、2の累乗のサイズにしてやりなおし
+			// 2の累乗ではない場合は、2の累乗のサイズに変換
 			var ceil_image = document.createElement("canvas");
 			ceil_image.width	= ceil_width;
 			ceil_image.height	= ceil_height;
@@ -285,12 +285,10 @@ S3GLTexture.prototype.setImage = function(image) {
 				0, 0, original_width, original_height,
 				0, 0, ceil_width, ceil_height
 			);
-			this.setImage(ceil_image);
-			return;
+			image = ceil_image;
 		} 
 	}
-	if(	(image instanceof ArrayBufferView) ||
-		(image instanceof ImageData) ||
+	if(	(image instanceof ImageData) ||
 		(image instanceof HTMLImageElement) ||
 		(image instanceof HTMLCanvasElement) ||
 		(image instanceof HTMLVideoElement) ||
