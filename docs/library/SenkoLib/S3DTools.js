@@ -182,6 +182,11 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 			}
 			val = getURLFromPrm(trim_line, "tex");
 			if(val) {
+				material_type.textureDiffuse = val;
+			}
+			val = getURLFromPrm(trim_line, "bump");
+			if(val) {
+				material_type.textureNormal = val;
 			}
 			var material = new S3Material(material_name, material_type);
 			mesh.addMaterial(material);
