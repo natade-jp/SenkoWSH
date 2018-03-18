@@ -33,6 +33,17 @@ varying vec3 interpolationWorldNormal;
 varying vec3 interpolationPosition;
 varying vec2 interpolationTextureCoord;
 
+// お手軽反射マッピング
+vec3 getReflectionColor(vec3 vector, float metallic) {
+	float x = vector.y;
+	x = (metallic < 0.0001) ? 0.0 :
+		x < -0.1 ? mix(0.0, 0.8, (x + 1.0) * (1.0 / 0.9)) :
+		x < 0.0 ? mix(0.8, 0.3, (x + 0.1) * (1.0 / 0.1)) :
+		x < 0.01 ? mix(0.3, 1.0, x * (1.0 / 0.01)) :
+		mix(1.0, 0.3, (x - 0.01) * (1.0 / (1.0 - 0.01)));
+	return vec3(x, x, x);
+}
+
 void main(void) {
 
 	// 頂点シェーダーから受け取った情報
@@ -99,9 +110,8 @@ void main(void) {
 	vec3	destSpecular	= vec3(0.0, 0.0, 0.0);
 	vec3	destAmbient		= materialAmbient * 0.2;
 
-	// 光の数だけ繰り返す
+	// 光による物体の色を計算
 	for(int i = 0; i < LIGHTS_MAX; i++) {
-		
 		// 平行光源か点光源
 		if((lightsMode[i] == LIGHT_MODE_DIRECTIONAL)||(lightsMode[i] == LIGHT_MODE_POINT)) {
 			bool is_direction = lightsMode[i] == LIGHT_MODE_DIRECTIONAL;
@@ -132,9 +142,12 @@ void main(void) {
 		}
 	}
 	
+	// 最終的な色を計算
+	// アンビエント光 + 物体の色 + 反射光 + 鏡面反射光
+	// メタリックが強いほど、物体の色を減らす
 	vec3	destColor = destAmbient + clamp(destDiffuse, 0.0, 1.0);
-	vertexReflectVector = vertexReflectVector * 0.5 + vec3(0.5,0.5,0.5);
-	destColor = destColor * (1.0 - materialMetallic) + vertexReflectVector * materialMetallic;
-
-	gl_FragColor = vec4(destColor + destSpecular, 1.0);
+	destColor =		clamp(destColor * (1.0 - materialMetallic * 0.8), 0.0, 1.0)
+				+ getReflectionColor(vertexReflectVector, materialMetallic) * materialMetallic
+				+ destSpecular;
+	gl_FragColor = vec4(destColor, 1.0);
 }
