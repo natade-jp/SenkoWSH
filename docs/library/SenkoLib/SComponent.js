@@ -874,11 +874,11 @@ SCanvas.prototype.putImage = function(data, drawcallback, drawsize, isresizecanv
 	}
 	else if(data instanceof SCanvas) {
 		// SCanvas -> canvas
-		_this.putImage(data.getElement(), isresizecanvas, drawsize, drawcallback);
+		this.putImage(data.getElement(), isresizecanvas, drawsize, drawcallback);
 	}
 	else if((data instanceof Element) && (data.tagName === "CANVAS")){
 		// canvas -> URL(string)
-		_this.putImage(data.toDataURL(), isresizecanvas, drawsize, drawcallback);
+		this.putImage(data.toDataURL(), isresizecanvas, drawsize, drawcallback);
 	}
 	else if((data instanceof Blob) || (data instanceof File)) {
 		var _this = this;
