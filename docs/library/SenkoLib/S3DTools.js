@@ -65,7 +65,47 @@ S3Mesh.DATA_MQO = "MQO";
  * @param {String} text
  * @returns {unresolved}
  */
-S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text, url) {
+	
+	var File = function(pathname) {
+		this.pathname = pathname.replace(/\\/g, "/" );
+	};
+	File.prototype.getAbsolutePath = function() {
+		if(/$http/.test(this.pathname)) {
+			return this.pathname;
+		}
+		var name = window.location.toString();
+		if(!(/\/$/.test(name))) {
+			name = name.match(/.*\//)[0];
+		}
+		var namelist = this.pathname.split("/");
+		var i;
+		for(i = 0; i < namelist.length; i++) {
+			if((namelist[i] === "") || (namelist[i] === ".")) {
+				continue;
+			}
+			if(namelist[i] === "..") {
+				name = name.substring(0 ,name.length - 1).match(/.*\//)[0];
+				continue;
+			}
+			name += namelist[i];
+			if(i !== namelist.length - 1) {
+				name += "/";
+			}
+		}
+		return name;
+	};
+	File.prototype.getParent = function() {
+		var x = this.getAbsolutePath().match(/.*\//)[0];
+		return(x.substring(0 ,x.length - 1));
+	};
+	var mqofile = null;
+	var parent_dir = "./";
+	if(url) {
+		mqofile = new File(url);
+		parent_dir = mqofile.getParent() + "/";
+	}
+	
 	var lines = text.split("\n");
 	var i;
 	var block_stack = [];
@@ -182,11 +222,11 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text) {
 			}
 			val = getURLFromPrm(trim_line, "tex");
 			if(val) {
-				material_type.textureDiffuse = val;
+				material_type.textureDiffuse = parent_dir + val;
 			}
 			val = getURLFromPrm(trim_line, "bump");
 			if(val) {
-				material_type.textureNormal = val;
+				material_type.textureNormal = parent_dir + val;
 			}
 			var material = new S3Material(material_name, material_type);
 			mesh.addMaterial(material);

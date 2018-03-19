@@ -171,7 +171,8 @@ S3System.prototype._download = function(url, callback) {
 		image.onload = function() {
 			callback(image, ext);
 		};
-		image.src = this.pathname;
+		image.src = url;
+		return;
 	}
 	var http = new XMLHttpRequest();
 	var handleHttpResponse = function (){
@@ -944,20 +945,20 @@ S3Mesh.prototype.addMaterial = function(material) {
 // 他のファイルの読み書きの拡張用
 S3Mesh.prototype.inputData = function(data, type) {
 	var that = this;
-	var load = function(ldata, ltype) {
+	var load = function(ldata, ltype, url) {
 		that._init();
-		S3Mesh.DATA_INPUT_FUNCTION[ltype](that, ldata);
+		S3Mesh.DATA_INPUT_FUNCTION[ltype](that, ldata, url);
 		that.setComplete(true);
 	};
 	if(((typeof data === "string")||(data instanceof String))&&((data.indexOf("\n") === -1))) {
 		// 1行の場合はURLとみなす（雑）
 		var downloadCallback = function(text) {
-			load(text, type);
+			load(text, type, data);
 		};
 		this.sys._download(data, downloadCallback);
 	}
 	else {
-		load(data, type);
+		load(data, type, "");
 	}
 };
 S3Mesh.prototype.outputData = function(type) {
@@ -987,7 +988,7 @@ S3Mesh.DATA_OUTPUT_FUNCTION	= {};
 */
 
 S3Mesh.DATA_JSON = "JSON";
-S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh, json) {
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh, json, url) {
 	var meshdata;
 	if((typeof json === "string")||(json instanceof String)) {
 		meshdata = eval(json);

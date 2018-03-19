@@ -39,18 +39,18 @@
 	
 	var light_ambient = s3.createLight();
 	light_ambient.setMode(S3LightMode.AMBIENT_LIGHT);
-	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.1));
+	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.05));
 	scene.addLight(light_ambient);
 	
-	var light_up = s3.createLight();
-	light_up.setMode(S3LightMode.DIRECTIONAL_LIGHT);
-	light_up.setColor(new S3Vector( 0.0,  0.05,  0.0));
-	light_up.setDirection(new S3Vector( 0,  1,  0));
-	scene.addLight(light_up);
+//	var light_up = s3.createLight();
+//	light_up.setMode(S3LightMode.DIRECTIONAL_LIGHT);
+//	light_up.setColor(new S3Vector( 0.0,  0.05,  0.0));
+//	light_up.setDirection(new S3Vector( 0,  1,  0));
+//	scene.addLight(light_up);
 	
 	var light_point = s3.createLight();
 	light_point.setMode(S3LightMode.POINT_LIGHT);
-	light_point.setColor(new S3Vector( 1.0,  1.0,  1.0));
+	light_point.setColor(new S3Vector( 0.9,  0.9,  1.0));
 	light_point.setPosition(new S3Vector( 100,  0,  0));
 	light_point.setRange(200);
 	scene.addLight(light_point);

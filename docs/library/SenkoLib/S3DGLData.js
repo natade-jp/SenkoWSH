@@ -252,9 +252,13 @@ S3GLTexture.prototype._init = function() {
 	this.image			= null;
 	this.is_loadimage	= false;
 	this.is_dispose		= false;
+	this.gldata			= null;
 };
 S3GLTexture.prototype.dispose = function() {
-	this.is_dispose = true;
+	if(!this.is_dispose) {
+		this.is_dispose = true;
+		this.sys.glfunc.deleteTexture(this.url);
+	}
 };
 S3GLTexture.prototype.setImage = function(image) {
 	if((image === null) || this.is_dispose){
@@ -313,6 +317,19 @@ S3GLTexture.prototype.setImage = function(image) {
 		console.log("not setImage");
 		console.log(image);
 	}
+};
+S3GLTexture.prototype.getGLData = function() {
+	if(this.is_dispose) {
+		return null;
+	}
+	if(this.gldata) {
+		return this.gldata;
+	}
+	if(this.is_loadimage) {
+		this.gldata = this.sys.glfunc.createTexture(this.url, this.image);
+		return this.gldata;
+	}
+	return null;
 };
 
 var S3GLMesh = function(sys) {
@@ -512,12 +529,15 @@ S3GLMesh.prototype._getGLArrayData = function() {
 	// テクスチャについてはロードもあるので、別管理
 	var texture = {};
 	{
-		var diffuse	= {};
-		var normal		= {};
+		var diffuse	= [];
+		var normal	= [];
 		for(i = 0; i < material_list.length; i++) {
-			diffuse	= this.sys.createTexture(material_list[i].textureDiffuse);
-			normal	= this.sys.createTexture(material_list[i].textureNormal);
+			console.log(material_list[i]);
+			diffuse[i]	= this.sys.createTexture(material_list[i].textureDiffuse);
+			normal[i]	= this.sys.createTexture(material_list[i].textureNormal);
 		}
+		texture.diffuse = diffuse;
+		texture.normal = normal;
 	}
 	
 	var arraydata = {};
@@ -538,13 +558,24 @@ S3GLMesh.prototype.disposeGLData = function() {
 			if(gldata.ibo.data !== undefined) {
 				this.sys.glfunc.deleteBuffer(gldata.ibo.data);
 			}
+			delete gldata.ibo;
 		}
 		if(gldata.vbo !== undefined) {
-			for(var key in this.arraydata.vbo) {
-				if(this.arraydata.vbo[key].data !== undefined) {
-					this.sys.glfunc.deleteBuffer(this.arraydata.vbo[key].data);
+			for(var key in gldata.vbo) {
+				if(gldata.vbo[key].data !== undefined) {
+					this.sys.glfunc.deleteBuffer(gldata.vbo[key].data);
 				}
 			}
+			delete gldata.vbo;
+		}
+		if(gldata.texture !== undefined) {
+			for(var key in gldata.texture.diffuse) {
+				gldata.texture.diffuse[key].dispose();
+			}
+			for(var key in gldata.texture.normal) {
+				gldata.texture.normal[key].dispose();
+			}
+			delete gldata.texture;
 		}
 	}
 	delete this.gldata;
