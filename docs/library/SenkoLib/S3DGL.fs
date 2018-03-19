@@ -33,15 +33,25 @@ varying vec3 interpolationWorldNormal;
 varying vec3 interpolationPosition;
 varying vec2 interpolationTextureCoord;
 
-// お手軽反射マッピング
-vec3 getReflectionColor(vec3 vector, float metallic) {
+// お手軽リフレクトとラフネス
+vec3 getMetalColor(vec3 vector, float reflect, float power) {
+	if(reflect < 0.0001) {
+		return vec3(0.0, 0.0, 0.0);
+	}
+	float roughness = (100.0 - power) * 0.01;
 	float x = vector.y;
-	x = (metallic < 0.0001) ? 0.0 :
-		x < -0.1 ? mix(0.0, 0.8, (x + 1.0) * (1.0 / 0.9)) :
-		x < 0.0 ? mix(0.8, 0.3, (x + 0.1) * (1.0 / 0.1)) :
-		x < 0.01 ? mix(0.3, 1.0, x * (1.0 / 0.01)) :
-		mix(1.0, 0.3, (x - 0.01) * (1.0 / (1.0 - 0.01)));
-	return vec3(x, x, x);
+	float x1 = mix(-0.1, -0.5, roughness);
+	float x2 = mix(0.01,  0.5, roughness);
+	float c1 = mix(-0.3,  0.5, roughness);
+	float c2 = mix( 0.9,  0.6, roughness);
+	float c3 = mix( 0.3,  0.4, roughness);
+	float c4 = mix( 1.2,  0.8, roughness);
+	float c5 = mix( 0.3,  0.5, roughness);
+	x = x < x1	?	mix( c1, c2,	(x + 1.0)	* (1.0 / (1.0 + x1)))	:
+		x < 0.0 ?	mix( c2, c3,	(x - x1)	* (1.0 / -x1))			:
+		x < x2	?	mix( c3, c4,	x			* (1.0 / x2))			:
+					mix( c4, c5,	(x - x2)	* (1.0 / (1.0 - x2)))	;
+	return vec3(x, x, x) * reflect;
 }
 
 void main(void) {
@@ -147,7 +157,7 @@ void main(void) {
 	// メタリックが強いほど、物体の色を減らす
 	vec3	destColor = destAmbient + clamp(destDiffuse, 0.0, 1.0);
 	destColor =		clamp(destColor * (1.0 - materialMetallic * 0.8), 0.0, 1.0)
-				+ getReflectionColor(vertexReflectVector, materialMetallic) * materialMetallic
+				+  getMetalColor(vertexReflectVector, materialMetallic, materialPower)
 				+ destSpecular;
 	gl_FragColor = vec4(destColor, 1.0);
 }
