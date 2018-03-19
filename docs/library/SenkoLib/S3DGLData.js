@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ImageBitmap */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement */
 
 ﻿"use strict";
 
@@ -295,8 +295,7 @@ S3GLTexture.prototype.setImage = function(image) {
 	if(	(image instanceof ImageData) ||
 		(image instanceof HTMLImageElement) ||
 		(image instanceof HTMLCanvasElement) ||
-		(image instanceof HTMLVideoElement) ||
-		(image instanceof ImageBitmap)) {
+		(image instanceof HTMLVideoElement)) {
 		if(this.url === null) {
 			// 直接設定した場合はIDをURLとして設定する
 			this.url		= this.sys._createID();

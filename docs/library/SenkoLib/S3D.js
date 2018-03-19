@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-/* global S3Math, S3Matrix, S3Vector, Float32Array, Int32Array, ImageBitmap, HTMLVideoElement, HTMLCanvasElement, HTMLImageElement, ImageData, ArrayBufferView */
+/* global S3Math, S3Matrix, S3Vector, Float32Array, Int32Array, HTMLVideoElement, HTMLCanvasElement, HTMLImageElement, ImageData, ArrayBufferView */
 
 ﻿/**
  * SenkoLib S3D.js

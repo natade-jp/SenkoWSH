@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial, ImageData, ArrayBufferView, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ImageBitmap, ArrayBuffer, SharedArrayBuffer, WebGLTexture */
+﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial, ImageData, ArrayBufferView, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ArrayBuffer, SharedArrayBuffer, WebGLTexture */
 
 ﻿"use strict";
 
@@ -619,8 +619,7 @@ var S3GLSystem = function() {
 			if(	!(image instanceof ImageData) &&
 				!(image instanceof HTMLImageElement) &&
 				!(image instanceof HTMLCanvasElement) &&
-				!(image instanceof HTMLVideoElement) &&
-				!(image instanceof ImageBitmap)) {
+				!(image instanceof HTMLVideoElement)) {
 				throw "createBufferTexture";
 			}
 			var gl = that.getGL();
