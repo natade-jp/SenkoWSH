@@ -125,10 +125,10 @@ S3Material.prototype.getGLData = function() {
 		materialsColor		:
 			new S3GLVertex([this.color.x, this.color.y, this.color.z, this.diffuse]			, 4, S3GLVertex.datatype.Float32Array),
 		materialsSpecular	:
-			new S3GLVertex([this.specular.x, this.specular.y, this.specular.z, this.power]	, 4, S3GLVertex.datatype.Float32Array),
+			new S3GLVertex([this.specular.x, this.specular.y, this.specular.z, 100]	, 4, S3GLVertex.datatype.Float32Array),
 		materialsEmission	:
 			new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
-		materialsAmbientAndMetallic	:
+		materialsAmbientAndReflect	:
 			new S3GLVertex([this.ambient.x, this.ambient.y, this.ambient.z, this.reflect]	, 4, S3GLVertex.datatype.Float32Array)
 	};
 };
