@@ -1,4 +1,4 @@
-﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial, ImageData, ArrayBufferView, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ArrayBuffer, SharedArrayBuffer, WebGLTexture */
+﻿/* global S3System, S3Mesh, S3Model, S3System.SYSTEM_MODE, Float32Array, S3System.CULL_MODE, S3System.FRONT_FACE, S3LightMode, Int32Array, S3Vector, S3Matrix, WebGLBuffer, S3GLLight, S3GLMesh, S3GLVertex, S3GLMatelial, ImageData, ArrayBufferView, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, ArrayBuffer, SharedArrayBuffer, WebGLTexture, S3Texture */
 
 ﻿"use strict";
 
@@ -732,9 +732,6 @@ S3GLSystem.prototype.createScene = function() {
 S3GLSystem.prototype.createModel = function() {
 	return new S3GLModel();
 };
-S3GLSystem.prototype.createTexture = function(data) {
-	return new S3GLTexture(this, data);
-};
 
 S3GLSystem.prototype.getGL = function() {
 	return this.gl;
@@ -944,4 +941,10 @@ S3GLSystem.prototype.drawScene = function(scene) {
 	
 	// 描写終了
 	this._bindEnd();
+};
+
+S3GLSystem.prototype._disposeObject = function(obj) {
+	if(obj instanceof S3Texture) {
+		this.glfunc.deleteTexture(this.url);
+	}
 };

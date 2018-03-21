@@ -1,4 +1,4 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement */
+/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, S3Texture */
 
 ﻿"use strict";
 
@@ -107,6 +107,20 @@ S3GLVertex.gltypetable = {
  * 素材にメソッドを拡張
  * /////////////////////////////////////////////////////////
  */
+
+S3Texture.prototype.getGLData = function() {
+	if(this.is_dispose) {
+		return null;
+	}
+	if(this.gldata) {
+		return this.gldata;
+	}
+	if(this.is_loadimage) {
+		this.gldata = this.sys.glfunc.createTexture(this.url, this.image);
+		return this.gldata;
+	}
+	return null;
+};
 
 S3Material.prototype.getGLHash = function() {
 	// 名前は被らないので、ハッシュに使用する
@@ -240,97 +254,6 @@ S3Vertex.prototype.getGLData = function() {
  * /////////////////////////////////////////////////////////
  */
 
-var S3GLTexture = function(s3system, data) {
-	this.sys	= s3system;
-	this._init();
-	if(arguments.length === 2) {
-		this.setImage(data);
-	}
-};
-S3GLTexture.prototype._init = function() {
-	this.url			= null;
-	this.image			= null;
-	this.is_loadimage	= false;
-	this.is_dispose		= false;
-	this.gldata			= null;
-};
-S3GLTexture.prototype.dispose = function() {
-	if(!this.is_dispose) {
-		this.is_dispose = true;
-		this.sys.glfunc.deleteTexture(this.url);
-	}
-};
-S3GLTexture.prototype.setImage = function(image) {
-	if((image === null) || this.is_dispose){
-		return;
-	}
-	if(	(image instanceof HTMLImageElement) ||
-		(image instanceof HTMLCanvasElement)) {
-		var original_width  = image.width;
-		var original_height = image.height;
-		var ceil_power_of_2 = function(x) {
-			var a = Math.log2(x);
-			if ((a - Math.floor(a)) < 1e-10) {
-				return x;
-			}
-			else {
-				return 1 << Math.ceil(a);
-			}
-		};
-		var ceil_width  = ceil_power_of_2(original_width);
-		var ceil_height = ceil_power_of_2(original_height);
-		if((original_width !== ceil_width) || (original_height !== ceil_height)) {
-			// 2の累乗ではない場合は、2の累乗のサイズに変換
-			var ceil_image = document.createElement("canvas");
-			ceil_image.width	= ceil_width;
-			ceil_image.height	= ceil_height;
-			ceil_image.getContext("2d").drawImage(
-				image,
-				0, 0, original_width, original_height,
-				0, 0, ceil_width, ceil_height
-			);
-			image = ceil_image;
-		} 
-	}
-	if(	(image instanceof ImageData) ||
-		(image instanceof HTMLImageElement) ||
-		(image instanceof HTMLCanvasElement) ||
-		(image instanceof HTMLVideoElement)) {
-		if(this.url === null) {
-			// 直接設定した場合はIDをURLとして設定する
-			this.url		= this.sys._createID();
-		}
-		this.image			= image;
-		this.is_loadimage	= true;
-		return;
-	}
-	else if((typeof image === "string")||(image instanceof String)) {
-		this.url = image;
-		var that = this;
-		this.sys._download(this.url, function (image, ext){
-			that.setImage(image);
-		});
-		return;
-	}
-	else {
-		console.log("not setImage");
-		console.log(image);
-	}
-};
-S3GLTexture.prototype.getGLData = function() {
-	if(this.is_dispose) {
-		return null;
-	}
-	if(this.gldata) {
-		return this.gldata;
-	}
-	if(this.is_loadimage) {
-		this.gldata = this.sys.glfunc.createTexture(this.url, this.image);
-		return this.gldata;
-	}
-	return null;
-};
-
 var S3GLMesh = function(sys) {
 	this.sys = sys;
 	this.super = S3Mesh.prototype;
@@ -432,7 +355,6 @@ S3GLMesh.prototype._getGLArrayData = function() {
 	
 	var vertex_list			= this.getVertexArray();
 	var triangleindex_list	= this.getTriangleIndexArray();
-	var material_list		= this.getMaterialArray();
 	var i, j;
 	var hashlist = [];
 	var vertex_length = 0;
@@ -525,24 +447,9 @@ S3GLMesh.prototype._getGLArrayData = function() {
 		}
 	}
 	
-	// テクスチャについてはロードもあるので、別管理
-	var texture = {};
-	{
-		var diffuse	= [];
-		var normal	= [];
-		for(i = 0; i < material_list.length; i++) {
-			console.log(material_list[i]);
-			diffuse[i]	= this.sys.createTexture(material_list[i].textureDiffuse);
-			normal[i]	= this.sys.createTexture(material_list[i].textureNormal);
-		}
-		texture.diffuse = diffuse;
-		texture.normal = normal;
-	}
-	
 	var arraydata = {};
 	arraydata.ibo		= ibo;
 	arraydata.vbo		= vbo;
-	arraydata.texture	= texture;
 	return arraydata;
 };
 
@@ -567,14 +474,12 @@ S3GLMesh.prototype.disposeGLData = function() {
 			}
 			delete gldata.vbo;
 		}
-		if(gldata.texture !== undefined) {
-			for(var key in gldata.texture.diffuse) {
-				gldata.texture.diffuse[key].dispose();
+		{
+			var material_list = this.getMaterialArray();
+			for(var i = 0; i < material_list.length; i++) {
+				material_list[i].textureDiffuse.dispose();
+				material_list[i].textureNormal.dispose();
 			}
-			for(var key in gldata.texture.normal) {
-				gldata.texture.normal[key].dispose();
-			}
-			delete gldata.texture;
 		}
 	}
 	delete this.gldata;

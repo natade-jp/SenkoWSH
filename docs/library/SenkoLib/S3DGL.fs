@@ -7,6 +7,8 @@ uniform vec4	materialsColor[MATERIALS_MAX];
 uniform vec4	materialsSpecular[MATERIALS_MAX];
 uniform vec3	materialsEmission[MATERIALS_MAX];
 uniform vec4	materialsAmbientAndReflect[MATERIALS_MAX];
+uniform sampler2D materialsTextureColor[MATERIALS_MAX];
+
 
 // 頂点移動
 uniform mat4 matrixWorldToLocal;

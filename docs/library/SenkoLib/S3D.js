@@ -188,6 +188,28 @@ S3System.prototype._download = function(url, callback) {
 	http.open("GET", url, true);
 	http.send(null);
 };
+S3System.prototype._toVector3 = function(x) {
+	if(x instanceof S3Vector) {
+		return x;
+	}
+	else if(!isNaN(x)) {
+		return new S3Vector(x, x, x);
+	}
+	else if(x instanceof Array) {
+		return new S3Vector(x[0], x[1], x[2]);
+	}
+	else {
+		throw "IllegalArgumentException";
+	};
+};
+S3System.prototype._toValue = function(x) {
+	if(!isNaN(x)) {
+		return x;
+	}
+	else {
+		throw "IllegalArgumentException";
+	};
+};
 
 S3System.prototype.setBackgroundColor = function(color) {
 	this.backgroundColor = color;
@@ -694,6 +716,9 @@ S3System.prototype.drawScene = function(scene) {
 	}
 };
 
+S3System.prototype._disposeObject = function() {
+};
+
 /**
  * /////////////////////////////////////////////////////////
  * 描写に使用するシーンを構成するクラス群
@@ -717,6 +742,138 @@ S3System.prototype.drawScene = function(scene) {
  * ポリゴン情報を構成部品
  * /////////////////////////////////////////////////////////
  */
+
+var S3Texture = function(s3system, data) {
+	this.sys	= s3system;
+	this._init();
+	if(data !== undefined) {
+		this.setImage(data);
+	}
+};
+S3System.prototype.createTexture = function(name) {
+	return new S3Texture(this, name);
+};
+S3Texture.prototype._init = function() {
+	this.url			= null;
+	this.image			= null;
+	this.is_loadimage	= false;
+	this.is_dispose		= false;
+	this.gldata			= null;
+};
+S3Texture.prototype.dispose = function() {
+	if(!this.is_dispose) {
+		this.is_dispose = true;
+		if(this.gldata !== null) {
+			this.sys._disposeObject(this);
+			this.gldata = null;
+		}
+	}
+};
+S3Texture.prototype.setImage = function(image) {
+	if((image === null) || this.is_dispose){
+		return;
+	}
+	if(	(image instanceof HTMLImageElement) ||
+		(image instanceof HTMLCanvasElement)) {
+		var original_width  = image.width;
+		var original_height = image.height;
+		var ceil_power_of_2 = function(x) {
+			var a = Math.log2(x);
+			if ((a - Math.floor(a)) < 1e-10) {
+				return x;
+			}
+			else {
+				return 1 << Math.ceil(a);
+			}
+		};
+		var ceil_width  = ceil_power_of_2(original_width);
+		var ceil_height = ceil_power_of_2(original_height);
+		if((original_width !== ceil_width) || (original_height !== ceil_height)) {
+			// 2の累乗ではない場合は、2の累乗のサイズに変換
+			var ceil_image = document.createElement("canvas");
+			ceil_image.width	= ceil_width;
+			ceil_image.height	= ceil_height;
+			ceil_image.getContext("2d").drawImage(
+				image,
+				0, 0, original_width, original_height,
+				0, 0, ceil_width, ceil_height
+			);
+			image = ceil_image;
+		} 
+	}
+	if(	(image instanceof ImageData) ||
+		(image instanceof HTMLImageElement) ||
+		(image instanceof HTMLCanvasElement) ||
+		(image instanceof HTMLVideoElement)) {
+		if(this.url === null) {
+			// 直接設定した場合はIDをURLとして設定する
+			this.url		= this.sys._createID();
+		}
+		this.image			= image;
+		this.is_loadimage	= true;
+		return;
+	}
+	else if((typeof image === "string")||(image instanceof String)) {
+		this.url = image;
+		var that = this;
+		this.sys._download(this.url, function (image, ext){
+			that.setImage(image);
+		});
+		return;
+	}
+	else {
+		console.log("not setImage");
+		console.log(image);
+	}
+};
+
+/**
+ * 素材 (mutable)
+ * @param {S3Material} type
+ * @param {S3Material} name
+ * @returns {S3Material}
+ */
+var S3Material = function(s3system, name) {
+	this.sys		= s3system;
+	this.name		= "s3default";
+	if(name !== undefined) {
+		this.name = name;
+	}
+	this.color		= new S3Vector(1.0, 1.0, 1.0, 1.0);	// 拡散反射の色
+	this.diffuse	= 0.8;								// 拡散反射の強さ
+	this.emission	= new S3Vector(0.0, 0.0, 0.0);		// 自己照明（輝き）
+	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 鏡面反射の色
+	this.power		= 5.0;								// 鏡面反射の強さ
+	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 光によらない初期色
+	this.reflect	= 0.0;								// 環境マッピングによる反射の強さ
+	this.textureDiffuse	= this.sys.createTexture();
+	this.textureNormal	= this.sys.createTexture();
+};
+S3System.prototype.createMaterial = function(name) {
+	return new S3Material(this, name);
+};
+S3Material.prototype.setName = function(name)		{ this.name = name; };
+S3Material.prototype.setColor = function(color)		{ this.color = this.sys._toVector3(color); };
+S3Material.prototype.setDiffuse = function(diffuse)	{ this.diffuse = this.sys._toValue(diffuse); };
+S3Material.prototype.setEmission = function(emission)	{ this.emission = this.sys._toVector3(emission); };
+S3Material.prototype.setSpecular = function(specular)	{ this.specular = this.sys._toVector3(specular); };
+S3Material.prototype.setPower = function(power)		{ this.power = this.sys._toValue(power); };
+S3Material.prototype.setAmbient = function(ambient)	{ this.ambient = this.sys._toVector3(ambient); };
+S3Material.prototype.setReflect = function(reflect)	{ this.reflect = this.sys._toValue(reflect); };
+S3Material.prototype.setTextureDiffuse = function(data) {
+	if(this.textureDiffuse !== null) {
+		this.textureDiffuse.dispose();
+	}
+	this.textureDiffuse = this.sys.createTexture();
+	this.textureDiffuse.setImage(data);
+};
+S3Material.prototype.setTextureNormal = function(data) {
+	if(this.textureNormal !== null) {
+		this.textureNormal.dispose();
+	}
+	this.textureNormal = this.sys.createTexture();
+	this.textureNormal.setImage(data);
+};
 
 /**
  * 頂点 (immutable)
@@ -751,40 +908,6 @@ S3Vertex.prototype.inverseTriangle = function() {
 		return new S3Vertex(this.position, this.normal.negate(), this.rhw);
 	}
 };
-
-/**
- * 素材
- * @param {String} name
- * @param {S3Material} type
- * @returns {S3Material}
- */
-var S3Material = function(name, type) {
-	this.name		= name;
-	this.color		= new S3Vector(1.0, 1.0, 1.0, 1.0);	// 拡散反射の色
-	this.diffuse	= 0.8;								// 拡散反射の強さ
-	this.emission	= new S3Vector(0.0, 0.0, 0.0);		// 自己照明（輝き）
-	this.specular	= new S3Vector(0.0, 0.0, 0.0);		// 鏡面反射の色
-	this.power		= 5.0;								// 鏡面反射の強さ
-	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 光によらない初期色
-	this.reflect	= 0.0;								// 環境マッピングによる反射の強さ
-	this.textureDiffuse	= null;
-	this.textureNormal	= null;
-	if(type !== undefined) {
-		if(type.color !== undefined)	{ this.color	= type.color;		}
-		if(type.diffuse !== undefined)	{ this.diffuse	= type.diffuse;		}
-		if(type.emission !== undefined) { this.emission	= type.emission;	}
-		if(type.specular !== undefined) { this.specular	= type.specular;	}
-		if(type.power !== undefined)	{ this.power	= type.power;		}
-		if(type.ambient !== undefined)	{ this.ambient	= type.ambient;		}
-		if(type.reflect !== undefined)	{ this.reflect	= type.reflect;		}
-		if(type.textureDiffuse !== undefined)	{ this.textureDiffuse	= type.textureDiffuse;		}
-		if(type.textureNormal !== undefined)	{ this.textureNormal	= type.textureNormal;		}
-	}
-};
-S3System.prototype.createMaterial = function(name, type) {
-	return new S3Material(name, type);
-};
-S3Material.DEFAULT_MATERIAL = new S3Material("s3default");
 
 /**
  * ABCの頂点を囲む3角ポリゴン (immutable)
@@ -947,7 +1070,7 @@ S3Mesh.prototype.inputData = function(data, type) {
 	var that = this;
 	var load = function(ldata, ltype, url) {
 		that._init();
-		S3Mesh.DATA_INPUT_FUNCTION[ltype](that, ldata, url);
+		S3Mesh.DATA_INPUT_FUNCTION[ltype](that.sys, that, ldata, url);
 		that.setComplete(true);
 	};
 	if(((typeof data === "string")||(data instanceof String))&&((data.indexOf("\n") === -1))) {
@@ -962,7 +1085,7 @@ S3Mesh.prototype.inputData = function(data, type) {
 	}
 };
 S3Mesh.prototype.outputData = function(type) {
-	return S3Mesh.DATA_OUTPUT_FUNCTION[type](this);
+	return S3Mesh.DATA_OUTPUT_FUNCTION[type](this.sys, this);
 };
 S3Mesh.DATA_INPUT_FUNCTION	= {};
 S3Mesh.DATA_OUTPUT_FUNCTION	= {};
@@ -988,7 +1111,7 @@ S3Mesh.DATA_OUTPUT_FUNCTION	= {};
 */
 
 S3Mesh.DATA_JSON = "JSON";
-S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh, json, url) {
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(sys, mesh, json, url) {
 	var meshdata;
 	if((typeof json === "string")||(json instanceof String)) {
 		meshdata = eval(json);
@@ -1000,7 +1123,7 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh, json, url) {
 	var material = 0;
 	// 材質名とインデックスを取得
 	for(var materialname in meshdata.Indexes) {
-		mesh.addMaterial(new S3Material(materialname));
+		mesh.addMaterial(sys.createMaterial(materialname));
 		var materialindexlist = meshdata.Indexes[materialname];
 		for(i = 0; i < materialindexlist.length; i++) {
 			var list = materialindexlist[i];
@@ -1022,17 +1145,18 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh, json, url) {
 	}
 	return;
 };
-S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_JSON] = function(mesh) {
+S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_JSON] = function(sys, mesh) {
 	var i, j;
 	var vertex			= mesh.getVertexArray(); 
 	var triangleindex	= mesh.getTriangleIndexArray(); 
 	var material		= mesh.getMaterialArray();
 	var material_vertexlist = [];
 	var material_length = material.length !== 0 ? material.length : 1;
+	var default_material = sys.createTexture();
 	// 材質リストを取得
 	for(i = 0; i < material_length; i++) {
 		material_vertexlist[i] = {
-			material: material[i] ? material[i] : S3Material.DEFAULT_MATERIAL ,
+			material: material[i] ? material[i] : default_material ,
 			list:[]
 		};
 	}

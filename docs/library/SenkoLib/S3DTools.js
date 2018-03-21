@@ -65,7 +65,7 @@ S3Mesh.DATA_MQO = "MQO";
  * @param {String} text
  * @returns {unresolved}
  */
-S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text, url) {
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(sys, mesh, text, url) {
 	
 	var File = function(pathname) {
 		this.pathname = pathname.replace(/\\/g, "/" );
@@ -178,57 +178,57 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text, url) {
 		}
 		if(block_type === "Material") {
 			var material_name = first.replace(/\"/g, "");
-			var material_type = {};
+			var material = sys.createMaterial();
+			material.setName(material_name);
 			var val;
 			val = getNumberFromPrm(trim_line, "col");
 			if(val.length !== 0) {
-				material_type.color = new S3Vector(val[0], val[1], val[2], val[3]);
+				material.setColor(new S3Vector(val[0], val[1], val[2], val[3]));
 			}
 			val = getNumberFromPrm(trim_line, "dif");
 			if(val.length !== 0) {
-				material_type.diffuse = val[0];
+				material.setDiffuse(val[0]);
 			}
 			val = getNumberFromPrm(trim_line, "amb");
 			if(val.length !== 0) {
-				material_type.ambient = new S3Vector(val[0], val[0], val[0]);
+				material.setAmbient(new S3Vector(val[0], val[0], val[0]));
 			}
 			val = getNumberFromPrm(trim_line, "amb_col");
 			if(val.length !== 0) {
-				material_type.ambient = new S3Vector(val[0], val[1], val[2]);
+				material.setAmbient(new S3Vector(val[0], val[1], val[2]));
 			}
 			val = getNumberFromPrm(trim_line, "emi");
 			if(val.length !== 0) {
-				material_type.emission = new S3Vector(val[0], val[0], val[0]);
+				material.setEmission(new S3Vector(val[0], val[0], val[0]));
 			}
 			val = getNumberFromPrm(trim_line, "emi_col");
 			if(val.length !== 0) {
-				material_type.emission = new S3Vector(val[0], val[1], val[2]);
+				material.setEmission(new S3Vector(val[0], val[1], val[2]));
 			}
 			val = getNumberFromPrm(trim_line, "spc");
 			if(val.length !== 0) {
-				material_type.specular = new S3Vector(val[0], val[0], val[0]);
+				material.setSpecular(new S3Vector(val[0], val[0], val[0]));
 			}
 			val = getNumberFromPrm(trim_line, "spc_col");
 			if(val.length !== 0) {
-				material_type.specular = new S3Vector(val[0], val[1], val[2]);
+				material.setSpecular(new S3Vector(val[0], val[1], val[2]));
 			}
 			val = getNumberFromPrm(trim_line, "power");
 			if(val.length !== 0) {
-				material_type.power = val[0];
+				material.setPower(val[0]);
 			}
 			val = getNumberFromPrm(trim_line, "reflect");
 			if(val.length !== 0) {
-				material_type.reflect = val[0];
+				material.setReflect(val[0]);
 			}
 			val = getURLFromPrm(trim_line, "tex");
 			if(val) {
-				material_type.textureDiffuse = parent_dir + val;
+				material.setTextureDiffuse(parent_dir + val);
 			}
 			val = getURLFromPrm(trim_line, "bump");
 			if(val) {
-				material_type.textureNormal = parent_dir + val;
+				material.setTextureNormal(parent_dir + val);
 			}
-			var material = new S3Material(material_name, material_type);
 			mesh.addMaterial(material);
 		}
 		else if(block_type === "vertex") {
@@ -269,7 +269,7 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh, text, url) {
  * @param {S3Mesh} mesh
  * @returns {String}
  */
-S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_MQO] = function(mesh) {
+S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_MQO] = function(sys, mesh) {
 	var i;
 	var output = [];
 	var vertex			= mesh.getVertexArray(); 
