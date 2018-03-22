@@ -136,9 +136,9 @@ S3Material.prototype.getGLHash = function() {
  */
 S3Material.prototype.getGLData = function() {
 	return {
-		materialsColor		:
+		materialsColorAndDiffuse	:
 			new S3GLVertex([this.color.x, this.color.y, this.color.z, this.diffuse]			, 4, S3GLVertex.datatype.Float32Array),
-		materialsSpecular	:
+		materialsSpecularAndPower	:
 			new S3GLVertex([this.specular.x, this.specular.y, this.specular.z, this.power]	, 4, S3GLVertex.datatype.Float32Array),
 		materialsEmission	:
 			new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
@@ -146,7 +146,6 @@ S3Material.prototype.getGLData = function() {
 			new S3GLVertex([this.ambient.x, this.ambient.y, this.ambient.z, this.reflect]	, 4, S3GLVertex.datatype.Float32Array)
 	};
 };
-
 
 /**
  * /////////////////////////////////////////////////////////
@@ -161,17 +160,17 @@ S3Light.prototype.getGLHash = function() {
 S3Light.prototype.getGLData = function() {
 	var lightsColor = this.color.mul(this.power);
 	var lightsVector = new S3Vector();
+	// uniform 節約のためにライト用のベクトルは用途によって入れる値を変更する
 	if(this.mode === S3LightMode.DIRECTIONAL_LIGHT) {
 		lightsVector = this.direction;
 	}
 	else if(this.mode === S3LightMode.POINT_LIGHT) {
 		lightsVector = this.position;
 	}
+	// uniform 節約のために最終的に渡すデータをまとめる
 	return {
-		lightsMode		: new S3GLVertex(this.mode,			1, S3GLVertex.datatype.Int32Array),
-		lightsRange		: new S3GLVertex(this.range,		1, S3GLVertex.datatype.Float32Array),
-		lightsVector	: new S3GLVertex(lightsVector,		3, S3GLVertex.datatype.Float32Array),
-		lightsColor		: new S3GLVertex(lightsColor,		3, S3GLVertex.datatype.Float32Array)
+		lightsData1	: new S3GLVertex([this.mode, this.range, lightsVector.x, lightsVector.y] , 4, S3GLVertex.datatype.Float32Array),
+		lightsData2	: new S3GLVertex([lightsVector.z, lightsColor.x, lightsColor.y, lightsColor.z] , 4, S3GLVertex.datatype.Float32Array)
 	};
 };
 
