@@ -3,11 +3,13 @@ precision mediump float;
 
 // 材質
 #define MATERIALS_MAX			4
-uniform vec4	materialsColorAndDiffuse[MATERIALS_MAX];
-uniform vec4	materialsSpecularAndPower[MATERIALS_MAX];
-uniform vec3	materialsEmission[MATERIALS_MAX];
-uniform vec4	materialsAmbientAndReflect[MATERIALS_MAX];
-uniform sampler2D materialsTextureColor[MATERIALS_MAX];
+uniform vec4		materialsColorAndDiffuse[MATERIALS_MAX];
+uniform vec4		materialsSpecularAndPower[MATERIALS_MAX];
+uniform vec3		materialsEmission[MATERIALS_MAX];
+uniform vec4		materialsAmbientAndReflect[MATERIALS_MAX];
+uniform vec2		materialsTextureExist[MATERIALS_MAX];
+uniform sampler2D	materialsTextureColor[MATERIALS_MAX];
+uniform sampler2D	materialsTextureNormal[MATERIALS_MAX];
 
 // 頂点移動
 uniform mat4 matrixWorldToLocal;
@@ -34,6 +36,11 @@ varying vec2 interpolationTextureCoord;
 
 void main(void) {
 
+	const vec4 ZERO			= vec4(0.0, 0.0, 0.0, 0.0);
+	const vec4 ONE			= vec4(1.0, 1.0, 1.0, 1.0);
+	const vec4 WHITE		= ONE;
+	const vec3 NORMALTOP	= vec3(0.5, 0.5, 1.0);
+
 	// 頂点シェーダーから受け取った情報
 	int		vertexMaterial		= int(interpolationMaterialFloat);
 	vec3	vertexNormal		= normalize(interpolationNormal);
@@ -47,59 +54,79 @@ void main(void) {
 	vec3	materialEmission;
 	vec3	materialAmbient;
 	float	materialReflect;
-	if(vertexMaterial < 4) {
-		if(vertexMaterial < 2) {
-			if(vertexMaterial == 0) {
-				materialColor		= materialsColorAndDiffuse[0].xyz;
-				materialDiffuse		= materialsColorAndDiffuse[0].z;
-				materialSpecular	= materialsSpecularAndPower[0].xyz;
-				materialPower		= materialsSpecularAndPower[0].w;
-				materialEmission	= materialsEmission[0];
-				materialAmbient		= materialsAmbientAndReflect[0].xyz;
-				materialReflect		= materialsAmbientAndReflect[0].w;
+	float	materialRoughness;
+	vec4	materialTextureColor;
+
+	{
+		if(vertexMaterial < 4) {
+			if(vertexMaterial < 2) {
+				if(vertexMaterial == 0) {
+					materialColor			= materialsColorAndDiffuse[0].xyz;
+					materialDiffuse			= materialsColorAndDiffuse[0].z;
+					materialSpecular		= materialsSpecularAndPower[0].xyz;
+					materialPower			= materialsSpecularAndPower[0].w;
+					materialEmission		= materialsEmission[0];
+					materialAmbient			= materialsAmbientAndReflect[0].xyz;
+					materialReflect			= materialsAmbientAndReflect[0].w;
+					materialTextureColor	= materialsTextureExist[0].x > 0.5 ?
+						texture2D(materialsTextureColor[0], interpolationTextureCoord) : WHITE;
+				}
+				else {
+					materialColor		= materialsColorAndDiffuse[1].xyz;
+					materialDiffuse		= materialsColorAndDiffuse[1].z;
+					materialSpecular	= materialsSpecularAndPower[1].xyz;
+					materialPower		= materialsSpecularAndPower[1].w;
+					materialEmission	= materialsEmission[1];
+					materialAmbient		= materialsAmbientAndReflect[1].xyz;
+					materialReflect		= materialsAmbientAndReflect[1].w;
+					materialTextureColor	= materialsTextureExist[1].x > 0.5 ?
+						texture2D(materialsTextureColor[1], interpolationTextureCoord) : WHITE;
+				}
 			}
 			else {
-				materialColor		= materialsColorAndDiffuse[1].xyz;
-				materialDiffuse		= materialsColorAndDiffuse[1].z;
-				materialSpecular	= materialsSpecularAndPower[1].xyz;
-				materialPower		= materialsSpecularAndPower[1].w;
-				materialEmission	= materialsEmission[1];
-				materialAmbient		= materialsAmbientAndReflect[1].xyz;
-				materialReflect		= materialsAmbientAndReflect[1].w;
+				if(vertexMaterial == 2) {
+					materialColor		= materialsColorAndDiffuse[2].xyz;
+					materialDiffuse		= materialsColorAndDiffuse[2].z;
+					materialSpecular	= materialsSpecularAndPower[2].xyz;
+					materialPower		= materialsSpecularAndPower[2].w;
+					materialEmission	= materialsEmission[2];
+					materialAmbient		= materialsAmbientAndReflect[2].xyz;
+					materialReflect		= materialsAmbientAndReflect[2].w;
+					materialTextureColor	= materialsTextureExist[2].x > 0.5 ?
+						texture2D(materialsTextureColor[2], interpolationTextureCoord) : WHITE;
+				}
+				else {
+					materialColor		= materialsColorAndDiffuse[3].xyz;
+					materialDiffuse		= materialsColorAndDiffuse[3].z;
+					materialSpecular	= materialsSpecularAndPower[3].xyz;
+					materialPower		= materialsSpecularAndPower[3].w;
+					materialEmission	= materialsEmission[3];
+					materialAmbient		= materialsAmbientAndReflect[3].xyz;
+					materialReflect		= materialsAmbientAndReflect[3].w;
+					materialTextureColor	= materialsTextureExist[3].x > 0.5 ?
+						texture2D(materialsTextureColor[3], interpolationTextureCoord) : WHITE;
+				}
 			}
 		}
-		else {
-			if(vertexMaterial == 2) {
-				materialColor		= materialsColorAndDiffuse[2].xyz;
-				materialDiffuse		= materialsColorAndDiffuse[2].z;
-				materialSpecular	= materialsSpecularAndPower[2].xyz;
-				materialPower		= materialsSpecularAndPower[2].w;
-				materialEmission	= materialsEmission[2];
-				materialAmbient		= materialsAmbientAndReflect[2].xyz;
-				materialReflect		= materialsAmbientAndReflect[2].w;
-			}
-			else {
-				materialColor		= materialsColorAndDiffuse[3].xyz;
-				materialDiffuse		= materialsColorAndDiffuse[3].z;
-				materialSpecular	= materialsSpecularAndPower[3].xyz;
-				materialPower		= materialsSpecularAndPower[3].w;
-				materialEmission	= materialsEmission[3];
-				materialAmbient		= materialsAmbientAndReflect[3].xyz;
-				materialReflect		= materialsAmbientAndReflect[3].w;
-			}
-		}
+		// ラフネス値(0...1)を暫定計算(大きいほどざらざらしている)
+		materialRoughness = (100.0 - materialPower) * 0.01;
+	}
+
+	{
+		// テクスチャを反映
+		materialColor *= materialTextureColor.xyz;
 	}
 
 	// カメラが向いている方向を取得
 	vec3	eyeDirection = normalize(matrixWorldToLocal * vec4(eyeWorldDirection, 0.0)).xyz;
 	
 	// 物質の色の初期値
-	vec3	destDiffuse		= materialEmission;
-	vec3	destSpecular	= vec3(0.0, 0.0, 0.0);
+	vec3	destDiffuse		= materialColor * materialEmission;
+	vec3	destSpecular	= ZERO.xyz;
 	vec3	destAmbient		= materialAmbient * 0.2;
 	
 	// 光の色の平均
-	vec3	averageLightsColor = vec3(0.0, 0.0, 0.0);
+	vec3	averageLightsColor = ZERO.xyz;
 	
 	// 光による物体の色を計算
 	{
@@ -148,12 +175,9 @@ void main(void) {
 	}
 	
 	// 最終的な色を計算
-	vec3 destColor = vec3(0.0, 0.0, 0.0);
+	vec3 destColor = ZERO.xyz;
 	
 	{
-		// ラフネス値(0...1)を暫定計算(大きいほどざらざらしている)
-		float materialRoughness = (100.0 - materialPower) * 0.01;
-		
 		// アンビエント光
 		destColor += destAmbient;
 		

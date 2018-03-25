@@ -223,7 +223,7 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(sys, mesh, text, url) {
 			}
 			val = getURLFromPrm(trim_line, "tex");
 			if(val) {
-				material.setTextureDiffuse(parent_dir + val);
+				material.setTextureColor(parent_dir + val);
 			}
 			val = getURLFromPrm(trim_line, "bump");
 			if(val) {

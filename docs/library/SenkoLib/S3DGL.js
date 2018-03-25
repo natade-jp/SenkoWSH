@@ -390,6 +390,10 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	var i = 0;
 	
 	// ---- check Location ----
+	if(variable === undefined) {
+		// シェーダーでは利用していないものをbindしようとした。
+		return false;
+	}
 	// 長さが0なら位置が未調査なので調査する
 	if(variable.location.length === 0) {
 		if(variable.modifiers === "attribute") {
@@ -469,6 +473,7 @@ S3GLProgram.prototype.bindData = function(name, data) {
 				return new variable.instance([data]);
 			}
 		}
+		console.log(data);
 		throw "not toArraydata";
 	};
 	
@@ -479,7 +484,10 @@ S3GLProgram.prototype.bindData = function(name, data) {
 	else {
 		for(i = 0; i < data.length; i++) {
 			if(variable.location[i] !== -1) {
-				data[i] = toArraydata(data[i]);
+				// 配列の値が NULL になっているものは調査しない
+				if(data[i] !== null) {
+					data[i] = toArraydata(data[i]);
+				}
 			}
 		}
 	}
@@ -510,7 +518,10 @@ S3GLProgram.prototype.bindData = function(name, data) {
 			// 配列の場合は、配列の数だけbindする
 			for(i = 0; i < data.length; i++) {
 				if(variable.location[i] !== -1) {
-					variable.bind(variable.location[i], data[i]);
+					// 配列の値が NULL になっているものはbindしない
+					if(data[i] !== null) {
+						variable.bind(variable.location[i], data[i]);
+					}
 				}
 			}
 		}

@@ -846,7 +846,7 @@ var S3Material = function(s3system, name) {
 	this.power		= 5.0;								// 鏡面反射の強さ
 	this.ambient	= new S3Vector(0.6, 0.6, 0.6);		// 光によらない初期色
 	this.reflect	= 0.0;								// 環境マッピングによる反射の強さ
-	this.textureDiffuse	= this.sys.createTexture();
+	this.textureColor	= this.sys.createTexture();
 	this.textureNormal	= this.sys.createTexture();
 };
 S3System.prototype.createMaterial = function(name) {
@@ -860,12 +860,12 @@ S3Material.prototype.setSpecular = function(specular)	{ this.specular = this.sys
 S3Material.prototype.setPower = function(power)		{ this.power = this.sys._toValue(power); };
 S3Material.prototype.setAmbient = function(ambient)	{ this.ambient = this.sys._toVector3(ambient); };
 S3Material.prototype.setReflect = function(reflect)	{ this.reflect = this.sys._toValue(reflect); };
-S3Material.prototype.setTextureDiffuse = function(data) {
-	if(this.textureDiffuse !== null) {
-		this.textureDiffuse.dispose();
+S3Material.prototype.setTextureColor = function(data) {
+	if(this.textureColor !== null) {
+		this.textureColor.dispose();
 	}
-	this.textureDiffuse = this.sys.createTexture();
-	this.textureDiffuse.setImage(data);
+	this.textureColor = this.sys.createTexture();
+	this.textureColor.setImage(data);
 };
 S3Material.prototype.setTextureNormal = function(data) {
 	if(this.textureNormal !== null) {

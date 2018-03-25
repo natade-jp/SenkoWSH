@@ -112,7 +112,7 @@ S3Texture.prototype.getGLData = function() {
 	if(this.is_dispose) {
 		return null;
 	}
-	if(this.gldata) {
+	if(this.gldata !== null) {
 		return this.gldata;
 	}
 	if(this.is_loadimage) {
@@ -135,6 +135,8 @@ S3Material.prototype.getGLHash = function() {
  * @returns {頂点データ（色情報）}
  */
 S3Material.prototype.getGLData = function() {
+	var tex_color	= this.textureColor.getGLData();
+	var tex_normal	= this.textureNormal.getGLData();
 	return {
 		materialsColorAndDiffuse	:
 			new S3GLVertex([this.color.x, this.color.y, this.color.z, this.diffuse]			, 4, S3GLVertex.datatype.Float32Array),
@@ -143,7 +145,11 @@ S3Material.prototype.getGLData = function() {
 		materialsEmission	:
 			new S3GLVertex(this.emission	, 3, S3GLVertex.datatype.Float32Array),
 		materialsAmbientAndReflect	:
-			new S3GLVertex([this.ambient.x, this.ambient.y, this.ambient.z, this.reflect]	, 4, S3GLVertex.datatype.Float32Array)
+			new S3GLVertex([this.ambient.x, this.ambient.y, this.ambient.z, this.reflect]	, 4, S3GLVertex.datatype.Float32Array),
+		materialsTextureExist	:
+			new S3GLVertex([tex_color === null?0:1, tex_normal === null?0:1]	, 2, S3GLVertex.datatype.Float32Array),
+		materialsTextureColor	:	tex_color,
+		materialsTextureNormal	:	tex_normal
 	};
 };
 
