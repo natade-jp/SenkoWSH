@@ -56,6 +56,7 @@ void main(void) {
 	float	materialReflect;
 	float	materialRoughness;
 	vec4	materialTextureColor;
+	vec3	materialTextureNormal;
 
 	{
 		if(vertexMaterial < 4) {
@@ -70,6 +71,8 @@ void main(void) {
 					materialReflect			= materialsAmbientAndReflect[0].w;
 					materialTextureColor	= materialsTextureExist[0].x > 0.5 ?
 						texture2D(materialsTextureColor[0], interpolationTextureCoord) : WHITE;
+					materialTextureNormal	= materialsTextureExist[0].y > 0.5 ?
+						texture2D(materialsTextureNormal[0], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 				else {
 					materialColor		= materialsColorAndDiffuse[1].xyz;
@@ -81,6 +84,8 @@ void main(void) {
 					materialReflect		= materialsAmbientAndReflect[1].w;
 					materialTextureColor	= materialsTextureExist[1].x > 0.5 ?
 						texture2D(materialsTextureColor[1], interpolationTextureCoord) : WHITE;
+					materialTextureNormal	= materialsTextureExist[1].y > 0.5 ?
+						texture2D(materialsTextureNormal[1], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 			}
 			else {
@@ -94,6 +99,8 @@ void main(void) {
 					materialReflect		= materialsAmbientAndReflect[2].w;
 					materialTextureColor	= materialsTextureExist[2].x > 0.5 ?
 						texture2D(materialsTextureColor[2], interpolationTextureCoord) : WHITE;
+					materialTextureNormal	= materialsTextureExist[2].y > 0.5 ?
+						texture2D(materialsTextureNormal[2], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 				else {
 					materialColor		= materialsColorAndDiffuse[3].xyz;
@@ -105,6 +112,8 @@ void main(void) {
 					materialReflect		= materialsAmbientAndReflect[3].w;
 					materialTextureColor	= materialsTextureExist[3].x > 0.5 ?
 						texture2D(materialsTextureColor[3], interpolationTextureCoord) : WHITE;
+					materialTextureNormal	= materialsTextureExist[3].y > 0.5 ?
+						texture2D(materialsTextureNormal[3], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 			}
 		}
@@ -116,6 +125,7 @@ void main(void) {
 		// テクスチャを反映
 		materialColor *= materialTextureColor.xyz;
 	}
+
 
 	// カメラが向いている方向を取得
 	vec3	eyeDirection = normalize(matrixWorldToLocal * vec4(eyeWorldDirection, 0.0)).xyz;

@@ -20,7 +20,7 @@
 // S3Angles オイラー角 (immutable)
 
 var S3Math =  {
-	EPSILON: 2.2204460492503130808472633361816E-16,
+	EPSILON: 2.2204460492503130808472633361816E-8,
 	clamp: function(x, min, max) {
 		return (x < min) ? min : (x > max) ? max : x;
 	},
@@ -228,13 +228,6 @@ S3Vector.prototype.negate = function() {
 		1.0
 	);
 };
-S3Vector.prototype.equals = function(num) {
-	var epsilon = 1e-5;
-	return	(Math.abs(this.x - num.x) < epsilon) &&
-			(Math.abs(this.y - num.y) < epsilon) &&
-			(Math.abs(this.z - num.z) < epsilon) &&
-			(Math.abs(this.w - num.w) < epsilon);
-};
 S3Vector.prototype.toString = function(num) {
 	if(num === 1) {
 		return "[" + this.x + "]T";
@@ -312,24 +305,93 @@ S3Vector.prototype.getDistance = function(tgt) {
 };
 
 /**
- * A, B, C の3点を通る平面の法線OUTを求めます。
- * A, B, C の3点の時計回りが表だとした場合、表方向へ延びる法線となります。
- * @param {S3Vector} A
- * @param {S3Vector} B
- * @param {S3Vector} C
- * @returns {S3Vector}
+ * 非数か確認する
+ * @returns {Boolean}
  */
-S3Vector.getNormalVector = function(A, B, C) {
-	var v1 = A.getDirection(C);
-	var v2 = A.getDirection(B);
-	var normal = v1.cross(v2);
-	try {
-		return normal.normalize();
-	}
-	catch (e) {
-		return null;
-	}
+S3Vector.prototype.isNaN = function() {
+	return isNaN(this.x) || isNaN(this.y) || isNaN(this.z)  || isNaN(this.w);
 };
+
+/**
+ * 有限の値か確認する
+ * @returns {Boolean}
+ */
+S3Vector.prototype.isFinite = function() {
+	return isFinite(this.x) && isFinite(this.y) && isFinite(this.z) && isFinite(this.w);
+};
+
+/**
+ * 実数か確認する
+ * @returns {Boolean}
+ */
+S3Vector.prototype.isRealNumber = function() {
+	return !this.isNaN() && this.isFinite();
+};
+
+/**
+ * A, B, C の3点を通る平面の法線と、UV座標による接線、従法線を求めます。
+ * A, B, C の3点の時計回りが表だとした場合、表方向へ延びる法線となります。
+ * @param {S3Vector} posA
+ * @param {S3Vector} posB
+ * @param {S3Vector} posC
+ * @param {S3Vector} uvA
+ * @param {S3Vector} uvB
+ * @param {S3Vector} uvC
+ * @returns {Object}
+ */
+S3Vector.getNormalVector = function(posA, posB, posC, uvA, uvB, uvC) {
+	while(1) {
+		var P0 = posA.getDirection(posB);
+		var P1 = posA.getDirection(posC);
+		var N;
+		try {
+			N = (P0.cross(P1)).normalize();
+		}
+		catch (e) {
+			// 頂点の位置が直行しているなどのエラー処理
+			N = new S3Vector(0.3333, 0.3333, 0.3333);
+			break;
+		}
+		if((uvA === null) | (uvB === null) | (uvC === null)) {
+			// UV値がない場合はノーマルのみ返す
+			break;
+		}
+		// Calculation of tangent and bitangent vectors
+		// http://sunandblackcat.com/tipFullView.php?l=eng&topicid=8
+		var st0 = uvA.getDirection(uvB);
+		var st1 = uvA.getDirection(uvC);
+		var q;
+		try {
+			q = 1.0 / ((st0.cross(st1)).z);
+			var T = new S3Vector(); // Tangent	接線
+			var B = new S3Vector(); // Binormal	従法線
+			T.x = q * (  st1.y * P0.x - st0.y * P1.x);
+			T.y = q * (  st1.y * P0.y - st0.y * P1.y);
+			T.z = q * (  st1.y * P0.z - st0.y * P1.z);
+			B.x = q * ( -st1.x * P0.x + st0.x * P1.x);
+			B.y = q * ( -st1.x * P0.y + st0.x * P1.y);
+			B.z = q * ( -st1.x * P0.z + st0.x * P1.z);
+			// 異常な値がないかチェック
+			if(!T.isRealNumber() || !B.isRealNumber()) {
+				break;
+			}
+			return {
+				normal		: N,
+				tangent		: T.normalize(),
+				binormal	: B.normalize()
+			};
+		}
+		catch (e) {
+			break;
+		}
+	}
+	return {
+		normal		: N,
+		tangent		: null,
+		binormal	: null
+	};
+};
+
 
 /**
  * A, B, C の3点が時計回りなら true をかえす。
@@ -454,6 +516,36 @@ S3Matrix.prototype.transposed = function() {
 		this.m02, this.m12, this.m22, this.m32,
 		this.m03, this.m13, this.m23, this.m33
 	);
+};
+
+/**
+ * 非数か確認する
+ * @returns {Boolean}
+ */
+S3Matrix.prototype.isNaN = function() {
+	return	isNaN(this.m00) || isNaN(this.m01) || isNaN(this.m02)  || isNaN(this.m03) ||
+			isNaN(this.m10) || isNaN(this.m11) || isNaN(this.m12)  || isNaN(this.m13) ||
+			isNaN(this.m20) || isNaN(this.m21) || isNaN(this.m22)  || isNaN(this.m23) ||
+			isNaN(this.m30) || isNaN(this.m31) || isNaN(this.m32)  || isNaN(this.m33);
+};
+
+/**
+ * 有限の値であるか確認する
+ * @returns {Boolean}
+ */
+S3Matrix.prototype.isFinite = function() {
+	return	isFinite(this.m00) && isFinite(this.m01) && isFinite(this.m02)  && isFinite(this.m03) ||
+			isFinite(this.m10) && isFinite(this.m11) && isFinite(this.m12)  && isFinite(this.m13) ||
+			isFinite(this.m20) && isFinite(this.m21) && isFinite(this.m22)  && isFinite(this.m23) ||
+			isFinite(this.m30) && isFinite(this.m31) && isFinite(this.m32)  && isFinite(this.m33);
+};
+
+/**
+ * 実数か確認する
+ * @returns {Boolean}
+ */
+S3Matrix.prototype.isRealNumber = function() {
+	return !this.isNaN() && this.isFinite();
 };
 
 /**
@@ -585,25 +677,6 @@ S3Matrix.prototype.inverse4 = function() {
 	B.m32 = (A.m00*A.m12*A.m31 + A.m01*A.m10*A.m32 + A.m02*A.m11*A.m30 - A.m00*A.m11*A.m32 - A.m01*A.m12*A.m30 - A.m02*A.m10*A.m31) * id;
 	B.m33 = (A.m00*A.m11*A.m22 + A.m01*A.m12*A.m20 + A.m02*A.m10*A.m21 - A.m00*A.m12*A.m21 - A.m01*A.m10*A.m22 - A.m02*A.m11*A.m20) * id;
 	return B;
-};
-S3Matrix.prototype.equals = function(num) {
-	var epsilon = 1e-5;
-	return	(Math.abs(this.m00 - num.m00) < epsilon) &&
-			(Math.abs(this.m01 - num.m01) < epsilon) &&
-			(Math.abs(this.m02 - num.m02) < epsilon) &&
-			(Math.abs(this.m03 - num.m03) < epsilon) &&
-			(Math.abs(this.m10 - num.m10) < epsilon) &&
-			(Math.abs(this.m11 - num.m11) < epsilon) &&
-			(Math.abs(this.m12 - num.m12) < epsilon) &&
-			(Math.abs(this.m13 - num.m13) < epsilon) &&
-			(Math.abs(this.m20 - num.m20) < epsilon) &&
-			(Math.abs(this.m21 - num.m21) < epsilon) &&
-			(Math.abs(this.m22 - num.m22) < epsilon) &&
-			(Math.abs(this.m23 - num.m23) < epsilon) &&
-			(Math.abs(this.m30 - num.m30) < epsilon) &&
-			(Math.abs(this.m31 - num.m31) < epsilon) &&
-			(Math.abs(this.m32 - num.m32) < epsilon) &&
-			(Math.abs(this.m33 - num.m33) < epsilon);
 };
 S3Matrix.prototype.toString = function() {
 	return "[" +

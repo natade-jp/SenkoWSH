@@ -642,7 +642,7 @@ S3System.prototype._calcVertexTransformation = function(vertexlist, MVP, Viewpor
 		var rhw = p.w;
 		p = p.mul(1.0 / rhw);
 		p = this.mulMatrix(Viewport, p);
-		newvertexlist[i] = new S3Vertex(p, null, rhw);
+		newvertexlist[i] = new S3Vertex(p);
 	}
 	return newvertexlist;
 };
@@ -878,35 +878,16 @@ S3Material.prototype.setTextureNormal = function(data) {
 /**
  * 頂点 (immutable)
  * @param {S3Vector} position 座標
- * @param {S3Vector} normal レンダリング前の法線値（計算して予め求める必要あり）
- * @param {Number} rhw レンダリング値の透視変換のときに使用する、普段は使用しない
  * @returns {S3Vertex}
  */
-var S3Vertex = function(position, normal, rhw) {
+var S3Vertex = function(position) {
 	this.position	= position;
-	if(normal instanceof S3Vector) {
-		this.normal	= normal;
-	}
-	if(rhw !== undefined) {
-		this.rhw		= rhw;
-	}
-	else {
-		this.rhw		= 1.0;
-	}
 };
-S3System.prototype.createVertex = function(position, normal, rhw) {
-	return new S3Vertex(position, normal, rhw);
+S3System.prototype.createVertex = function(position) {
+	return new S3Vertex(position);
 };
 S3Vertex.prototype.clone = function() {
-	return new S3Vertex(this.position, this.normal, this.rhw);
-};
-S3Vertex.prototype.inverseTriangle = function() {
-	if(this.normal === undefined) {
-		return new S3Vertex(this.position, this.normal, this.rhw);
-	}
-	else {
-		return new S3Vertex(this.position, this.normal.negate(), this.rhw);
-	}
+	return new S3Vertex(this.position);
 };
 
 /**
@@ -919,7 +900,7 @@ S3Vertex.prototype.inverseTriangle = function() {
  * @param {Array} uvlist S3Vector Array
  */
 var S3TriangleIndex = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
-	this.init(i1, i2, i3, indexlist, materialIndex, uvlist);
+	this._init(i1, i2, i3, indexlist, materialIndex, uvlist);
 };
 S3System.prototype.createTriangleIndex = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
 	return new S3TriangleIndex(i1, i2, i3, indexlist, materialIndex, uvlist);
@@ -934,12 +915,21 @@ S3System.prototype.createTriangleIndex = function(i1, i2, i3, indexlist, materia
  * @param {Number} materialIndex 負の場合や未定義の場合は 0 とします。
  * @param {Array} uvlist S3Vector Array
  */
-S3TriangleIndex.prototype.init = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
+S3TriangleIndex.prototype._init = function(i1, i2, i3, indexlist, materialIndex, uvlist) {
+	this.index				= null;		// 各頂点を示すインデックスリスト
+	this.uv					= null;		// 各頂点のUV座標
+	this.materialIndex		= null;		// 面の材質
 	if((indexlist instanceof Array) && (indexlist.length > 0)) {
 		this.index = [indexlist[i1], indexlist[i2], indexlist[i3]];
 	}
-	if((uvlist instanceof Array) && (uvlist.length > 0) && (uvlist[0] instanceof S3Vector)) {
+	else {
+		throw "IllegalArgumentException";
+	}
+	if((uvlist !== undefined) && (uvlist instanceof Array) && (uvlist.length > 0) && (uvlist[0] instanceof S3Vector)) {
 		this.uv = [uvlist[i1], uvlist[i2], uvlist[i3]];
+	}
+	else {
+		this.uv = [null, null, null];
 	}
 	materialIndex = materialIndex      ? materialIndex : 0;
 	materialIndex = materialIndex >= 0 ? materialIndex : 0;
@@ -997,9 +987,6 @@ S3Mesh.prototype.setCompileGL = function(is_compile_gl) {
 S3Mesh.prototype.inverseTriangle = function() {
 	this.setComplete(false);
 	var i = 0;
-	for(i = 0; i < this.src.vertex.length; i++) {
-		this.src.vertex[i] = this.src.vertex[i].inverseTriangle();
-	}
 	for(i = 0; i < this.triangleindex.length; i++) {
 		this.src.triangleindex[i] = this.src.triangleindex[i].inverseTriangle();
 	}

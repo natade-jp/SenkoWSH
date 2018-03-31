@@ -186,18 +186,31 @@ S3Light.prototype.getGLData = function() {
  * /////////////////////////////////////////////////////////
  */
 
-/**
- * テクスチャで利用するUV情報を持つか持たないか
- * @returns {Boolean}
- */
-S3TriangleIndex.prototype.isEnabledTexture = function() {
-	return !(this.uv === undefined);
+S3TriangleIndex.prototype.createGLTriangleIndexData = function() {
+	return new S3GLTriangleIndexData(this);
 };
 
-S3TriangleIndex.prototype.getGLHash = function(number, vertexList) {
-	var uvdata = this.isEnabledTexture() ? this.uv[number].toString(2) : "";
+var S3GLTriangleIndexData = function(triangle_index) {
+	this.index				= triangle_index.index;				// 各頂点を示すインデックスリスト
+	this.materialIndex		= triangle_index.materialIndex;		// 面の材質
+	this.uv					= triangle_index.uv;				// 各頂点のUV座標
+	this._isEnabledTexture	= triangle_index.uv[0] !== null;	// UV情報があるか
+	
+	this.face				= {};
+	this.vertex				= {};
+	// S3Vector.getTangentVectorの取得値を格納用
+	this.face.normal		= null;							// 面の法線情報
+	this.face.tangent		= null;							// 面の接線情報
+	this.face.binormal		= null;							// 面の従法線情報
+	this.vertex.normal		= [null, null, null];			// 頂点ごとの法線
+	this.vertex.tangent		= [null, null, null];			// 頂点ごとの接線 
+	this.vertex.binormal	= [null, null, null];			// 頂点ごとの従法線 
+};
+
+S3GLTriangleIndexData.prototype.getGLHash = function(number, vertexList) {
+	var uvdata = this._isEnabledTexture ? this.uv[number].toString(2) : "";
 	var vertex   = vertexList[this.index[number]].getGLHash();
-	return vertex + this.materialIndex + uvdata;
+	return vertex + this.materialIndex + uvdata + this.vertex.normal[number].toString(3);
 };
 
 /**
@@ -208,16 +221,18 @@ S3TriangleIndex.prototype.getGLHash = function(number, vertexList) {
  * @param {S3Vertex[]} vertexList 頂点の配列
  * @returns {頂点データ（座標、素材番号、UV値が入っている）}
  */
-S3TriangleIndex.prototype.getGLData = function(number, vertexList) {
+S3GLTriangleIndexData.prototype.getGLData = function(number, vertexList) {
 	var vertex		= {};
-	var vertexdata_list = null;
-	vertexdata_list	= vertexList[this.index[number]].getGLData();
+	var vertexdata_list = vertexList[this.index[number]].getGLData();
 	for(var key in vertexdata_list) {
 		vertex[key]	= vertexdata_list[key];
 	}
-	var uvdata = this.isEnabledTexture() ? this.uv[number] : new S3Vector(0.0, 0.0, 0.0);
+	var uvdata = this._isEnabledTexture ? this.uv[number] : new S3Vector(0.0, 0.0);
 	vertex.vertexTextureCoord	= new S3GLVertex(uvdata, 2, S3GLVertex.datatype.Float32Array);
 	vertex.vertexMaterialFloat	= new S3GLVertex(this.materialIndex, 1, S3GLVertex.datatype.Float32Array);
+	vertex.vertexNormal			= new S3GLVertex(this.vertex.normal[number], 3, S3GLVertex.datatype.Float32Array);
+	vertex.vertexBinormal		= new S3GLVertex(this.vertex.binormal[number], 3, S3GLVertex.datatype.Float32Array);
+	vertex.vertexTangent		= new S3GLVertex(this.vertex.tangent[number], 3, S3GLVertex.datatype.Float32Array);
 	return vertex;
 };
 
@@ -227,16 +242,8 @@ S3TriangleIndex.prototype.getGLData = function(number, vertexList) {
  * /////////////////////////////////////////////////////////
  */
 
-/**
- * 法線情報が定義済みかどうか
- * @returns {Boolean}
- */
-S3Vertex.prototype.isEnabledNormal = function() {
-	return this.normal !== undefined;
-};
 S3Vertex.prototype.getGLHash = function() {
-	var ndata = this.isEnabledNormal() ? this.normal.toString(3) : "";
-	return this.position.toString(3) + ndata;
+	return this.position.toString(3);
 };
 /**
  * 頂点データを作成して取得する
@@ -245,9 +252,7 @@ S3Vertex.prototype.getGLHash = function() {
  * @returns {頂点データ（座標、法線情報）}
  */
 S3Vertex.prototype.getGLData = function() {
-	var ndata = this.isEnabledNormal() ? this.normal : new S3Vector(0.33, 0.33, 0.33);
 	return {
-		vertexNormal	: new S3GLVertex(ndata, 3, S3GLVertex.datatype.Float32Array),
 		vertexPosition	: new S3GLVertex(this.position, 3, S3GLVertex.datatype.Float32Array)
 	};
 };
@@ -267,89 +272,125 @@ var S3GLMesh = function(sys) {
 S3GLMesh.prototype = new S3Mesh();
 
 /**
- * 自分が持っている頂点情報に、メッシュの形から自動計算した法線情報を付け加える
- * @returns {undefined}
+ * 三角形インデックス情報（頂点ごとのYV、法線）などを求める
+ * 具体的には共有している頂点をしらべて、法線の平均値をとる
+ * @returns {S3GLTriangleIndexData}
  */
-S3GLMesh.prototype._makeNormalMap = function() {
+S3GLMesh.prototype.createTriangleIndexData = function() {
 	var i, j;
 	var vertex_list			= this.getVertexArray();
 	var triangleindex_list	= this.getTriangleIndexArray();
-	var normal_stacklist	= [];
+	var tid_list = [];
 	
-	// ノーマルベクトルを収集するクラス
-	var VectorList = function() {
-		this.vector_list = [];
-	};
-	VectorList.prototype.add = function(vector) {
-		this.vector_list.push(vector);
-	};
-	// 近いベクトルがあるかないか
-	VectorList.prototype.isNearVector = function(vector) {
-		var i;
-		for(i = 0;i < this.vector_list.length; i++) {
-			if(this.vector_list[i].equals(vector)) {
-				return true;
-			}
-		}
-		return false;
+	var normallist = {
+		normal		: null,
+		tangent		: null,
+		binormal	: null
 	};
 	
-	// 各面の法線を調べて、スタックへ配列へ保存していく
+	// 各面の法線、接線、従法線を調べる
 	for(i = 0; i < triangleindex_list.length; i++) {
 		var triangleindex = triangleindex_list[i];
-		var indexlist = triangleindex.index;
-		var normal = null;
+		var index	= triangleindex.index;
+		var uv		= triangleindex.uv;
+		tid_list[i]	= triangleindex.createGLTriangleIndexData();
+		var triangledata = tid_list[i];
+		var vector_list = null;
 		// 3点を時計回りで通る平面が表のとき
-		if(this.sys.dimensionmode === S3System.DIMENSION_MODE.LEFT_HAND) {
-			normal = S3Vector.getNormalVector(
-				vertex_list[indexlist[0]].position,
-				vertex_list[indexlist[1]].position,
-				vertex_list[indexlist[2]].position
+		if(this.sys.dimensionmode === S3System.DIMENSION_MODE.RIGHT_HAND) {
+			vector_list = S3Vector.getNormalVector(
+				vertex_list[index[0]].position, vertex_list[index[1]].position, vertex_list[index[2]].position,
+				uv[0], uv[1], uv[2],
 			);
 		}
 		else {
-			normal = S3Vector.getNormalVector(
-				vertex_list[indexlist[2]].position,
-				vertex_list[indexlist[1]].position,
-				vertex_list[indexlist[0]].position
+			vector_list = S3Vector.getNormalVector(
+				vertex_list[index[2]].position, vertex_list[index[1]].position, vertex_list[index[0]].position,
+				uv[2], uv[1], uv[0],
 			);
 		}
-		// 頂点の位置が直行しているなどのエラー処理
-		if(!(normal instanceof S3Vector)) {
-			normal = new S3Vector(0.3333, 0.3333, 0.3333);
-		}
-		// 計算したノーマルマップを保存する
-		for(j = 0; j < 3; j++) {
-			var index = indexlist[j];
-			if(normal_stacklist[index] === undefined) {
-				normal_stacklist[index] = [];
-			}
-			normal_stacklist[index].push(normal);
+		for(var vector_name in normallist) {
+			triangledata.face[vector_name] = vector_list[vector_name];
 		}
 	}
 	
-	// 各頂点の法線は、法線の平均値とする
-	for(i = 0; i < vertex_list.length; i++) {
-		var normal;
-		if(normal_stacklist[i] === undefined) {
-			// インデックスとして未使用の頂点の場合は、法線の計算は存在しない
-			normal = new S3Vector(0.3333, 0.3333, 0.3333);
+	// 素材ごとに、三角形の各頂点に、面の法線情報を追加する
+	var vertexdatalist_material = [];
+	for(i = 0; i < triangleindex_list.length; i++) {
+		var triangleindex = triangleindex_list[i];
+		var material = triangleindex.materialIndex;
+		var triangledata = tid_list[i];
+		// 未登録なら新規作成する
+		if(vertexdatalist_material[material] === undefined) {
+			vertexdatalist_material[material] = [];
 		}
-		else {
-			var vlist = new VectorList();
-			normal = S3Vector.ZERO;
-			for(j = 0; j < normal_stacklist[i].length; j++) {
-				var normalvector = normal_stacklist[i][j];
-				// 同じ方向を向いている法線は1つとしてカウント
-				if(!vlist.isNearVector(normalvector)) {
-					normal = normal.add(normalvector);
-					vlist.add(normalvector);
+		var vertexdata_list = vertexdatalist_material[material];
+		// 素材ごとの三角形の各頂点に対応する法線情報に加算していく
+		for(j = 0; j < 3; j++) {
+			// 未登録なら新規作成する
+			var index = triangleindex.index[j];
+			if(vertexdata_list[index] === undefined) {
+				var newdata = {};
+				newdata.normal		= new S3Vector(0, 0, 0);
+				newdata.tangent		= new S3Vector(0, 0, 0);
+				newdata.binormal	= new S3Vector(0, 0, 0);
+				vertexdata_list[index] = newdata;
+			}
+			var vertexdata = vertexdata_list[index];
+			
+			// 加算する
+			for(var vector_name in normallist) {
+				if(triangledata.face[vector_name] !== null) {
+					// データが入っていたら加算する
+					vertexdata[vector_name] = vertexdata[vector_name].add(triangledata.face[vector_name]);
 				}
 			}
-			normal = normal.normalize();
 		}
-		vertex_list[i] = new S3Vertex(vertex_list[i].position, normal);
 	}
+	
+	// マテリアルごとの頂点の法線を、正規化して1とする（平均値をとる）
+	for(var material in vertexdatalist_material) {
+		var vertexdata_list = vertexdatalist_material[material];
+		for(var index in vertexdata_list) {
+			var vertexdata = vertexdata_list[index];
+			for(var vectorname in normallist) {
+				// あまりに小さいと、0で割ることになるためチェックする
+				if(vertexdata[vectorname].normFast() > 0.000001) {
+					vertexdata[vectorname] = vertexdata[vectorname].normalize();
+				}
+			}
+		}
+	}
+	
+	// 面法線と、頂点（スムーズ）法線との角度の差が、下記より大きい場合は面法線を優先
+	var SMOOTH = {};
+	SMOOTH.normal	= Math.cos((60/360)*(2*Math.PI));
+	SMOOTH.tangent	= Math.cos((60/360)*(2*Math.PI));
+	SMOOTH.binormal	= Math.cos((60/360)*(2*Math.PI));
+	
+	// 最終的に三角形の各頂点の法線を求める
+	for(i = 0; i < triangleindex_list.length; i++) {
+		var triangleindex = triangleindex_list[i];
+		var material = triangleindex.materialIndex;
+		var triangledata = tid_list[i];
+		var vertexdata_list = vertexdatalist_material[material];
+		
+		// 法線ががあまりに違うのであれば、面の法線を採用する
+		for(j = 0; j < 3; j++) {
+			var index = triangleindex.index[j];
+			var vertexdata = vertexdata_list[index];
+			for(var vectorname in normallist) {
+				// 各頂点の法線と、面自体の法線の内積をとる
+				var rate  = triangledata.face[vectorname].dot(vertexdata[vectorname]);
+				// 指定した度以上傾いていたら、面の法線を採用する
+				var targetdata = (rate < SMOOTH[vectorname]) ? triangledata.face : vertexdata;
+				// コピー
+				triangledata.vertex[vectorname][j]	= targetdata[vectorname];
+			}
+		}
+	}
+	
+	return tid_list;
 };
 
 /**
@@ -359,7 +400,7 @@ S3GLMesh.prototype._makeNormalMap = function() {
 S3GLMesh.prototype._getGLArrayData = function() {
 	
 	var vertex_list			= this.getVertexArray();
-	var triangleindex_list	= this.getTriangleIndexArray();
+	var triangleindex_list	= this.createTriangleIndexData();
 	var i, j;
 	var hashlist = [];
 	var vertex_length = 0;
@@ -510,7 +551,6 @@ S3GLMesh.prototype.getGLData = function() {
 		return null;
 	}
 	// 作成
-	this._makeNormalMap(); // ノーマルマップを作成して
 	var gldata = this._getGLArrayData(); // GL用の配列データを作成
 	// IBO / VBO 用のオブジェクトを作成
 	gldata.ibo.data = this.sys.glfunc.createBufferIBO(gldata.ibo.array);
