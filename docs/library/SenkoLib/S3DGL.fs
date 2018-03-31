@@ -12,7 +12,8 @@ uniform sampler2D	materialsTextureColor[MATERIALS_MAX];
 uniform sampler2D	materialsTextureNormal[MATERIALS_MAX];
 
 // 頂点移動
-uniform mat4 matrixWorldToLocal;
+uniform mat4 matrixWorldToLocal4;
+uniform mat3 matrixLocalToWorld3;
 
 // ライト
 #define LIGHTS_MAX				4
@@ -30,7 +31,8 @@ uniform vec3 eyeWorldDirection;
 // シェーダー間情報
 varying float interpolationMaterialFloat;
 varying vec3 interpolationNormal;
-varying vec3 interpolationWorldNormal;
+varying vec3 interpolationBinormal;
+varying vec3 interpolationTangent;
 varying vec3 interpolationPosition;
 varying vec2 interpolationTextureCoord;
 
@@ -44,7 +46,8 @@ void main(void) {
 	// 頂点シェーダーから受け取った情報
 	int		vertexMaterial		= int(interpolationMaterialFloat);
 	vec3	vertexNormal		= normalize(interpolationNormal);
-	vec3	vertexReflectVector	= reflect(eyeWorldDirection, normalize(interpolationWorldNormal));
+	vec3	vertexBinormal		= normalize(interpolationBinormal);
+	vec3	vertexTangent		= normalize(interpolationTangent);
 
 	// 材質を取得
 	vec3	materialColor;
@@ -57,6 +60,7 @@ void main(void) {
 	float	materialRoughness;
 	vec4	materialTextureColor;
 	vec3	materialTextureNormal;
+	bool	materialIsSetNormal;
 
 	{
 		if(vertexMaterial < 4) {
@@ -71,7 +75,8 @@ void main(void) {
 					materialReflect			= materialsAmbientAndReflect[0].w;
 					materialTextureColor	= materialsTextureExist[0].x > 0.5 ?
 						texture2D(materialsTextureColor[0], interpolationTextureCoord) : WHITE;
-					materialTextureNormal	= materialsTextureExist[0].y > 0.5 ?
+					materialIsSetNormal		= materialsTextureExist[0].y > 0.5;
+					materialTextureNormal	= materialIsSetNormal ?
 						texture2D(materialsTextureNormal[0], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 				else {
@@ -84,7 +89,8 @@ void main(void) {
 					materialReflect		= materialsAmbientAndReflect[1].w;
 					materialTextureColor	= materialsTextureExist[1].x > 0.5 ?
 						texture2D(materialsTextureColor[1], interpolationTextureCoord) : WHITE;
-					materialTextureNormal	= materialsTextureExist[1].y > 0.5 ?
+					materialIsSetNormal		= materialsTextureExist[1].y > 0.5;
+					materialTextureNormal	= materialIsSetNormal ?
 						texture2D(materialsTextureNormal[1], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 			}
@@ -99,7 +105,8 @@ void main(void) {
 					materialReflect		= materialsAmbientAndReflect[2].w;
 					materialTextureColor	= materialsTextureExist[2].x > 0.5 ?
 						texture2D(materialsTextureColor[2], interpolationTextureCoord) : WHITE;
-					materialTextureNormal	= materialsTextureExist[2].y > 0.5 ?
+					materialIsSetNormal		= materialsTextureExist[2].y > 0.5;
+					materialTextureNormal	= materialIsSetNormal ?
 						texture2D(materialsTextureNormal[2], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 				else {
@@ -112,7 +119,8 @@ void main(void) {
 					materialReflect		= materialsAmbientAndReflect[3].w;
 					materialTextureColor	= materialsTextureExist[3].x > 0.5 ?
 						texture2D(materialsTextureColor[3], interpolationTextureCoord) : WHITE;
-					materialTextureNormal	= materialsTextureExist[3].y > 0.5 ?
+					materialIsSetNormal		= materialsTextureExist[3].y > 0.5;
+					materialTextureNormal	= materialIsSetNormal ?
 						texture2D(materialsTextureNormal[3], interpolationTextureCoord).xyz : NORMALTOP;
 				}
 			}
@@ -122,13 +130,24 @@ void main(void) {
 	}
 
 	{
-		// テクスチャを反映
+		// カラーテクスチャ反映
 		materialColor *= materialTextureColor.xyz;
+		
+		// ノーマルテクスチャ反映 (Tangentベクトル計算の時点で不具合含んでいる可能性あり)
+		if(materialIsSetNormal) {
+			materialTextureNormal = (materialTextureNormal * 2.0 - 1.0);
+			vertexNormal = vec3(
+				dot(materialTextureNormal, vertexTangent), 
+				dot(materialTextureNormal, - vertexBinormal), 
+				dot(materialTextureNormal, vertexNormal));
+		}
 	}
 
+	// 反射ベクトル
+	vec3	vertexReflectVector	= reflect( eyeWorldDirection, normalize(matrixLocalToWorld3 * vertexNormal) );
 
 	// カメラが向いている方向を取得
-	vec3	eyeDirection = normalize(matrixWorldToLocal * vec4(eyeWorldDirection, 0.0)).xyz;
+	vec3	eyeDirection = normalize(matrixWorldToLocal4 * vec4(eyeWorldDirection, 0.0)).xyz;
 	
 	// 物質の色の初期値
 	vec3	destDiffuse		= materialColor * materialEmission;
@@ -152,8 +171,8 @@ void main(void) {
 				// 光源の種類によって、ピクセルと光への方向ベクトルの計算を変える
 				// lightsVector は、点光源なら位置を、平行光源なら方向を指す値
 				vec3 lightDirection = is_direction ?
-					normalize(matrixWorldToLocal * vec4(lightVector, 0.0)).xyz :
-					normalize(matrixWorldToLocal * vec4(interpolationPosition - lightVector, 0.0)).xyz;
+					normalize(matrixWorldToLocal4 * vec4(lightVector, 0.0)).xyz :
+					normalize(matrixWorldToLocal4 * vec4(interpolationPosition - lightVector, 1.0)).xyz;
 				float d = is_direction ? -1.0 : length(lightVector - interpolationPosition);
 				if(d < lightRange) {
 					// 点光源の場合は遠いほど暗くする

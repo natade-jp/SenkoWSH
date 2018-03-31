@@ -358,10 +358,13 @@ S3Vector.getNormalVector = function(posA, posB, posC, uvA, uvB, uvC) {
 		}
 		// Calculation of tangent and bitangent vectors
 		// http://sunandblackcat.com/tipFullView.php?l=eng&topicid=8
+		// https://stackoverflow.com/questions/5255806/how-to-calculate-tangent-and-binormal
+		// http://www.terathon.com/code/tangent.html
 		var st0 = uvA.getDirection(uvB);
 		var st1 = uvA.getDirection(uvC);
 		var q;
 		try {
+			// 接線空間からオブジェクト空間への変換値の計算
 			q = 1.0 / ((st0.cross(st1)).z);
 			var T = new S3Vector(); // Tangent	接線
 			var B = new S3Vector(); // Binormal	従法線
@@ -375,10 +378,14 @@ S3Vector.getNormalVector = function(posA, posB, posC, uvA, uvB, uvC) {
 			if(!T.isRealNumber() || !B.isRealNumber()) {
 				break;
 			}
+			// オブジェクト空間から接線空間への変換値の計算
+			var nT = T.sub(N.mul(N.dot(T))).normalize();
+			var w  = N.cross(T).dot(B) < 0.0 ? -1.0 : 1.0;
+			var nB = N.cross(nT).mul(w);
 			return {
 				normal		: N,
-				tangent		: T.normalize(),
-				binormal	: B.normalize()
+				tangent		: nT,
+				binormal	: nB
 			};
 		}
 		catch (e) {

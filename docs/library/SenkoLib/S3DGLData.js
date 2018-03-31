@@ -208,7 +208,7 @@ var S3GLTriangleIndexData = function(triangle_index) {
 };
 
 S3GLTriangleIndexData.prototype.getGLHash = function(number, vertexList) {
-	var uvdata = this._isEnabledTexture ? this.uv[number].toString(2) : "";
+	var uvdata = this._isEnabledTexture ? this.uv[number].toString(2) + this.face.binormal.toString(2) + this.face.tangent.toString(2): "";
 	var vertex   = vertexList[this.index[number]].getGLHash();
 	return vertex + this.materialIndex + uvdata + this.vertex.normal[number].toString(3);
 };
@@ -384,6 +384,7 @@ S3GLMesh.prototype.createTriangleIndexData = function() {
 				var rate  = triangledata.face[vectorname].dot(vertexdata[vectorname]);
 				// 指定した度以上傾いていたら、面の法線を採用する
 				var targetdata = (rate < SMOOTH[vectorname]) ? triangledata.face : vertexdata;
+				//var targetdata = triangledata.face;
 				// コピー
 				triangledata.vertex[vectorname][j]	= targetdata[vectorname];
 			}
