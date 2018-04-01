@@ -829,6 +829,19 @@ S3GLSystem.prototype.deleteBuffer = function(data) {
 	this.gl.deleteBuffer(data);
 };
 
+S3GLSystem.prototype._getDummyTexture = function() {
+	if(this._textureDummyData === undefined) {
+		var canvas = document.createElement("canvas");
+		canvas.width  = 1;
+		canvas.height = 1;
+		var context = canvas.getContext("2d");
+		var imagedata = context.getImageData(0, 0, canvas.width, canvas.height);
+		this._textureDummyId = this._createID();
+		this._textureDummyData = this.glfunc.createTexture(this._textureDummyId, imagedata);
+	}
+	return this._textureDummyData;
+};
+
 S3GLSystem.prototype._setDepthMode = function() {
 	if(this.gl === null) {
 		return null;

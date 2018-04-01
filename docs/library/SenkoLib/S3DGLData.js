@@ -135,8 +135,13 @@ S3Material.prototype.getGLHash = function() {
  * @returns {頂点データ（色情報）}
  */
 S3Material.prototype.getGLData = function() {
+	// テクスチャを取得
 	var tex_color	= this.textureColor.getGLData();
 	var tex_normal	= this.textureNormal.getGLData();
+	// テクスチャのありなしフラグを作成。ない場合はダミーデータを入れる。
+	var tex_exist	= [tex_color === null?0:1, tex_normal === null?0:1];
+	tex_color	= tex_color === null	? this.sys._getDummyTexture() : tex_color;
+	tex_normal	= tex_normal === null	? this.sys._getDummyTexture() : tex_normal;
 	return {
 		materialsColorAndDiffuse	:
 			new S3GLVertex([this.color.x, this.color.y, this.color.z, this.diffuse]			, 4, S3GLVertex.datatype.Float32Array),
@@ -147,7 +152,7 @@ S3Material.prototype.getGLData = function() {
 		materialsAmbientAndReflect	:
 			new S3GLVertex([this.ambient.x, this.ambient.y, this.ambient.z, this.reflect]	, 4, S3GLVertex.datatype.Float32Array),
 		materialsTextureExist	:
-			new S3GLVertex([tex_color === null?0:1, tex_normal === null?0:1]	, 2, S3GLVertex.datatype.Float32Array),
+			new S3GLVertex(tex_exist	, 2, S3GLVertex.datatype.Float32Array),
 		materialsTextureColor	:	tex_color,
 		materialsTextureNormal	:	tex_normal
 	};
