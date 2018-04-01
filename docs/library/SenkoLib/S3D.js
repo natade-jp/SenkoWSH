@@ -984,12 +984,9 @@ S3Mesh.prototype.setComplete = function(is_complete) {
 S3Mesh.prototype.setCompileGL = function(is_compile_gl) {
 	this.is_compile_gl = is_compile_gl;
 };
-S3Mesh.prototype.inverseTriangle = function() {
+S3Mesh.prototype.setInverseTriangle = function(inverse) {
 	this.setComplete(false);
-	var i = 0;
-	for(i = 0; i < this.triangleindex.length; i++) {
-		this.src.triangleindex[i] = this.src.triangleindex[i].inverseTriangle();
-	}
+	this.is_inverse = inverse; 
 };
 S3Mesh.prototype.getVertexArray = function() {
 	return this.src.vertex;
@@ -1020,17 +1017,17 @@ S3Mesh.prototype.addVertex = function(vertex) {
 S3Mesh.prototype.addTriangleIndex = function(ti) {
 	// 一応 immutable なのでそのままシャローコピー
 	this.setComplete(false);
-	var meshtri = this.getTriangleIndexArray(); 
+	var meshtri = this.getTriangleIndexArray();
 	if(ti === undefined) {
 		// _init から呼ばれたときに引数がない場合はなにもせず終わる
 	}
 	else if(ti instanceof S3TriangleIndex) {
-		meshtri[meshtri.length] = ti;
+		meshtri[meshtri.length] = this.is_inverse ? ti.inverseTriangle() : ti;
 	}
 	else {
 		var i = 0;
 		for(i = 0; i < ti.length; i++) {
-			meshtri[meshtri.length] = ti[i];
+			meshtri[meshtri.length] = this.is_inverse ? ti[i].inverseTriangle() : ti[i];
 		}
 	}
 };
@@ -1057,8 +1054,8 @@ S3Mesh.prototype.inputData = function(data, type) {
 	var that = this;
 	var load = function(ldata, ltype, url) {
 		that._init();
-		S3Mesh.DATA_INPUT_FUNCTION[ltype](that.sys, that, ldata, url);
-		that.setComplete(true);
+		var isLoad = S3Mesh.DATA_INPUT_FUNCTION[ltype](that.sys, that, ldata, url);
+		that.setComplete(isLoad);
 	};
 	if(((typeof data === "string")||(data instanceof String))&&((data.indexOf("\n") === -1))) {
 		// 1行の場合はURLとみなす（雑）
@@ -1130,7 +1127,7 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_JSON] = function(sys, mesh, json, url) {
 		var vertex = new S3Vertex(vector);
 		mesh.addVertex(vertex);
 	}
-	return;
+	return true;
 };
 S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_JSON] = function(sys, mesh) {
 	var i, j;

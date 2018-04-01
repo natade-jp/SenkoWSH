@@ -160,7 +160,7 @@ S3Material.prototype.getGLData = function() {
  */
 
 S3Light.prototype.getGLHash = function() {
-	return "" + this.mode + this.power + this.range + this.position.toString() + this.direction.toString() + this.color.toString();
+	return "" + this.mode + this.power + this.range + this.position.toString(3) + this.direction.toString(3) + this.color.toString(3);
 };
 
 S3Light.prototype.getGLData = function() {
@@ -380,11 +380,17 @@ S3GLMesh.prototype.createTriangleIndexData = function() {
 			var index = triangleindex.index[j];
 			var vertexdata = vertexdata_list[index];
 			for(var vectorname in normallist) {
-				// 各頂点の法線と、面自体の法線の内積をとる
-				var rate  = triangledata.face[vectorname].dot(vertexdata[vectorname]);
-				// 指定した度以上傾いていたら、面の法線を採用する
-				var targetdata = (rate < SMOOTH[vectorname]) ? triangledata.face : vertexdata;
-				//var targetdata = triangledata.face;
+				var targetdata;
+				if(triangledata.face[vectorname]) {
+					// 面で計算した値が入っているなら、
+					// 面で計算した値と、頂点の値とを比較してどちらかを採用する
+					var rate  = triangledata.face[vectorname].dot(vertexdata[vectorname]);
+					// 指定した度以上傾いていたら、面の法線を採用する
+					targetdata = (rate < SMOOTH[vectorname]) ? triangledata.face : vertexdata;
+				}
+				else {
+					targetdata = vertexdata;
+				}
 				// コピー
 				triangledata.vertex[vectorname][j]	= targetdata[vectorname];
 			}
@@ -551,8 +557,8 @@ S3GLMesh.prototype.getGLData = function() {
 	if(!this.sys.isSetGL()) {
 		return null;
 	}
-	// 作成
 	var gldata = this._getGLArrayData(); // GL用の配列データを作成
+	
 	// IBO / VBO 用のオブジェクトを作成
 	gldata.ibo.data = this.sys.glfunc.createBufferIBO(gldata.ibo.array);
 	for(var key in gldata.vbo) {

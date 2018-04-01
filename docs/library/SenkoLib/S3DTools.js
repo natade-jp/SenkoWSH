@@ -260,7 +260,7 @@ S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_MQO] = function(sys, mesh, text, url) {
 			}
 		}
 	}
-	return mesh;
+	return true;
 };
 
 /**
@@ -316,4 +316,126 @@ S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_MQO] = function(sys, mesh) {
 	
 	output.push("}");
 	return output.join("\n");
+};
+
+S3Mesh.DATA_OBJ = "OBJ";
+
+/**
+ * Wavefront OBJ形式で入力
+ * v 頂点
+ * vt テクスチャ
+ * vn テクスチャ 
+ * f 面
+ * @param {S3Mesh} mesh
+ * @param {String} text
+ * @returns {unresolved}
+ */
+S3Mesh.DATA_INPUT_FUNCTION[S3Mesh.DATA_OBJ] = function(sys, mesh, text, url) {
+	
+	var trim = function(str) {
+		return(str.replace(/^\s+|\s+$/g, ""));
+	};
+	
+	// 文字列解析
+	var lines = text.split("\n");
+	var v_list = [];
+	var vt_list = [];
+	var vn_list = [];
+	var face_v_list = [];
+	var face_vt_list = [];
+	var face_vn_list = [];
+	for(var i = 0; i < lines.length; i++) {
+		// コメントより前の文字を取得
+		var line = trim(lines[i].split("#")[0]);
+		
+		if(line.length === 0) {
+			// 空白なら何もしない
+			continue;
+		}
+		
+		var data = line.split(" ");
+		if(data[0] === "v") {
+			// vertex
+			var v = new S3Vector(parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3]));
+			v_list.push(v);
+		}
+		else if(data[1] === "vt") {
+			// texture
+			var vt = new S3Vector(parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3]));
+			vt_list.push(vt);
+			
+		}
+		else if(data[2] === "vn") {
+			// normal
+			var vn = new S3Vector(parseFloat(data[1]), parseFloat(data[2]), parseFloat(data[3]));
+			vn_list.push(vn);
+		}
+		else if(data[0] === "f") {
+			// face
+			var vcount = data.length - 3; // 繰り返す回数
+			for(var j = 0;j < vcount; j++) {
+				var fdata = [];
+				if((j % 2) === 0) {
+					fdata[0] = data[1 + j];
+					fdata[1] = data[1 + j + 1];
+					fdata[2] = data[1 + j + 2];
+				}
+				else {
+					fdata[0] = data[1 + j];
+					fdata[1] = data[1 + j + 1];
+					fdata[2] = data[1 + j + 2];
+				}
+				var face_v = [];
+				var face_vt = [];
+				var face_vn = [];
+				// 数字は1から始まるので、1を引く
+				for(var k = 0;k < 3; k++) {
+					var indexdata = fdata[k].split("/");
+					if(indexdata.length === 1) {
+						// 頂点インデックス
+						face_v[k]	= parseInt(indexdata[0], 10) - 1;
+					}
+					else if(indexdata.length === 2) {
+						// 頂点テクスチャ座標インデックス
+						face_v[k]	= parseInt(indexdata[0], 10) - 1;
+						face_vt[k]	= parseInt(indexdata[1], 10) - 1;
+					}
+					else if(indexdata.length === 3) {
+						if(indexdata[1].length !== 0) {
+							// 頂点法線インデックス
+							face_v[k]	= parseInt(indexdata[0], 10) - 1;
+							face_vt[k]	= parseInt(indexdata[1], 10) - 1;
+							face_vn[k]	= parseInt(indexdata[2], 10) - 1;
+						}
+						else {
+							// テクスチャ座標インデックス無しの頂点法線インデックス
+							face_v[k]	= parseInt(indexdata[0], 10) - 1;
+							face_vt[k]	= null;
+							face_vn[k]	= parseInt(indexdata[2], 10) - 1;
+						}
+					}
+				}
+				face_v_list.push(face_v);
+				face_vt_list.push(face_vt);
+				face_vn_list.push(face_vn);
+			}
+		}
+	}
+	
+	// 変換
+	// マテリアルの保存
+	var material = sys.createMaterial();
+	mesh.addMaterial(material);
+	// 頂点の保存
+	for(var i = 0; i < v_list.length; i++) {
+		var vertex = sys.createVertex(v_list[i]);
+		mesh.addVertex(vertex);
+	}
+	// インデックスの保存
+	for(var i = 0; i < face_v_list.length; i++) {
+		var triangle = new S3TriangleIndex(0, 1, 2, face_v_list[i], 0);
+		mesh.addTriangleIndex(triangle);
+	}
+	
+	return true;
 };
