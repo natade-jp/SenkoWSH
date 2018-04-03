@@ -133,13 +133,13 @@ void main(void) {
 		// カラーテクスチャ反映
 		materialColor *= materialTextureColor.xyz;
 		
-		// ノーマルテクスチャ反映 (Tangentベクトル計算の時点で不具合含んでいる可能性あり)
+		// ノーマルテクスチャ反映
 		if(materialIsSetNormal) {
 			materialTextureNormal = (materialTextureNormal * 2.0 - 1.0);
-			vertexNormal = vec3(
-				dot(materialTextureNormal, vertexTangent), 
-				dot(materialTextureNormal, - vertexBinormal), 
-				dot(materialTextureNormal, vertexNormal));
+			vertexNormal = normalize(
+				-materialTextureNormal.x * vertexTangent +
+				materialTextureNormal.y * vertexBinormal +
+				materialTextureNormal.z * vertexNormal);
 		}
 	}
 
