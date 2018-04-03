@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, S3System.SYSTEM_MODE, IDTools, S3Mesh, File, S3System.FRONT_FACE, S3LightMode, S3System */
+﻿/* global System, SComponent, S3System.SYSTEM_MODE, IDTools, S3Mesh, File, S3System.FRONT_FACE, S3LightMode */
 
 ﻿function test3D(canvas) {
 	
@@ -19,13 +19,9 @@
 	
 	var model = s3.createModel();
 	var mesh = s3.createMesh();
-//	mesh.setInverseTriangle(true);
-//	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
-//	mesh.inputData("../resource/bunny.obj", S3Mesh.DATA_OBJ);
-	mesh.inputData("../resource/bumptest.mqo", S3Mesh.DATA_MQO);
-	mesh.setComplete(true);
+	mesh.inputData("../resource/teapod.mqo", S3Mesh.DATA_MQO);
 	model.setMesh(mesh);
-	model.setScale(1);
+	model.setScale(5);
 
 	camera.setEye(new S3Vector( 20,  30,  50));
 	camera.setCenter(new S3Vector( 0,  0,  0));
@@ -41,10 +37,10 @@
 	light_down.setDirection(new S3Vector( 0,  -1,  0));
 	scene.addLight(light_down);
 	
-//	var light_ambient = s3.createLight();
-//	light_ambient.setMode(S3LightMode.AMBIENT_LIGHT);
-//	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.05));
-//	scene.addLight(light_ambient);
+	var light_ambient = s3.createLight();
+	light_ambient.setMode(S3LightMode.AMBIENT_LIGHT);
+	light_ambient.setColor(new S3Vector( 0.0,  0.1,  0.05));
+	scene.addLight(light_ambient);
 	
 //	var light_up = s3.createLight();
 //	light_up.setMode(S3LightMode.DIRECTIONAL_LIGHT);
@@ -89,8 +85,8 @@
 	panel = new SCanvas();
 	panel.putMe("scomponent", SComponent.putype.IN);
 	panel.setUnit(SComponent.unittype.PX);
-	panel.setPixelSize(800, 600);
-	panel.setSize(800, 600);
+	panel.setPixelSize(640, 480);
+	panel.setSize(640, 480);
 	
 	test3D(panel.getCanvas());
 	
