@@ -230,7 +230,9 @@ SComponent.prototype._isBooleanAttribute = function(element, attribute) {
 	}
 	return (element.getAttribute(attribute) === null);
 };
-
+SComponent.prototype.getEnabledElement = function() {
+	return null;
+};
 SComponent.prototype.setEnabled = function(isenabled) {
 	if(isenabled) {
 		this.removeClass(SComponent.CLASS_DISABLED);
@@ -238,17 +240,9 @@ SComponent.prototype.setEnabled = function(isenabled) {
 	else {
 		this.addClass(SComponent.CLASS_DISABLED);
 	}
-	var element = this.getElement();
-	// input要素ではないなら中の要素を使用する
-	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
-		element = this.getElementNode();
-		if(element === null) {
-			return;
-		}
-	}
+	var element = this.getEnabledElement();
 	// disabled属性が利用可能ならつける
-	if(	(element.tagName === "INPUT") ||
-		(element.tagName === "SELECT") ){
+	if(element !== null) {
 		this._setBooleanAttribute(element, "disabled", isenabled);
 	}
 };
@@ -313,10 +307,42 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 			}
 			return element;
 		},
-		AputB : function(node, component, type) {
-			if(!(component instanceof SComponent)) {
+		AputB : function(target, component, type) {
+			if((!target) || (!component) || (!(component instanceof SComponent))) {
 				throw "IllegalArgumentException";
 			}
+			else if(target === component) {
+				throw "it referenced me";
+			}
+			else if((type !== SComponent.putype.IN) &&
+				(type !== SComponent.putype.RIGHT) &&
+				(type !== SComponent.putype.NEWLINE) ) {
+				throw "IllegalArgumentException";
+			}
+			var node = null;
+			if((typeof target === "string")||(target instanceof String)) {
+				node = document.getElementById(target);
+			}
+			else if(target instanceof SComponent) {
+				if(type === SComponent.putype.IN) {
+					if(target.isContainer()) {
+						node = target.getContainerElement();
+					}
+					else {
+						throw "not Container";
+					}
+				}
+				else {
+					node = target.getElement();
+				}
+			}
+			if(node === null) {
+				throw "IllegalArgumentException";
+			}
+			// この時点で
+			// node は HTML要素 となる。
+			// component は SComponent となる。
+			
 			var insertNext = function(newNode, referenceNode) {
 				if(referenceNode.nextSibling) {
 					referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -419,7 +445,12 @@ SComponent.prototype.getWall = function(type) {
 	this._wall = wall;
 	return wall;
 };
-
+SComponent.prototype.isContainer = function() {
+	return this.getContainerElement() !== null;
+};
+SComponent.prototype.getContainerElement = function() {
+	return null;
+};
 SComponent.prototype.getElement = function() {
 	// すでに作成済みならそれを返して、作っていないければ作る
 	if(this._element) {
@@ -456,46 +487,12 @@ SComponent.prototype.getElement = function() {
 };
 
 SComponent.prototype.put = function(targetComponent, type) {
-	if(targetComponent === null) {
-		throw "IllegalArgumentException";
-	}
-	if(this === targetComponent) {
-		throw "it referenced me";
-	}
-	if(!(targetComponent instanceof SComponent)) {
-		throw "IllegalArgumentException";
-	}
-	if(	(type !== SComponent.putype.IN) &&
-		(type !== SComponent.putype.RIGHT) &&
-		(type !== SComponent.putype.NEWLINE) ) {
-		throw "IllegalArgumentException";
-	}
-	this.tool.AputB(this.getElement(), targetComponent, type);
+	this.tool.AputB(this, targetComponent, type);
 	return;
 };
 
 SComponent.prototype.putMe = function(target, type) {
-	var target_element;
-	if(target === null) {
-		throw "IllegalArgumentException";
-	}
-	if(this === target) {
-		throw "it referenced me";
-	}
-	if((typeof target === "string")||(target instanceof String)) {
-		target_element = document.getElementById(target);
-	}
-	else if(target.getElement) {
-		target_element = target.getElement();
-	}
-	if( (target_element === null) ||
-		(	(type !== SComponent.putype.IN) &&
-			(type !== SComponent.putype.RIGHT) &&
-			(type !== SComponent.putype.NEWLINE) )
-	) {
-		throw "IllegalArgumentException";
-	}
-	this.tool.AputB(target_element, this, type);
+	this.tool.AputB(target, this, type);
 	return;
 };
 SComponent.prototype.isVisible = function() {
@@ -531,6 +528,9 @@ var SPanel = function() {
 	this.super.addClass.call(this,  SComponent.CLASS_PANEL);
 };
 SPanel.prototype = new SComponent();
+SPanel.prototype.getContainerElement = function() {
+	return this.getElement();
+};
 
 var SLabel = function(title) {
 	this.super = SComponent.prototype;
@@ -538,6 +538,9 @@ var SLabel = function(title) {
 	this.super.addClass.call(this,  SComponent.CLASS_LABEL);
 };
 SLabel.prototype = new SComponent();
+SLabel.prototype.getContainerElement = function() {
+	return this.getElement();
+};
 
 var SComboBox = function(item) {
 	this.super = SComponent.prototype;
@@ -546,6 +549,9 @@ var SComboBox = function(item) {
 	this.super.addClass.call(this, SComponent.CLASS_COMBOBOX);
 };
 SComboBox.prototype = new SComponent();
+SComboBox.prototype.getEnabledElement = function() {
+	return this.getElement();
+};
 SComboBox.prototype.addListener = function(func) {
 	this.getElement().addEventListener("change", func, false);
 };
@@ -616,6 +622,9 @@ var SButton = function(title) {
 	this.super.getElement.call(this).type = "button";
 };
 SButton.prototype = new SComponent();
+SButton.prototype.getEnabledElement = function() {
+	return this.getElement();
+};
 SButton.prototype.addListener = function(func) {
 	this.getElement().addEventListener("click", func, false);
 };
@@ -648,17 +657,8 @@ SFileLoadButton.fileaccept = {
 	jpeg 	: "image/jpg",
 	gif 	: "image/gif"
 };
-SFileLoadButton.prototype.setEnabled = function(isenabled) {
-	if(isenabled) {
-		this.removeClass(SComponent.CLASS_DISABLED);
-	}
-	else {
-		this.addClass(SComponent.CLASS_DISABLED);
-	}
-	this._setBooleanAttribute(this.file, "disabled", isenabled);
-};
-SFileLoadButton.prototype.isEnabled = function() {
-	return this._isBooleanAttribute(this.file, "disabled");
+SFileLoadButton.prototype.getEnabledElement = function() {
+	return this.file;
 };
 SFileLoadButton.prototype.getFileAccept = function() {
 	var accept = this.file.getAttribute("accept");
@@ -1067,6 +1067,9 @@ var SSlider = function(min, max) {
 	this.getElement.call(this).appendChild(this.datalist);
 };
 SSlider.prototype = new SComponent();
+SSlider.prototype.getEnabledElement = function() {
+	return this.slider;
+};
 SSlider.prototype.setMaximum = function(max) {
 	this.slider.max = max;
 };
