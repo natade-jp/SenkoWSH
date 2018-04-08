@@ -98,14 +98,6 @@ SComponent.prototype.getElementNode = function() {
 	}
 	return node;
 };
-SComponent.prototype.clearChildNodes = function() {
-	var element = this.getElement();
-	var child = element.lastChild;
-	while (child) {
-		element.removeChild(child);
-		child = element.lastChild;
-	}
-};
 SComponent.prototype.setLabelPosition = function(labelposition) {
 	// ラベルかどうか確認
 	var element = this.getElement();
@@ -119,7 +111,7 @@ SComponent.prototype.setLabelPosition = function(labelposition) {
 	}
 	var elementnode = this.getElementNode();
 	// 中身を一旦消去する
-	this.clearChildNodes();
+	this.node_tool.removeChildNodes(this.getElement());
 	// 配置を設定する
 	if(labelposition === SComponent.LEFT) {
 		// ラベル内のテキストは左側
@@ -178,11 +170,11 @@ SComponent.prototype.setText = function(title) {
 SComponent.prototype.getText = function() {
 	var element = this.getElement();
 	var title = null;
-	// input要素なら value を書き換える
+	// input要素なら value を取得
 	if(element.tagName === "INPUT") {
-		title = this.value;
+		title = element.value;
 	}
-	// select要素なら option を取得する
+	// select要素なら option を取得
 	else if(element.tagName === "SELECT") {
 		var child = element.children;
 		var i = 0;
@@ -196,53 +188,29 @@ SComponent.prototype.getText = function() {
 	}
 	else {
 	// テキストノードを取得する
-		title = this.getTextNode().nodeValue.trim();
+		var node = this.getTextNode();
+		title = node ? node.nodeValue.trim() : "";
 	}
 	return (title === null) ? "" : title;
-};
-SComponent.prototype._setBooleanAttribute = function(element, attribute, isset) {
-	if((	!(typeof attribute === "string") &&
-			!(attribute instanceof String)) ||
-			(typeof isset !== "boolean")) {
-		throw "IllegalArgumentException";
-	}
-	var checked = element.getAttribute(attribute);
-	if((!isset) && (checked === null))  {
-		// falseなので無効化させる。すでにチェック済みなら何もしなくてよい
-		element.setAttribute(attribute, attribute);
-	}
-	else if ((isset) && (checked !== null)) {
-		element.removeAttribute(attribute);
-	}
-};
-SComponent.prototype._isBooleanAttribute = function(element, attribute) {
-	if( !(typeof attribute === "string") &&
-		!(attribute instanceof String)) {
-		throw "IllegalArgumentException";
-	}
-	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
-		throw "not support";
-	}
-	return (element.getAttribute(attribute) === null);
 };
 SComponent.prototype.getEnabledElement = function() {
 	return null;
 };
 SComponent.prototype.setEnabled = function(isenabled) {
 	if(isenabled) {
-		this.removeClass(SComponent.cssclass.DISABLED);
+		this.node_tool.removeClass(this.getElement(), SComponent.cssclass.DISABLED);
 	}
 	else {
-		this.addClass(SComponent.cssclass.DISABLED);
+		this.node_tool.addClass(this.getElement(), SComponent.cssclass.DISABLED);
 	}
 	var element = this.getEnabledElement();
 	// disabled属性が利用可能ならつける
 	if(element !== null) {
-		this._setBooleanAttribute(element, "disabled", isenabled);
+		this.node_tool.setBooleanAttribute(element, "disabled", isenabled);
 	}
 };
 SComponent.prototype.isEnabled = function() {
-	return !this.isSetClass(SComponent.cssclass.DISABLED);
+	return !this.node_tool.isSetClass(this.getElement(), SComponent.cssclass.DISABLED);
 };
 SComponent.prototype.getId = function() {
 	return this.id;
@@ -253,35 +221,8 @@ SComponent.prototype.getUnit = function() {
 SComponent.prototype.setUnit = function(unittype) {
 	this.unit = unittype;
 };
-SComponent.prototype.isSetClass = function(classname) {
-	var element = this.getElement();
-	var classdata = element.className;
-	if(classdata === null) {
-		return false;
-	}
-	var pattern = new RegExp( " *" + classname + " *" , "g");
-	return pattern.test(classdata);
-};
 SComponent.prototype.addClass = function(classname) {
-	var element = this.getElement();
-	var classdata = element.className;
-	if(classdata === null) {
-		element.className = classname;
-		return;
-	}
-	element.className = classdata + " " + classname;
-};
-SComponent.prototype.removeClass = function(classname) {
-	var element = this.getElement();
-	var classdata = element.className;
-	if(classdata === null) {
-		return;
-	}
-	var pattern = new RegExp( " *" + classname + " *" , "g");
-	if(!pattern.test(classdata)) {
-		return;
-	}
-	element.className = classdata.replace(pattern, "");
+	return this.node_tool.addClass(this.getElement(), classname);
 };
 SComponent.prototype._initComponent = function(elementtype, title) {
 	this.id				= "SComponent_" + (SComponent._counter++).toString(16);
@@ -292,14 +233,114 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 	this.elementtype	= elementtype;
 	this.unit			= SComponent.unittype.EM;
 	
-	this.tool			= {
-		remove : function(id) {
-			var element = document.getElementById(id);
+	this.node_tool		= {
+		
+		setBooleanAttribute : function(element, attribute, isset) {
+			if((	!(typeof attribute === "string") &&
+					!(attribute instanceof String)) ||
+					(typeof isset !== "boolean")) {
+				throw "IllegalArgumentException";
+			}
+			var checked = element.getAttribute(attribute);
+			if((!isset) && (checked === null))  {
+				// falseなので無効化させる。すでにチェック済みなら何もしなくてよい
+				element.setAttribute(attribute, attribute);
+			}
+			else if ((isset) && (checked !== null)) {
+				element.removeAttribute(attribute);
+			}
+		},
+		
+		isBooleanAttribute : function(element, attribute) {
+			if( !(typeof attribute === "string") &&
+				!(attribute instanceof String)) {
+				throw "IllegalArgumentException";
+			}
+			return (element.getAttribute(attribute) === null);
+		},
+		
+		removeNode : function(element) {
 			if(element) {
 				if (element.parentNode) {
 					element.parentNode.removeChild(element);
 				}
 			}
+			return element;
+		},
+		
+		removeChildNodes : function(element) {
+			var child = element.lastChild;
+			while (child) {
+				element.removeChild(child);
+				child = element.lastChild;
+			}
+			return;
+		},
+		
+		isSetClass : function(element, classname) {
+			var classdata = element.className;
+			if(classdata === null) {
+				return false;
+			}
+			var pattern = new RegExp( " *" + classname + " *" , "g");
+			return pattern.test(classdata);
+		},
+		
+		addClass : function(element, classname) {
+			var classdata = element.className;
+			if(classdata === null) {
+				element.className = classname;
+				return;
+			}
+			var pattern = new RegExp( " *" + classname + " *" , "g");
+			if(pattern.test(classdata)) {
+				return;
+			}
+			element.className = classdata + " " + classname;
+		},
+		
+		removeClass : function(element, classname) {
+			var classdata = element.className;
+			if(classdata === null) {
+				return;
+			}
+			var pattern = new RegExp( " *" + classname + " *" , "g");
+			if(!pattern.test(classdata)) {
+				return;
+			}
+			element.className = classdata.replace(pattern, "");
+		}
+	};
+	
+	var that = this;
+	var mouseevent = {
+		over : function(){
+			that.node_tool.addClass(that.getElement(), SComponent.cssclass.MOUSEOVER);
+		},
+		out : function(){
+			that.node_tool.removeClass(that.getElement(), SComponent.cssclass.MOUSEOVER);
+			that.node_tool.removeClass(that.getElement(), SComponent.cssclass.MOUSEDOWN);
+		},
+		down  : function(){
+			that.node_tool.addClass(that.getElement(), SComponent.cssclass.MOUSEDOWN);
+		},
+		up  : function(){
+			that.node_tool.removeClass(that.getElement(), SComponent.cssclass.MOUSEDOWN);
+		}
+	};
+	
+	this.tool			= {
+		attachMouseEvent : function(element) {
+			element.addEventListener("touchstart", mouseevent.over	,false);
+			element.addEventListener("touchend", mouseevent.up		,false);
+			element.addEventListener("mouseover",mouseevent.over	,false);
+			element.addEventListener("mouseout"	,mouseevent.out		,false);
+			element.addEventListener("mousedown",mouseevent.down	,false);
+			element.addEventListener("mouseup"	,mouseevent.up		,false);
+		},
+		removeNodeForId : function(id) {
+			var element = document.getElementById(id);
+			that.node_tool.removeNode(element);
 			return element;
 		},
 		AputB : function(target, component, type) {
@@ -418,8 +459,8 @@ SComponent.prototype.setSize = function(width, height) {
 	this.setHeight(height);
 };
 SComponent.prototype.removeMe = function() {
-	this.tool.remove(this.id);
-	this.tool.remove(this.space_id);
+	this.tool.removeNodeForId(this.id);
+	this.tool.removeNodeForId(this.space_id);
 };
 SComponent.prototype.onAdded = function() {
 };
@@ -456,28 +497,7 @@ SComponent.prototype.getElement = function() {
 	element.className = SComponent.cssclass.COMPONENT;
 	element.style.display = "inline-block";
 	this._element = element;
-	
-	var x = this;
-	var mouseoverfunc = function(){
-		x.addClass.call(x,SComponent.cssclass.MOUSEOVER);
-	};
-	var mouseoutfunc = function(){
-		x.removeClass.call(x,SComponent.cssclass.MOUSEOVER);
-		x.removeClass.call(x,SComponent.cssclass.MOUSEDOWN);
-	};
-	var mousedownfunc  = function(){
-		x.addClass.call(x,SComponent.cssclass.MOUSEDOWN);
-	};
-	var mouseupfunc  = function(){
-		x.removeClass.call(x,SComponent.cssclass.MOUSEDOWN);
-	};
-	
-	element.addEventListener("touchstart", mousedownfunc,false);
-	element.addEventListener("touchend", mouseupfunc	,false);
-	element.addEventListener("mouseover",mouseoverfunc	,false);
-	element.addEventListener("mouseout"	,mouseoutfunc	,false);
-	element.addEventListener("mousedown",mousedownfunc	,false);
-	element.addEventListener("mouseup"	,mouseupfunc	,false);
+	this.tool.attachMouseEvent(element);
 	return element;
 };
 
@@ -553,6 +573,9 @@ var SGroupBox = function(title) {
 	element.appendChild(this.body);
 };
 SGroupBox.prototype = new SComponent();
+SGroupBox.prototype.getEnabledElement = function() {
+	return this.getElement();
+};
 SGroupBox.prototype.getContainerElement = function() {
 	return this.body;
 };
@@ -929,7 +952,8 @@ var SImagePanel = function() {
 };
 SImagePanel.prototype = new SComponent();
 SImagePanel.prototype.clear = function() {
-	this.clearChildNodes();
+	// 未作成
+	this.node_tool.removeChildNodes(this.getElement());
 };
 SImagePanel.prototype.toDataURL = function() {
 	return this.image.src;
