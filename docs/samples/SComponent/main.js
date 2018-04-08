@@ -6,22 +6,20 @@
 	
 	System.out.println("HTML での部品用のクラスです。");
 	
-	var panel;
 	// パネルを作って、指定した ID の要素内に入れる。
-	panel = new SPanel();
+	var panel = new SPanel();
 	panel.putMe("component_test", SComponent.putype.IN);
 	
-	var label1, label2, label3;
 	// ラベルを作って、パネルの中に入れる。
-	label1 = new SLabel("SComponentPutType.IN");
+	var label1 = new SLabel("SComponentPutType.IN");
 	panel.put(label1, SComponent.putype.IN);
 	
 	// obj2 は、 obj1 の右に配置する
-	label2 = new SLabel("SComponentPutType.RIGHT");
+	var label2 = new SLabel("SComponentPutType.RIGHT");
 	label1.put(label2, SComponent.putype.RIGHT);
 	
 	// obj3 は、 obj2 の下に配置する
-	label3 = new SLabel("SComponentPutType.NEWLINE");
+	var label3 = new SLabel("SComponentPutType.NEWLINE");
 	label2.put(label3, SComponent.putype.NEWLINE);
 	
 	// obj3 のサイズを指定する
@@ -33,8 +31,12 @@
 	// obj1 の内容を変更する
 	label1.setText("【" + label1.getText() + "】");
 	
+	// パネルを作って、指定した ID の要素内に入れる。
+	var groupbox = new SGroupBox("グループボックス");
+	panel.put(groupbox, SComponent.putype.NEWLINE);
+	
 	var button1 = new SButton("10回押す");
-	label3.put(button1, SComponent.putype.NEWLINE);
+	groupbox.put(button1, SComponent.putype.IN);
 	var pushed1 = 10;
 	// クリックすると内部の関数が呼ばれる
 	button1.addListener(function () {

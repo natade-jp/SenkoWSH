@@ -26,27 +26,28 @@ var SComponent = function() {
 };
 
 SComponent._counter			= 0;
-SComponent.CLASS_MOUSEOVER	= "SCOMPONENT_MouseOver";
-SComponent.CLASS_MOUSEDOWN	= "SCOMPONENT_MouseDown";
-SComponent.CLASS_DISABLED	= "SCOMPONENT_Disabled";
-SComponent.CLASS_COMPONENT	= "SCOMPONENT_Component";
-SComponent.CLASS_NEWLINE	= "SCOMPONENT_Newline";
-SComponent.CLASS_SPACE		= "SCOMPONENT_Space";
-SComponent.CLASS_PANEL		= "SCOMPONENT_Panel";
-SComponent.CLASS_IMAGEPANEL	= "SCOMPONENT_ImagePanel";
-SComponent.CLASS_LABEL		= "SCOMPONENT_Label";
-SComponent.CLASS_SELECT		= "SCOMPONENT_Select";
-SComponent.CLASS_COMBOBOX	= "SCOMPONENT_ComboBox";
-SComponent.CLASS_CHECKBOX	= "SCOMPONENT_CheckBox";
-SComponent.CLASS_CHECKBOX_IMAGE	= "SCOMPONENT_CheckBoxImage";
-SComponent.CLASS_BUTTON		= "SCOMPONENT_Button";
-SComponent.CLASS_FILELOAD	= "SCOMPONENT_FileLoad";
-SComponent.CLASS_FILESAVE	= "SCOMPONENT_FileSave";
-SComponent.CLASS_CANVAS		= "SCOMPONENT_Canvas";
-SComponent.CLASS_PROGRESSBAR= "SCOMPONENT_ProgressBar";
-SComponent.CLASS_SLIDER		= "SCOMPONENT_Slider";
-
-
+SComponent.cssclass = {
+	MOUSEOVER		: "SCOMPONENT_MouseOver",
+	MOUSEDOWN		: "SCOMPONENT_MouseDown",
+	DISABLED		: "SCOMPONENT_Disabled",
+	COMPONENT		: "SCOMPONENT_Component",
+	NEWLINE			: "SCOMPONENT_Newline",
+	SPACE			: "SCOMPONENT_Space",
+	PANEL			: "SCOMPONENT_Panel",
+	IMAGEPANEL		: "SCOMPONENT_ImagePanel",
+	LABEL			: "SCOMPONENT_Label",
+	SELECT			: "SCOMPONENT_Select",
+	COMBOBOX		: "SCOMPONENT_ComboBox",
+	CHECKBOX		: "SCOMPONENT_CheckBox",
+	CHECKBOX_IMAGE	: "SCOMPONENT_CheckBoxImage",
+	BUTTON			: "SCOMPONENT_Button",
+	FILELOAD		: "SCOMPONENT_FileLoad",
+	FILESAVE		: "SCOMPONENT_FileSave",
+	CANVAS			: "SCOMPONENT_Canvas",
+	PROGRESSBAR		: "SCOMPONENT_ProgressBar",
+	SLIDER			: "SCOMPONENT_Slider",
+	GROUPBOX		: "SCOMPONENT_GropuBox"
+};
 SComponent.putype = {
 	IN		: 0,
 	RIGHT	: 1,
@@ -205,19 +206,13 @@ SComponent.prototype._setBooleanAttribute = function(element, attribute, isset) 
 			(typeof isset !== "boolean")) {
 		throw "IllegalArgumentException";
 	}
-	if((element.tagName !== "INPUT") && (element.tagName !== "SELECT")){
-		throw "not support";
-	}
 	var checked = element.getAttribute(attribute);
-	if(checked === null) {
-		if(!isset) {
-			element.setAttribute(attribute, attribute);
-		}
+	if((!isset) && (checked === null))  {
+		// falseなので無効化させる。すでにチェック済みなら何もしなくてよい
+		element.setAttribute(attribute, attribute);
 	}
-	else {
-		if(isset) {
-			element.removeAttribute(attribute);
-		}
+	else if ((isset) && (checked !== null)) {
+		element.removeAttribute(attribute);
 	}
 };
 SComponent.prototype._isBooleanAttribute = function(element, attribute) {
@@ -235,10 +230,10 @@ SComponent.prototype.getEnabledElement = function() {
 };
 SComponent.prototype.setEnabled = function(isenabled) {
 	if(isenabled) {
-		this.removeClass(SComponent.CLASS_DISABLED);
+		this.removeClass(SComponent.cssclass.DISABLED);
 	}
 	else {
-		this.addClass(SComponent.CLASS_DISABLED);
+		this.addClass(SComponent.cssclass.DISABLED);
 	}
 	var element = this.getEnabledElement();
 	// disabled属性が利用可能ならつける
@@ -247,7 +242,7 @@ SComponent.prototype.setEnabled = function(isenabled) {
 	}
 };
 SComponent.prototype.isEnabled = function() {
-	return !this.isSetClass(SComponent.CLASS_DISABLED);
+	return !this.isSetClass(SComponent.cssclass.DISABLED);
 };
 SComponent.prototype.getId = function() {
 	return this.id;
@@ -436,10 +431,10 @@ SComponent.prototype.getWall = function(type) {
 	var wall = document.createElement("span");
 	wall.id = this.wallid;
 	if(type === SComponent.putype.RIGHT) {
-		wall.className = SComponent.CLASS_SPACE;
+		wall.className = SComponent.cssclass.SPACE;
 	}
 	else if(type === SComponent.putype.NEWLINE) {
-		wall.className = SComponent.CLASS_NEWLINE;
+		wall.className = SComponent.cssclass.NEWLINE;
 	}
 	wall.style.display = "inline-block";
 	this._wall = wall;
@@ -458,23 +453,23 @@ SComponent.prototype.getElement = function() {
 	}
 	var element = document.createElement(this.elementtype);
 	element.id = this.id;
-	element.className = SComponent.CLASS_COMPONENT;
+	element.className = SComponent.cssclass.COMPONENT;
 	element.style.display = "inline-block";
 	this._element = element;
 	
 	var x = this;
 	var mouseoverfunc = function(){
-		x.addClass.call(x,SComponent.CLASS_MOUSEOVER);
+		x.addClass.call(x,SComponent.cssclass.MOUSEOVER);
 	};
 	var mouseoutfunc = function(){
-		x.removeClass.call(x,SComponent.CLASS_MOUSEOVER);
-		x.removeClass.call(x,SComponent.CLASS_MOUSEDOWN);
+		x.removeClass.call(x,SComponent.cssclass.MOUSEOVER);
+		x.removeClass.call(x,SComponent.cssclass.MOUSEDOWN);
 	};
 	var mousedownfunc  = function(){
-		x.addClass.call(x,SComponent.CLASS_MOUSEDOWN);
+		x.addClass.call(x,SComponent.cssclass.MOUSEDOWN);
 	};
 	var mouseupfunc  = function(){
-		x.removeClass.call(x,SComponent.CLASS_MOUSEDOWN);
+		x.removeClass.call(x,SComponent.cssclass.MOUSEDOWN);
 	};
 	
 	element.addEventListener("touchstart", mousedownfunc,false);
@@ -525,7 +520,7 @@ SComponent.prototype.toString = function() {
 var SPanel = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div");
-	this.super.addClass.call(this,  SComponent.CLASS_PANEL);
+	this.super.addClass.call(this,  SComponent.cssclass.PANEL);
 };
 SPanel.prototype = new SComponent();
 SPanel.prototype.getContainerElement = function() {
@@ -535,18 +530,38 @@ SPanel.prototype.getContainerElement = function() {
 var SLabel = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div", title);
-	this.super.addClass.call(this,  SComponent.CLASS_LABEL);
+	this.super.addClass.call(this,  SComponent.cssclass.LABEL);
 };
 SLabel.prototype = new SComponent();
 SLabel.prototype.getContainerElement = function() {
 	return this.getElement();
 };
 
+var SGroupBox = function(title) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "fieldset");
+	this.super.addClass.call(this, SComponent.cssclass.PANEL);
+	this.super.addClass.call(this, SComponent.cssclass.GROUPBOX);
+	var element   = this.super.getElement.call(this);
+	this.legend = document.createElement("legend");
+	this.legend.className = SComponent.cssclass.LABEL;
+	this.legend.id = this.id + "_legend";
+	this.legend.textContent = title;
+	this.body = document.createElement("div");
+	this.body.id = this.id + "_body";
+	element.appendChild(this.legend);
+	element.appendChild(this.body);
+};
+SGroupBox.prototype = new SComponent();
+SGroupBox.prototype.getContainerElement = function() {
+	return this.body;
+};
+
 var SComboBox = function(item) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "select", item);
-	this.super.addClass.call(this, SComponent.CLASS_SELECT);
-	this.super.addClass.call(this, SComponent.CLASS_COMBOBOX);
+	this.super.addClass.call(this, SComponent.cssclass.SELECT);
+	this.super.addClass.call(this, SComponent.cssclass.COMBOBOX);
 };
 SComboBox.prototype = new SComponent();
 SComboBox.prototype.getEnabledElement = function() {
@@ -586,18 +601,21 @@ SComboBox.prototype.getSelectedItem = function() {
 var SCheckBox = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
-	this.super.addClass.call(this, SComponent.CLASS_LABEL);
-	this.super.addClass.call(this, SComponent.CLASS_CHECKBOX);
+	this.super.addClass.call(this, SComponent.cssclass.LABEL);
+	this.super.addClass.call(this, SComponent.cssclass.CHECKBOX);
 	var checkbox = document.createElement("input");
 	checkbox.type = "checkbox";
 	checkbox.id = this.id + "_checkbox";
-	checkbox.className = SComponent.CLASS_CHECKBOX_IMAGE;
+	checkbox.className = SComponent.cssclass.CHECKBOX_IMAGE;
 	this.checkbox = checkbox;
 	var element   = this.super.getElement.call(this);
 	element.appendChild(checkbox);
 	this.super.setLabelPosition.call(this, SComponent.labelposition.RIGHT);
 };
 SCheckBox.prototype = new SComponent();
+SCheckBox.prototype.getEnabledElement = function() {
+	return this.checkbox;
+};
 SCheckBox.prototype.setCheckBoxImageSize = function(size) {
 	if(typeof size !== "number") {
 		throw "IllegalArgumentException not number";
@@ -618,7 +636,7 @@ SCheckBox.prototype.isChecked = function() {
 var SButton = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "input", title);
-	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
+	this.super.addClass.call(this, SComponent.cssclass.BUTTON);
 	this.super.getElement.call(this).type = "button";
 };
 SButton.prototype = new SComponent();
@@ -635,8 +653,8 @@ var SFileLoadButton = function(title) {
 	// https://github.com/facebook/react/issues/7683
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label", title);
-	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
-	this.super.addClass.call(this, SComponent.CLASS_FILELOAD);
+	this.super.addClass.call(this, SComponent.cssclass.BUTTON);
+	this.super.addClass.call(this, SComponent.cssclass.FILELOAD);
 	var element   = this.super.getElement.call(this);
 	var file = document.createElement("input");
 	element.style.textAlign =  "center";  
@@ -685,8 +703,8 @@ SFileLoadButton.prototype.addListener = function(func) {
 var SFileSaveButton = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "a", title);
-	this.super.addClass.call(this, SComponent.CLASS_BUTTON);
-	this.super.addClass.call(this, SComponent.CLASS_FILESAVE);
+	this.super.addClass.call(this, SComponent.cssclass.BUTTON);
+	this.super.addClass.call(this, SComponent.cssclass.FILESAVE);
 	this.filename = "";
 	this.url      = "";
 	var element   = this.super.getElement.call(this);
@@ -719,7 +737,7 @@ SFileSaveButton.prototype.setEnabled = function(isenabled) {
 var SCanvas = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "canvas");
-	this.super.addClass.call(this,  SComponent.CLASS_CANVAS);
+	this.super.addClass.call(this,  SComponent.cssclass.CANVAS);
 	this.canvas = this.super.getElement.call(this);
 	this.glmode = false;
 	this.setPixelSize(300, 150);	// canvas のデフォルト値を設定する
@@ -903,7 +921,7 @@ SCanvas.prototype.toDataURL = function(type) {
 var SImagePanel = function() {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div");
-	this.super.addClass.call(this,  SComponent.CLASS_IMAGEPANEL);
+	this.super.addClass.call(this,  SComponent.cssclass.IMAGEPANEL);
 	var image = document.createElement("img");
 	image.id = this.id + "_img";
 	this.image = image;
@@ -976,8 +994,8 @@ SImagePanel.prototype.putImage = function(data, drawcallback) {
 var SProgressBar = function(min, max) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label");
-	this.super.addClass.call(this, SComponent.CLASS_LABEL);
-	this.super.addClass.call(this, SComponent.CLASS_PROGRESSBAR);
+	this.super.addClass.call(this, SComponent.cssclass.LABEL);
+	this.super.addClass.call(this, SComponent.cssclass.PROGRESSBAR);
 	this.min	= 0.0;
 	this.max	= 0.0;
 	this.value	= min;
@@ -996,7 +1014,7 @@ var SProgressBar = function(min, max) {
 	this.progress = document.createElement("progress");
 	this.getElement.call(this).appendChild(this.progress);
 	this.progress.id = this.id + "_progress";
-	this.progress.className = SComponent.CLASS_PROGRESSBAR;
+	this.progress.className = SComponent.cssclass.PROGRESSBAR;
 	// 内部の目盛りは0-1を使用する
 	this.progress.value	= 0.0;
 	this.progress.max	= 1.0;
@@ -1041,8 +1059,8 @@ SProgressBar.prototype.getPercentComplete = function() {
 var SSlider = function(min, max) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "label");
-	this.super.addClass.call(this, SComponent.CLASS_LABEL);
-	this.super.addClass.call(this, SComponent.CLASS_SLIDER);
+	this.super.addClass.call(this, SComponent.cssclass.LABEL);
+	this.super.addClass.call(this, SComponent.cssclass.SLIDER);
 	if(arguments.length === 0) {
 		min = 0.0;
 		max = 1.0;
@@ -1055,7 +1073,7 @@ var SSlider = function(min, max) {
 	this.slider = document.createElement("input");
 	this.slider.id = this.id + "_slider";
 	this.slider.type	= "range";
-	this.slider.className = SComponent.CLASS_SLIDER;
+	this.slider.className = SComponent.cssclass.SLIDER;
 	this.slider.value	= min;
 	this.slider.min		= min;
 	this.slider.max		= max;
