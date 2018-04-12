@@ -34,6 +34,9 @@ SComponent.cssclass = {
 	NEWLINE			: "SCOMPONENT_Newline",
 	SPACE			: "SCOMPONENT_Space",
 	PANEL			: "SCOMPONENT_Panel",
+	PANEL_LEGEND	: "SCOMPONENT_PanelLegend",
+	GROUPBOX		: "SCOMPONENT_GroupBox",
+	GROUPBOX_LEGEND	: "SCOMPONENT_GroupBoxLegend",
 	IMAGEPANEL		: "SCOMPONENT_ImagePanel",
 	LABEL			: "SCOMPONENT_Label",
 	SELECT			: "SCOMPONENT_Select",
@@ -45,8 +48,7 @@ SComponent.cssclass = {
 	FILESAVE		: "SCOMPONENT_FileSave",
 	CANVAS			: "SCOMPONENT_Canvas",
 	PROGRESSBAR		: "SCOMPONENT_ProgressBar",
-	SLIDER			: "SCOMPONENT_Slider",
-	GROUPBOX		: "SCOMPONENT_GropuBox"
+	SLIDER			: "SCOMPONENT_Slider"
 };
 SComponent.putype = {
 	IN		: 0,
@@ -98,6 +100,25 @@ SComponent.prototype.getElementNode = function() {
 	}
 	return node;
 };
+SComponent.prototype.getEditableNodeForValue = function() {
+	// Value要素をもつもの
+	return null;
+};
+SComponent.prototype.getEditableNodeForNodeValue = function() {
+	// Value要素をもつなら、このメソッドは利用不可とする
+	if(this.getEditableNodeForValue()) {
+		return null;
+	}
+	// nodeValue 要素をもつもの
+	var textnode = this.getTextNode();
+	// 見つからなかったら作成する
+	if(textnode === null) {
+		var element = this.getElement();
+		var textnode = document.createTextNode("");
+		element.appendChild(textnode);
+	}
+	return textnode;
+};
 SComponent.prototype.setLabelPosition = function(labelposition) {
 	// ラベルかどうか確認
 	var element = this.getElement();
@@ -129,67 +150,28 @@ SComponent.prototype.setText = function(title) {
 	if(!title) {
 		return;
 	}
-	var element = this.getElement();
-	// input 要素なら value を書き換える
-	if(element.tagName === "INPUT") {
-		element.value = title;
+	var node = null;
+	node = this.getEditableNodeForValue();
+	if(node) {
+		node.value = title;
+		return;
 	}
-	// select 要素なら option を書き換える
-	else if(element.tagName === "SELECT") {
-		// 1つの文字列のみならば、配列化する
-		if	((typeof title === "string") &&
-			(title instanceof String)) {
-			title = [title];
-		}
-		// 内部の要素を全部消去する
-		var child = element.lastChild;
-		while (child) {
-			element.removeChild(child);
-			child = element.lastChild;
-		}
-		var i = 0;
-		// 追加していく
-		for(i = 0; i < title.length; i++) {
-			var option_node = document.createElement("option");
-			option_node.text = title[i].toString();
-			option_node.value = title[i].toString();
-			element.appendChild(option_node);
-		}
-	}
-	// そのほかは、中にあるテキストノードを編集する
-	else {
-		var textnode = this.getTextNode();
-		// 見つからなかったら作成する
-		if(textnode === null) {
-			var textnode = document.createTextNode("");
-			element.appendChild(textnode);
-		}
-		textnode.nodeValue = title;
+	node = this.getEditableNodeForNodeValue();
+	if(node) {
+		node.nodeValue = title;
+		return;
 	}
 };
 SComponent.prototype.getText = function() {
-	var element = this.getElement();
 	var title = null;
-	// input要素なら value を取得
-	if(element.tagName === "INPUT") {
-		title = element.value;
+	var node = null;
+	node = this.getEditableNodeForValue();
+	if(node) {
+		title = node.value;
 	}
-	// select要素なら option を取得
-	else if(element.tagName === "SELECT") {
-		var child = element.children;
-		var i = 0;
-		var output = [];
-		for(i = 0; i < child.length; i++) {
-			if(child[i].tagName === "OPTION") {
-				output[output.length] = child[i].text;
-			}
-		}
-		return output;
-	}
-	else {
-	// テキストノードを取得する
-		var node = this.getTextNode();
-		title = node ? node.nodeValue.trim() : "";
+	node = this.getEditableNodeForNodeValue();
+	if(node) {
+		title = node.nodeValue.trim();
 	}
 	return (title === null) ? "" : title;
 };
@@ -537,14 +519,41 @@ SComponent.prototype.toString = function() {
  * /////////////////////////////////////////////////////////
  */
 
-var SPanel = function() {
+var SPanel = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "div");
-	this.super.addClass.call(this,  SComponent.cssclass.PANEL);
+	this.super.addClass.call(this, SComponent.cssclass.PANEL);
+	var element   = this.super.getElement.call(this);
+	this.legend = document.createElement("span");
+	this.node_tool.addClass(this.legend, SComponent.cssclass.PANEL_LEGEND);
+	this.legend.id = this.id + "_legend";
+	var that = this;
+	this.paneltool = {
+		setText :  function(title) {
+			if(title) {
+				that.legend.textContent = title;
+				that.legend.style.display = "block";
+			}
+			else {
+				that.legend.style.display = "none";
+			}
+		}
+	};
+	this.paneltool.setText(title);
+	this.body = document.createElement("div");
+	this.body.id = this.id + "_body";
+	element.appendChild(this.legend);
+	element.appendChild(this.body);
+};
+SPanel.prototype.setText = function(title) {
+	this.paneltool.setText(title);
 };
 SPanel.prototype = new SComponent();
 SPanel.prototype.getContainerElement = function() {
-	return this.getElement();
+	return this.body;
+};
+SPanel.prototype.clear = function() {
+	this.node_tool.removeChildNodes(this.body);
 };
 
 var SLabel = function(title) {
@@ -560,11 +569,10 @@ SLabel.prototype.getContainerElement = function() {
 var SGroupBox = function(title) {
 	this.super = SComponent.prototype;
 	this.super._initComponent.call(this, "fieldset");
-	this.super.addClass.call(this, SComponent.cssclass.PANEL);
 	this.super.addClass.call(this, SComponent.cssclass.GROUPBOX);
 	var element   = this.super.getElement.call(this);
 	this.legend = document.createElement("legend");
-	this.legend.className = SComponent.cssclass.LABEL;
+	this.node_tool.addClass(this.legend, SComponent.cssclass.GROUPBOX_LEGEND);
 	this.legend.id = this.id + "_legend";
 	this.legend.textContent = title;
 	this.body = document.createElement("div");
@@ -579,6 +587,9 @@ SGroupBox.prototype.getEnabledElement = function() {
 SGroupBox.prototype.getContainerElement = function() {
 	return this.body;
 };
+SGroupBox.prototype.clear = function() {
+	this.node_tool.removeChildNodes(this.body);
+};
 
 var SComboBox = function(item) {
 	this.super = SComponent.prototype;
@@ -592,6 +603,44 @@ SComboBox.prototype.getEnabledElement = function() {
 };
 SComboBox.prototype.addListener = function(func) {
 	this.getElement().addEventListener("change", func, false);
+};
+SComboBox.prototype.setText = function(title) {
+	if(!title) {
+		return;
+	}
+	var element = this.getElement();
+	// 1つの文字列のみならば、配列化する
+	if	((typeof title === "string") &&
+		(title instanceof String)) {
+		title = [title];
+	}
+	// 内部の要素を全部消去する
+	var child = element.lastChild;
+	while (child) {
+		element.removeChild(child);
+		child = element.lastChild;
+	}
+	var i = 0;
+	// 追加していく
+	for(i = 0; i < title.length; i++) {
+		var option_node = document.createElement("option");
+		option_node.text = title[i].toString();
+		option_node.value = title[i].toString();
+		element.appendChild(option_node);
+	}
+};
+SComboBox.prototype.getText = function() {
+	var element = this.getElement();
+	// select要素なら option を取得
+	var child = element.children;
+	var i = 0;
+	var output = [];
+	for(i = 0; i < child.length; i++) {
+		if(child[i].tagName === "OPTION") {
+			output[output.length] = child[i].text;
+		}
+	}
+	return output;
 };
 SComboBox.prototype.setSelectedItem = function(text) {
 	var child = this.getElement().children;
@@ -663,6 +712,9 @@ var SButton = function(title) {
 	this.super.getElement.call(this).type = "button";
 };
 SButton.prototype = new SComponent();
+SButton.prototype.getEditableNodeForValue = function() {
+	return this.getElement();
+};
 SButton.prototype.getEnabledElement = function() {
 	return this.getElement();
 };

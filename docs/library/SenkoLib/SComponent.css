@@ -21,31 +21,58 @@
 .SCOMPONENT_Panel {
 	border-style:		solid;
 	border-width:		1px;
-	border-color:		gray;
-	border-radius:		5px;
-	margin:				0.2em;
-	padding:			0.8em;
+	border-color:		#e0e0e0;
+	border-radius:		1px;
+	box-shadow:			3px 3px 10px rgba(0,0,0,0.1);
+	margin:				0.5em;
+	padding:			0em;
 	background-color:	#ffffff;
 }
 
+.SCOMPONENT_PanelLegend {
+	padding:			0.2em;
+	margin:				0px;
+	display:			block;
+	background-color:	#e0e0e0;
+}
+
+.SCOMPONENT_GroupBox {
+	margin:				0.5em;
+	padding:			0em;
+	border-style:		solid;
+	border-width:		1px;
+	border-color:		#e0e0e0;
+	border-radius:		10px;
+}
+
+.SCOMPONENT_GroupBoxLegend {
+	margin-left:				1em;
+}
+
+.SCOMPONENT_GroupBox > div, .SCOMPONENT_Panel > div {
+	margin:				0.2em;
+	padding:			0.8em;
+}
+
+
 .SCOMPONENT_Button {
 	color:				black;
-	border-style:		none;
+	border-style:		solid;
 	border-width:		1px;
-	border-radius:		0.2em;
 	border-color:		#e0e0e0;
+	border-radius:		2px;
 	background-color:	#f0f0f0;
-	margin:				0.2em;
-	padding:			0.2em 1em 0em 1em;
-	box-shadow:			1px  1px 2px rgba(0, 0, 0, 0.3),
-						0px  1px 0px rgba(255,255,255,0.5) inset,
-						0px -1px 0px rgba(255,255,255,0.2) inset;
+	margin:				0.3em;
+	padding:			0.2em 1.5em 0.2em 1.5em;
 	cursor:				pointer;
 	/* A要素などで作ったものも中央に配置し、下線を除去する */
 	text-align:			center;
 	text-decoration:	none;
 	/* iphoneなどでもボタンの形が独自にする */
 	-webkit-appearance:	none;
+	/* 立体ボタン */
+	box-shadow:			0px  2px 0px rgba(255,255,255,0.3) inset,
+						0px -2px 0px rgba(0,0,0,0.3) inset;
 }
 
 .SCOMPONENT_Button.SCOMPONENT_MouseOver {
@@ -53,6 +80,8 @@
 }
 .SCOMPONENT_Button.SCOMPONENT_MouseDown {
 	background-color:	#e0e0e0;
+	/* 立体ボタン */
+	box-shadow:			0px 2px 0px rgba(0,0,0,0.3) inset;
 }
 
 .SCOMPONENT_Button.SCOMPONENT_Disabled {
@@ -82,6 +111,8 @@
 	-ms-user-select:		none;
 	/* タップしたときに色が表示されないようにする */
 	-webkit-tap-highlight-color:	rgba(0,0,0,0);
+	/* ドラッグ&ドロップやクリックイベントの無効化 */
+	pointer-events:		none;
 }
 
 /* disabled が対応していないボタン以外の物は、半透明化 */
@@ -134,9 +165,7 @@
 	
 	/* 横に引き延ばす */
 	.SCOMPONENT_Panel {
-		width:				92% !important;
-		margin:				2% !important;
-		padding:			2% !important;
+		width:				calc(100% - 20px) !important;
 	}
 	
 }

@@ -2,7 +2,7 @@
 
 function testFileLoad(panel) {
 	
-	panel.clearChildNodes();
+	panel.clear();
 	
 	// Canvas
 	var canvas = new SCanvas();
@@ -39,7 +39,7 @@ function testFileLoad(panel) {
 
 function testWritePixel(panel) {
 	
-	panel.clearChildNodes();
+	panel.clear();
 	
 	// Canvas
 	var canvas = new SCanvas();
@@ -84,7 +84,7 @@ function testWritePixel(panel) {
 
 function testInterpolation(panel) {
 	
-	panel.clearChildNodes();
+	panel.clear();
 	
 	var srcWidth  = 16;
 	var srcHeight = 16;
@@ -165,7 +165,7 @@ function testInterpolation(panel) {
 
 function testBlending(panel) {
 	
-	panel.clearChildNodes();
+	panel.clear();
 	
 	var canvasWidth  = 128;
 	var canvasHeight = 128;
@@ -236,7 +236,7 @@ function testBlending(panel) {
 
 function testEtc(panel) {
 	
-	panel.clearChildNodes();
+	panel.clear();
 	
 	var canvasWidth  = 320;
 	var canvasHeight = 240;
