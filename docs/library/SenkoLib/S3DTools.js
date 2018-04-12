@@ -306,7 +306,7 @@ S3Mesh.DATA_OUTPUT_FUNCTION[S3Mesh.DATA_MQO] = function(sys, mesh) {
 			line += " V(" + ti.index[0] + " " + ti.index[1] + " " + ti.index[2] + ")";
 			line += " M(" + ti.materialIndex + ")";
 			// UVはないかもしれないので、条件を付ける
-			if(ti.uv !== undefined) {
+			if((ti.uv !== undefined) && (ti.uv[0] !== null)) {
 				line += " UV(" + ti.uv[0] + " " + ti.uv[1] + " " + ti.uv[2] +")";
 			}
 			output.push(line);

@@ -30,6 +30,11 @@
 	float:				none;
 	height:				240px;
 }
+#code {
+	width:				100%;
+	float:				none;
+	height:				240px;
+}
 
 </style>
 </head>
@@ -42,8 +47,11 @@
 <div id="scomponent"></div>
 <div id="result">
 	<div id="senko_console"></div>
+	<div id="code"></div>
 </div>
 <script type="text/javascript">
+	var element = document.getElementById("code");
+	element.innerText = main;
 	System.setShowHtmlConsole(true);
 	System.startHtmlMain();
 </script> 
