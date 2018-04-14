@@ -305,13 +305,13 @@ S3GLMesh.prototype.createTriangleIndexData = function() {
 		if(this.sys.dimensionmode === S3System.DIMENSION_MODE.RIGHT_HAND) {
 			vector_list = S3Vector.getNormalVector(
 				vertex_list[index[0]].position, vertex_list[index[1]].position, vertex_list[index[2]].position,
-				uv[0], uv[1], uv[2],
+				uv[0], uv[1], uv[2]
 			);
 		}
 		else {
 			vector_list = S3Vector.getNormalVector(
 				vertex_list[index[2]].position, vertex_list[index[1]].position, vertex_list[index[0]].position,
-				uv[2], uv[1], uv[0],
+				uv[2], uv[1], uv[0]
 			);
 		}
 		for(var vector_name in normallist) {

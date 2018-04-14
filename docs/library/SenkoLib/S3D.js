@@ -778,7 +778,8 @@ S3Texture.prototype.setImage = function(image) {
 		var original_width  = image.width;
 		var original_height = image.height;
 		var ceil_power_of_2 = function(x) {
-			var a = Math.log2(x);
+			// IE には Math.log2 がない
+			var a = Math.log(x) / Math.log(2);
 			if ((a - Math.floor(a)) < 1e-10) {
 				return x;
 			}
