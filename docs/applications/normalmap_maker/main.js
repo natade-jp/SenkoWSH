@@ -122,11 +122,8 @@ var redrawNormalMap = function() {
 	
 function makeInputPanel() {
 	
-	var panel = new SPanel();
+	var panel = new SPanel("入力画像");
 	panel.putMe("scomponent_input", SComponent.putype.IN);
-	
-	var l_disc = new SLabel("入力画像");
-	l_disc.putMe(panel, SComponent.putype.IN);
 	
 	var sizelist = [8, 16, 32, 64, 128, 256, 512];
 	var c_width  = new SComboBox(sizelist);
@@ -145,7 +142,7 @@ function makeInputPanel() {
 	c_boyake.addListener(redrawReadSampleResized);
 	
 	var l_width  = new SLabel("よこ[px]");
-	l_width.putMe (l_disc, SComponent.putype.RIGHT);
+	l_width.putMe (panel, SComponent.putype.IN);
 	c_width.putMe (l_width, SComponent.putype.RIGHT);
 	var l_height = new SLabel("たて[px]");
 	l_height.putMe(c_width, SComponent.putype.RIGHT);
@@ -159,7 +156,7 @@ function makeInputPanel() {
 	c_boyake.putMe(l_boyake, SComponent.putype.RIGHT);
 	
 	panel.setUnit(SComponent.unittype.PX);
-	panel.setWidth(512);
+	panel.setWidth(520);
 	l_denoise.setWidth(5);
 	l_boyake.setWidth(5);
 	
@@ -201,12 +198,8 @@ function makeInputPanel() {
 
 function makeEditPanel() {
 	
-	var panel = new SPanel();
+	var panel = new SPanel("ノーマルマップ調整");
 	panel.putMe("scomponent_edit", SComponent.putype.IN);
-	
-	var l_disc = new SLabel("ノーマルマップ調整");
-	l_disc.putMe(panel, SComponent.putype.IN);
-	
 	
 	var redraw= function() {
 		redrawNormalMap();
@@ -215,7 +208,7 @@ function makeEditPanel() {
 	c_outotsu.addListener(redraw);
 	
 	var l_outotsu = new SLabel("でこぼこ");
-	l_outotsu.putMe(l_disc, SComponent.putype.NEWLINE);
+	l_outotsu.putMe(panel, SComponent.putype.IN);
 	c_outotsu.putMe(l_outotsu, SComponent.putype.RIGHT);
 	
 	c_surudosa.addListener(redraw);
@@ -225,7 +218,7 @@ function makeEditPanel() {
 	c_surudosa.putMe(l_surudosa, SComponent.putype.RIGHT);
 	
 	panel.setUnit(SComponent.unittype.PX);
-	panel.setWidth(512);
+	panel.setWidth(520);
 	l_outotsu.setWidth(5);
 	l_surudosa.setWidth(5);
 	

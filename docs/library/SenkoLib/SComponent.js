@@ -32,6 +32,8 @@ SComponent.cssclass = {
 	DISABLED		: "SCOMPONENT_Disabled",
 	COMPONENT		: "SCOMPONENT_Component",
 	NEWLINE			: "SCOMPONENT_Newline",
+	CLOSE			: "SCOMPONENT_Close",
+	OPEN			: "SCOMPONENT_Open",
 	SPACE			: "SCOMPONENT_Space",
 	CONTENTSBOX		: "SCOMPONENT_ContentsBox",
 	PANEL			: "SCOMPONENT_Panel",
@@ -234,7 +236,7 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 			if(classdata === null) {
 				return false;
 			}
-			var pattern = new RegExp( " *" + classname + " *" , "g");
+			var pattern = new RegExp( "(^" + classname + "$)|( +" + classname + ")" , "g");
 			return pattern.test(classdata);
 		},
 		
@@ -244,7 +246,7 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 				element.className = classname;
 				return;
 			}
-			var pattern = new RegExp( " *" + classname + " *" , "g");
+			var pattern = new RegExp( "(^" + classname + "$)|( +" + classname + ")" , "g");
 			if(pattern.test(classdata)) {
 				return;
 			}
@@ -256,7 +258,7 @@ SComponent.prototype._initComponent = function(elementtype, title) {
 			if(classdata === null) {
 				return;
 			}
-			var pattern = new RegExp( " *" + classname + " *" , "g");
+			var pattern = new RegExp( "(^" + classname + "$)|( +" + classname + ")" , "g");
 			if(!pattern.test(classdata)) {
 				return;
 			}
@@ -582,12 +584,12 @@ var SSlidePanel = function(title) {
 	this.body = document.createElement("div");
 	this.node_tool.addClass(this.body, SComponent.cssclass.CONTENTSBOX);
 	this.body.id = this.id + "_body";
-	this.is_open = false;
 	var that = this;
 	var clickfunc = function() {
 		that.setOpen(!that.isOpen());
 	};
 	this.legend.addEventListener("click", clickfunc);
+	this.setOpen(false);
 	element.appendChild(this.legend);
 	this.slide.appendChild(this.body);
 	element.appendChild(this.slide);
@@ -597,8 +599,12 @@ SSlidePanel.prototype.setOpen = function(is_open) {
 	this.is_open = is_open;
     if (this.is_open){
 		this.slide.style.maxHeight	= this.body.scrollHeight + "px";
+		this.node_tool.addClass(this.legend, SComponent.cssclass.OPEN);
+		this.node_tool.removeClass(this.legend, SComponent.cssclass.CLOSE);
     } else {
 		this.slide.style.maxHeight	= null;
+		this.node_tool.addClass(this.legend, SComponent.cssclass.CLOSE);
+		this.node_tool.removeClass(this.legend, SComponent.cssclass.OPEN);
     } 
 };
 SSlidePanel.prototype.isOpen = function() {

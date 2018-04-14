@@ -36,7 +36,7 @@
 	panel.put(panel2, SComponent.putype.NEWLINE);
 	panel2.put(new SLabel("テスト"), SComponent.putype.IN);
 	
-	// タイトル付き
+	// スライドパネル
 	var slidepanel = new SSlidePanel("スライドパネル");
 	panel2.put(slidepanel, SComponent.putype.NEWLINE);
 	

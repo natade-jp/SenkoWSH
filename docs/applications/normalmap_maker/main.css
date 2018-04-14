@@ -9,6 +9,11 @@ h1 {
 	font-weight: normal;
 }
 
+.SCOMPONENT_ContentsBox {
+	margin:				0.1em;
+	padding:			0.1em;
+}
+
 #scomponent_input,
 #scomponent_edit,
 #scomponent_output {
