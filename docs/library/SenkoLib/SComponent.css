@@ -11,6 +11,8 @@
 	-webkit-tap-highlight-color:	rgba(0,0,0,0);
 	/* メニューを出さない */
 	-webkit-touch-callout:	none;
+	/* 変化に時間をつける */
+    transition:			0.15s;
 }
 
 .SCOMPONENT_Label {
@@ -18,7 +20,8 @@
 	padding:			0.1em;
 }
 
-.SCOMPONENT_Panel {
+.SCOMPONENT_Panel,
+.SCOMPONENT_SlidePanel {
 	border-style:		solid;
 	border-width:		1px;
 	border-color:		#e0e0e0;
@@ -29,11 +32,16 @@
 	background-color:	#ffffff;
 }
 
-.SCOMPONENT_PanelLegend {
+.SCOMPONENT_PanelLegend,
+.SCOMPONENT_SlidePanelLegend {
 	padding:			0.2em;
 	margin:				0px;
 	display:			block;
 	background-color:	#e0e0e0;
+}
+
+.SCOMPONENT_SlidePanelLegend {
+	cursor:				pointer;
 }
 
 .SCOMPONENT_GroupBox {
@@ -49,11 +57,20 @@
 	margin-left:				1em;
 }
 
-.SCOMPONENT_GroupBox > div, .SCOMPONENT_Panel > div {
+.SCOMPONENT_ContentsBox {
 	margin:				0.2em;
 	padding:			0.8em;
 }
 
+.SCOMPONENT_SlidePanelSlide {
+	margin:				0px;
+	padding:			0px;
+	border:				none;
+	outline:			none;
+    max-height:			0;
+	overflow:			hidden;
+	transition:			max-height 0.2s ease-out;
+}
 
 .SCOMPONENT_Button {
 	color:				black;
@@ -164,7 +181,9 @@
 	}
 	
 	/* 横に引き延ばす */
-	.SCOMPONENT_Panel {
+	.SCOMPONENT_Panel,
+	.SCOMPONENT_SlidePanel,
+	.SCOMPONENT_GroupBox {
 		width:				calc(100% - 20px) !important;
 	}
 	

@@ -33,8 +33,12 @@ SComponent.cssclass = {
 	COMPONENT		: "SCOMPONENT_Component",
 	NEWLINE			: "SCOMPONENT_Newline",
 	SPACE			: "SCOMPONENT_Space",
+	CONTENTSBOX		: "SCOMPONENT_ContentsBox",
 	PANEL			: "SCOMPONENT_Panel",
 	PANEL_LEGEND	: "SCOMPONENT_PanelLegend",
+	SLIDEPANEL		: "SCOMPONENT_SlidePanel",
+	SLIDEPANEL_LEGEND: "SCOMPONENT_SlidePanelLegend",
+	SLIDEPANEL_SLIDE: "SCOMPONENT_SlidePanelSlide",
 	GROUPBOX		: "SCOMPONENT_GroupBox",
 	GROUPBOX_LEGEND	: "SCOMPONENT_GroupBoxLegend",
 	IMAGEPANEL		: "SCOMPONENT_ImagePanel",
@@ -79,13 +83,6 @@ SComponent.prototype.getTextNode = function() {
 	// テキストノードがない場合は null をかえす
 	return textnode;
 };
-SComponent.prototype.removeTextNode = function() {
-	var element = this.getElement();
-	var textnode = this.getTextNode();
-	if(textnode) {
-		element.removeChild(textnode);
-	}
-};
 SComponent.prototype.getElementNode = function() {
 	var element = this.getElement();
 	// children でテキストノード意外を取得する
@@ -118,33 +115,6 @@ SComponent.prototype.getEditableNodeForNodeValue = function() {
 		element.appendChild(textnode);
 	}
 	return textnode;
-};
-SComponent.prototype.setLabelPosition = function(labelposition) {
-	// ラベルかどうか確認
-	var element = this.getElement();
-	if(element.tagName !== "LABEL") {
-		return;
-	}
-	// すでにあるテキストノードを調査する
-	var textnode = this.getTextNode();
-	if(textnode === null) {
-		textnode = document.createTextNode("");
-	}
-	var elementnode = this.getElementNode();
-	// 中身を一旦消去する
-	this.node_tool.removeChildNodes(this.getElement());
-	// 配置を設定する
-	if(labelposition === SComponent.LEFT) {
-		// ラベル内のテキストは左側
-		element.appendChild(textnode);
-		element.appendChild(elementnode);
-	}
-	else {
-		// ラベルのテキストは右側
-		element.appendChild(elementnode);
-		element.appendChild(textnode);
-	}
-	return;
 };
 SComponent.prototype.setText = function(title) {
 	if(!title) {
@@ -527,6 +497,10 @@ var SPanel = function(title) {
 	this.legend = document.createElement("span");
 	this.node_tool.addClass(this.legend, SComponent.cssclass.PANEL_LEGEND);
 	this.legend.id = this.id + "_legend";
+	this.body = document.createElement("div");
+	this.node_tool.addClass(this.body, SComponent.cssclass.CONTENTSBOX);
+	this.body.id = this.id + "_body";
+	
 	var that = this;
 	this.paneltool = {
 		setText :  function(title) {
@@ -540,15 +514,15 @@ var SPanel = function(title) {
 		}
 	};
 	this.paneltool.setText(title);
-	this.body = document.createElement("div");
-	this.body.id = this.id + "_body";
 	element.appendChild(this.legend);
 	element.appendChild(this.body);
 };
-SPanel.prototype.setText = function(title) {
-	this.paneltool.setText(title);
-};
 SPanel.prototype = new SComponent();
+SPanel.prototype.setText = function(title) {
+	if(this.paneltool) {
+		this.paneltool.setText(title);
+	}
+};
 SPanel.prototype.getContainerElement = function() {
 	return this.body;
 };
@@ -576,6 +550,7 @@ var SGroupBox = function(title) {
 	this.legend.id = this.id + "_legend";
 	this.legend.textContent = title;
 	this.body = document.createElement("div");
+	this.node_tool.addClass(this.body, SComponent.cssclass.CONTENTSBOX);
 	this.body.id = this.id + "_body";
 	element.appendChild(this.legend);
 	element.appendChild(this.body);
@@ -588,6 +563,54 @@ SGroupBox.prototype.getContainerElement = function() {
 	return this.body;
 };
 SGroupBox.prototype.clear = function() {
+	this.node_tool.removeChildNodes(this.body);
+};
+
+var SSlidePanel = function(title) {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "div");
+	this.super.addClass.call(this, SComponent.cssclass.SLIDEPANEL);
+	var element   = this.super.getElement.call(this);
+	this.textnode = document.createTextNode( title ? title : "");
+	this.legend = document.createElement("span");
+	this.node_tool.addClass(this.legend, SComponent.cssclass.SLIDEPANEL_LEGEND);
+	this.legend.id = this.id + "_legend";
+	this.legend.appendChild(this.textnode);
+	this.slide = document.createElement("div");
+	this.node_tool.addClass(this.slide, SComponent.cssclass.SLIDEPANEL_SLIDE);
+	this.slide.id = this.id + "_slide";
+	this.body = document.createElement("div");
+	this.node_tool.addClass(this.body, SComponent.cssclass.CONTENTSBOX);
+	this.body.id = this.id + "_body";
+	this.is_open = false;
+	var that = this;
+	var clickfunc = function() {
+		that.setOpen(!that.isOpen());
+	};
+	this.legend.addEventListener("click", clickfunc);
+	element.appendChild(this.legend);
+	this.slide.appendChild(this.body);
+	element.appendChild(this.slide);
+};
+SSlidePanel.prototype = new SComponent();
+SSlidePanel.prototype.setOpen = function(is_open) {
+	this.is_open = is_open;
+    if (this.is_open){
+		this.slide.style.maxHeight	= this.body.scrollHeight + "px";
+    } else {
+		this.slide.style.maxHeight	= null;
+    } 
+};
+SSlidePanel.prototype.isOpen = function() {
+	return this.is_open;
+};
+SSlidePanel.prototype.getTextNode = function() {
+	return this.textnode;
+};
+SSlidePanel.prototype.getContainerElement = function() {
+	return this.body;
+};
+SSlidePanel.prototype.clear = function() {
 	this.node_tool.removeChildNodes(this.body);
 };
 
@@ -672,7 +695,7 @@ SComboBox.prototype.getSelectedItem = function() {
 
 var SCheckBox = function(title) {
 	this.super = SComponent.prototype;
-	this.super._initComponent.call(this, "label", title);
+	this.super._initComponent.call(this, "label");
 	this.super.addClass.call(this, SComponent.cssclass.LABEL);
 	this.super.addClass.call(this, SComponent.cssclass.CHECKBOX);
 	var checkbox = document.createElement("input");
@@ -680,13 +703,40 @@ var SCheckBox = function(title) {
 	checkbox.id = this.id + "_checkbox";
 	checkbox.className = SComponent.cssclass.CHECKBOX_IMAGE;
 	this.checkbox = checkbox;
+	this.textnode = document.createTextNode( title ? title : "");
 	var element   = this.super.getElement.call(this);
-	element.appendChild(checkbox);
-	this.super.setLabelPosition.call(this, SComponent.labelposition.RIGHT);
+	element.appendChild(this.checkbox);
+	element.appendChild(this.textnode);
 };
 SCheckBox.prototype = new SComponent();
 SCheckBox.prototype.getEnabledElement = function() {
 	return this.checkbox;
+};
+SCheckBox.prototype.getTextNode = function() {
+	return this.textnode;
+};
+SCheckBox.prototype.getElementNode = function() {
+	return this.checkbox;
+};
+SCheckBox.prototype.setLabelPosition = function(labelposition) {
+	// ラベルかどうか確認
+	var element = this.getElement();
+	var textnode = this.getTextNode();
+	var elementnode = this.getElementNode();
+	// 中身を一旦消去する
+	this.node_tool.removeChildNodes(element);
+	// 配置を設定する
+	if(labelposition === SComponent.labelposition.LEFT) {
+		// ラベル内のテキストは左側
+		element.appendChild(textnode);
+		element.appendChild(elementnode);
+	}
+	else {
+		// ラベルのテキストは右側
+		element.appendChild(elementnode);
+		element.appendChild(textnode);
+	}
+	return;
 };
 SCheckBox.prototype.setCheckBoxImageSize = function(size) {
 	if(typeof size !== "number") {

@@ -31,12 +31,17 @@
 	// obj1 の内容を変更する
 	label1.setText("【" + label1.getText() + "】");
 	
-	// パネルを作って、指定した ID の要素内に入れる。
-	var groupbox = new SGroupBox("グループボックス");
-	panel.put(groupbox, SComponent.putype.NEWLINE);
+	// タイトル付き
+	var panel2 = new SPanel("タイトル付きパネル");
+	panel.put(panel2, SComponent.putype.NEWLINE);
+	panel2.put(new SLabel("テスト"), SComponent.putype.IN);
+	
+	// タイトル付き
+	var slidepanel = new SSlidePanel("スライドパネル");
+	panel2.put(slidepanel, SComponent.putype.NEWLINE);
 	
 	var button1 = new SButton("10回押す");
-	groupbox.put(button1, SComponent.putype.IN);
+	slidepanel.put(button1, SComponent.putype.IN);
 	var pushed1 = 10;
 	// クリックすると内部の関数が呼ばれる
 	button1.addListener(function () {
@@ -84,10 +89,14 @@
 		imagepanel.setEnabled(!imagepanel.isEnabled());
 	});
 	
+	// パネルを作って、指定した ID の要素内に入れる。
+	var groupbox = new SGroupBox("グループボックス");
+	slidepanel.put(groupbox, SComponent.putype.NEWLINE);
+	
 	// FileLoad
 	var fileloadbtn = new SFileLoadButton("load");
 	fileloadbtn.setFileAccept(SFileLoadButton.fileaccept.image);
-	button2.put(fileloadbtn, SComponent.putype.NEWLINE);
+	groupbox.put(fileloadbtn, SComponent.putype.IN);
 	fileloadbtn.addListener(function(file) {
 		var i = 0;
 		for(;i < file.length; i++) {
