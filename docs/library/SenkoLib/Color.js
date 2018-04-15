@@ -100,7 +100,7 @@ Color.prototype._setHSV = function(h, s, v, a) {
 	return this;
 };
 
-Color.prototype._setHLS = function(h, l, s, a) {
+Color.prototype._setHSL = function(h, s, l, a) {
 	var i, f;
 	var max, min, delta;
 	
@@ -156,6 +156,7 @@ Color.prototype._setHLS = function(h, l, s, a) {
 		this.g = min;
 		this.b = min + delta * (1.0 - f);
 	}
+	
 	return this;
 };
 
@@ -210,7 +211,7 @@ Color.prototype._getHSV = function() {
 	};
 };
 
-Color.prototype._getHLS = function() {
+Color.prototype._getHSL = function() {
 	var max, min, delta;
 	var h, l, s;
 	
@@ -247,8 +248,8 @@ Color.prototype._getHLS = function() {
 	
 	return {
 		h : h,
-		l : l,
 		s : s,
+		l : l,
 		a : this.a
 	};
 };
@@ -448,20 +449,20 @@ Color.prototype.getHSV = function() {
 	return color;
 };
 
-Color.newColorNormalizedHLS = function() {
+Color.newColorNormalizedHSL = function() {
 	var h = 0.0;
-	var l = 0.0;
 	var s = 0.0;
+	var l = 0.0;
 	var a = 1.0;
 	if(arguments.length === 1) {
 		if(arguments[0].h) h = arguments[0].h;
-		if(arguments[0].l) l = arguments[0].l;
 		if(arguments[0].s) s = arguments[0].s;
+		if(arguments[0].l) l = arguments[0].l;
 		if(arguments[0].a) a = arguments[0].a;
 		if (arguments[0].length >= 3) {
 			h = arguments[0][0];
-			l = arguments[0][1];
-			s = arguments[0][2];
+			s = arguments[0][1];
+			l = arguments[0][2];
 		}
 		if (arguments[0].length >= 4) {
 			a = arguments[0][3];
@@ -470,35 +471,35 @@ Color.newColorNormalizedHLS = function() {
 	else {
 		if(arguments.length >= 3) {
 			h = arguments[0];
-			l = arguments[1];
-			s = arguments[2];
+			s = arguments[1];
+			l = arguments[2];
 		}
 		if (arguments.length >= 4) {
 			a = arguments[3];
 		}
 	}
-	l = Math.min(Math.max(l, 0.0), 1.0);
 	s = Math.min(Math.max(s, 0.0), 1.0);
+	l = Math.min(Math.max(l, 0.0), 1.0);
 	a = Math.min(Math.max(a, 0.0), 1.0);
 	var color = new Color();
-	color._setHLS( Color._flact(h), l, s, a );
+	color._setHSL( Color._flact(h), s, l, a );
 	return color;
 };
 
-Color.newColorHLS = function() {
+Color.newColorHSL = function() {
 	var h = 0.0;
-	var l = 0.0;
 	var s = 0.0;
+	var l = 0.0;
 	var a = 255.0;
 	if(arguments.length === 1) {
 		if(arguments[0].h) h = arguments[0].h;
-		if(arguments[0].l) l = arguments[0].l;
 		if(arguments[0].s) s = arguments[0].s;
+		if(arguments[0].l) l = arguments[0].l;
 		if(arguments[0].a) a = arguments[0].a;
 		if (arguments[0].length >= 3) {
 			h = arguments[0][0];
-			l = arguments[0][1];
-			s = arguments[0][2];
+			s = arguments[0][1];
+			l = arguments[0][2];
 		}
 		if (arguments[0].length >= 4) {
 			a = arguments[0][3];
@@ -507,30 +508,30 @@ Color.newColorHLS = function() {
 	else {
 		if(arguments.length >= 3) {
 			h = arguments[0];
-			l = arguments[1];
-			s = arguments[2];
+			s = arguments[1];
+			l = arguments[2];
 		}
 		if (arguments.length >= 4) {
 			a = arguments[3];
 		}
 	}
-	return Color.newColorNormalizedHLS(
+	return Color.newColorNormalizedHSL(
 		h / 360.0,
-		l / 255.0,
 		s / 255.0,
+		l / 255.0,
 		a / 255.0
 	);
 };
 
-Color.prototype.getNormalizedHLS = function() {
-	return this._getHLS();
+Color.prototype.getNormalizedHSL = function() {
+	return this._getHSL();
 };
 
-Color.prototype.getHLS = function() {
-	var color = this.getNormalizedHLS();
+Color.prototype.getHSL = function() {
+	var color = this.getNormalizedHSL();
 	color.h = Math.round(color.h * 360.0);
-	color.l = Math.round(color.l * 255.0);
 	color.s = Math.round(color.s * 255.0);
+	color.l = Math.round(color.l * 255.0);
 	color.a = Math.round(color.a * 255.0);
 	return color;
 };

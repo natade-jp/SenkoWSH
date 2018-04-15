@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-﻿/* global System, Text, Blob, File, Element, ImageData */
+﻿/* global System, Text, Blob, File, Element, ImageData, Color */
 
 ﻿/**
  * SenkoLib SComponent.js
@@ -54,7 +54,8 @@ SComponent.cssclass = {
 	FILESAVE		: "SCOMPONENT_FileSave",
 	CANVAS			: "SCOMPONENT_Canvas",
 	PROGRESSBAR		: "SCOMPONENT_ProgressBar",
-	SLIDER			: "SCOMPONENT_Slider"
+	SLIDER			: "SCOMPONENT_Slider",
+	COLORPICKER		: "SCOMPONENT_ColorPicker"
 };
 SComponent.putype = {
 	IN		: 0,
@@ -1317,3 +1318,278 @@ SSlider.prototype.setHeight = function(height) {
 	this.super.setHeight.call(this, height);
 	this.slider.style.height = height.toString() + this.unit;
 };
+
+
+var SColorPicker = function() {
+	this.super = SComponent.prototype;
+	this.super._initComponent.call(this, "div");
+	this.super.addClass.call(this, SComponent.cssclass.COLORPICKER);
+	var element	= this.getElement();
+	var that = this;
+	var hls = {
+		H : {
+			div : document.createElement("div"),
+			split : 6,
+			value : 0.0,
+			input : null,
+			gauge : null,
+			color_data : [],
+			color_node : [],
+			is_press : false
+		},
+		S : {
+			div : document.createElement("div"),
+			split : 1,
+			value : 0.5,
+			input : null,
+			gauge : null,
+			color_data	: [],
+			color_node	: [],
+			is_press : false
+		},
+		L :	{
+			div : document.createElement("div"),
+			split : 2,
+			value : 0.5,
+			input : null,
+			gauge : null,
+			color_data : [],
+			color_node : [],
+			is_press : false
+		}
+	};
+	
+	for(var i = 0; i <= hls.H.split; i++) {
+		var x = 1.0 / hls.H.split * i;
+		hls.H.color_data.push(Color.newColorNormalizedHSL([x, 1.0, 0.5]).getCSSHex());
+	}
+	
+	// イベントをどこで発生させたか分かるように、
+	// 関数を戻り値としてもどし、戻り値として戻した関数を
+	// イベント発生時に呼び出すようにしています。
+	
+	// 押したときにマウスの位置を取得して更新する
+	var pushevent = function(name) {
+		return function(event) {
+			if(event.length) event = event[0];
+			if(hls[name].is_press) {
+				var node = event.target;
+				node = node ? node : event.currentTarget;
+				hls[name].value = event.offsetX / node.clientWidth;
+				that.redraw();
+			}
+		};
+	};
+	
+	// 押した・離したの管理
+	var pressevent = function(name, is_press) {
+		return function(event) {
+			if(event.length) event = event[0];
+			var node = event.target;
+			node = node ? node : event.currentTarget;
+			hls[name].is_press = is_press;
+			if(is_press) {
+				pushevent(name)(event);
+			}
+		};
+	};
+	
+	// インプットボックスの変更
+	var inputevent = function(name) {
+		return function(event) {
+			// イベントが発生したノードの取得
+			var node = event.target;
+			node = node ? node : event.currentTarget;
+			hls[name].value = node.value / 100.0;
+			that.redraw();
+		};
+	};
+	
+	// 内部のカラーバーを作成
+	var createSelectBar = function(target, name) {
+		var element_cover	= document.createElement("div");	// クリック検出
+		var element_gauge	= document.createElement("div");	// ゲージ表示用
+		var element_gradient= document.createElement("div");	// グラデーション作成用
+		
+		// レイヤーの初期設定
+		target.style.position			= "relative";
+		element_cover.style.position	= "absolute";
+		element_gauge.style.position	= "absolute";
+		element_gradient.style.position	= "absolute";
+		element_cover.style.margin		= "0px";
+		element_cover.style.padding		= "0px";
+		element_gauge.style.margin		= "0px";
+		element_gauge.style.padding		= "0px";
+		element_gradient.style.margin	= "0px";
+		element_gradient.style.padding	= "0px";
+		
+		// 上にかぶせるカバー
+		element_cover.addEventListener("mousedown"	, pressevent(name, true), false);
+		element_cover.addEventListener("mouseup"	, pressevent(name, false), false);
+		element_cover.addEventListener("mouseout"	, pressevent(name, false), false);
+		element_cover.addEventListener("mousemove"	, pushevent(name), false);
+		element_cover.addEventListener("touchstart"	, pressevent(name, true), false);
+		element_cover.addEventListener("touchend"	, pressevent(name, false), false);
+		element_cover.addEventListener("touchcancel", pressevent(name, false), false);
+		element_cover.addEventListener("touchmove"	, pushevent(name), false);
+		element_cover.dataset.name	= name;
+		element_cover.style.width			= "100%";
+		element_cover.style.height			= "100%";
+		element_cover.style.bottom			= "0px";
+		
+		// ゲージ（横幅で｜を表す）
+		element_gauge.style.width			= "33%";
+		element_gauge.style.height			= "100%";
+		element_gauge.style.bottom			= "0px";
+		element_gauge.style.borderStyle		= "ridge";
+		element_gauge.style.borderWidth		= "0px 2px 0px 0px";
+		hls[name].gauge = element_gauge;
+		
+		// グラデーション部分
+		var split = hls[name].split;
+		element_gradient.style.width			= "100%";
+		element_gradient.style.height			= "100%";
+		element_gradient.style.overflow		= "hidden";
+		for(var i = 0; i < split; i++) {
+			var element_color = document.createElement("div");
+			element_color.style.display		= "inline-block";
+			element_color.style.margin		= "0px";
+			element_color.style.padding		= "0px";
+			element_color.style.height		= "100%";
+			element_color.style.width		= 100.0 / split + "%";
+			element_color.style.background	= "linear-gradient(to right, #000, #FFF)";
+			hls[name].color_node.push(element_color);
+			element_gradient.appendChild(element_color);
+		}
+		
+		// 3つのレイヤーを結合
+		target.appendChild(element_gradient);
+		target.appendChild(element_gauge);
+		target.appendChild(element_cover);
+	};
+	
+	// 1行を作成
+	var createColorBar = function(name) {
+		var element_text		= document.createElement("span");
+		var element_colorbar	= document.createElement("div");
+		var element_inputbox	= document.createElement("input");
+		
+		// 位置の基本設定
+		element_text.style.display		= "inline-block";
+		element_colorbar.style.display	= "inline-block";
+		element_inputbox.style.display	= "inline-block";
+		element_text.style.verticalAlign		= "top";
+		element_colorbar.style.verticalAlign	= "top";
+		element_inputbox.style.verticalAlign	= "top";
+		element_text.style.height		= "100%";
+		element_colorbar.style.height	= "100%";
+		element_inputbox.style.height	= "100%";
+
+		// 文字
+		element_text.style.margin		= "0px";
+		element_text.style.padding		= "0px";
+		element_text.style.textAlign	= "center";
+		
+		// 中央のバー
+		element_colorbar.style.margin	= "0px 0.5em 0px 0.5em";
+		element_colorbar.style.padding	= "0px";
+		element_colorbar.style.borderStyle	= "solid";
+		element_colorbar.style.borderWidth	= "1px";
+		
+		// 入力ボックス
+		element_inputbox.addEventListener("input", inputevent(name), false);
+		element_inputbox.type = "number";
+		element_inputbox.style.margin	= "0px";
+		element_inputbox.style.padding	= "0px";
+		element_inputbox.style.borderStyle	= "none";
+		element_inputbox.min = 0.0;
+		element_inputbox.max = 100.0;
+		element_inputbox.step = 1.0;
+		hls[key].input = element_inputbox;
+		
+		// 横幅調整
+		element_text.style.width		= "1.5em";
+		element_colorbar.style.width	= "calc(100% - 6.0em)";
+		element_inputbox.style.width	= "3.5em";
+		
+		// バーの内部を作成
+		createSelectBar(element_colorbar, name);
+		
+		// バーのサイズ調整
+		var target = hls[key].div;
+		target.style.height				= "1.2em";
+		target.style.margin				= "0.5em 0px 0.5em 0px";
+		
+		element_text.appendChild(document.createTextNode(name));
+		target.appendChild(element_text);
+		target.appendChild(element_colorbar);
+		target.appendChild(element_inputbox);
+	};
+	
+	// HSLの3つを作成する
+	for(var key in hls) {
+		createColorBar(key);
+	}
+	
+	this.hls = hls;
+	this.listener = [];
+	
+	// Elementを更新後にくっつける
+	this.redraw();
+	element.appendChild(this.hls.H.div);
+	element.appendChild(this.hls.S.div);
+	element.appendChild(this.hls.L.div);
+};
+SColorPicker.prototype = new SComponent();
+SColorPicker.prototype.setColor = function(color) {
+	if(!(color instanceof Color)) {
+		throw "ArithmeticException";
+	}
+	var hls = this.hls;
+	var c = color.getNormalizedHSL();
+	hls.H.value = c.h;
+	hls.S.value = c.s; 
+	hls.L.value = c.l; 
+	this.redraw();
+};
+SColorPicker.prototype.getColor = function() {
+	var hls = this.hls;
+	var h = hls.H.value;
+	var s = hls.S.value;
+	var l = hls.L.value;
+	return Color.newColorNormalizedHSL([h, s, l]);
+};
+SColorPicker.prototype.redraw = function() {
+	var hls = this.hls;
+	var h = hls.H.value;
+	var s = hls.S.value;
+	var l = hls.L.value;
+	hls.S.color_data = [
+		Color.newColorNormalizedHSL([h, 0.0, l]).getCSSHex(),
+		Color.newColorNormalizedHSL([h, 1.0, l]).getCSSHex()
+	];
+	hls.L.color_data = [
+		Color.newColorNormalizedHSL([h, s, 0.0]).getCSSHex(),
+		Color.newColorNormalizedHSL([h, s, 0.5]).getCSSHex(),
+		Color.newColorNormalizedHSL([h, s, 1.0]).getCSSHex()
+	];
+	for(var key in hls) {
+		var data = hls[key].color_data;
+		var node = hls[key].color_node;
+		for(var i = 0; i < node.length; i++) {
+			node[i].style.background = "linear-gradient(to right, " + data[i] + ", " + data[i + 1] + ")";
+		}
+		var value = Math.round(100.0 * hls[key].value);
+		hls[key].gauge.style.width = value + "%";
+		hls[key].input.value = value;
+	}
+	for(var i = 0;i < this.listener.length; i++) {
+		this.listener[i]();
+	}
+};
+
+SColorPicker.prototype.addListener = function(func) {
+	this.listener.push(func);
+};
+
+

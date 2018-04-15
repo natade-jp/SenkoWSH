@@ -145,7 +145,7 @@
 	
 	// Slider
 	var slider = new SSlider(0, 100);
-	combobox.put(slider, SComponent.putype.NEWLINE);
+	checkbox.put(slider, SComponent.putype.NEWLINE);
 	slider.setMinorTickSpacing(10);
 	slider.setMajorTickSpacing(50);
 	slider.addListener(function () {
@@ -155,5 +155,13 @@
 	var imagepanel = new SImagePanel();
 	slider.put(imagepanel, SComponent.putype.NEWLINE);
 	imagepanel.putImage("../resource/image_test1.jpg");
+	
+	// 色の選択
+	var picker = new SColorPicker();
+	imagepanel.put(picker, SComponent.putype.NEWLINE);
+	picker.addListener(function () {
+		System.out.println("ColorPicker " + picker.getColor());
+	});
+	
 	
 }
