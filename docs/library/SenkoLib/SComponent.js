@@ -1431,7 +1431,6 @@ var SColorPicker = function() {
 		element_cover.addEventListener("touchstart"	, pressevent(name, true), false);
 		element_cover.addEventListener("touchend"	, pressevent(name, false), false);
 		element_cover.addEventListener("touchcancel", pressevent(name, false), false);
-		element_cover.addEventListener("touchmove"	, pushevent(name), false);
 		element_cover.dataset.name	= name;
 		element_cover.style.width			= "100%";
 		element_cover.style.height			= "100%";

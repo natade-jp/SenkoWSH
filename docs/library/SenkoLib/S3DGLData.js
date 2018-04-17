@@ -535,8 +535,13 @@ S3GLMesh.prototype.disposeGLData = function() {
 		{
 			var material_list = this.getMaterialArray();
 			for(var i = 0; i < material_list.length; i++) {
-				material_list[i].textureDiffuse.dispose();
-				material_list[i].textureNormal.dispose();
+				var mat = material_list[i];
+				for(var key in mat) {
+					var obj = mat[key];
+					if(obj instanceof S3Texture) {
+						obj.dispose();
+					}
+				}
 			}
 		}
 	}
