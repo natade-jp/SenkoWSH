@@ -320,7 +320,9 @@ S3GLMesh.prototype.createTriangleIndexData = function() {
 	}
 	
 	// 素材ごとに、三角形の各頂点に、面の法線情報を追加する
+	// 後に正規化する（平均値をとる）が、同じベクトルを加算しないようにキャッシュでチェックする
 	var vertexdatalist_material = [];
+	var vertexdatalist_material_cash = [];
 	for(i = 0; i < triangleindex_list.length; i++) {
 		var triangleindex = triangleindex_list[i];
 		var material = triangleindex.materialIndex;
@@ -328,26 +330,37 @@ S3GLMesh.prototype.createTriangleIndexData = function() {
 		// 未登録なら新規作成する
 		if(vertexdatalist_material[material] === undefined) {
 			vertexdatalist_material[material] = [];
+			vertexdatalist_material_cash[material] = [];
 		}
 		var vertexdata_list = vertexdatalist_material[material];
+		var vertexdata_list_cash = vertexdatalist_material_cash[material];
 		// 素材ごとの三角形の各頂点に対応する法線情報に加算していく
 		for(j = 0; j < 3; j++) {
 			// 未登録なら新規作成する
 			var index = triangleindex.index[j];
 			if(vertexdata_list[index] === undefined) {
-				var newdata = {};
-				newdata.normal		= new S3Vector(0, 0, 0);
-				newdata.tangent		= new S3Vector(0, 0, 0);
-				newdata.binormal	= new S3Vector(0, 0, 0);
-				vertexdata_list[index] = newdata;
+				vertexdata_list[index] = {
+					normal		: new S3Vector(0, 0, 0),
+					tangent		: new S3Vector(0, 0, 0),
+					binormal	: new S3Vector(0, 0, 0)
+				};
+				vertexdata_list_cash[index] = {
+					normal		: [],
+					tangent		: [],
+					binormal	: []
+				};
 			}
 			var vertexdata = vertexdata_list[index];
+			var vertexdata_cash = vertexdata_list_cash[index];
 			
 			// 加算する
 			for(var vector_name in normallist) {
 				if(triangledata.face[vector_name] !== null) {
 					// データが入っていたら加算する
+					var id = triangledata.face[vector_name].toHash(3);
+					if(vertexdata_cash[vector_name][id]) continue;
 					vertexdata[vector_name] = vertexdata[vector_name].add(triangledata.face[vector_name]);
+					vertexdata_cash[vector_name][id] = true;
 				}
 			}
 		}
@@ -369,9 +382,9 @@ S3GLMesh.prototype.createTriangleIndexData = function() {
 	
 	// 面法線と、頂点（スムーズ）法線との角度の差が、下記より大きい場合は面法線を優先
 	var SMOOTH = {};
-	SMOOTH.normal	= Math.cos((60/360)*(2*Math.PI));
-	SMOOTH.tangent	= Math.cos((60/360)*(2*Math.PI));
-	SMOOTH.binormal	= Math.cos((60/360)*(2*Math.PI));
+	SMOOTH.normal	= Math.cos((50/360)*(2*Math.PI));
+	SMOOTH.tangent	= Math.cos((50/360)*(2*Math.PI));
+	SMOOTH.binormal	= Math.cos((50/360)*(2*Math.PI));
 	
 	// 最終的に三角形の各頂点の法線を求める
 	for(i = 0; i < triangleindex_list.length; i++) {
