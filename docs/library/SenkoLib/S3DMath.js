@@ -245,15 +245,15 @@ S3Vector.prototype.toString = function(num) {
 S3Vector.prototype.toHash = function(num) {
 	var s = 4;
 	var t = 10000;
-	var x = (Number.parseFloat(this.x.toExponential(3).substring(0,5)) * 321) & 0xFFFFFFFF;
+	var x = (parseFloat(this.x.toExponential(3).substring(0,5)) * 321) & 0xFFFFFFFF;
 	if(num >= 2) {
-		x = (x * 12345 + Number.parseFloat(this.y.toExponential(s).substring(0,s+2)) * t) & 0xFFFFFFFF;
+		x = (x * 12345 + parseFloat(this.y.toExponential(s).substring(0,s+2)) * t) & 0xFFFFFFFF;
 	}
 	if(num >= 3) {
-		x = (x * 12345 + Number.parseFloat(this.z.toExponential(s).substring(0,s+2)) * t) & 0xFFFFFFFF;
+		x = (x * 12345 + parseFloat(this.z.toExponential(s).substring(0,s+2)) * t) & 0xFFFFFFFF;
 	}
 	if(num >= 4) {
-		x = (x * 12345 + Number.parseFloat(this.w.toExponential(s).substring(0,s+2)) * t) & 0xFFFFFFFF;
+		x = (x * 12345 + parseFloat(this.w.toExponential(s).substring(0,s+2)) * t) & 0xFFFFFFFF;
 	}
 	return x;
 };
