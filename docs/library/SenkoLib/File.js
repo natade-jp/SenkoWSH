@@ -290,10 +290,10 @@ File.prototype.isHidden = function() {
 File.prototype.lastModified = function() {
 	if(this.isJScript) {
 		if(this.isFile()) {
-			return(new Date(this.fso.getFile(this.pathname).DateLastAccessed));
+			return(new Date(this.fso.getFile(this.pathname).DateLastModified));
 		}
 		else if(this.isDirectory()) {
-			return(new Date(this.fso.getFolder(this.pathname).DateLastAccessed));
+			return(new Date(this.fso.getFolder(this.pathname).DateLastModified));
 		}
 		else {
 			return(false);
@@ -488,12 +488,21 @@ File.prototype.mkdirs = function() {
 File.prototype.renameTo = function(name) {
 	if(this.isJScript) {
 		if(this.isFile()) {
-			this.fso.getFile(this.pathname).Name = name;
+			// 例えばファイル名を大文字から小文字に変換といった場合、
+			// Scripting.FileSystemObject の仕様によりエラーが発生するため、
+			// 別のファイル名を経由する
+			var file = this.fso.getFile(this.pathname);
+			var key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);
+			file.Name = name.getName() + key;
+			file.Name = name.getName();
 			this.pathname = name.getAbsolutePath();
 			return(true);
 		}
 		else if(this.isDirectory()) {
-			this.fso.getFolder(this.pathname).Name = name;
+			var file = this.fso.getFolder(this.pathname);
+			var key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);
+			file.Name = name.getName() + key;
+			file.Name = name.getName();
 			this.pathname = name.getAbsolutePath();
 			return(true);
 		}
@@ -877,6 +886,10 @@ File.prototype.setByte = function(array_) {
 
 //static
 File.createTempFile = function(){
+	var isHTML = (typeof window !== "undefined");
+	if(isHTML) {
+		throw "not createTempFile";
+	}
 	var isJScript = (typeof WSH !== "undefined");
 	if(isJScript) {
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -884,6 +897,11 @@ File.createTempFile = function(){
 	}
 };
 File.getCurrentDirectory = function(){
+	var isHTML = (typeof window !== "undefined");
+	if(isHTML) {
+		var file = new File("./");
+		return file.getParent();
+	}
 	var isJScript = (typeof WSH !== "undefined");
 	if(isJScript) {
 		var shell = new ActiveXObject("WScript.Shell");
@@ -891,6 +909,10 @@ File.getCurrentDirectory = function(){
 	}
 };
 File.setCurrentDirectory = function(file) {
+	var isHTML = (typeof window !== "undefined");
+	if(isHTML) {
+		throw "not setCurrentDirectory";
+	}
 	var isJScript = (typeof WSH !== "undefined");
 	if(isJScript) {
 		var shell = WScript.CreateObject ("WScript.Shell");
@@ -899,6 +921,10 @@ File.setCurrentDirectory = function(file) {
 	}
 };
 File.searchFile = function(file){
+	var isHTML = (typeof window !== "undefined");
+	if(isHTML) {
+		throw "not searchFile";
+	}
 	var isJScript = (typeof WSH !== "undefined");
 	if(isJScript) {
 		var fso = new ActiveXObject('Scripting.FileSystemObject');
