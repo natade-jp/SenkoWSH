@@ -17,14 +17,12 @@
 
 var CSVTool = {
 	
-	parseCSV: function(text, separator, newline) {
+	parseCSV: function(text, separator) {
 		if(arguments.length < 1) {
 			separator = ",";
 		}
-		if(arguments.length < 2) {
-			newline = "\n";
-		}
-		text = text.replace(/\r\n?|\n/g, newline);
+		// 改行コードの正規化
+		text = text.replace(/\r\n?|\n/g, "\n");
 		var CODE_SEPARATOR = separator.charCodeAt(0);
 		var CODE_CR    = 0x0D;
 		var CODE_LF    = 0x0A;
@@ -426,16 +424,25 @@ File.prototype.list = function() {
 };
 File.prototype.getAbsolutePath = function() {
 	if(this.isHTML) {
-		if(/$http/.test(this.pathname)) {
-			return this.pathname;
+		var all_path = null;
+		// URLを一度取得する
+		if(/^http/.test(this.pathname)) {
+			all_path = this.pathname;
 		}
-		var name = window.location.toString();
+		else {
+			var curdir = window.location.toString();
 		// 最後がスラッシュで終えていないは、ファイル部分を削る
-		if(!(/\/$/.test(name))) {
-			name = name.match(/.*\//)[0];
+			if(!(/\/$/.test(curdir))) {
+				curdir = curdir.match(/.*\//)[0];
+			}
+			all_path = curdir + this.pathname;
 		}
-		// フォルダを移動していく
-		var namelist = this.pathname.split("/");
+		// ホストとファイルに分ける
+		var hosttext = all_path.match(/^http[^\/]+\/\/[^\/]+\//)[0];
+		var filetext = all_path.substr(hosttext.length);
+		// パスを1つずつ解析しながら辿っていく
+		var name = hosttext;
+		var namelist = filetext.split("/");
 		var i;
 		for(i = 0; i < namelist.length; i++) {
 			if((namelist[i] === "") || (namelist[i] === ".")) {
@@ -992,16 +999,23 @@ File.searchFile = function(file){
 		return(null);
 	}
 };
-File.downloadFileList = function(files, callback) {
+File.downloadFileList = function(files, lastCallback, fileCallback) {
 	var downloadcount = 0;
 	var i;
-	var inf = function() {
-		downloadcount++;
-		if(downloadcount === files.length) {
-			callback();
-		}
+	var inf = function(filenumber) {
+		return function() {
+			downloadcount++;
+			if(fileCallback && fileCallback.length && fileCallback[filenumber] ) {
+				fileCallback[filenumber](files[filenumber]);
+			}
+			if(downloadcount === files.length) {
+				if(lastCallback) {
+					lastCallback(files);
+				}
+			}
+		};
 	};
 	for(i = 0; i < files.length; i++ ) {
-		files[i].download(inf);
+		files[i].download(inf(i));
 	}
 };
