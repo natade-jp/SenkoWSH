@@ -845,6 +845,8 @@ String.format = function(){
 	return(parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));
 };
 
-String.valueOf = function(obj){
-	return(obj.toString());
-};
+if(typeof String.valueOf === "undefined") {
+	String.valueOf = function(obj){
+		return(obj.toString());
+	};
+}
