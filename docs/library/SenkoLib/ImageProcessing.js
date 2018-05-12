@@ -3,9 +3,9 @@
 ﻿/* global System, ImageData */
 
 ﻿/**
- * SenkoLib SImageProcessing.js
+ * SenkoLib ImageProcessing.js
  *  画像処理ライブラリの基本ライブラリ
- *  色(SIColor) と 画像データ(SIData) の定義を行います。
+ *  色(ImgColor) と 画像データ(ImgData) の定義を行います。
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -22,72 +22,72 @@
  * 色クラス
  * /////////////////////////////////////////////////////////
  */
-var SIColor = function() {
+var ImgColor = function() {
 };
-SIColor.prototype.getColor = function() {
+ImgColor.prototype.getColor = function() {
 	return null;
 };
-SIColor.prototype.clone = function() {
+ImgColor.prototype.clone = function() {
 	return null;
 };
-SIColor.prototype.zero = function() {
+ImgColor.prototype.zero = function() {
 	return null;
 };
-SIColor.prototype.one = function() {
+ImgColor.prototype.one = function() {
 	return null;
 };
-SIColor.prototype.add = function() {
+ImgColor.prototype.add = function() {
 	return null;
 };
-SIColor.prototype.sub = function() {
+ImgColor.prototype.sub = function() {
 	return null;
 };
-SIColor.prototype.mul = function() {
+ImgColor.prototype.mul = function() {
 	return null;
 };
-SIColor.prototype.div = function() {
+ImgColor.prototype.div = function() {
 	return null;
 };
-SIColor.prototype.exp = function() {
+ImgColor.prototype.exp = function() {
 	return null;
 };
-SIColor.prototype.log = function() {
+ImgColor.prototype.log = function() {
 	return null;
 };
-SIColor.prototype.pow = function() {
+ImgColor.prototype.pow = function() {
 	return null;
 };
-SIColor.prototype.baselog = function() {
+ImgColor.prototype.baselog = function() {
 	return null;
 };
-SIColor.prototype.table = function() {
+ImgColor.prototype.table = function() {
 	return null;
 };
-SIColor.prototype.random = function() {
+ImgColor.prototype.random = function() {
 	return null;
 };
-SIColor.prototype.luminance = function() {
+ImgColor.prototype.luminance = function() {
 	return null;
 };
-SIColor.prototype.addColor = function() {
+ImgColor.prototype.addColor = function() {
 	return null;
 };
-SIColor.prototype.subColor = function() {
+ImgColor.prototype.subColor = function() {
 	return null;
 };
-SIColor.prototype.mulColor = function() {
+ImgColor.prototype.mulColor = function() {
 	return null;
 };
-SIColor.prototype.divColor = function() {
+ImgColor.prototype.divColor = function() {
 	return null;
 };
-SIColor.prototype.maxColor = function() {
+ImgColor.prototype.maxColor = function() {
 	return null;
 };
-SIColor.prototype.minColor = function() {
+ImgColor.prototype.minColor = function() {
 	return null;
 };
-SIColor.normType = {
+ImgColor.normType = {
 	/**
 	 * マンハッタン距離を使用する
 	 * @type Number
@@ -100,51 +100,51 @@ SIColor.normType = {
 	 */
 	Eugrid : 1
 };
-SIColor.prototype.norm = function() {
+ImgColor.prototype.norm = function() {
 	return null;
 };
-SIColor.prototype.normFast = function() {
+ImgColor.prototype.normFast = function() {
 	return null;
 };
-SIColor.prototype.normColor = function(c, normType) {
+ImgColor.prototype.normColor = function(c, normType) {
 	return this.subColor(c).norm(normType);
 };
-SIColor.prototype.normColorFast = function(c, normType) {
+ImgColor.prototype.normColorFast = function(c, normType) {
 	return this.subColor(c).normFast(normType);
 };
-SIColor.prototype.getBlendAlpha = function() {
+ImgColor.prototype.getBlendAlpha = function() {
 	return null;
 };
-SIColor.prototype.setBlendAlpha = function() {
+ImgColor.prototype.setBlendAlpha = function() {
 	return null;
 };
-SIColor.prototype.exchangeColorAlpha = function() {
+ImgColor.prototype.exchangeColorAlpha = function() {
 	return null;
 };
-SIColor.prototype.equals = function() {
+ImgColor.prototype.equals = function() {
 	return false;
 };
-SIColor.ipLerp = function(v0, v1, x) {
+ImgColor.ipLerp = function(v0, v1, x) {
 	var delta = v1.subColor(v0);
 	return v0.addColor(delta.mul(x));
 };
-SIColor.ipCosine = function(v0, v1, x) {
-	return SIColor.ipLerp(v0, v1,((1.0 - Math.cos(Math.PI * x)) * 0.5));
+ImgColor.ipCosine = function(v0, v1, x) {
+	return ImgColor.ipLerp(v0, v1,((1.0 - Math.cos(Math.PI * x)) * 0.5));
 };
-SIColor.ipHermite2p3 = function(v0, v1, x) {
-	return SIColor.ipLerp(v0, v1, (x * x * (3.0 - 2.0 * x)));
+ImgColor.ipHermite2p3 = function(v0, v1, x) {
+	return ImgColor.ipLerp(v0, v1, (x * x * (3.0 - 2.0 * x)));
 };
-SIColor.ipHermite2p5 = function(v0, v1, x) {
-	return SIColor.ipLerp(v0, v1, (x * x * x * (6.0 * x * x - 15.0 * x + 10.0)));
+ImgColor.ipHermite2p5 = function(v0, v1, x) {
+	return ImgColor.ipLerp(v0, v1, (x * x * x * (6.0 * x * x - 15.0 * x + 10.0)));
 };
-SIColor.ipHermite4p = function(v0, v1, v2, v3, x) {
+ImgColor.ipHermite4p = function(v0, v1, v2, v3, x) {
 	var P = v3.subColor(v2).subColor(v0.subColor(v1));
 	var Q = v0.subColor(v1).subColor(P);
 	var R = v2.subColor(v0);
 	var S = v1;
 	return  P.mul(x * x * x).addColor(Q.mul(x * x)).addColor(R.mul(x)).addColor(S);
 };
-SIColor.funcInBicubic = function(d, a) {
+ImgColor.funcInBicubic = function(d, a) {
 	if(d <= 1.0) {
 		return 1.0 - ((a + 3.0) * d * d) + ((a + 2.0) * d * d * d);
 	}
@@ -152,31 +152,31 @@ SIColor.funcInBicubic = function(d, a) {
 		return (-4.0 * a) + (8.0 * a * d) - (5.0 * a * d * d) + (a * d * d * d);
 	}
 };
-SIColor.ipBicubic = function(v0, v1, v2, v3, x, a) {
+ImgColor.ipBicubic = function(v0, v1, v2, v3, x, a) {
 	var w0, w1, w2, w3, c;
-	w0 = SIColor.funcInBicubic(x + 1, a);
-	w1 = SIColor.funcInBicubic(x    , a);
-	w2 = SIColor.funcInBicubic(1 - x, a);
-	w3 = SIColor.funcInBicubic(2 - x, a);
+	w0 = ImgColor.funcInBicubic(x + 1, a);
+	w1 = ImgColor.funcInBicubic(x    , a);
+	w2 = ImgColor.funcInBicubic(1 - x, a);
+	w3 = ImgColor.funcInBicubic(2 - x, a);
 	c = v0.mul(w0).addColor(v1.mul(w1)).addColor(v2.mul(w2)).addColor(v3.mul(w3));
 	return c.mul(1.0 / (w0 + w1 + w2 + w3));
 };
-SIColor.ipBicubicSoft = function(v0, v1, v2, v3, x) {
-	return SIColor.ipBicubic(v0, v1, v2, v3, x, -0.5);
+ImgColor.ipBicubicSoft = function(v0, v1, v2, v3, x) {
+	return ImgColor.ipBicubic(v0, v1, v2, v3, x, -0.5);
 };
-SIColor.ipBicubicNormal = function(v0, v1, v2, v3, x) {
-	return SIColor.ipBicubic(v0, v1, v2, v3, x, -1.0);
+ImgColor.ipBicubicNormal = function(v0, v1, v2, v3, x) {
+	return ImgColor.ipBicubic(v0, v1, v2, v3, x, -1.0);
 };
-SIColor.ipBicubicSharp = function(v0, v1, v2, v3, x) {
-	return SIColor.ipBicubic(v0, v1, v2, v3, x, -1.2);
+ImgColor.ipBicubicSharp = function(v0, v1, v2, v3, x) {
+	return ImgColor.ipBicubic(v0, v1, v2, v3, x, -1.2);
 };
-SIColor.ipBicubic2D = function(va, nx, ny, a) {
+ImgColor.ipBicubic2D = function(va, nx, ny, a) {
 	var output = va[0][0].zero();
 	var x, y, y_weight, weight, sum = 0.0;
 	for(y = 0; y < 4; y++) {
-		y_weight = SIColor.funcInBicubic(Math.abs(- ny + y - 1), a);
+		y_weight = ImgColor.funcInBicubic(Math.abs(- ny + y - 1), a);
 		for(x = 0; x < 4; x++) {
-			weight  = SIColor.funcInBicubic(Math.abs(- nx + x - 1), a);
+			weight  = ImgColor.funcInBicubic(Math.abs(- nx + x - 1), a);
 			weight *= y_weight;
 			sum    += weight;
 			output = output.addColor(va[y][x].mul(weight));
@@ -185,288 +185,288 @@ SIColor.ipBicubic2D = function(va, nx, ny, a) {
 	output = output.mul(1.0 / sum);
 	return output;
 };
-SIColor.ipBicubic2DSoft = function(va, nx, ny) {
-	return SIColor.ipBicubic2D(va, nx, ny, -0.5);
+ImgColor.ipBicubic2DSoft = function(va, nx, ny) {
+	return ImgColor.ipBicubic2D(va, nx, ny, -0.5);
 };
-SIColor.ipBicubic2DNormal = function(va, nx, ny) {
-	return SIColor.ipBicubic2D(va, nx, ny, -1.0);
+ImgColor.ipBicubic2DNormal = function(va, nx, ny) {
+	return ImgColor.ipBicubic2D(va, nx, ny, -1.0);
 };
-SIColor.ipBicubic2DSharp = function(va, nx, ny) {
-	return SIColor.ipBicubic2D(va, nx, ny, -1.2);
+ImgColor.ipBicubic2DSharp = function(va, nx, ny) {
+	return ImgColor.ipBicubic2D(va, nx, ny, -1.2);
 };
-SIColor.brendNone = function(x, y, alpha) {
+ImgColor.brendNone = function(x, y, alpha) {
 	return y;
 };
-SIColor.brendAlpha = function(x, y, alpha) {
+ImgColor.brendAlpha = function(x, y, alpha) {
 	var x_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
-	x = SIColor.ipLerp(x, y, y_alpha);
+	x = ImgColor.ipLerp(x, y, y_alpha);
 	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
 };
-SIColor.brendAdd = function(x, y, alpha) {
+ImgColor.brendAdd = function(x, y, alpha) {
 	var x_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.addColor(y.mul(y_alpha));
 	return x.setBlendAlpha(Math.max(x_alpha, y_alpha));
 };
-SIColor.brendSub = function(x, y, alpha) {
+ImgColor.brendSub = function(x, y, alpha) {
 	var new_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.subColor(y.mul(y_alpha));
 	return x.setBlendAlpha(new_alpha);
 };
-SIColor.brendRevSub = function(x, y, alpha) {
+ImgColor.brendRevSub = function(x, y, alpha) {
 	var new_alpha = y.getBlendAlpha();
 	var x_alpha = x.getBlendAlpha() * alpha;
 	y = y.subColor(x.mul(x_alpha));
 	return y.setBlendAlpha(new_alpha);
 };
-SIColor.brendMul = function(x, y, alpha) {
+ImgColor.brendMul = function(x, y, alpha) {
 	var new_alpha = x.getBlendAlpha();
 	var y_alpha = y.getBlendAlpha() * alpha;
 	x = x.mulColor(y.mul(y_alpha).div(255.0));
 	return x.setBlendAlpha(new_alpha);
 };
 
-var SIColorY = function(color) {
+var ImgColorY = function(color) {
 	this.y = color;
 };
-SIColorY.prototype = new SIColor();
-SIColorY.prototype.getColor = function() {
+ImgColorY.prototype = new ImgColor();
+ImgColorY.prototype.getColor = function() {
 	return this.y;
 };
-SIColorY.prototype.clone = function() {
-	return new SIColorY(this.y);
+ImgColorY.prototype.clone = function() {
+	return new ImgColorY(this.y);
 };
-SIColorY.prototype.zero = function() {
-	return new SIColorY(0.0);
+ImgColorY.prototype.zero = function() {
+	return new ImgColorY(0.0);
 };
-SIColorY.prototype.one = function() {
-	return new SIColorY(1.0);
+ImgColorY.prototype.one = function() {
+	return new ImgColorY(1.0);
 };
-SIColorY.prototype.add = function(x) {
-	return new SIColorY(this.y + x);
+ImgColorY.prototype.add = function(x) {
+	return new ImgColorY(this.y + x);
 };
-SIColorY.prototype.sub = function(x) {
-	return new SIColorY(this.y - x);
+ImgColorY.prototype.sub = function(x) {
+	return new ImgColorY(this.y - x);
 };
-SIColorY.prototype.mul = function(x) {
-	return new SIColorY(this.y * x);
+ImgColorY.prototype.mul = function(x) {
+	return new ImgColorY(this.y * x);
 };
-SIColorY.prototype.div = function(x) {
-	return new SIColorY(this.y / x);
+ImgColorY.prototype.div = function(x) {
+	return new ImgColorY(this.y / x);
 };
-SIColorY.prototype.exp = function() {
-	return new SIColorY(Math.exp(this.y));
+ImgColorY.prototype.exp = function() {
+	return new ImgColorY(Math.exp(this.y));
 };
-SIColorY.prototype.log = function() {
-	return new SIColorY(Math.log(this.y));
+ImgColorY.prototype.log = function() {
+	return new ImgColorY(Math.log(this.y));
 };
-SIColorY.prototype.pow = function(base) {
-	return new SIColorY(Math.pow(base, this.y));
+ImgColorY.prototype.pow = function(base) {
+	return new ImgColorY(Math.pow(base, this.y));
 };
-SIColorY.prototype.baselog = function(base) {
-	return new SIColorY(Math.log(this.y) / Math.log(base));
+ImgColorY.prototype.baselog = function(base) {
+	return new ImgColorY(Math.log(this.y) / Math.log(base));
 };
-SIColorY.prototype.table = function(table) {
-	return new SIColorY(table[Math.floor(this.y)]);
+ImgColorY.prototype.table = function(table) {
+	return new ImgColorY(table[Math.floor(this.y)]);
 };
-SIColorY.prototype.random = function() {
-	return new SIColorY(Math.random() * 256);
+ImgColorY.prototype.random = function() {
+	return new ImgColorY(Math.random() * 256);
 };
-SIColorY.prototype.luminance = function() {
+ImgColorY.prototype.luminance = function() {
 	return this.y;
 };
-SIColorY.prototype.addColor = function(c) {
-	return new SIColorY(this.y + c.y);
+ImgColorY.prototype.addColor = function(c) {
+	return new ImgColorY(this.y + c.y);
 };
-SIColorY.prototype.subColor = function(c) {
-	return new SIColorY(this.y - c.y);
+ImgColorY.prototype.subColor = function(c) {
+	return new ImgColorY(this.y - c.y);
 };
-SIColorY.prototype.mulColor = function(c) {
-	return new SIColorY(this.y * c.y);
+ImgColorY.prototype.mulColor = function(c) {
+	return new ImgColorY(this.y * c.y);
 };
-SIColorY.prototype.divColor = function(c) {
-	return new SIColorY(this.y / c.y);
+ImgColorY.prototype.divColor = function(c) {
+	return new ImgColorY(this.y / c.y);
 };
-SIColorY.prototype.maxColor = function(c) {
-	return new SIColorY(Math.max(c.y, this.y));
+ImgColorY.prototype.maxColor = function(c) {
+	return new ImgColorY(Math.max(c.y, this.y));
 };
-SIColorY.prototype.minColor = function(c) {
-	return new SIColorY(Math.min(c.y, this.y));
+ImgColorY.prototype.minColor = function(c) {
+	return new ImgColorY(Math.min(c.y, this.y));
 };
-SIColorY.prototype.norm = function() {
+ImgColorY.prototype.norm = function() {
 	return Math.abs(this.y);
 };
-SIColorY.prototype.normFast = function() {
+ImgColorY.prototype.normFast = function() {
 	return Math.abs(this.y);
 };
-SIColorY.prototype.getBlendAlpha = function() {
+ImgColorY.prototype.getBlendAlpha = function() {
 	return 1.0;
 };
-SIColorY.prototype.setBlendAlpha = function() {
+ImgColorY.prototype.setBlendAlpha = function() {
 	return this;
 };
-SIColorY.prototype.exchangeColorAlpha = function() {
+ImgColorY.prototype.exchangeColorAlpha = function() {
 	return this;
 };
-SIColorY.prototype.equals = function(c) {
+ImgColorY.prototype.equals = function(c) {
 	return this.y === c.y;
 };
-SIColorY.prototype.toString = function() {
+ImgColorY.prototype.toString = function() {
 	return "color(" + this.y + ")";
 };
-var SIColorRGBA = function(color) {
+var ImgColorRGBA = function(color) {
 	// ディープコピー
 	this.rgba = [color[0], color[1], color[2], color[3]];
 };
-SIColorRGBA.prototype = new SIColor();
-SIColorRGBA.prototype.getColor = function() {
+ImgColorRGBA.prototype = new ImgColor();
+ImgColorRGBA.prototype.getColor = function() {
 	return this.rgba;
 };
-SIColorRGBA.prototype.clone = function() {
-	return new SIColorRGBA(this.rgba);
+ImgColorRGBA.prototype.clone = function() {
+	return new ImgColorRGBA(this.rgba);
 };
-SIColorRGBA.prototype.zero = function() {
-	return new SIColorRGBA([0.0, 0.0, 0.0, 0.0]);
+ImgColorRGBA.prototype.zero = function() {
+	return new ImgColorRGBA([0.0, 0.0, 0.0, 0.0]);
 };
-SIColorRGBA.prototype.one = function() {
-	return new SIColorRGBA([1.0, 1.0, 1.0, 1.0]);
+ImgColorRGBA.prototype.one = function() {
+	return new ImgColorRGBA([1.0, 1.0, 1.0, 1.0]);
 };
-SIColorRGBA.prototype.add = function(x) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.add = function(x) {
+	return new ImgColorRGBA([
 		this.rgba[0] + x,	this.rgba[1] + x,
 		this.rgba[2] + x,	this.rgba[3] + x ]);
 };
-SIColorRGBA.prototype.sub = function(x) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.sub = function(x) {
+	return new ImgColorRGBA([
 		this.rgba[0] - x,	this.rgba[1] - x,
 		this.rgba[2] - x,	this.rgba[3] - x ]);
 };
-SIColorRGBA.prototype.mul = function(x) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.mul = function(x) {
+	return new ImgColorRGBA([
 		this.rgba[0] * x,	this.rgba[1] * x,
 		this.rgba[2] * x,	this.rgba[3] * x ]);
 };
-SIColorRGBA.prototype.div = function(x) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.div = function(x) {
+	return new ImgColorRGBA([
 		this.rgba[0] / x,	this.rgba[1] / x,
 		this.rgba[2] / x,	this.rgba[3] / x ]);
 };
-SIColorRGBA.prototype.exp = function() {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.exp = function() {
+	return new ImgColorRGBA([
 		Math.exp(this.rgba[0]),	Math.exp(this.rgba[1]),
 		Math.exp(this.rgba[2]),	Math.exp(this.rgba[3]) ]);
 };
-SIColorRGBA.prototype.log = function() {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.log = function() {
+	return new ImgColorRGBA([
 		Math.log(this.rgba[0]),	Math.log(this.rgba[1]),
 		Math.log(this.rgba[2]),	Math.log(this.rgba[3]) ]);
 };
-SIColorRGBA.prototype.pow = function(base) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.pow = function(base) {
+	return new ImgColorRGBA([
 		Math.pow(base, this.rgba[0]),	Math.pow(base, this.rgba[1]),
 		Math.pow(base, this.rgba[2]),	Math.pow(base, this.rgba[3]) ]);
 };
-SIColorRGBA.prototype.baselog = function(base) {
+ImgColorRGBA.prototype.baselog = function(base) {
 	var x = 1.0 / Math.log(base);
-	return new SIColorRGBA([
+	return new ImgColorRGBA([
 		Math.log(this.rgba[0]) * x,	Math.log(this.rgba[1]) * x,
 		Math.log(this.rgba[2]) * x,	Math.log(this.rgba[3]) * x ]);
 };
-SIColorRGBA.prototype.table = function(table) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.table = function(table) {
+	return new ImgColorRGBA([
 		table[Math.round(this.rgba[0])], table[Math.round(this.rgba[1])],
 		table[Math.round(this.rgba[2])], table[Math.round(this.rgba[3])] ]);
 };
-SIColorRGBA.prototype.random = function() {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.random = function() {
+	return new ImgColorRGBA([
 		Math.floor(Math.random() * 256), Math.floor(Math.random() * 256),
 		Math.floor(Math.random() * 256), Math.floor(Math.random() * 256) ]);
 };
-SIColorRGBA.prototype.luminance = function() {
+ImgColorRGBA.prototype.luminance = function() {
 	return 0.2126 * this.rgba[0] + 0.7152 * this.rgba[1] + 0.0722 * this.rgba[2];
 };
-SIColorRGBA.prototype.addColor = function(c) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.addColor = function(c) {
+	return new ImgColorRGBA([
 		this.rgba[0] + c.rgba[0],	this.rgba[1] + c.rgba[1],
 		this.rgba[2] + c.rgba[2],	this.rgba[3] + c.rgba[3] ]);
 };
-SIColorRGBA.prototype.subColor = function(c) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.subColor = function(c) {
+	return new ImgColorRGBA([
 		this.rgba[0] - c.rgba[0],	this.rgba[1] - c.rgba[1],
 		this.rgba[2] - c.rgba[2],	this.rgba[3] - c.rgba[3] ]);
 };
-SIColorRGBA.prototype.mulColor = function(c) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.mulColor = function(c) {
+	return new ImgColorRGBA([
 		this.rgba[0] * c.rgba[0],	this.rgba[1] * c.rgba[1],
 		this.rgba[2] * c.rgba[2],	this.rgba[3] * c.rgba[3] ]);
 };
-SIColorRGBA.prototype.divColor = function(c) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.divColor = function(c) {
+	return new ImgColorRGBA([
 		this.rgba[0] / c.rgba[0],	this.rgba[1] / c.rgba[1],
 		this.rgba[2] / c.rgba[2],	this.rgba[3] / c.rgba[3] ]);
 };
-SIColorRGBA.prototype.maxColor = function(c) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.maxColor = function(c) {
+	return new ImgColorRGBA([
 		Math.max(c.rgba[0], this.rgba[0]),Math.max(c.rgba[1], this.rgba[1]),
 		Math.max(c.rgba[2], this.rgba[2]),Math.max(c.rgba[3], this.rgba[3])]);
 };
-SIColorRGBA.prototype.minColor = function(c) {
-	return new SIColorRGBA([
+ImgColorRGBA.prototype.minColor = function(c) {
+	return new ImgColorRGBA([
 		Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
 		Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
 };
-SIColorRGBA.prototype.norm = function(normType) {
-	if(normType === SIColor.normType.Manhattan) {
+ImgColorRGBA.prototype.norm = function(normType) {
+	if(normType === ImgColor.normType.Manhattan) {
 		return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
 	}
-	else if(normType === SIColor.normType.Eugrid) {
+	else if(normType === ImgColor.normType.Eugrid) {
 		return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
 	}
 };
-SIColorRGBA.prototype.normFast = function(normType) {
-	if(normType === SIColor.normType.Manhattan) {
+ImgColorRGBA.prototype.normFast = function(normType) {
+	if(normType === ImgColor.normType.Manhattan) {
 		return Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2]);
 	}
-	else if(normType === SIColor.normType.Eugrid) {
+	else if(normType === ImgColor.normType.Eugrid) {
 		return this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2];
 	}
 };
-SIColorRGBA.prototype.getBlendAlpha = function() {
+ImgColorRGBA.prototype.getBlendAlpha = function() {
 	return this.rgba[3] / 255.0;
 };
-SIColorRGBA.prototype.setBlendAlpha = function(x) {
+ImgColorRGBA.prototype.setBlendAlpha = function(x) {
 	var color = this.clone();
 	color.rgba[3] = x * 255.0;
 	return color;
 };
-SIColorRGBA.prototype.exchangeColorAlpha = function(color) {
-	return new SIColorRGBA( [ this.rgba[0], this.rgba[1], this.rgba[2], color.rgba[3] ]);
+ImgColorRGBA.prototype.exchangeColorAlpha = function(color) {
+	return new ImgColorRGBA( [ this.rgba[0], this.rgba[1], this.rgba[2], color.rgba[3] ]);
 };
-SIColorRGBA.prototype.getRRGGBB = function() {
+ImgColorRGBA.prototype.getRRGGBB = function() {
 	return (this.rgba[0] << 16) | (this.rgba[1] << 8) | (this.rgba[2] & 0xff);
 };
-SIColorRGBA.prototype.getRed = function() {
+ImgColorRGBA.prototype.getRed = function() {
 	return (this.rgba[0]);
 };
-SIColorRGBA.prototype.getGreen = function() {
+ImgColorRGBA.prototype.getGreen = function() {
 	return (this.rgba[1]);
 };
-SIColorRGBA.prototype.getBlue = function() {
+ImgColorRGBA.prototype.getBlue = function() {
 	return (this.rgba[2]);
 };
-SIColorRGBA.prototype.equals = function(c) {
+ImgColorRGBA.prototype.equals = function(c) {
 	return	(this.rgba[0] === c.rgba[0]) &&
 			(this.rgba[1] === c.rgba[1]) &&
 			(this.rgba[2] === c.rgba[2]) &&
 			(this.rgba[3] === c.rgba[3]) ;
 };
-SIColorRGBA.prototype.toString = function() {
+ImgColorRGBA.prototype.toString = function() {
 	return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
 };
-SIColorRGBA.prototype.mulMatrix = function(m) {
-	var color = new SIColorRGBA();
+ImgColorRGBA.prototype.mulMatrix = function(m) {
+	var color = new ImgColorRGBA();
 	color.rgba[0] =	this.rgba[0] * m[0][0] +
 					this.rgba[1] * m[0][1] +
 					this.rgba[2] * m[0][2] +
@@ -491,28 +491,28 @@ SIColorRGBA.prototype.mulMatrix = function(m) {
  * 指定した部分の色を取得するクラス
  * xとyは中に納まらなくてもよいが、離散値を使用すること
  * 
- * SIWrapNone	はみでた色は null
- * SIWrapClamp	はみでた色は最も近い位置の色にする
- * SIWrapRepeat	はみでた色は反対側の方向から取得する
+ * ImgWrapNone	はみでた色は null
+ * ImgWrapClamp	はみでた色は最も近い位置の色にする
+ * ImgWrapRepeat	はみでた色は反対側の方向から取得する
  * /////////////////////////////////////////////////////////
  */
-var SIWrap = function() {
+var ImgWrap = function() {
 };
-SIWrap.prototype._init = function(width, height) {
+ImgWrap.prototype._init = function(width, height) {
 	this.setSize(width, height);
 };
-SIWrap.prototype.clone = function() {
+ImgWrap.prototype.clone = function() {
 	var func = this.getPixelPosition;
-	var x = new SIWrap();
+	var x = new ImgWrap();
 	x._init(this.width, this.height);
 	x.getPixelPosition = func;
 	return x;
 };
-SIWrap.prototype.setSize = function(width, height) {
+ImgWrap.prototype.setSize = function(width, height) {
 	this.width  = width;
 	this.height = height;
 };
-SIWrap.prototype.getPixelPosition = function(x, y) {
+ImgWrap.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -522,15 +522,15 @@ SIWrap.prototype.getPixelPosition = function(x, y) {
 		return null;
 	}
 };
-var SIWrapNone = function(width, height) {
-	SIWrap.prototype._init.call(this, width, height);
+var ImgWrapNone = function(width, height) {
+	ImgWrap.prototype._init.call(this, width, height);
 };
-SIWrapNone.prototype = new SIWrap();
-var SIWrapClamp = function(width, height) {
-	SIWrap.prototype._init.call(this, width, height);
+ImgWrapNone.prototype = new ImgWrap();
+var ImgWrapClamp = function(width, height) {
+	ImgWrap.prototype._init.call(this, width, height);
 };
-SIWrapClamp.prototype = new SIWrap();
-SIWrapClamp.prototype.getPixelPosition = function(x, y) {
+ImgWrapClamp.prototype = new ImgWrap();
+ImgWrapClamp.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -541,11 +541,11 @@ SIWrapClamp.prototype.getPixelPosition = function(x, y) {
 	y = ~~Math.floor(Math.min(Math.max(0, y), this.height - 1));
 	return [x, y];
 };
-var SIWrapRepeat = function(width, height) {
-	SIWrap.prototype._init.call(this, width, height);
+var ImgWrapRepeat = function(width, height) {
+	ImgWrap.prototype._init.call(this, width, height);
 };
-SIWrapRepeat.prototype = new SIWrap();
-SIWrapRepeat.prototype.getPixelPosition = function(x, y) {
+ImgWrapRepeat.prototype = new ImgWrap();
+ImgWrapRepeat.prototype.getPixelPosition = function(x, y) {
 	x = ~~Math.floor(x);
 	y = ~~Math.floor(y);
 	if((x >= 0) && (y >= 0) && (x < this.width) && (y < this.height)) {
@@ -570,19 +570,19 @@ SIWrapRepeat.prototype.getPixelPosition = function(x, y) {
 /**
  * /////////////////////////////////////////////////////////
  * 画像データクラス
- * SIDataRGBA   32bit整数 0xRRGGBBAA で管理
- * SIDataY 32bit浮動小数点で管理
+ * ImgDataRGBA   32bit整数 0xRRGGBBAA で管理
+ * ImgDataY 32bit浮動小数点で管理
  * /////////////////////////////////////////////////////////
  */
 
-var SIData = function() {
+var ImgData = function() {
 };
-SIData.wrapmode = {
+ImgData.wrapmode = {
 	INSIDE			: "INSIDE",
 	CLAMP			: "CLAMP",
 	REPEAT			: "REPEAT"
 };
-SIData.filtermode = {
+ImgData.filtermode = {
 	NEAREST_NEIGHBOR	: "NEAREST_NEIGHBOR",
 	BILINEAR			: "BILINEAR",
 	COSINE				: "COSINE",
@@ -595,7 +595,7 @@ SIData.filtermode = {
 	BICUBIC_SHARP		: "BICUBIC_SHARP"
 };
 
-SIData.brendtype = {
+ImgData.brendtype = {
 	NONE				: "NONE",
 	ALPHA				: "ALPHA",
 	ADD					: "ADD",
@@ -604,13 +604,13 @@ SIData.brendtype = {
 	MUL					: "MUL"
 };
 
-SIData.prototype._init = function() {
-	this.setWrapMode(SIData.wrapmode.INSIDE);
-	this.setFilterMode(SIData.filtermode.NEAREST_NEIGHBOR);
-	this.setBlendType(SIData.brendtype.NONE);
+ImgData.prototype._init = function() {
+	this.setWrapMode(ImgData.wrapmode.INSIDE);
+	this.setFilterMode(ImgData.filtermode.NEAREST_NEIGHBOR);
+	this.setBlendType(ImgData.brendtype.NONE);
 	this.globalAlpha = 1.0;
 };
-SIData.prototype._copyData = function(x) {
+ImgData.prototype._copyData = function(x) {
 	x.setWrapMode(this.getWrapMode());
 	x.setFilterMode(this.getFilterMode());
 	x.setBlendType(this.getBlendType());
@@ -618,127 +618,127 @@ SIData.prototype._copyData = function(x) {
 	x.data.set(this.data);
 	x.globalAlpha = this.globalAlpha;
 };
-SIData.prototype.clone = function() {
-	var x = new SIData();
+ImgData.prototype.clone = function() {
+	var x = new ImgData();
 	this._copyData(x);
 	return x;
 };
 
 /**
  * 画面外の色を選択する方法を選ぶ
- * @param {SIData.wrapmode} _wrapmode
+ * @param {ImgData.wrapmode} _wrapmode
  * @returns {undefined}
  */
-SIData.prototype.setWrapMode = function(_wrapmode) {
+ImgData.prototype.setWrapMode = function(_wrapmode) {
 	this._wrapmode = _wrapmode;
-	if(_wrapmode === SIData.wrapmode.INSIDE) {
-		this.wrapper = new SIWrapNone(this.width, this.height);
+	if(_wrapmode === ImgData.wrapmode.INSIDE) {
+		this.wrapper = new ImgWrapNone(this.width, this.height);
 	}
-	else if(_wrapmode === SIData.wrapmode.CLAMP) {
-		this.wrapper = new SIWrapClamp(this.width, this.height);
+	else if(_wrapmode === ImgData.wrapmode.CLAMP) {
+		this.wrapper = new ImgWrapClamp(this.width, this.height);
 	}
-	else if(_wrapmode === SIData.wrapmode.REPEAT) {
-		this.wrapper = new SIWrapRepeat(this.width, this.height);
+	else if(_wrapmode === ImgData.wrapmode.REPEAT) {
+		this.wrapper = new ImgWrapRepeat(this.width, this.height);
 	}
 };
 
 /**
  * 画面外の色を選択する方法を取得する
- * @returns {SIData.wrapmode}
+ * @returns {ImgData.wrapmode}
  */
-SIData.prototype.getWrapMode = function() {
+ImgData.prototype.getWrapMode = function() {
 	return this._wrapmode;
 };
 
 /**
  * 実数で色を選択した場合に、どのように色を補完するか選択する
- * @param {SIData.filtermode} iptype
+ * @param {ImgData.filtermode} iptype
  * @returns {undefined}
  */
-SIData.prototype.setFilterMode = function(iptype) {
+ImgData.prototype.setFilterMode = function(iptype) {
 	this.iptype	= iptype;
-	if(iptype === SIData.filtermode.NEAREST_NEIGHBOR) {
-		this.ipfunc	= SIColor.ipLerp;
+	if(iptype === ImgData.filtermode.NEAREST_NEIGHBOR) {
+		this.ipfunc	= ImgColor.ipLerp;
 		this.ipn	= 1;
 	}
-	else if(iptype === SIData.filtermode.BILINEAR) {
-		this.ipfunc = SIColor.ipLerp;
+	else if(iptype === ImgData.filtermode.BILINEAR) {
+		this.ipfunc = ImgColor.ipLerp;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.filtermode.COSINE) {
-		this.ipfunc = SIColor.ipCosine;
+	else if(iptype === ImgData.filtermode.COSINE) {
+		this.ipfunc = ImgColor.ipCosine;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.filtermode.HERMITE4_3) {
-		this.ipfunc = SIColor.ipHermite2p3;
+	else if(iptype === ImgData.filtermode.HERMITE4_3) {
+		this.ipfunc = ImgColor.ipHermite2p3;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.filtermode.HERMITE4_5) {
-		this.ipfunc = SIColor.ipHermite2p5;
+	else if(iptype === ImgData.filtermode.HERMITE4_5) {
+		this.ipfunc = ImgColor.ipHermite2p5;
 		this.ipn	= 2;
 	}
-	else if(iptype === SIData.filtermode.HERMITE16) {
-		this.ipfunc = SIColor.ipHermite4p;
+	else if(iptype === ImgData.filtermode.HERMITE16) {
+		this.ipfunc = ImgColor.ipHermite4p;
 		this.ipn	= 4;
 	}
-	else if(iptype === SIData.filtermode.BICUBIC) {
-		this.ipfunc = SIColor.ipBicubic2DNormal;
+	else if(iptype === ImgData.filtermode.BICUBIC) {
+		this.ipfunc = ImgColor.ipBicubic2DNormal;
 		this.ipn	= 16;
 	}
-	else if(iptype === SIData.filtermode.BICUBIC_SOFT) {
-		this.ipfunc = SIColor.ipBicubicSoft;
+	else if(iptype === ImgData.filtermode.BICUBIC_SOFT) {
+		this.ipfunc = ImgColor.ipBicubicSoft;
 		this.ipn	= 4;
 	}
-	else if(iptype === SIData.filtermode.BICUBIC_NORMAL) {
-		this.ipfunc = SIColor.ipBicubicNormal;
+	else if(iptype === ImgData.filtermode.BICUBIC_NORMAL) {
+		this.ipfunc = ImgColor.ipBicubicNormal;
 		this.ipn	= 4;
 	}
-	else if(iptype === SIData.filtermode.BICUBIC_SHARP) {
-		this.ipfunc = SIColor.ipBicubicSharp;
+	else if(iptype === ImgData.filtermode.BICUBIC_SHARP) {
+		this.ipfunc = ImgColor.ipBicubicSharp;
 		this.ipn	= 4;
 	}
 };
 
 /**
  * 実数で色を選択した場合に、どのように色を補完するか取得する
- * @returns {SIData.filtermode}
+ * @returns {ImgData.filtermode}
  */
-SIData.prototype.getFilterMode = function() {
+ImgData.prototype.getFilterMode = function() {
 	return this.iptype;
 };
 
 /**
  * このデータへ書き込む際に、書き込み値をどのようなブレンドで反映させるか設定する
- * @param {SIData.brendtype} _blendtype
+ * @param {ImgData.brendtype} _blendtype
  * @returns {undefined}
  */
-SIData.prototype.setBlendType = function(_blendtype) {
+ImgData.prototype.setBlendType = function(_blendtype) {
 	this._blendtype = _blendtype;
-	if(_blendtype === SIData.brendtype.NONE) {
-		this.blendfunc = SIColor.brendNone;
+	if(_blendtype === ImgData.brendtype.NONE) {
+		this.blendfunc = ImgColor.brendNone;
 	}
-	else if(_blendtype === SIData.brendtype.ALPHA) {
-		this.blendfunc = SIColor.brendAlpha;
+	else if(_blendtype === ImgData.brendtype.ALPHA) {
+		this.blendfunc = ImgColor.brendAlpha;
 	}
-	else if(_blendtype === SIData.brendtype.ADD) {
-		this.blendfunc = SIColor.brendAdd;
+	else if(_blendtype === ImgData.brendtype.ADD) {
+		this.blendfunc = ImgColor.brendAdd;
 	}
-	else if(_blendtype === SIData.brendtype.SUB) {
-		this.blendfunc = SIColor.brendSub;
+	else if(_blendtype === ImgData.brendtype.SUB) {
+		this.blendfunc = ImgColor.brendSub;
 	}
-	else if(_blendtype === SIData.brendtype.REVSUB) {
-		this.blendfunc = SIColor.brendRevSub;
+	else if(_blendtype === ImgData.brendtype.REVSUB) {
+		this.blendfunc = ImgColor.brendRevSub;
 	}
-	else if(_blendtype === SIData.brendtype.MUL) {
-		this.blendfunc = SIColor.brendMul;
+	else if(_blendtype === ImgData.brendtype.MUL) {
+		this.blendfunc = ImgColor.brendMul;
 	}
 };
 
 /**
  * このデータへ書き込む際に、書き込み値をどのようなブレンドで反映させるか取得する
- * @returns {SIData.brendtype}
+ * @returns {ImgData.brendtype}
  */
-SIData.prototype.getBlendType = function() {
+ImgData.prototype.getBlendType = function() {
 	return this._blendtype;
 };
 
@@ -749,7 +749,7 @@ SIData.prototype.getBlendType = function() {
  * @param {type} height
  * @returns {undefined}
  */
-SIData.prototype.setSize = function(width, height) {
+ImgData.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		this.wrapper.setSize(width, height);
 		return;
@@ -764,7 +764,7 @@ SIData.prototype.setSize = function(width, height) {
  * 中身をクリアします。
  * @returns {undefined}
  */
-SIData.prototype.clear = function() {
+ImgData.prototype.clear = function() {
 	if(this.data) {
 		this.data.fill(0);
 	}
@@ -776,11 +776,11 @@ SIData.prototype.clear = function() {
  * x, y が整数かつ画像の範囲内を保証している場合に使用可能
  * @param {number} x
  * @param {number} y
- * @returns {SIColorRGBA}
+ * @returns {ImgColorRGBA}
  */
-SIData.prototype.getPixelInside = function(x, y) {
+ImgData.prototype.getPixelInside = function(x, y) {
 	var p = (y * this.width + x) * 4;
-	var c = new SIColorRGBA([
+	var c = new ImgColorRGBA([
 		this.data[p],
 		this.data[p + 1],
 		this.data[p + 2],
@@ -797,7 +797,7 @@ SIData.prototype.getPixelInside = function(x, y) {
  * @param {type} color
  * @returns {undefined}
  */
-SIData.prototype.setPixelInside = function(x, y, color) {
+ImgData.prototype.setPixelInside = function(x, y, color) {
 	var p = (y * this.width + x) * 4;
 	this.data[p]     = color.getColor()[0];
 	this.data[p + 1] = color.getColor()[1];
@@ -810,9 +810,9 @@ SIData.prototype.setPixelInside = function(x, y, color) {
  * x, y が整数かつ画像の範囲内を保証していない場合に使用可能
  * @param {type} x
  * @param {type} y
- * @returns {SIColor}
+ * @returns {ImgColor}
  */
-SIData.prototype.getPixel = function(x, y) {
+ImgData.prototype.getPixel = function(x, y) {
 	var p = this.wrapper.getPixelPosition(x, y);
 	if(p) {
 		return this.getPixelInside(p[0], p[1]);
@@ -828,10 +828,10 @@ SIData.prototype.getPixel = function(x, y) {
  * @param {type} color
  * @returns {undefined}
  */
-SIData.prototype.setPixel = function(x, y, color) {
+ImgData.prototype.setPixel = function(x, y, color) {
 	var p = this.wrapper.getPixelPosition(x, y);
 	if(p) {
-		if(this._blendtype === SIData.brendtype.NONE) {
+		if(this._blendtype === ImgData.brendtype.NONE) {
 			this.setPixelInside(p[0], p[1], color);
 		}
 		else {
@@ -847,9 +847,9 @@ SIData.prototype.setPixel = function(x, y, color) {
  * x, y が実数かつ画像の範囲内を保証していない場合でも使用可能
  * @param {type} x
  * @param {type} y
- * @returns {SIColor}
+ * @returns {ImgColor}
  */
-SIData.prototype.getColor = function(x, y) {
+ImgData.prototype.getColor = function(x, y) {
 	var rx = Math.floor(x);
 	var ry = Math.floor(y);
 	if(	(this.ipn === 1) ||
@@ -917,9 +917,9 @@ SIData.prototype.getColor = function(x, y) {
  * 座標系は、0-1を使用して、テクスチャとみたてて色を取得します。
  * @param {type} u
  * @param {type} v
- * @returns {SIColor}
+ * @returns {ImgColor}
  */
-SIData.prototype.getColorUV = function(u, v) {
+ImgData.prototype.getColorUV = function(u, v) {
 	return this.getColor(u * this.width, v * this.height);
 };
 
@@ -931,16 +931,16 @@ SIData.prototype.getColorUV = function(u, v) {
  * @param {type} color
  * @returns {undefined}
  */
-SIData.prototype.setColor = function(x, y, color) {
+ImgData.prototype.setColor = function(x, y, color) {
 	this.setPixel(Math.floor(x), Math.floor(y), color);
 };
 
 
 /**
- * Canvas型の drawImage と同じ使用方法で SIData をドローする
- * SIDataRGBA データの上には、SIDataRGBA のみ書き込み可能
- * SIDataY    データの上には、SIDataY    のみ書き込み可能
- * @param {SIData} image
+ * Canvas型の drawImage と同じ使用方法で ImgData をドローする
+ * ImgDataRGBA データの上には、ImgDataRGBA のみ書き込み可能
+ * ImgDataY    データの上には、ImgDataY    のみ書き込み可能
+ * @param {ImgData} image
  * @param {number} sx
  * @param {number} sy
  * @param {number} sw
@@ -951,8 +951,8 @@ SIData.prototype.setColor = function(x, y, color) {
  * @param {number} dh
  * @returns {undefined}
  */
-SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
-	if(!(image instanceof SIData)) {
+ImgData.prototype.drawImgData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+	if(!(image instanceof ImgData)) {
 		throw "IllegalArgumentException";
 	}
 	if(arguments.length === 3) {
@@ -1006,7 +1006,7 @@ SIData.prototype.drawSIData = function(image, sx, sy, sw, sh, dx, dy, dw, dh) {
  * @param {function} callback callback(color, x, y, this) 実行したいコールバック関数
  * @returns {undefined}
  */
-SIData.prototype.forEach = function(callback) {
+ImgData.prototype.forEach = function(callback) {
 	var x = 0, y = 0;
 	for(; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
@@ -1014,8 +1014,8 @@ SIData.prototype.forEach = function(callback) {
 		}
 	}
 };
-var SIDataRGBA = function() {
-	SIData.prototype._init.call(this);
+var ImgDataRGBA = function() {
+	ImgData.prototype._init.call(this);
 	if(arguments.length === 1) {
 		var image = arguments[0];
 		this.putImageData(image);
@@ -1023,17 +1023,17 @@ var SIDataRGBA = function() {
 	else if(arguments.length === 2) {
 		var width  = arguments[0];
 		var height = arguments[1];
-		SIData.prototype.setSize.call(this, width, height);
+		ImgData.prototype.setSize.call(this, width, height);
 	}
 };
-SIDataRGBA.prototype = new SIData();
-SIDataRGBA.prototype.clone = function() {
-	var x = new SIDataRGBA(this.width, this.height);
+ImgDataRGBA.prototype = new ImgData();
+ImgDataRGBA.prototype.clone = function() {
+	var x = new ImgDataRGBA(this.width, this.height);
 	this._copyData(x);
 	return x;
 };
-SIDataRGBA.prototype.putDataY = function(imagedata, n) {
-	if(!(imagedata instanceof SIDataY)) {
+ImgDataRGBA.prototype.putDataY = function(imagedata, n) {
+	if(!(imagedata instanceof ImgDataY)) {
 		throw "IllegalArgumentException";
 	}
 	this.setSize(imagedata.width, imagedata.height);
@@ -1046,32 +1046,32 @@ SIDataRGBA.prototype.putDataY = function(imagedata, n) {
 		p += 4;
 	}
 };
-SIDataRGBA.prototype.putDataYToR = function(imagedata) {
+ImgDataRGBA.prototype.putDataYToR = function(imagedata) {
 	this.putDataS(imagedata, 0);
 };
-SIDataRGBA.prototype.putDataYToG = function(imagedata) {
+ImgDataRGBA.prototype.putDataYToG = function(imagedata) {
 	this.putDataS(imagedata, 1);
 };
-SIDataRGBA.prototype.putDataYToB = function(imagedata) {
+ImgDataRGBA.prototype.putDataYToB = function(imagedata) {
 	this.putDataS(imagedata, 2);
 };
-SIDataRGBA.prototype.putDataYToA = function(imagedata) {
+ImgDataRGBA.prototype.putDataYToA = function(imagedata) {
 	this.putDataS(imagedata, 3);
 };
-SIDataRGBA.prototype.putImageData = function(imagedata) {
+ImgDataRGBA.prototype.putImageData = function(imagedata) {
 	if(	(imagedata instanceof ImageData) ||
-		(imagedata instanceof SIDataRGBA)) {
+		(imagedata instanceof ImgDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
-	else if(imagedata instanceof SIDataY) {
+	else if(imagedata instanceof ImgDataY) {
 		this.putImageData(imagedata.getImageData());
 	}
 	else {
 		throw "IllegalArgumentException";
 	}
 };
-SIDataRGBA.prototype.getImageData = function() {
+ImgDataRGBA.prototype.getImageData = function() {
 	var canvas, context;
 	canvas = document.createElement("canvas");
 	canvas.width  = this.width;
@@ -1081,15 +1081,15 @@ SIDataRGBA.prototype.getImageData = function() {
 	imagedata.data.set(this.data);
 	return imagedata;
 };
-SIDataRGBA.prototype.grayscale = function() {
+ImgDataRGBA.prototype.grayscale = function() {
 	this.forEach(function(color, x, y, data) {
 		var luminance = ~~color.luminance();
-		var newcolor = new SIColorRGBA( [luminance, luminance, luminance, color.rgba[3]] );
+		var newcolor = new ImgColorRGBA( [luminance, luminance, luminance, color.rgba[3]] );
 		data.setPixelInside(x, y, newcolor);
 	});
 };
-var SIDataY = function() {
-	SIData.prototype._init.call(this);
+var ImgDataY = function() {
+	ImgData.prototype._init.call(this);
 	if(arguments.length === 1) {
 		var image = arguments[0];
 		this.putImageData(image);
@@ -1100,13 +1100,13 @@ var SIDataY = function() {
 		this.setSize(width, height);
 	}
 };
-SIDataY.prototype = new SIData();
-SIDataY.prototype.clone = function() {
-	var x = new SIDataY(this.width, this.height);
+ImgDataY.prototype = new ImgData();
+ImgDataY.prototype.clone = function() {
+	var x = new ImgDataY(this.width, this.height);
 	this._copyData(x);
 	return x;
 };
-SIDataY.prototype.setSize = function(width, height) {
+ImgDataY.prototype.setSize = function(width, height) {
 	if((this.width === width) && (this.height === height)) {
 		return;
 	}
@@ -1115,17 +1115,17 @@ SIDataY.prototype.setSize = function(width, height) {
 	this.wrapper.setSize(width, height);
 	this.data	= new Float32Array(this.width * this.height);
 };
-SIDataY.prototype.getPixelInside = function(x, y) {
+ImgDataY.prototype.getPixelInside = function(x, y) {
 	var p = y * this.width + x;
-	return new SIColorY(this.data[p]);
+	return new ImgColorY(this.data[p]);
 };
-SIDataY.prototype.setPixelInside = function(x, y, color) {
+ImgDataY.prototype.setPixelInside = function(x, y, color) {
 	var p = y * this.width + x;
 	this.data[p]     = color.getColor();
 };
-SIDataY.prototype.putImageData = function(imagedata, n) {
+ImgDataY.prototype.putImageData = function(imagedata, n) {
 	if(	(imagedata instanceof ImageData) ||
-		(imagedata instanceof SIDataRGBA)) {
+		(imagedata instanceof ImgDataRGBA)) {
 		this.setSize(imagedata.width, imagedata.height);
 		if(n === undefined) {
 			n = 0;
@@ -1136,7 +1136,7 @@ SIDataY.prototype.putImageData = function(imagedata, n) {
 			p += 4;
 		}
 	}
-	else if(imagedata instanceof SIDataY) {
+	else if(imagedata instanceof ImgDataY) {
 		this.setSize(imagedata.width, imagedata.height);
 		this.data.set(imagedata.data);
 	}
@@ -1144,19 +1144,19 @@ SIDataY.prototype.putImageData = function(imagedata, n) {
 		throw "IllegalArgumentException";
 	}
 };
-SIDataY.prototype.putImageDataR = function(imagedata) {
+ImgDataY.prototype.putImageDataR = function(imagedata) {
 	this.putImageData(imagedata, 0);
 };
-SIDataY.prototype.putImageDataG = function(imagedata) {
+ImgDataY.prototype.putImageDataG = function(imagedata) {
 	this.putImageData(imagedata, 1);
 };
-SIDataY.prototype.putImageDataB = function(imagedata) {
+ImgDataY.prototype.putImageDataB = function(imagedata) {
 	this.putImageData(imagedata, 2);
 };
-SIDataY.prototype.putImageDataA = function(imagedata) {
+ImgDataY.prototype.putImageDataA = function(imagedata) {
 	this.putImageData(imagedata, 3);
 };
-SIDataY.prototype.getImageData = function() {
+ImgDataY.prototype.getImageData = function() {
 	var canvas, context;
 	canvas = document.createElement("canvas");
 	canvas.width  = this.width;

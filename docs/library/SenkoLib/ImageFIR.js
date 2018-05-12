@@ -1,9 +1,9 @@
 ﻿"use strict";
 ﻿
-/* global System, ImageData, SIData, SIColor */
+/* global System, ImageData, ImgData, ImgColor */
 
 ﻿/**
- * SenkoLib SIFIR.js
+ * SenkoLib ImageFIR.js
  *  画像処理ライブラリの畳込みによるFIRフィルタがメインです。
  *  オレンジビューアのソースコードを参考に作成しています。
  * 
@@ -14,7 +14,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
  * DEPENDENT LIBRARIES:
- *  SImageProcessing.js
+ *  ImageProcessing.js
  */
 
 
@@ -27,9 +27,9 @@
 /**
  * 画像処理に使用する配列
  * @param {type} matrix 2次元配列
- * @returns {SIFIRMatrix}
+ * @returns {ImgFIRMatrix}
  */
-var SIFIRMatrix = function(matrix) {
+var ImgFIRMatrix = function(matrix) {
 	this.height = matrix.length;
 	this.width  = matrix[0].length;
 	this.matrix = [];
@@ -38,10 +38,10 @@ var SIFIRMatrix = function(matrix) {
 		this.matrix[i] = matrix[i].slice();
 	}
 };
-SIFIRMatrix.prototype.clone = function() {
-	return new SIFIRMatrix(this.matrix);
+ImgFIRMatrix.prototype.clone = function() {
+	return new ImgFIRMatrix(this.matrix);
 };
-SIFIRMatrix.prototype.rotateEdge = function(val) {
+ImgFIRMatrix.prototype.rotateEdge = function(val) {
 	// 周囲の値を時計回りに回転させます。
 	var m = this.clone();
 	
@@ -86,7 +86,7 @@ SIFIRMatrix.prototype.rotateEdge = function(val) {
 	}
 	return m;
 };
-SIFIRMatrix.prototype.mul = function(val) {
+ImgFIRMatrix.prototype.mul = function(val) {
 	var m = this.clone();
 	var x, y;
 	for(y = 0; y < m.height; y++) {
@@ -96,7 +96,7 @@ SIFIRMatrix.prototype.mul = function(val) {
 	}
 	return m;
 };
-SIFIRMatrix.prototype.sum = function() {
+ImgFIRMatrix.prototype.sum = function() {
 	var sum = 0;
 	var x, y;
 	for(y = 0; y < this.height; y++) {
@@ -106,26 +106,26 @@ SIFIRMatrix.prototype.sum = function() {
 	}
 	return sum;
 };
-SIFIRMatrix.prototype.normalize = function() {
+ImgFIRMatrix.prototype.normalize = function() {
 	return this.clone().mul(1.0 / this.sum());
 };
-SIFIRMatrix.prototype.addCenter = function(val) {
+ImgFIRMatrix.prototype.addCenter = function(val) {
 	var m = this.clone();
 	m.matrix[m.height >> 1][m.width >> 1] += val;
 	return m;
 };
-SIFIRMatrix.makeLaplacianFilter = function() {
-	return new SIFIRMatrix([
+ImgFIRMatrix.makeLaplacianFilter = function() {
+	return new ImgFIRMatrix([
 		[ 0.0, -1.0, 0.0],
 		[-1.0,  4.0,-1.0],
 		[ 0.0, -1.0, 0.0]
 	]);
 };
-SIFIRMatrix.makeSharpenFilter = function(power) {
-	var m = SIFIRMatrix.makeLaplacianFilter();
+ImgFIRMatrix.makeSharpenFilter = function(power) {
+	var m = ImgFIRMatrix.makeLaplacianFilter();
 	return m.mul(power).addCenter(1.0);
 };
-SIFIRMatrix.makeBlur = function(width, height) {
+ImgFIRMatrix.makeBlur = function(width, height) {
 	var m = [];
 	var value = 1.0 / (width * height);
 	var x, y;
@@ -135,9 +135,9 @@ SIFIRMatrix.makeBlur = function(width, height) {
 			m[y][x] = value;
 		}
 	}
-	return new SIFIRMatrix(m);
+	return new ImgFIRMatrix(m);
 };
-SIFIRMatrix.makeGaussianFilter = function(width, height, sd) {
+ImgFIRMatrix.makeGaussianFilter = function(width, height, sd) {
 	if(sd === undefined) {
 		sd = 1.0;
 	}
@@ -155,10 +155,10 @@ SIFIRMatrix.makeGaussianFilter = function(width, height, sd) {
 			m[y][x] = v[x] * v[y];
 		}
 	}
-	return new SIFIRMatrix(m).normalize();
+	return new ImgFIRMatrix(m).normalize();
 };
 
-SIFIRMatrix.makeCircle = function(r) {
+ImgFIRMatrix.makeCircle = function(r) {
 	var m = [];
 	var radius	= r * 0.5;
 	var center	= r >> 1;
@@ -175,16 +175,16 @@ SIFIRMatrix.makeCircle = function(r) {
 			}
 		}
 	}
-	return new SIFIRMatrix(m).normalize();
+	return new ImgFIRMatrix(m).normalize();
 };
 
 /**
- * SIFIRMatrix を使用して畳込みを行う
- * @param {SIFIRMatrix} matrix
+ * ImgFIRMatrix を使用して畳込みを行う
+ * @param {ImgFIRMatrix} matrix
  * @returns {undefined}
  */
-SIData.prototype.convolution = function(matrix) {
-	if(!(matrix instanceof SIFIRMatrix)) {
+ImgData.prototype.convolution = function(matrix) {
+	if(!(matrix instanceof ImgFIRMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	var x, y, fx, fy, mx, my;
@@ -212,14 +212,14 @@ SIData.prototype.convolution = function(matrix) {
 };
 
 /**
- * SIFIRMatrix を使用してバイラテラルフィルタ的な畳込みを行う
+ * ImgFIRMatrix を使用してバイラテラルフィルタ的な畳込みを行う
  * 対象の色に近いほど、フィルタをかける処理となる
- * @param {SIFIRMatrix} matrix
+ * @param {ImgFIRMatrix} matrix
  * @param {number} p 0.0～1.0 強度
  * @returns {undefined}
  */
-SIData.prototype.convolutionBilateral = function(matrix, p) {
-	if(!(matrix instanceof SIFIRMatrix)) {
+ImgData.prototype.convolutionBilateral = function(matrix, p) {
+	if(!(matrix instanceof ImgFIRMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	if(p === undefined) {
@@ -253,7 +253,7 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 					if(!tgtcolor) {
 						continue;
 					}
-					var newfilter = exptable[Math.floor(tgtcolor.normColor(thiscolor, SIColor.normType.Eugrid))] * m[my][mx];
+					var newfilter = exptable[Math.floor(tgtcolor.normColor(thiscolor, ImgColor.normType.Eugrid))] * m[my][mx];
 					newcolor = newcolor.addColor(tgtcolor.mul(newfilter));
 					sumfilter += newfilter;
 				}
@@ -265,13 +265,13 @@ SIData.prototype.convolutionBilateral = function(matrix, p) {
 };
 
 /**
- * SIFIRMatrix を使用して指数関数空間で畳込みを行う
- * @param {SIFIRMatrix} matrix
+ * ImgFIRMatrix を使用して指数関数空間で畳込みを行う
+ * @param {ImgFIRMatrix} matrix
  * @param {number} e 底(1.01-1.2)
  * @returns {undefined}
  */
-SIData.prototype.convolutionExp = function(matrix, e) {
-	if(!(matrix instanceof SIFIRMatrix)) {
+ImgData.prototype.convolutionExp = function(matrix, e) {
+	if(!(matrix instanceof ImgFIRMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	if(e === undefined) {
@@ -306,13 +306,13 @@ SIData.prototype.convolutionExp = function(matrix, e) {
 };
 
 /**
- * SIFIRMatrix を使用してアンシャープ畳込みを行う
- * @param {SIFIRMatrix} matrix
+ * ImgFIRMatrix を使用してアンシャープ畳込みを行う
+ * @param {ImgFIRMatrix} matrix
  * @param {type} rate
  * @returns {undefined}
  */
-SIData.prototype.convolutionUnSharp = function(matrix, rate) {
-	if(!(matrix instanceof SIFIRMatrix)) {
+ImgData.prototype.convolutionUnSharp = function(matrix, rate) {
+	if(!(matrix instanceof ImgFIRMatrix)) {
 		throw "IllegalArgumentException";
 	}
 	var x, y, fx, fy, mx, my;
@@ -347,8 +347,8 @@ SIData.prototype.convolutionUnSharp = function(matrix, rate) {
  * @param {number} power 強度
  * @returns {undefined}
  */
-SIData.prototype.filterSharp = function(power) {
-	var m = SIFIRMatrix.makeSharpenFilter(power);
+ImgData.prototype.filterSharp = function(power) {
+	var m = ImgFIRMatrix.makeSharpenFilter(power);
 	this.convolution(m);
 };
 
@@ -357,10 +357,10 @@ SIData.prototype.filterSharp = function(power) {
  * @param {number} n 口径
  * @returns {undefined}
  */
-SIData.prototype.filterBlur = function(n) {
-	var m = SIFIRMatrix.makeBlur(n, 1);
+ImgData.prototype.filterBlur = function(n) {
+	var m = ImgFIRMatrix.makeBlur(n, 1);
 	this.convolution(m);
-	var m = SIFIRMatrix.makeBlur(1, n);
+	var m = ImgFIRMatrix.makeBlur(1, n);
 	this.convolution(m);
 };
 
@@ -369,10 +369,10 @@ SIData.prototype.filterBlur = function(n) {
  * @param {number} n 口径
  * @returns {undefined}
  */
-SIData.prototype.filterGaussian = function(n) {
-	var m = SIFIRMatrix.makeGaussianFilter(n, 1);
+ImgData.prototype.filterGaussian = function(n) {
+	var m = ImgFIRMatrix.makeGaussianFilter(n, 1);
 	this.convolution(m);
-	var m = SIFIRMatrix.makeGaussianFilter(1, n);
+	var m = ImgFIRMatrix.makeGaussianFilter(1, n);
 	this.convolution(m);
 };
 
@@ -382,8 +382,8 @@ SIData.prototype.filterGaussian = function(n) {
  * @param {number} rate
  * @returns {undefined}
  */
-SIData.prototype.filterUnSharp = function(n, rate) {
-	var m = SIFIRMatrix.makeGaussianFilter(n, n);
+ImgData.prototype.filterUnSharp = function(n, rate) {
+	var m = ImgFIRMatrix.makeGaussianFilter(n, n);
 	this.convolutionUnSharp(m, rate);
 };
 
@@ -393,8 +393,8 @@ SIData.prototype.filterUnSharp = function(n, rate) {
  * @param {number} p 0.0～1.0 強度
  * @returns {undefined}
  */
-SIData.prototype.filterBilateral = function(n, p) {
-	var m = SIFIRMatrix.makeGaussianFilter(n, n);
+ImgData.prototype.filterBilateral = function(n, p) {
+	var m = ImgFIRMatrix.makeGaussianFilter(n, n);
 	this.convolutionBilateral(m, p);
 };
 
@@ -404,8 +404,8 @@ SIData.prototype.filterBilateral = function(n, p) {
  * @param {type} e 底(1.01-1.2)
  * @returns {undefined}
  */
-SIData.prototype.filterSoftLens = function(n, e) {
-	var m = SIFIRMatrix.makeCircle(n);
+ImgData.prototype.filterSoftLens = function(n, e) {
+	var m = ImgFIRMatrix.makeCircle(n);
 	this.convolutionExp(m, e);
 };
 

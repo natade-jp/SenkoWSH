@@ -1,4 +1,4 @@
-﻿/* global System, SComponent, SCanvas, SFile, SIData, SFileLoadButton */
+﻿/* global System, SComponent, SCanvas, SFile, ImgData, SFileLoadButton */
 
 function testFileLoad(panel) {
 	
@@ -56,12 +56,12 @@ function testWritePixel(panel) {
 	var button1 = new SButton("RGBA でピクセルに書き込み");
 	canvas.put(button1, SComponent.putype.NEWLINE);
 	button1.addListener(function() {
-		var data = new SIDataRGBA(canvas.getImageData());
+		var data = new ImgDataRGBA(canvas.getImageData());
 		var i = 0;
 		for(i = 0; i < 100; i++) {
 			var x = Math.floor(Math.random() * data.width);
 			var y = Math.floor(Math.random() * data.height);
-			data.setPixelInside(x, y, new SIColorRGBA([255, 255, 255, 255]));
+			data.setPixelInside(x, y, new ImgColorRGBA([255, 255, 255, 255]));
 		}
 		canvas.putImageData(data.getImageData());
 	});
@@ -70,12 +70,12 @@ function testWritePixel(panel) {
 	var button2 = new SButton("輝度値 でピクセルに書き込み");
 	button1.put(button2, SComponent.putype.RIGHT);
 	button2.addListener(function() {
-		var data = new SIDataY(canvas.getImageData());
+		var data = new ImgDataY(canvas.getImageData());
 		var i = 0;
 		for(i = 0; i < 100; i++) {
 			var x = Math.floor(Math.random() * data.width);
 			var y = Math.floor(Math.random() * data.height);
-			data.setPixelInside(x, y, new SIColorY(255));
+			data.setPixelInside(x, y, new ImgColorY(255));
 		}
 		canvas.putImageData(data.getImageData());
 	});
@@ -94,7 +94,7 @@ function testInterpolation(panel) {
 	// Button
 	var gene = new SButton("画像作成");
 	var genefunc = function() {
-		var data = new SIDataY();
+		var data = new ImgDataY();
 		data.putImageData(inputcanvas.getImageData());
 		data.forEach(function(color, x, y) {
 			data.setPixelInside(x, y, color.random());
@@ -116,20 +116,20 @@ function testInterpolation(panel) {
 	
 	
 	var wrapmode = [
-		SIData.wrapmode.REPEAT,
-		SIData.wrapmode.CLAMP
+		ImgData.wrapmode.REPEAT,
+		ImgData.wrapmode.CLAMP
 	];
 	var filtermode = [
-		SIData.filtermode.NEAREST_NEIGHBOR,
-		SIData.filtermode.BILINEAR,
-		SIData.filtermode.COSINE,
-		SIData.filtermode.HERMITE4_3,
-		SIData.filtermode.HERMITE4_5,
-		SIData.filtermode.HERMITE16,
-		SIData.filtermode.BICUBIC,
-		SIData.filtermode.BICUBIC_SOFT,
-		SIData.filtermode.BICUBIC_NORMAL,
-		SIData.filtermode.BICUBIC_SHARP
+		ImgData.filtermode.NEAREST_NEIGHBOR,
+		ImgData.filtermode.BILINEAR,
+		ImgData.filtermode.COSINE,
+		ImgData.filtermode.HERMITE4_3,
+		ImgData.filtermode.HERMITE4_5,
+		ImgData.filtermode.HERMITE16,
+		ImgData.filtermode.BICUBIC,
+		ImgData.filtermode.BICUBIC_SOFT,
+		ImgData.filtermode.BICUBIC_NORMAL,
+		ImgData.filtermode.BICUBIC_SHARP
 	];
 	
 	var cb_selectertype = new SComboBox(wrapmode);
@@ -144,11 +144,11 @@ function testInterpolation(panel) {
 	var button = new SButton("拡大");
 	cb_interpolationtype.put(button, SComponent.putype.NEWLINE);
 	button.addListener(function() {
-		var srcdata = new SIDataY(inputcanvas.getImageData());
+		var srcdata = new ImgDataY(inputcanvas.getImageData());
 		srcdata.setWrapMode(cb_selectertype.getSelectedItem());
 		srcdata.setFilterMode(cb_interpolationtype.getSelectedItem());
-		var dstdata = new SIDataY(dstWidth, dstHeight);
-		dstdata.drawSIData(srcdata, 0, 0, dstWidth, dstHeight);
+		var dstdata = new ImgDataY(dstWidth, dstHeight);
+		dstdata.drawImgData(srcdata, 0, 0, dstWidth, dstHeight);
 		outputcanvas.putImageData(dstdata.getImageData());
 	});
 	
@@ -196,12 +196,12 @@ function testBlending(panel) {
 	label2.put(canvas_src2, SComponent.putype.RIGHT);
 	
 	var brendtype = [
-		SIData.brendtype.NONE,
-		SIData.brendtype.ALPHA,
-		SIData.brendtype.ADD,
-		SIData.brendtype.SUB,
-		SIData.brendtype.REVSUB,
-		SIData.brendtype.MUL
+		ImgData.brendtype.NONE,
+		ImgData.brendtype.ALPHA,
+		ImgData.brendtype.ADD,
+		ImgData.brendtype.SUB,
+		ImgData.brendtype.REVSUB,
+		ImgData.brendtype.MUL
 	];
 	var cb_brendtype = new SComboBox(brendtype);
 	cb_brendtype.setWidth(8);
@@ -219,11 +219,11 @@ function testBlending(panel) {
 	var button = new SButton("blend");
 	cb_globalalpha.put(button, SComponent.putype.RIGHT);
 	button.addListener(function() {
-		var src1 = new SIDataRGBA(canvas_src1.getImageData());
-		var src2 = new SIDataRGBA(canvas_src2.getImageData());
+		var src1 = new ImgDataRGBA(canvas_src1.getImageData());
+		var src2 = new ImgDataRGBA(canvas_src2.getImageData());
 		src1.setBlendType(cb_brendtype.getSelectedItem());
 		src1.globalAlpha = parseFloat(cb_globalalpha.getSelectedItem());
-		src1.drawSIData(src2, 0, 0);
+		src1.drawImgData(src2, 0, 0);
 		canvas_dst.putImageData(src1.getImageData());
 	});
 	
@@ -305,15 +305,15 @@ function testEtc(panel) {
 	var button = new SButton("実行");
 	cb_filtertype.put(button, SComponent.putype.RIGHT);
 	button.addListener(function() {
-		var src = new SIDataRGBA(canvas_src.getImageData());
+		var src = new ImgDataRGBA(canvas_src.getImageData());
 		var m;
 		if(cb_filtertype.getSelectedItem() === filtertype[0]) {
-			src.setWrapMode(SIData.wrapmode.CLAMP);
+			src.setWrapMode(ImgData.wrapmode.CLAMP);
 			src.filterBlur(7);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[1]) {
-			src.setWrapMode(SIData.wrapmode.CLAMP);
+			src.setWrapMode(ImgData.wrapmode.CLAMP);
 			src.filterSharp(0.5);
 			canvas_dst.putImageData(src.getImageData());
 		}
@@ -323,28 +323,28 @@ function testEtc(panel) {
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[3]) {
 			src.grayscale();
-			var height = new SIDataY(src);
-			height.setWrapMode(SIData.wrapmode.REPEAT);
+			var height = new ImgDataY(src);
+			height.setWrapMode(ImgData.wrapmode.REPEAT);
 			height.filterGaussian(5);
 			canvas_dst.putImageData(height.getNormalMap().getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[4]) {
-			src.setWrapMode(SIData.wrapmode.CLAMP);
+			src.setWrapMode(ImgData.wrapmode.CLAMP);
 			src.filterGaussian(7);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[5]) {
-			src.setWrapMode(SIData.wrapmode.CLAMP);
+			src.setWrapMode(ImgData.wrapmode.CLAMP);
 			src.filterBilateral(5, 0.8);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[6]) {
-			src.setWrapMode(SIData.wrapmode.CLAMP);
+			src.setWrapMode(ImgData.wrapmode.CLAMP);
 			src.filterSoftLens(5, 1.2);
 			canvas_dst.putImageData(src.getImageData());
 		}
 		else if(cb_filtertype.getSelectedItem() === filtertype[7]) {
-			src.setWrapMode(SIData.wrapmode.CLAMP);
+			src.setWrapMode(ImgData.wrapmode.CLAMP);
 			src.filterUnSharp(7, 1);
 			canvas_dst.putImageData(src.getImageData());
 		}
@@ -374,13 +374,13 @@ function testEtc(panel) {
 
 ﻿function main(args) {
 	
-	System.out.println("SImageProcessing クラスのサンプル");
+	System.out.println("ImageProcessing クラスのサンプル");
 	
 	// パネルを作って、指定した ID の要素内に入れる。
 	var mainpanel = new SPanel();
 	mainpanel.putMe("scomponent", SComponent.putype.IN);
 	
-	var label = new SLabel("SImageProcessing のテストです");
+	var label = new SLabel("ImageProcessing のテストです");
 	mainpanel.put(label, SComponent.putype.IN);
 	
 	var combobox_type = [

@@ -1,14 +1,14 @@
-﻿/* global System, SComponent, SCanvas, SFile, SFileButton, SIData, SFileLoadButton */
+﻿/* global System, SComponent, SCanvas, SFile, SFileButton, ImgData, SFileLoadButton */
 
-var imagedata_readrgba	= new SIDataRGBA(32, 32);
-imagedata_readrgba.setWrapMode(SIData.wrapmode.REPEAT);
-imagedata_readrgba.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
-var imagedata_readgray	= new SIDataY(32, 32);
-imagedata_readgray.setWrapMode(SIData.wrapmode.REPEAT);
-imagedata_readgray.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
-var imagedata_resized	= new SIDataY(32, 32);
-imagedata_resized.setWrapMode(SIData.wrapmode.REPEAT);
-imagedata_resized.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
+var imagedata_readrgba	= new ImgDataRGBA(32, 32);
+imagedata_readrgba.setWrapMode(ImgData.wrapmode.REPEAT);
+imagedata_readrgba.setFilterMode(ImgData.filtermode.BICUBIC_SOFT);
+var imagedata_readgray	= new ImgDataY(32, 32);
+imagedata_readgray.setWrapMode(ImgData.wrapmode.REPEAT);
+imagedata_readgray.setFilterMode(ImgData.filtermode.BICUBIC_SOFT);
+var imagedata_resized	= new ImgDataY(32, 32);
+imagedata_resized.setWrapMode(ImgData.wrapmode.REPEAT);
+imagedata_resized.setFilterMode(ImgData.filtermode.BICUBIC_SOFT);
 var setting_width	= 0;
 var setting_height	= 0;
 var setting_denoise	= 0;
@@ -84,16 +84,16 @@ var redrawReadSample = function() {
 
 	// 入力画像が小さいのであれば、入力画像にデノイズ処理
 	if(src_size < dst_size) {
-		var imagedata_denoised = new SIDataY(imagedata_readgray);
-		imagedata_denoised.setWrapMode(SIData.wrapmode.REPEAT);
-		imagedata_denoised.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
+		var imagedata_denoised = new ImgDataY(imagedata_readgray);
+		imagedata_denoised.setWrapMode(ImgData.wrapmode.REPEAT);
+		imagedata_denoised.setFilterMode(ImgData.filtermode.BICUBIC_SOFT);
 		filterDenoise(imagedata_denoised, setting_denoise);
 		filterBoyake(imagedata_denoised, setting_boyake);
-		imagedata_resized.drawSIData(imagedata_denoised, 0, 0, setting_width, setting_height);
+		imagedata_resized.drawImgData(imagedata_denoised, 0, 0, setting_width, setting_height);
 	}
 	// 出力画像が小さいのであれば、出力画像にデノイズ処理
 	else {
-		imagedata_resized.drawSIData(imagedata_readgray, 0, 0, setting_width, setting_height);
+		imagedata_resized.drawImgData(imagedata_readgray, 0, 0, setting_width, setting_height);
 		filterDenoise(imagedata_resized, setting_denoise);
 		filterBoyake(imagedata_resized, setting_boyake);
 	}
@@ -105,9 +105,9 @@ var redrawReadSample = function() {
 
 var redrawNormalMap = function() {
 	
-	var imagedata_filter = new SIDataY(imagedata_resized);
-	imagedata_filter.setWrapMode(SIData.wrapmode.REPEAT);
-	imagedata_filter.setFilterMode(SIData.filtermode.BICUBIC_SOFT);
+	var imagedata_filter = new ImgDataY(imagedata_resized);
+	imagedata_filter.setWrapMode(ImgData.wrapmode.REPEAT);
+	imagedata_filter.setFilterMode(ImgData.filtermode.BICUBIC_SOFT);
 	
 	setting_outotsu		= parseFloat(c_outotsu.getValue());
 	setting_surudosa	= parseFloat(c_surudosa.getValue());

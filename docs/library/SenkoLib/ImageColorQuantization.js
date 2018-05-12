@@ -1,9 +1,9 @@
 ﻿"use strict";
 
-﻿/* global System, ImageData, SIData, SIDataRGBA, SIColorRGBA, SIColor, SIColorY */
+﻿/* global System, ImageData, ImgData, ImgDataRGBA, ImgColorRGBA, ImgColor, ImgColorY */
 
 ﻿/**
- * SenkoLib SIColorQuantization.js
+ * SenkoLib ImageColorQuantization.js
  *  画像処理ライブラリの中の減色に関する処理
  *  オレンジビューアのソースコードを参考に作成しています。
  * 
@@ -14,14 +14,14 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
  * DEPENDENT LIBRARIES:
- *  SImageProcessing.js
+ *  ImageProcessing.js
  */
 
 /**
  * 使用している色数を取得します
  * @returns {Number}
  */
-SIDataRGBA.prototype.getColorCount = function() {
+ImgDataRGBA.prototype.getColorCount = function() {
 	// 色を記録する領域
 	// 0x200000 = 256 * 256 * 256 / 8 = 2097152
 	var sw = new Uint8ClampedArray(0x200000);
@@ -43,7 +43,7 @@ SIDataRGBA.prototype.getColorCount = function() {
  * @param {Number} colors 色の数
  * @returns {}
  */
-SIDataRGBA.prototype.getPalletMedianCut = function(colors) {
+ImgDataRGBA.prototype.getPalletMedianCut = function(colors) {
 	if(this.getColorCount()<=colors){
 		return(null);
 	}
@@ -220,7 +220,7 @@ SIDataRGBA.prototype.getPalletMedianCut = function(colors) {
 		b = b < 0 ? 0 : b > 255 ? 255 : b;
 
 		//COLORREF 型で代入
-		pallet[i] = new SIColorRGBA([r, g, b, 255]);
+		pallet[i] = new ImgColorRGBA([r, g, b, 255]);
 	}
 	
 	return pallet;
@@ -229,9 +229,9 @@ SIDataRGBA.prototype.getPalletMedianCut = function(colors) {
 /**
  * 使用されている色のパレットを取得します。
  * 最大256色まで取得します。
- * @returns {Array|SIData.getPallet.pallet}
+ * @returns {Array|ImgData.getPallet.pallet}
  */
-SIDataRGBA.prototype.getPallet = function() {
+ImgDataRGBA.prototype.getPallet = function() {
 	var pallet = [];
 	var rrggbb_array = new Uint32Array(256);
 	var count = 0;
@@ -258,7 +258,7 @@ SIDataRGBA.prototype.getPallet = function() {
  * @param {Number} colors 階調数(2~256)
  * @returns {}
  */
-SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
+ImgDataRGBA.prototype.getPalletGrayscale = function(colors) {
 	var n = colors < 2 ? 2 : colors > 256 ? 256 : colors;
 	var pallet = [];
 	var diff = 255.0 / (n - 1);
@@ -267,7 +267,7 @@ SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
 	for(i = 0; i < n; i++) {
 		var y = Math.round(col);
 		y = y < 0 ? 0 : y > 255 ? 255 : y;
-		pallet[i] = new SIColorRGBA([y, y, y, 255]);
+		pallet[i] = new ImgColorRGBA([y, y, y, 255]);
 		col += diff;
 	}
 	return pallet;
@@ -279,7 +279,7 @@ SIDataRGBA.prototype.getPalletGrayscale = function(colors) {
  * @param {type} normType
  * @returns {object}
  */
-SIColor.prototype.searchColor = function(palettes, normType) {
+ImgColor.prototype.searchColor = function(palettes, normType) {
 	var i;
 	var norm = 0;
 	var c1_norm_max	= 0x7fffffff;
@@ -313,7 +313,7 @@ SIColor.prototype.searchColor = function(palettes, normType) {
 	};
 };
 
-var SIColorQuantization = {
+var ImgColorQuantization = {
 
 	diffusionPattern : {
 
@@ -369,9 +369,9 @@ var SIColorQuantization = {
  * @param {Array} palettes
  * @returns {undefined}
  */
-SIDataRGBA.prototype.quantizationSimple = function(palettes) {
+ImgDataRGBA.prototype.quantizationSimple = function(palettes) {
 	this.forEach(function(thiscolor, x, y, data) {
-		var palletcolor = thiscolor.searchColor(palettes, SIColor.normType.Eugrid);
+		var palletcolor = thiscolor.searchColor(palettes, ImgColor.normType.Eugrid);
 		data.setPixelInside(x, y, palletcolor.c1.color.exchangeColorAlpha(thiscolor));
 	});
 };
@@ -379,11 +379,11 @@ SIDataRGBA.prototype.quantizationSimple = function(palettes) {
 /**
  * パレットから組織的ディザ法による減色を行います。(Error-diffusion dithering)
  * @param {Array} palettes
- * @param {SIColorQuantization.orderPattern} orderPattern
- * @param {SIColor.normType} normType
+ * @param {ImgColorQuantization.orderPattern} orderPattern
+ * @param {ImgColor.normType} normType
  * @returns {undefined}
  */
-SIDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, normType) {
+ImgDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, normType) {
 	this.forEach(function(thiscolor, x, y, data) {
 		var palletcolor = thiscolor.searchColor(palettes, normType);
 		var color1 = palletcolor.c1.color;
@@ -420,10 +420,10 @@ SIDataRGBA.prototype.quantizationOrdered = function(palettes, orderPattern, norm
 /**
  * パレットから誤差拡散法による減色を行います。
  * @param {Array} palettes
- * @param {SIColorQuantization.diffusionPattern} diffusionPattern
+ * @param {ImgColorQuantization.diffusionPattern} diffusionPattern
  * @returns {undefined}
  */
-SIDataRGBA.prototype.quantizationDiffusion = function(palettes, diffusionPattern) {
+ImgDataRGBA.prototype.quantizationDiffusion = function(palettes, diffusionPattern) {
 	
 	// 誤差拡散するにあたって、0未満や255より大きな値を使用するため
 	// 一旦、下記のバッファにうつす
@@ -463,11 +463,11 @@ SIDataRGBA.prototype.quantizationDiffusion = function(palettes, diffusionPattern
 	// 選択処理
 	this.forEach(function(thiscolor, x, y, data) {
 		point = y * data.width + x;
-		var diffcolor = new SIColorRGBA(
+		var diffcolor = new ImgColorRGBA(
 			[color_r[point], color_g[point], color_b[point], 255]
 		);
 		// 最も近い色を探して
-		var palletcolor = diffcolor.searchColor(palettes, SIColor.normType.Eugrid);
+		var palletcolor = diffcolor.searchColor(palettes, ImgColor.normType.Eugrid);
 		palletcolor = palletcolor.c1.color;
 		// 値を設定する
 		data.setPixelInside(x, y, palletcolor.exchangeColorAlpha(thiscolor));
@@ -501,7 +501,7 @@ SIDataRGBA.prototype.quantizationDiffusion = function(palettes, diffusionPattern
  * @param {Array} colorcount 減色後の色数
  * @returns {undefined}
  */
-SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
+ImgDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
 	var count = this.getColorCount();
 	if(count > colorcount) {
 		var pallet = this.getPalletMedianCut(colorcount);
@@ -512,19 +512,19 @@ SIDataRGBA.prototype.filterQuantizationSimple = function(colorcount) {
 /**
  * 組織的ディザ法による減色
  * @param {Array} colorcount 減色後の色数
- * @param {SIColor.normType} normType 
+ * @param {ImgColor.normType} normType 
  * @returns {undefined}
  */
-SIDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) {
+ImgDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) {
 	if(normType === undefined) {
-		normType = SIColor.normType.Eugrid;
+		normType = ImgColor.normType.Eugrid;
 	}
 	var count = this.getColorCount();
 	if(count > colorcount) {
 		var pallet = this.getPalletMedianCut(colorcount);
 		this.quantizationOrdered(
 			pallet,
-			SIColorQuantization.orderPattern.patternBayer,
+			ImgColorQuantization.orderPattern.patternBayer,
 			normType
 		);
 	}
@@ -533,12 +533,12 @@ SIDataRGBA.prototype.filterQuantizationOrdered = function(colorcount, normType) 
 /**
  * 誤差拡散法による減色
  * @param {Array} colorcount
- * @param {SIColorQuantization.diffusionPattern} diffusionPattern
+ * @param {ImgColorQuantization.diffusionPattern} diffusionPattern
  * @returns {undefined}
  */
-SIDataRGBA.prototype.filterQuantizationDiffusion = function(colorcount, diffusionPattern) {
+ImgDataRGBA.prototype.filterQuantizationDiffusion = function(colorcount, diffusionPattern) {
 	if(diffusionPattern === undefined) {
-		diffusionPattern = SIColorQuantization.diffusionPattern.patternFloydSteinberg;
+		diffusionPattern = ImgColorQuantization.diffusionPattern.patternFloydSteinberg;
 	}
 	var count = this.getColorCount();
 	if(count > colorcount) {

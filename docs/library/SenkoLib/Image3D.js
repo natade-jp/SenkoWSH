@@ -1,9 +1,9 @@
 ﻿"use strict";
 
-﻿/* global SIColorRGBA, SIDataY, SIData */
+﻿/* global ImgColorRGBA, ImgDataY, ImgData */
 
 ﻿/**
- * SenkoLib SI3D.js
+ * SenkoLib Image3D.js
  *  画像処理ライブラリの中の3D系画像処理
  * 
  * AUTHOR:
@@ -13,7 +13,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  * 
  * DEPENDENT LIBRARIES:
- *  SImageProcessing.js
+ *  ImageProcessing.js
  */
 
 /**
@@ -21,9 +21,9 @@
  * @param {type} x
  * @param {type} y
  * @param {type} z
- * @returns {SIVector}
+ * @returns {ImgVector}
  */
-var SIVector = function(x, y, z) {
+var ImgVector = function(x, y, z) {
 	this.x = x;
 	this.y = y;
 	this.z = z;
@@ -31,11 +31,11 @@ var SIVector = function(x, y, z) {
 
 /**
  * クロス積
- * @param {SIVector} tgt
- * @returns {SIVector}
+ * @param {ImgVector} tgt
+ * @returns {ImgVector}
  */
-SIVector.prototype.cross = function(tgt) {
-	return new SIVector(
+ImgVector.prototype.cross = function(tgt) {
+	return new ImgVector(
 		this.y * tgt.z - this.z * tgt.y,
 		this.z * tgt.x - this.x * tgt.z,
 		this.x * tgt.y - this.y * tgt.x
@@ -44,11 +44,11 @@ SIVector.prototype.cross = function(tgt) {
 
 /**
  * ターゲットへのベクトル
- * @param {SIVector} tgt
- * @returns {SIVector}
+ * @param {ImgVector} tgt
+ * @returns {ImgVector}
  */
-SIVector.prototype.getDirection = function(tgt) {
-	return new SIVector(
+ImgVector.prototype.getDirection = function(tgt) {
+	return new ImgVector(
 		tgt.x - this.x,
 		tgt.y - this.y,
 		tgt.z - this.z
@@ -57,12 +57,12 @@ SIVector.prototype.getDirection = function(tgt) {
 
 /**
  * ターゲットへの方向ベクトル
- * @returns {SIVector}
+ * @returns {ImgVector}
  */
-SIVector.prototype.normalize = function() {
+ImgVector.prototype.normalize = function() {
 	var b = this.x * this.x + this.y * this.y + this.z * this.z;
 	b = Math.sqrt(1.0 / b);
-	return new SIVector(
+	return new ImgVector(
 		this.x * b,
 		this.y * b,
 		this.z * b
@@ -72,10 +72,10 @@ SIVector.prototype.normalize = function() {
 /**
  * 方向ベクトルから、RGBの画素へ変換
  * 右がX+,U+、下がY+,V+としたとき、RGB＝（+X, -Y, +Z）系とします。
- * @returns {SIColorRGBA}
+ * @returns {ImgColorRGBA}
  */
-SIVector.prototype.getNormalMapColor = function() {
-	return new SIColorRGBA([
+ImgVector.prototype.getNormalMapColor = function() {
+	return new ImgColorRGBA([
 		Math.round((1.0 + this.x) * 127.5),
 		Math.round((1.0 - this.y) * 127.5),
 		Math.round((1.0 + this.z) * 127.5),
@@ -86,10 +86,10 @@ SIVector.prototype.getNormalMapColor = function() {
 /**
  * RGBの画素から方向ベクトルへの変換
  * 右がX+,U+、下がY+,V+としたとき、RGB＝（+X, -Y, +Z）系とします。
- * @returns {SIVector}
+ * @returns {ImgVector}
  */
-SIColorRGBA.prototype.getNormalVector = function() {
-	return new SIVector(
+ImgColorRGBA.prototype.getNormalVector = function() {
+	return new ImgVector(
 		  (this.rgba[0] / 128.0) - 1.0,
 		- (this.rgba[1] / 128.0) + 1.0,
 		  (this.rgba[2] / 128.0) - 1.0
@@ -98,23 +98,23 @@ SIColorRGBA.prototype.getNormalVector = function() {
 
 /**
  * ノーマルマップを作成する
- * @returns {SIColorRGBA}
+ * @returns {ImgColorRGBA}
  */
-SIDataY.prototype.getNormalMap = function() {
-	if(this.getWrapMode() === SIData.wrapmode.INSIDE) {
+ImgDataY.prototype.getNormalMap = function() {
+	if(this.getWrapMode() === ImgData.wrapmode.INSIDE) {
 		// 端の値を取得できないのでエラー
 		throw "not inside";
 	}
 	
-	var output = new SIDataRGBA(this.width, this.height);
+	var output = new ImgDataRGBA(this.width, this.height);
 	var x, y;
 	for(y = 0; y < this.height; y++) {
 		for(x = 0; x < this.width; x++) {
-			var x1 = new SIVector(x - 1, y, this.getPixel(x - 1, y).getColor());
-			var x2 = new SIVector(x + 1, y, this.getPixel(x + 1, y).getColor());
+			var x1 = new ImgVector(x - 1, y, this.getPixel(x - 1, y).getColor());
+			var x2 = new ImgVector(x + 1, y, this.getPixel(x + 1, y).getColor());
 			var x3 = x1.getDirection(x2);
-			var y1 = new SIVector(x, y - 1, this.getPixel(x, y - 1).getColor());
-			var y2 = new SIVector(x, y + 1, this.getPixel(x, y + 1).getColor());
+			var y1 = new ImgVector(x, y - 1, this.getPixel(x, y - 1).getColor());
+			var y2 = new ImgVector(x, y + 1, this.getPixel(x, y + 1).getColor());
 			var y3 = y1.getDirection(y2);
 			var n  = x3.cross(y3).normalize();
 			output.setPixelInside(x, y, n.getNormalMapColor());
@@ -125,9 +125,9 @@ SIDataY.prototype.getNormalMap = function() {
 
 /**
  * ノーマルマップに対して、環境マッピングする
- * @param {SIColorRGBA} texture
- * @returns {SIColorRGBA}
+ * @param {ImgColorRGBA} texture
+ * @returns {ImgColorRGBA}
  */
-SIDataY.prototype.filterEnvironmentMapping = function(texture) {
+ImgDataY.prototype.filterEnvironmentMapping = function(texture) {
 };
 
