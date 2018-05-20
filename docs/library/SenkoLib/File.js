@@ -118,7 +118,7 @@ var CSVTool = {
 			for(var i = 0;i < text.length;i++) {
 				if(text[i] !== undefined) {
 					for(var j = 0;j < text[i].length;j++) {
-						var element = text[i][j].getAbsolutePath();
+						var element = text[i][j];
 						if(escape.test(element)) {
 							element = element.replace(/\"/g, "\"\"");
 							element = "\"" + element + "\"";
