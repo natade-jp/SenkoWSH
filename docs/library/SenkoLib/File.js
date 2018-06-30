@@ -574,6 +574,7 @@ File.createXMLHttpRequest = function() {
 			"Msxml2.XMLHTTP",
 			"Microsoft.XMLHTTP"
 		];
+		// ※ WinHttp.WinHttpRequest は onreadystatechange の書き換えができない
 		var i;
 		for(i = 0; i < MSXMLHTTP.length; i++) {
 			try {
@@ -603,6 +604,10 @@ File.prototype.download = function(callback) {
 				return(null);
 			}
 			var handleHttpResponse = function (){
+				// readyState === 0 UNSENT
+				// readyState === 1 OPENED
+				// readyState === 2 HEADERS_RECEIVED
+				// readyState === 3 LOADING
 				if(http.readyState === 4) { // DONE
 					if(http.status !== 200) {
 						console.log("error downloadText " + that.pathname);
@@ -645,7 +650,7 @@ File.prototype.getText = function(charset, newline) {
 			}
 			http.open("GET", this.pathname, false);
 			try {
-			http.send(null);
+				http.send(null);
 				text = http.responseText;
 			}
 			catch (e) {
@@ -948,7 +953,7 @@ File.searchFile = function(file){
 		}
 		else {
 			isTarget = file;
-		}	
+		}
 		path[pointer] = File.getCurrentDirectory().getNormalizedPathName();
 		targetfolder = fso.getFolder(path[pointer]);
 		list = new Enumerator(fso.getFolder(targetfolder).Files);
