@@ -143,7 +143,7 @@ var File = function(pathname) {
 	if(arguments.length !== 1) {
 		throw "IllegalArgumentException";
 	}
-	else if(typeof pathname === "string") {
+	else if((typeof pathname === "string")||(pathname instanceof String)) {
 		// \を/に置き換える
 		this.pathname = pathname.replace(/\\/g, "/" );
 	}
@@ -182,11 +182,14 @@ File.prototype.exists = function() {
 };
 File.prototype.copy = function(file) {
 	if(this.isJScript) {
+		if((typeof file === "string")||(file instanceof String)) {
+			file = new File(file);
+		}
 		if(this.isFile()) {
-			return(this.fso.CopyFile(this.pathname, file, true));
+			return(this.fso.CopyFile(this.pathname, file.getAbsolutePath(), true));
 		}
 		else if(this.isDirectory()) {
-			return(this.fso.CopyFolder(this.pathname, file, true));
+			return(this.fso.CopyFolder(this.pathname, file.getAbsolutePath(), true));
 		}
 		else {
 			return(false);
@@ -195,13 +198,16 @@ File.prototype.copy = function(file) {
 };
 File.prototype.move = function(file) {
 	if(this.isJScript) {
+		if((typeof file === "string")||(file instanceof String)) {
+			file = new File(file);
+		}
 		if(this.isFile()) {
-			this.fso.MoveFile(this.pathname, file);
+			this.fso.MoveFile(this.pathname, file.getAbsolutePath());
 			this.pathname = file.getAbsolutePath();
 			return(true);
 		}
 		else if(this.isDirectory()) {
-			this.fso.MoveFolder(this.pathname, file);
+			this.fso.MoveFolder(this.pathname, file.getAbsolutePath());
 			this.pathname = file.getAbsolutePath();
 			return(true);
 		}
@@ -228,7 +234,7 @@ File.prototype.getName = function() {
 };
 // 親フォルダの絶対パス名
 File.prototype.getParent = function() {
-	var x = this.getAbsolutePath().match(/.*\//)[0];
+	var x = this.getAbsolutePath().match(/.*[\/\\]/)[0];
 	return(x.substring(0 ,x.length - 1));
 };
 File.prototype.getParentFile = function() {
@@ -341,7 +347,7 @@ File.prototype.getNormalizedPathName = function() {
 	if(this.pathname === "") {
 		return(".\\");
 	}
-	var name = this.pathname.replace("/", "\\");
+	var name = this.pathname.replace(/\//g, "\\");
 	if(name.slice(-1) !== "\\") {
 		name += "\\";
 	}
@@ -494,6 +500,9 @@ File.prototype.mkdirs = function() {
 };
 File.prototype.renameTo = function(name) {
 	if(this.isJScript) {
+		if((typeof name === "string")||(name instanceof String)) {
+			name = new File(name);
+		}
 		if(this.isFile()) {
 			// 例えばファイル名を大文字から小文字に変換といった場合、
 			// Scripting.FileSystemObject の仕様によりエラーが発生するため、
@@ -634,31 +643,14 @@ File.prototype.getText = function(charset, newline) {
 			if(http === null) {
 				return(null);
 			}
-			var isdone = false;
-			var handleHttpResponse = function (){
-			//	if(xmlhttp.readyState === 0) { // UNSENT
-			//	}
-			//	if(xmlhttp.readyState === 1) { // OPENED
-			//	}
-			//	if(xmlhttp.readyState === 2) { // HEADERS_RECEIVED
-			//	}
-			//	if(xmlhttp.readyState === 3) { // LOADING
-			//	}
-				if(http.readyState === 4) { // DONE
-					isdone = true;
-				}
-			};
-			http.onreadystatechange = handleHttpResponse;
-			http.open("GET", this.pathname, true);
+			http.open("GET", this.pathname, false);
+			try {
 			http.send(null);
-			var TIMEOUT = 100; //timeout 10sec
-			for(var i = 0;(i < TIMEOUT) && (!isdone);i++) {
-				WScript.Sleep(100);
+				text = http.responseText;
 			}
-			if(http.status !== 200) {
-				return(null);
+			catch (e) {
+				text = "error";
 			}
-			text = http.responseText;
 		}
 		else {
 			// 使用可能な charset については下記を参照
@@ -922,6 +914,9 @@ File.setCurrentDirectory = function(file) {
 	}
 	var isJScript = (typeof WSH !== "undefined");
 	if(isJScript) {
+		if((typeof file === "string")||(file instanceof String)) {
+			file = new File(file);
+		}
 		var shell = WScript.CreateObject ("WScript.Shell");
 		var fso = new ActiveXObject('Scripting.FileSystemObject');
 		shell.CurrentDirectory = fso.getFolder(file.getAbsolutePath()).Name;
@@ -942,8 +937,11 @@ File.searchFile = function(file){
 		var targetfolder;
 		var buffer = null;
 		var isTarget;
+		if((typeof file === "string")||(file instanceof String)) {
+			file = new File(file);
+		}
 		if(typeof file !== "function") {
-			buffer = file.getAbsolutePath();
+			buffer = file.getName();
 			isTarget = function(name, fullpath) {
 				return(name === buffer);
 			};

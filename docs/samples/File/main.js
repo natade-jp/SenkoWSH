@@ -76,7 +76,7 @@
 	}
 	
 	//カレントディレクトリを移動
-	System.setCurrentDirectory("..");
+	System.setCurrentDirectory("../../");
 	
 	
 	System.out.println("File.searchFile で名前が一致しているファイルを選択します。");
