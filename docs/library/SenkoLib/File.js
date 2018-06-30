@@ -313,7 +313,6 @@ File.prototype.setLastModified = function(date) {
 			var date_string =
 				date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + (date.getDate()) + " " +
 				date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-			System.out.println(date_string);
 			file.ModifyDate = date_string;
 		}
 		else if(this.isDirectory()) {
