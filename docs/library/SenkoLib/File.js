@@ -304,6 +304,26 @@ File.prototype.lastModified = function() {
 		}
 	}
 };
+File.prototype.setLastModified = function(date) {
+	if(this.isJScript) {
+		if(this.isFile()) {
+			var shell = new ActiveXObject("Shell.Application");
+			var folder = shell.NameSpace(this.getParent());
+			var file = folder.ParseName(this.getName());
+			var date_string =
+				date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + (date.getDate()) + " " +
+				date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+			System.out.println(date_string);
+			file.ModifyDate = date_string;
+		}
+		else if(this.isDirectory()) {
+			return(false);
+		}
+		else {
+			return(false);
+		}
+	}
+};
 File.prototype.length = function() {
 	if(this.isJScript) {
 		if(this.isFile()) {
@@ -471,13 +491,26 @@ File.prototype.getAbsolutePath = function() {
 };
 File.prototype.mkdir = function() {
 	if(this.isJScript) {
-		if(this.exists()) {
+		var filename = this.getAbsolutePath();
+		if(this.fso.FileExists(filename)) {
+			// ファイルがあるため、フォルダを作れない
 			return(false);
 		}
-		else {
-			this.fso.CreateFolder(this.pathname);
+		else if(this.fso.FolderExists(filename)) {
+			// フォルダが既にあるため、TRUEで返す
 			return(true);
 		}
+		// フォルダがないので作成する
+		this.fso.CreateFolder(filename);
+		// 10秒間作られるまで待つ
+		for(var i = 0; i < (20 * 10); i++) {
+			if(this.fso.FolderExists(filename)) {
+				return(true);
+			}
+			WScript.Sleep(50); // 50ms
+		}
+		// いつまで待ってもフォルダが作られないので失敗
+		return(false);
 	}
 };
 File.prototype.mkdirs = function() {
@@ -487,11 +520,8 @@ File.prototype.mkdirs = function() {
 		var out  = true;
 		for(var i = 0; i < name.length; i++) {
 			dir += name[i];
-			if(this.fso.FileExists(dir)) {
+			if(!(new File(dir)).mkdir()) {
 				return(false);
-			}
-			else if(!this.fso.FolderExists(dir)) {
-				this.fso.CreateFolder(dir);
 			}
 			dir += "\\";
 		}
@@ -896,8 +926,10 @@ File.createTempFile = function(){
 	}
 	var isJScript = (typeof WSH !== "undefined");
 	if(isJScript) {
+		var TemporaryFolder = 2;
 		var fso = new ActiveXObject("Scripting.FileSystemObject");
-		return(new File(fso.GetTempName()));
+		// テンポラリフォルダ内の適当なファイル名を取得します
+		return(new File(fso.GetSpecialFolder(TemporaryFolder) + "\\" + fso.GetTempName()));
 	}
 };
 File.getCurrentDirectory = function(){

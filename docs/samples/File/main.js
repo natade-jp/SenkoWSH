@@ -65,6 +65,11 @@
 	file = new File(filename);
 	file.setCSV(text);
 	
+	System.out.println("更新日時を変更してみます。");
+	file.setLastModified(new Date(2000,0,1,1,23,45)); // 2000/1/1 1:23:45
+	
+	System.out.println("更新日時を取得してみます。");
+	System.out.println(file.lastModified());
 	
 	System.out.println("getCSV メソッドでcsvを読み込みます。");
 	file = new File(filename);
@@ -84,7 +89,6 @@
 	file = File.searchFile(filename);
 	if(file === null) {
 		System.out.println("ファイルが見つかりませんでした。");
-		System.stop();
 	}
 	else {
 		System.out.println(file.getAbsolutePath());
@@ -98,11 +102,11 @@
 	file = File.searchFile(filename);
 	if(file === null) {
 		System.out.println("ファイルが見つかりませんでした。");
-		System.stop();
 	}
 	else {
 		System.out.println(file.getAbsolutePath());
 	}
+	
 	
 	System.out.println("exists メソッド");
 	System.out.println(file.exists());
@@ -153,6 +157,8 @@
 	System.out.println("delete_ メソッドで削除");
 	System.out.println("copy メソッドでコピー");
 	System.out.println("move メソッドで移動");
+	
+
 	
 	System.stop();
 }
