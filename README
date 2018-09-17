@@ -11,20 +11,18 @@ natade / https://twitter.com/natadea
 
 
 【概要・ポリシー】
-ECMAScript ライブラリです。
+HTML5 向けの ECMAScript ライブラリです。
 
-・操作感をJavaに極力似せる
-・業務アプリ向けの操作は JavaScript、Windows 上で動く JScript の両方で動くことを目指す
-・画像関連の操作は、IE, Edge, Chrome, Firefox などで動かすことを目指す
+・操作感をJavaに似せる
 ・読みやすさを重視したコードにする
 ・1つのJavaScriptライブラリには1つのクラス、それに類するクラス群を書く
-・移植性を上げるため、出来る限り単体でロードするだけで動作することを目指す
+・JScript 向けは以下で管理します。
+https://github.com/natade-jp/SenkoLib-for-JScript
 
 
 【文字コードについて】
 ソースコードは、utf-8（BOM付き, UTF-8, LF）で統一します。
 スクリプトで自動で文字コード変換を行う都合上、BOM付きとしています。
-なお、Windows上ではJScriptに切り替えられるように「toHTML5.wsf」「toJScript.wsf」で変更が行えます。
 
 
 【フォルダ構成】
