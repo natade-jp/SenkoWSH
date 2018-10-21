@@ -1,7 +1,6 @@
 html, body {
 	height:			100%;
-	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo UI", "Meiryo", sans-serif;
-	font-weight:	500;
+	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
 }
 h2	{
 	margin-top:		0em;

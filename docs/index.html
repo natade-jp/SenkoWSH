@@ -8,10 +8,8 @@
 </head>
 <body>
 <h1>SenkoLib</h1>
-<p>JScript / HTML5 / node.js 用のライブラリです。
+<p>JScript / HTML5 / node.js 用のライブラリです。Java風の操作感を目指します。
 ライブラリ自体は<a href="https://opensource.org/licenses/Zlib">zlibライセンス</a>とします。</p>
-<p>本ライブラリの詳細は、<a href="https://blog.natade.net/2018/09/09/html5-javascript-jscript%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA-senkolib/">紹介記事</a>をご確認ください。</p>
-<p>JScript 向けは<a href="https://github.com/natade-jp/SenkoLib-for-JScript">別リポジトリ</a>をご確認ください。</p>
 
 <div id="applications" class="dllist">
 <h2>Applications</h2>
@@ -120,7 +118,7 @@ if(	element !== null) {
 	list = element.getElementsByTagName("dt");
 	for(i = 0; i < list.length; i++) {
 		var title = list[i].innerText;
-		list[i].innerHTML = "<a href=\"./samples/" + title + "/index.html\">" + title + "</a>";
+		list[i].innerHTML = "<a href=\"./samples/" + title + "/\">" + title + "</a>";
 	}
 }
 </script> 
