@@ -1,6 +1,6 @@
-/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, S3Texture */
+﻿/* global S3Vector, S3Material, S3TriangleIndex, S3Vertex, S3Mesh, S3Model, S3Scene, S3LightMode, Float32Array, S3System.DIMENSION_MODE, S3System, S3Matrix, S3Light, ArrayBufferView, ImageData, HTMLImageElement, HTMLCanvasElement, HTMLVideoElement, S3Texture */
 
-﻿"use strict";
+"use strict";
 
 ﻿/**
  * SenkoWSH S3DGLData.js

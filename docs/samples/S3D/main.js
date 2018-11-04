@@ -1,4 +1,4 @@
-/* global System, SComponent, S3System.SYSTEM_MODE, IDTools, S3Mesh, File */
+﻿/* global System, SComponent, S3System.SYSTEM_MODE, IDTools, S3Mesh, File */
 
 ﻿function test3D(canvas) {
 	
