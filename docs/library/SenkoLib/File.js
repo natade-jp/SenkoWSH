@@ -18,7 +18,7 @@
 var CSVTool = {
 	
 	parseCSV: function(text, separator) {
-		if(arguments.length < 1) {
+		if(arguments.length < 2) {
 			separator = ",";
 		}
 		// 改行コードの正規化
@@ -99,6 +99,12 @@ var CSVTool = {
 				}
 				else {
 					element += text.charAt(i);
+				}
+			}
+			// 最終行に改行がない場合
+			if(i === length - 1) {
+				if(count_columns !== 0) {
+					out[count_rows][count_columns] = element;
 				}
 			}
 		}
