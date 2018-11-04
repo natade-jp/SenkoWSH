@@ -3,7 +3,7 @@
 ﻿/* global WScript, ActiveXObject, WSH, System */
 
 ﻿/**
- * SenkoLib File.js
+ * SenkoWSH File.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

@@ -1,5 +1,5 @@
 ﻿/**
- * SenkoLib Character.js
+ * SenkoWSH Character.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

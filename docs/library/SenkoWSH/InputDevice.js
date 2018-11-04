@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib InputDevice.js
+ * SenkoWSH InputDevice.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

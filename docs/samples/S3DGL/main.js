@@ -15,8 +15,8 @@ S3DGLTest.prototype.initCanvas = function(canvas) {
 	this.controller.setCanvas(canvas);
 	this.camera	= s3.createCamera();
 	var program = s3.createProgram();
-	program.setFragmentShader("../../library/SenkoLib/S3DGL.fs");
-	program.setVertexShader("../../library/SenkoLib/S3DGL.vs");
+	program.setFragmentShader("../../library/SenkoWSH/S3DGL.fs");
+	program.setVertexShader("../../library/SenkoWSH/S3DGL.vs");
 	s3.setProgram(program);
 	s3.setSystemMode(S3System.SYSTEM_MODE.OPEN_GL);
 	s3.setFrontMode(S3System.FRONT_FACE.CLOCKWISE);

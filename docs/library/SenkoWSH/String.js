@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib String.js
+ * SenkoWSH String.js
  *  文字列の拡張ライブラリ
  * 
  * AUTHOR:

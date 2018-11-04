@@ -3,7 +3,7 @@
 ﻿"use strict";
 
 ﻿/**
- * SenkoLib S3DGLData.js
+ * SenkoWSH S3DGLData.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

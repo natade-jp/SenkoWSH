@@ -1,9 +1,9 @@
 【ライブラリ名】
-SenkoLib
+SenkoWSH
 
 
 【Github Pages】
-https://natade-jp.github.io/SenkoLib/
+https://natade-jp.github.io/SenkoWSH/
 
 
 【作者・連絡先】
@@ -11,14 +11,19 @@ natade / https://twitter.com/natadea
 
 
 【概要・ポリシー】
-ECMAScript ライブラリです。
+Windowsのバッチ処理で利用することを目的としたライブラリです。
+HTMLでもある程度動作するようになっています。
+バッチ処理を目的としていますが、一部HTML5を利用した機能もあります。これらは、開発中止となっています。
 
-・操作感をJavaに極力似せる
-・業務アプリ向けの操作は JavaScript、Windows 上で動く JScript の両方で動くことを目指す
-・画像関連の操作は、IE, Edge, Chrome, Firefox などで動かすことを目指す
 ・読みやすさを重視したコードにする
 ・1つのJavaScriptライブラリには1つのクラス、それに類するクラス群を書く
 ・移植性を上げるため、出来る限り単体でロードするだけで動作することを目指す
+
+
+【使い方】
+ダウンロードしたままのファイルは、HTML5用に文字コードを最適化しています。
+「toJScript.wsf」を実行してから、サンプルを実行し、
+利用するコードを切り貼りして利用することを想定しています。
 
 
 【文字コードについて】
@@ -40,22 +45,22 @@ ECMAScript ライブラリです。
 
 ./docs/library/
 　サンプルやアプリを使用するときに使用するライブラリ置き場
-　ここには、アプリケーションを作成するための SenkoLib 以外のライブラリを置くことがあります。
+　ここには、アプリケーションを作成するための SenkoWSH 以外のライブラリを置くことがあります。
 
-./docs/library/SenkoLib
-　SenkoLibを構成するJavaScirptライブラリがおいてあります。
+./docs/library/SenkoWSH
+　SenkoWSHを構成するJavaScirptライブラリがおいてあります。
 　もし他のクラスに依存する場合は、コメントに説明文を書く必要があります。
 　文字コードは、utf-8（BOM付き, UTF-8, LF）とします。
 
 ./docs/samples
-　SenkoLib内部に入っている各クラスの使用方法が入っています。
+　SenkoWSH内部に入っている各クラスの使用方法が入っています。
 　テストプログラムのようにメソッドが正しく動作するような形でいれます。
 　「index.html」「main.wsf」は、依存ライブラリ追加以外に変更しません。
 　「main.js」を変更してサンプルプログラムを作ります。
 　文字コードは、utf-8（BOM付き, UTF-8, LF）とします。
 
 ./docs/applications
-　SenkoLibを用いた、より実践的なアプリケーションを作成します。
+　SenkoWSHを用いた、HTML5用のアプリケーションを作成例です。
 
 
 
@@ -65,15 +70,15 @@ ECMAScript ライブラリです。
 私の元気のために、それぞれライセンスが異なります。
 
 
-SenkoLib Library (./docs/library/SenkoLib)
-　SenkoLib のライセンスは、ソースコードの上部に書かれています。
+SenkoWSH Library (./docs/library/SenkoWSH)
+　SenkoWSH のライセンスは、ソースコードの上部に書かれています。
 　書かれていない場合は、zlibライセンスとします
 
 　The zlib/libpng License
 　https://opensource.org/licenses/Zlib
 
 
-SenkoLib Samples (./docs/samples)
+SenkoWSH Samples (./docs/samples)
 　ライブラリを使用したサンプルのライセンスは、
 　ソースコードの上部に書かれています。
 　書かれていない場合は、NYSL Version 0.9982とします
@@ -82,7 +87,7 @@ SenkoLib Samples (./docs/samples)
 　http://www.kmonos.net/nysl/
 
 
-SenkoLib Applications (./docs/samples)
+SenkoWSH Applications (./docs/samples)
 　ライブラリを使用したアプリケーションのライセンスは、
 　ソースコードの上部に書かれています。
 　書かれていない場合は、 MIT ライセンスとします

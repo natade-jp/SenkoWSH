@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib BigIntegerByDecimalNumber.js
+ * SenkoWSH BigIntegerByDecimalNumber.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

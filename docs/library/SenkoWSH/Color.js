@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib Color.js
+ * SenkoWSH Color.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

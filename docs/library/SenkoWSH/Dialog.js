@@ -3,7 +3,7 @@
 /* global WScript */
 
 ﻿/**
- * SenkoLib Dialog.js
+ * SenkoWSH Dialog.js
  *
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

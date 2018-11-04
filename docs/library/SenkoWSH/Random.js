@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib Random.js
+ * SenkoWSH Random.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

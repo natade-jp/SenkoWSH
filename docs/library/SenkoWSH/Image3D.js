@@ -3,7 +3,7 @@
 ﻿/* global ImgColorRGBA, ImgDataY, ImgData */
 
 ﻿/**
- * SenkoLib Image3D.js
+ * SenkoWSH Image3D.js
  *  画像処理ライブラリの中の3D系画像処理
  * 
  * AUTHOR:

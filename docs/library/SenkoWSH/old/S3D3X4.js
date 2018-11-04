@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 ﻿/**
- * SenkoLib S3D.js
+ * SenkoWSH S3D.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

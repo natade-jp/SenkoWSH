@@ -3,7 +3,7 @@
 /* global S3Math, S3Matrix, S3Vector, Float32Array, Int32Array, HTMLVideoElement, HTMLCanvasElement, HTMLImageElement, ImageData, ArrayBufferView */
 
 ﻿/**
- * SenkoLib S3D.js
+ * SenkoWSH S3D.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

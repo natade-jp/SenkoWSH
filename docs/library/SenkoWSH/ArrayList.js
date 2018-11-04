@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib ArrayList.js
+ * SenkoWSH ArrayList.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

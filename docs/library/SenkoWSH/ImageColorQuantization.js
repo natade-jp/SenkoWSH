@@ -3,7 +3,7 @@
 ﻿/* global System, ImageData, ImgData, ImgDataRGBA, ImgColorRGBA, ImgColor, ImgColorY */
 
 ﻿/**
- * SenkoLib ImageColorQuantization.js
+ * SenkoWSH ImageColorQuantization.js
  *  画像処理ライブラリの中の減色に関する処理
  *  オレンジビューアのソースコードを参考に作成しています。
  * 

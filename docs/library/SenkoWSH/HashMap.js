@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib HashMap.js
+ * SenkoWSH HashMap.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

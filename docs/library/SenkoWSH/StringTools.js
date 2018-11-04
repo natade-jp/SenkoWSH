@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 /**
- * SenkoLib StringTools.js
+ * SenkoWSH StringTools.js
  *  文字列操作ライブラリ
  * 
  * AUTHOR:

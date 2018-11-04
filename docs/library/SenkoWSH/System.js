@@ -3,7 +3,7 @@
 /* global WSH, WScript, main */
 
 ﻿/**
- * SenkoLib System.js
+ * SenkoWSH System.js
  *  次のようなことを使用する場合に利用する。
  * 
  * ・JScript として動作させる。

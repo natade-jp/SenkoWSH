@@ -3,7 +3,7 @@
 ﻿/* global System, ImageData */
 
 ﻿/**
- * SenkoLib ImageProcessing.js
+ * SenkoWSH ImageProcessing.js
  *  画像処理ライブラリの基本ライブラリ
  *  色(ImgColor) と 画像データ(ImgData) の定義を行います。
  * 

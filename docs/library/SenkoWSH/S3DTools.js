@@ -3,7 +3,7 @@
 /* global S3Mesh */
 
 ﻿/**
- * SenkoLib S3DTools.js
+ * SenkoWSH S3DTools.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

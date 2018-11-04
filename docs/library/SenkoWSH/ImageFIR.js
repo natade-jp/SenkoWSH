@@ -3,7 +3,7 @@
 /* global System, ImageData, ImgData, ImgColor */
 
 ﻿/**
- * SenkoLib ImageFIR.js
+ * SenkoWSH ImageFIR.js
  *  画像処理ライブラリの畳込みによるFIRフィルタがメインです。
  *  オレンジビューアのソースコードを参考に作成しています。
  * 

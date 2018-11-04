@@ -3,7 +3,7 @@
 /* global Random */
 
 ﻿/**
- * SenkoLib BigInteger.js
+ * SenkoWSH BigInteger.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

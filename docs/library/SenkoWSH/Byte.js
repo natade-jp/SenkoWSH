@@ -1,5 +1,5 @@
 ﻿/**
- * SenkoLib Byte.js
+ * SenkoWSH Byte.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

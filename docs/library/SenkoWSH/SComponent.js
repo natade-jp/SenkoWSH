@@ -3,7 +3,7 @@
 ﻿/* global System, Text, Blob, File, Element, ImageData, Color */
 
 ﻿/**
- * SenkoLib SComponent.js
+ * SenkoWSH SComponent.js
  *  HTML5 アプリケーションを作るための GUI パーツクラス
  * 
  * AUTHOR:

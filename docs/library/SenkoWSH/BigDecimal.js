@@ -3,7 +3,7 @@
 /* global BigInteger */
 
 ﻿/**
- * SenkoLib BigDecimal.js
+ * SenkoWSH BigDecimal.js
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
