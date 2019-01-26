@@ -59,9 +59,6 @@ HTMLでもある程度動作するようになっています。
 　「main.js」を変更してサンプルプログラムを作ります。
 　文字コードは、utf-8（BOM付き, UTF-8, LF）とします。
 
-./docs/applications
-　SenkoWSHを用いた、HTML5用のアプリケーションを作成例です。
-
 
 
 【ライセンスについて】
@@ -85,12 +82,3 @@ SenkoWSH Samples (./docs/samples)
 　
 　NYSL Version 0.9982
 　http://www.kmonos.net/nysl/
-
-
-SenkoWSH Applications (./docs/samples)
-　ライブラリを使用したアプリケーションのライセンスは、
-　ソースコードの上部に書かれています。
-　書かれていない場合は、 MIT ライセンスとします
-　
-　The MIT License
-　https://ja.osdn.net/projects/opensource/wiki/licenses%2FMIT_license
