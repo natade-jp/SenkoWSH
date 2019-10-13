@@ -8,9 +8,13 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * 配列
+ */
 export default class ArrayList {
 	
 	/**
+	 * 配列
 	 * @param {{element: any[]}} [array]
 	 */
 	constructor(array) {
@@ -29,6 +33,15 @@ export default class ArrayList {
 	}
 
 	/**
+	 * 内部で利用しているArrayデータのディープコピーを取得する
+	 * @return {any[]}
+	 */
+	getArray() {
+		return this.clone().element;
+	}
+
+	/**
+	 * 各要素に指定した関数を実行する
 	 * @param {function(number, any): boolean} func 
 	 * @returns {boolean} result
 	 */
@@ -45,6 +58,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 文字列化
 	 * @returns {string}
 	 */
 	toString() {
@@ -52,6 +66,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 空にする
 	 * @returns {boolean}
 	 */
 	isEmpty() {
@@ -59,6 +74,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定したデータが含まれるか
 	 * @param {any} object
 	 * @returns {boolean}
 	 */
@@ -72,17 +88,22 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 配列長
 	 * @returns {number}
 	 */
 	size() {
 		return this.element.length;
 	}
 
+	/**
+	 * 配列を空にする
+	 */
 	clear() {
 		this.element.length = 0;
 	}
 	
 	/**
+	 * 結合する
 	 * @param {string} [separator = ","]
 	 * @returns {string}
 	 */
@@ -92,6 +113,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * ディープコピー
 	 * @returns {ArrayList}
 	 */
 	clone() {
@@ -103,6 +125,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定したデータが何番目に含まれるか
 	 * @param {any} object 
 	 * @returns {number}
 	 */
@@ -116,6 +139,7 @@ export default class ArrayList {
 	}
 
 	/**
+	 * 配列長
 	 * @returns {number}
 	 */
 	length() {
@@ -123,6 +147,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定したデータが何番目に含まれるか（後ろから調べる）
 	 * @param {any} object 
 	 * @returns {number}
 	 */
@@ -136,6 +161,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定した位置の配列値を取得
 	 * @param {number} index 
 	 */
 	get(index) {
@@ -143,6 +169,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定したデータを挿入
 	 * @param {any|number} index_or_object
 	 * @param {any} [object]
 	 */
@@ -156,37 +183,53 @@ export default class ArrayList {
 	}
 	
 	/**
-	 * @param {ArrayList|number} index_or_arraylist
-	 * @param {ArrayList} [arraylist]
+	 * 指定した配列を挿入
+	 * @param {ArrayList|any[]|number} index_or_arraylist
+	 * @param {ArrayList|any[]} [arraylist]
 	 */
 	addAll(index_or_arraylist, arraylist) {
-		if(index_or_arraylist instanceof ArrayList) {
-			const list  = index_or_arraylist.element;
+		if(arguments.length === 1) {
+			let list;
+			if(index_or_arraylist instanceof ArrayList) {
+				list = index_or_arraylist.element;
+			}
+			else if(typeof index_or_arraylist !== "number") {
+				list = index_or_arraylist;
+			}
 			let j = this.element.length;
 			for(let i = 0; i < list.length; i++) {
 				this.element[j++] = list[i];
 			}
 		}
-		else if(typeof index_or_arraylist === "number") {
-			let index = index_or_arraylist;
-			let list  = arraylist.element;
-			if(list === this.element) {
-				list = this.element.slice(0);
-			}
-			let size = this.element.length - index;
-			let target_i = this.element.length + list.length - 1;
-			let source_i = this.element.length - 1;
-			for(let i = 0; i < size ; i++ ) {
-				this.element[target_i--] = this.element[source_i--];
-			}
-			size = list.length;
-			for(let i = 0; i < size; i++) {
-				this.element[index++] = list[i];
+		else if(arguments.length === 2) {
+			if(typeof index_or_arraylist === "number") {
+				let index = index_or_arraylist;
+				let list;
+				if(arraylist instanceof ArrayList) {
+					list = arraylist.element;
+				}
+				else {
+					list = arraylist;
+				}
+				if(list === this.element) {
+					list = this.element.slice(0);
+				}
+				let size = this.element.length - index;
+				let target_i = this.element.length + list.length - 1;
+				let source_i = this.element.length - 1;
+				for(let i = 0; i < size ; i++ ) {
+					this.element[target_i--] = this.element[source_i--];
+				}
+				size = list.length;
+				for(let i = 0; i < size; i++) {
+					this.element[index++] = list[i];
+				}
 			}
 		}
 	}
 	
 	/**
+	 * 指定したデータで置き換える
 	 * @param {number} index 
 	 * @param {any} object 
 	 */
@@ -195,6 +238,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定した位置のデータを削除
 	 * @param {number} index 
 	 */
 	remove(index) {
@@ -202,6 +246,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 指定した範囲を削除
 	 * @param {number} fromIndex 
 	 * @param {number} toIndex 
 	 */
@@ -210,6 +255,7 @@ export default class ArrayList {
 	}
 	
 	/**
+	 * 安定ソート
 	 * @param { function(any, any): number } [compareFunction]
 	 */
 	sort(compareFunction) {
@@ -264,6 +310,7 @@ export default class ArrayList {
 	}
 
 	/**
+	 * 昇順ソート用の関数
 	 * @param {any} a
 	 * @param {any} b
 	 * @returns {number}

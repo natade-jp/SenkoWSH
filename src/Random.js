@@ -10,6 +10,7 @@
 
 /**
  * Collection of tools used in the Random.
+ * @private
  */
 class RandomTool {
 
@@ -17,6 +18,7 @@ class RandomTool {
 	 * Create a 32-bit nonnegative integer.
 	 * @param {number} x 
 	 * @returns {number}
+	 * @private
 	 */
 	static unsigned32(x) {
 		return ((x < 0) ? ((x & 0x7FFFFFFF) + 0x80000000) : x);
@@ -27,6 +29,7 @@ class RandomTool {
 	 * @param {number} x1 
 	 * @param {number} x2 
 	 * @returns {number}
+	 * @private
 	 */
 	static multiplication32(x1, x2) {
 		let b = (x1 & 0xFFFF) * (x2 & 0xFFFF);
@@ -41,12 +44,12 @@ class RandomTool {
 }
 
 /**
- * Random number class.
+ * 乱数
  */
 export default class Random {
 	
 	/**
-	 * Create Random.
+	 * 初期化
 	 * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
 	 */
 	constructor(seed) {
@@ -77,6 +80,7 @@ export default class Random {
 
 	/**
 	 * 内部データをシャッフル
+	 * @private
 	 */
 	_rnd521() {
 		const x = this.x;
@@ -89,7 +93,7 @@ export default class Random {
 	}
 
 	/**
-	 * Initialize random seed.
+	 * シード値の初期化
 	 * @param {number} seed
 	 */
 	setSeed(seed) {
@@ -140,6 +144,7 @@ export default class Random {
 	/**
 	 * 32-bit random number.
 	 * @returns {number} - 32ビットの乱数
+	 * @private
 	 */
 	genrand_int32() {
 		// 全て使用したら、再び混ぜる
@@ -153,7 +158,7 @@ export default class Random {
 	}
 
 	/**
-	 * Random number of specified bit length.
+	 * 指定したビット長以下で表せられる乱数生成
 	 * @param {number} bits - Required number of bits (up to 64 possible).
 	 * @returns {number}
 	 */
@@ -184,7 +189,7 @@ export default class Random {
 	}
 
 	/**
-	 * 8-bit random number array of specified length.
+	 * 8ビット長整数の乱数の配列
 	 * @param {number} size - 必要な長さ
 	 * @returns {Array<number>}
 	 */
@@ -199,7 +204,7 @@ export default class Random {
 	}
 
 	/**
-	 * 16-bit random number.
+	 * 16ビット長整数の乱数
 	 * @returns {number}
 	 */
 	nextShort() {
@@ -207,7 +212,7 @@ export default class Random {
 	}
 
 	/**
-	 * 32-bit random number.
+	 * 32ビット長整数の乱数
 	 * @param {number} [x] - 指定した値未満の数値を作る
 	 * @returns {number}
 	 */
@@ -224,7 +229,7 @@ export default class Random {
 	}
 
 	/**
-	 * 64-bit random number.
+	 * 64ビット長整数の乱数
 	 * @returns {number}
 	 */
 	nextLong() {
@@ -232,7 +237,7 @@ export default class Random {
 	}
 
 	/**
-	 * Random boolean.
+	 * bool値の乱数
 	 * @returns {boolean}
 	 */
 	nextBoolean() {
@@ -241,7 +246,7 @@ export default class Random {
 	}
 
 	/**
-	 * Float type random number in the range of [0, 1).
+	 * float精度の実数
 	 * @returns {number}
 	 */
 	nextFloat() {
@@ -249,7 +254,7 @@ export default class Random {
 	}
 
 	/**
-	 * Double type random number in the range of [0, 1).
+	 * double精度の実数
 	 * @returns {number}
 	 */
 	nextDouble() {
@@ -259,8 +264,7 @@ export default class Random {
 	}
 
 	/**
-	 * Random numbers from a Gaussian distribution.
-	 * This random number is a distribution with an average value of 0 and a standard deviation of 1.
+	 * ガウシアン分布に従う乱数
 	 * @returns {number}
 	 */
 	nextGaussian() {
@@ -279,7 +283,7 @@ export default class Random {
 }
 
 /**
- * Random number creation integer when no seed is set.
+ * 乱数生成用の初期シード値
  * @type {number}
  * @ignore
  */

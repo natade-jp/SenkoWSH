@@ -4,7 +4,7 @@
 	},
 	"source": {
 		"includePattern": ".+\\.m?js$",
-		"excludePattern": "\\.test\\.m?js$"
+		"excludePattern": "\\.test\\.m?js$|String|System"
 	},
 	"plugins": ["./node_modules/jsdoc-export-default-interop/dist/index"],
 	"templates": {

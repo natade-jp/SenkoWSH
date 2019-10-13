@@ -7,99 +7,123 @@
  * LICENSE:
  *  The MIT license https://opensource.org/licenses/MIT
  */
+
+/**
+ * 配列
+ * @param {{element: any[]}} [array]
+ */
 declare class ArrayList {
+    constructor(array?: any);
     /**
+     * 内部で利用しているArrayデータを取得する
+     * @return {any[]}
+     */
+    getArray(): any[];
+    /**
+     * 各要素に指定した関数を実行する
      * @param {function(number, any): boolean} func
      * @returns {boolean} result
      */
     each(func: (...params: any[]) => any): boolean;
     /**
+     * 文字列化
      * @returns {string}
      */
     toString(): string;
     /**
+     * 空にする
      * @returns {boolean}
      */
     isEmpty(): boolean;
     /**
+     * 指定したデータが含まれるか
      * @param {any} object
      * @returns {boolean}
      */
     contains(object: any): boolean;
     /**
+     * 配列長
      * @returns {number}
      */
     size(): number;
     /**
+     * 配列を空にする
+     */
+    clear(): void;
+    /**
+     * 結合する
      * @param {string} [separator = ","]
      * @returns {string}
      */
     join(separator?: string): string;
     /**
+     * ディープコピー
      * @returns {ArrayList}
      */
     clone(): ArrayList;
     /**
+     * 指定したデータが何番目に含まれるか
      * @param {any} object
      * @returns {number}
      */
     indexOf(object: any): number;
     /**
+     * 配列長
      * @returns {number}
      */
     length(): number;
     /**
+     * 指定したデータが何番目に含まれるか（後ろから調べる）
      * @param {any} object
      * @returns {number}
      */
     lastIndexOf(object: any): number;
     /**
+     * 指定した位置の配列値を取得
      * @param {number} index
      */
     get(index: number): void;
     /**
+     * 指定したデータを挿入
      * @param {any|number} index_or_object
      * @param {any} [object]
      */
     add(index_or_object: any | number, object?: any): void;
     /**
+     * 指定した配列を挿入
      * @param {ArrayList|number} index_or_arraylist
      * @param {ArrayList} [arraylist]
      */
     addAll(index_or_arraylist: ArrayList | number, arraylist?: ArrayList): void;
     /**
+     * 指定したデータで置き換える
      * @param {number} index
      * @param {any} object
      */
     set(index: number, object: any): void;
     /**
+     * 指定した位置のデータを削除
      * @param {number} index
      */
     remove(index: number): void;
     /**
+     * 指定した範囲を削除
      * @param {number} fromIndex
      * @param {number} toIndex
      */
     removeRange(fromIndex: number, toIndex: number): void;
     /**
+     * 安定ソート
      * @param { function(any, any): number } [compareFunction]
      */
     sort(compareFunction?: (...params: any[]) => any): void;
     /**
+     * 昇順ソート用の関数
      * @param {any} a
      * @param {any} b
      * @returns {number}
      */
     static COMPARE_DEFAULT(a: any, b: any): number;
-}
-
-declare namespace ArrayList {
-    /**
-     * @param {{element: any[]}} [array]
-     */
-    class ArrayList {
-        constructor(array?: any);
-    }
 }
 
 /**
@@ -110,6 +134,10 @@ declare namespace ArrayList {
  *
  * LICENSE:
  *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * CSVを扱う
  */
 declare class CSV {
     /**
@@ -155,9 +183,16 @@ declare class CSV {
  * LICENSE:
  *  The MIT license https://opensource.org/licenses/MIT
  */
+
+/**
+ * ダイアログ
+ */
 declare class Dialog {
     /**
-     * Dialog.popup("test", 0, "test", Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3);
+     * ダイアログを表示する
+     *
+     * 利用例
+     * - Dialog.popup("test", 0, "test", Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3);
      * @param {string} text
      * @param {number} [secondstowait=0]
      * @param {string} [caption=""]
@@ -166,100 +201,112 @@ declare class Dialog {
      */
     static popup(text: string, secondstowait?: number, caption?: string, type?: number): number;
     /**
-     * [OK]
+     * 「OK」のボタン配置
      * @type {number}
      */
     static MB_OK: number;
     /**
-     * [OK], [キャンセル]
+     * 「OK」、「キャンセル」のボタン配置
      * @type {number}
      */
     static MB_OKCANCEL: number;
     /**
-     * [中止], [再試行], [無視]
+     * 「中止」、「再試行」、「無視」のボタン配置
      * @type {number}
      */
     static MB_ABORTRETRYIGNORE: number;
     /**
-     * [はい], [いいえ], [キャンセル]
+     * 「はい」、「いいえ」、「キャンセル」のボタン配置
      * @type {number}
      */
     static MB_YESNOCANCEL: number;
     /**
-     * [はい], [いいえ]
+     * 「はい」、「いいえ」のボタン配置
      * @type {number}
      */
     static MB_YESNO: number;
     /**
-     * [再試行], [キャンセル]
+     * 「再試行」、「キャンセル」のボタン配置
      * @type {number}
      */
     static MB_RETRYCANCEL: number;
     /**
-     * [Stop]
+     * 中止「Stop」のアイコンのダイアログ
      * @type {number}
      */
     static MB_ICONSTOP: number;
     /**
-     * [?]
+     * 質問「?」のアイコンのダイアログ
      * @type {number}
      */
     static MB_ICONQUESTION: number;
     /**
-     * [!]
+     * 警告「!」のアイコンのダイアログ
      * @type {number}
      */
     static MB_ICONWARNING: number;
     /**
-     * [i]
+     * 情報「i」のアイコンのダイアログ
      * @type {number}
      */
     static MB_ICONINFORMATION: number;
     /**
+     * 「ボタン1」を選択
      * @type {number}
      */
     static MB_DEFBUTTON1: number;
     /**
+     * 「ボタン2」を選択
      * @type {number}
      */
     static MB_DEFBUTTON2: number;
     /**
+     * 「ボタン3」を選択
      * @type {number}
      */
     static MB_DEFBUTTON3: number;
     /**
+     * 「ボタン4」を選択
      * @type {number}
      */
     static MB_DEFBUTTON4: number;
     /**
+     * タイムアウトが発生
      * @type {number}
      */
     static IDTIMEOUT: number;
     /**
+     * 「OK」を選択
      * @type {number}
      */
     static IDOK: number;
     /**
+     * 「キャンセル」を選択
      * @type {number}
      */
     static IDCANCEL: number;
     /**
+     * 「中止」を選択
      * @type {number}
      */
     static IDABORT: number;
     /**
+     * 「再試行」を選択
      * @type {number}
      */
     static IDRETRY: number;
     /**
+     * 「無視」を選択
      * @type {number}
      */
     static IDIGNORE: number;
     /**
+     * 「はい」を選択
      * @type {number}
      */
     static IDYES: number;
     /**
+     * 「いいえ」を選択
      * @type {number}
      */
     static IDNO: number;
@@ -274,7 +321,184 @@ declare class Dialog {
  * LICENSE:
  *  The MIT license https://opensource.org/licenses/MIT
  */
-declare class File {
+
+/**
+ * 書式に合わせて文字列を組み立てるメソッドを提供
+ */
+declare class Format {
+    /**
+     * 書式に合わせて文字列を組み立てる
+     * - ロケール、日付時刻等はサポートしていません。
+     * - sprintfの変換指定子のpとnはサポートしていません。
+     * @param {String} text
+     * @param {...any} parm パラメータは可変引数
+     * @returns {String}
+     */
+    static textf(text: string, ...parm: any[]): string;
+}
+
+/**
+ * The script is part of SenkoWSH.
+ *
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ *
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 初期化
+ * @param {HashMap|Object<string, any>} [hash_map]
+ */
+declare class HashMap {
+    constructor(hash_map?: HashMap | {
+        [key: string]: any;
+    });
+    /**
+     * 内部で利用しているArrayデータを取得する
+     * @return {any}
+     */
+    getArray(): any;
+    /**
+     * 各要素に指定した関数を実行する
+     * @param {function(number, any): boolean} func
+     * @returns {boolean} result
+     */
+    each(func: (...params: any[]) => any): boolean;
+    /**
+     * 文字列化
+     * @returns {string}
+     */
+    toString(): string;
+    /**
+     * 指定したキーが含まれるか
+     * @param {string} key
+     * @returns {boolean}
+     */
+    containsKey(key: string): boolean;
+    /**
+     * 指定した値が含まれるか
+     * @param {any} value
+     * @returns {boolean}
+     */
+    containsValue(value: any): boolean;
+    /**
+     * 空かどうか
+     * @returns {boolean}
+     */
+    isEmpty(): boolean;
+    /**
+     * 空にする
+     */
+    clear(): void;
+    /**
+     * ディープコピー
+     * @returns {HashMap}
+     */
+    clone(): HashMap;
+    /**
+     * ハッシュの長さ
+     * @returns {number}
+     */
+    size(): number;
+    /**
+     * 指定したキーに対して対応する値を取得
+     * @param {string} key
+     * @returns {any}
+     */
+    get(key: string): any;
+    /**
+     * 指定したキー、その値を登録
+     * @param {string} key
+     * @param {any} value
+     * @returns {null|any}
+     */
+    put(key: string, value: any): null | any;
+    /**
+     * 指定したキー、その値を全て登録
+     * @param {HashMap} hashmap
+     */
+    putAll(hashmap: HashMap): void;
+    /**
+     * 指定したキーの値を削除
+     * @param {string} key
+     * @returns {null|any}
+     */
+    remove(key: string): null | any;
+}
+
+/**
+ * 初期化
+ * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
+ */
+declare class Random {
+    constructor(seed?: number);
+    /**
+     * シード値の初期化
+     * @param {number} seed
+     */
+    setSeed(seed: number): void;
+    /**
+     * 指定したビット長以下で表せられる乱数生成
+     * @param {number} bits - Required number of bits (up to 64 possible).
+     * @returns {number}
+     */
+    next(bits: number): number;
+    /**
+     * 8ビット長整数の乱数の配列
+     * @param {number} size - 必要な長さ
+     * @returns {Array<number>}
+     */
+    nextBytes(size: number): number[];
+    /**
+     * 16ビット長整数の乱数
+     * @returns {number}
+     */
+    nextShort(): number;
+    /**
+     * 32ビット長整数の乱数
+     * @param {number} [x] - 指定した値未満の数値を作る
+     * @returns {number}
+     */
+    nextInt(x?: number): number;
+    /**
+     * 64ビット長整数の乱数
+     * @returns {number}
+     */
+    nextLong(): number;
+    /**
+     * bool値の乱数
+     * @returns {boolean}
+     */
+    nextBoolean(): boolean;
+    /**
+     * float精度の実数
+     * @returns {number}
+     */
+    nextFloat(): number;
+    /**
+     * double精度の実数
+     * @returns {number}
+     */
+    nextDouble(): number;
+    /**
+     * ガウシアン分布に従う乱数
+     * @returns {number}
+     */
+    nextGaussian(): number;
+}
+
+/**
+ * The script is part of SenkoWSH.
+ *
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ *
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+declare class SFile {
     /**
      * @returns {boolean}
      */
@@ -284,20 +508,20 @@ declare class File {
      */
     exists(): boolean;
     /**
-     * @param {string|File} file_obj
+     * @param {string|SFile} file_obj
      * @returns {boolean}
      */
-    copy(file_obj: string | File): boolean;
+    copy(file_obj: string | SFile): boolean;
     /**
-     * @param {string|File} file_obj
+     * @param {string|SFile} file_obj
      * @returns {boolean}
      */
-    move(file_obj: string | File): boolean;
+    move(file_obj: string | SFile): boolean;
     /**
-     * @param {string|File} file_obj
+     * @param {string|SFile} file_obj
      * @returns {boolean}
      */
-    renameTo(file_obj: string | File): boolean;
+    renameTo(file_obj: string | SFile): boolean;
     /**
      * @returns {string}
      */
@@ -312,9 +536,9 @@ declare class File {
      */
     getParent(): string;
     /**
-     * @returns {File}
+     * @returns {SFile}
      */
-    getParentFile(): File;
+    getParentFile(): SFile;
     /**
      * @returns {string}
      */
@@ -417,312 +641,30 @@ declare class File {
      */
     static createXMLHttpRequest(): XMLHttpRequest;
     /**
-     * @returns {File}
+     * @returns {SFile}
      */
-    static createTempFile(): File;
+    static createTempFile(): SFile;
     /**
-     * @returns {File}
+     * @returns {SFile}
      */
-    static getCurrentDirectory(): File;
+    static getCurrentDirectory(): SFile;
     /**
-     * @param {string|File} file_obj
+     * @param {string|SFile} file_obj
      */
-    static setCurrentDirectory(file_obj: string | File): void;
+    static setCurrentDirectory(file_obj: string | SFile): void;
     /**
-     * @param {string|File|function(string, string): boolean} file_obj
+     * @param {string|SFile|function(string, string): boolean} file_obj
      */
-    static searchFile(file_obj: string | File | ((...params: any[]) => any)): void;
+    static searchFile(file_obj: string | SFile | ((...params: any[]) => any)): void;
 }
 
-declare namespace File {
+declare namespace SFile {
     /**
-     * @param {string|File} pathname
+     * @param {string|SFile} pathname
      */
-    class File {
-        constructor(pathname: string | File);
+    class SFile {
+        constructor(pathname: string | SFile);
     }
-}
-
-/**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-declare class Format {
-    /**
-     * C言語のprintfを再現
-     * ロケール、日付時刻等はサポートしていません。
-     * sprintfの変換指定子のpとnはサポートしていません。
-     * @param {String} text
-     * @param {...any} parm パラメータは可変引数
-     * @returns {String}
-     */
-    static textf(text: string, ...parm: any[]): string;
-}
-
-/**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-declare class HashMap {
-    /**
-     * @param {function(number, any): boolean} func
-     * @returns {boolean} result
-     */
-    each(func: (...params: any[]) => any): boolean;
-    /**
-     * @returns {string}
-     */
-    toString(): string;
-    /**
-     * @param {string} key
-     * @returns {boolean}
-     */
-    containsKey(key: string): boolean;
-    /**
-     * @param {any} value
-     * @returns {boolean}
-     */
-    containsValue(value: any): boolean;
-    /**
-     * @returns {boolean}
-     */
-    isEmpty(): boolean;
-    /**
-     * @returns {HashMap}
-     */
-    clone(): HashMap;
-    /**
-     * @returns {number}
-     */
-    size(): number;
-    /**
-     * @param {string} key
-     * @returns {any}
-     */
-    get(key: string): any;
-    /**
-     * @param {string} key
-     * @param {any} value
-     * @returns {null|any}
-     */
-    put(key: string, value: any): null | any;
-    /**
-     * @param {HashMap} hashmap
-     */
-    putAll(hashmap: HashMap): void;
-    /**
-     * @param {string} key
-     * @returns {null|any}
-     */
-    remove(key: string): null | any;
-}
-
-declare namespace HashMap {
-    /**
-     * @param {HashMap} [hash_map]
-     */
-    class HashMap {
-        constructor(hash_map?: HashMap);
-    }
-}
-
-/**
- * Collection of tools used in the Random.
- */
-declare class RandomTool {
-    /**
-     * Create a 32-bit nonnegative integer.
-     * @param {number} x
-     * @returns {number}
-     */
-    static unsigned32(x: number): number;
-    /**
-     * Multiply two 32-bit integers and output a 32-bit integer.
-     * @param {number} x1
-     * @param {number} x2
-     * @returns {number}
-     */
-    static multiplication32(x1: number, x2: number): number;
-}
-
-/**
- * Create Random.
- * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
- */
-declare class Random {
-    constructor(seed?: number);
-    /**
-     * 内部データをシャッフル
-     */
-    _rnd521(): void;
-    /**
-     * Initialize random seed.
-     * @param {number} seed
-     */
-    setSeed(seed: number): void;
-    /**
-     * 32-bit random number.
-     * @returns {number} - 32ビットの乱数
-     */
-    genrand_int32(): number;
-    /**
-     * Random number of specified bit length.
-     * @param {number} bits - Required number of bits (up to 64 possible).
-     * @returns {number}
-     */
-    next(bits: number): number;
-    /**
-     * 8-bit random number array of specified length.
-     * @param {number} size - 必要な長さ
-     * @returns {Array<number>}
-     */
-    nextBytes(size: number): number[];
-    /**
-     * 16-bit random number.
-     * @returns {number}
-     */
-    nextShort(): number;
-    /**
-     * 32-bit random number.
-     * @param {number} [x] - 指定した値未満の数値を作る
-     * @returns {number}
-     */
-    nextInt(x?: number): number;
-    /**
-     * 64-bit random number.
-     * @returns {number}
-     */
-    nextLong(): number;
-    /**
-     * Random boolean.
-     * @returns {boolean}
-     */
-    nextBoolean(): boolean;
-    /**
-     * Float type random number in the range of [0, 1).
-     * @returns {number}
-     */
-    nextFloat(): number;
-    /**
-     * Double type random number in the range of [0, 1).
-     * @returns {number}
-     */
-    nextDouble(): number;
-    /**
-     * Random numbers from a Gaussian distribution.
-     * This random number is a distribution with an average value of 0 and a standard deviation of 1.
-     * @returns {number}
-     */
-    nextGaussian(): number;
-}
-
-/**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-declare class StringWSH {
-    /**
-     * @param {string} text
-     * @param {string} target
-     * @param {string} replacement
-     * @returns {string}
-     */
-    static replaceAll(text: string, target: string, replacement: string): string;
-    /**
-     * @param {string} text
-     * @returns {string}
-     */
-    static trim(text: string): string;
-    /**
-     * @param {string} text
-     * @param {function(number, string, number): boolean} func
-     * @returns {boolean} result
-     */
-    static each(text: string, func: (...params: any[]) => any): boolean;
-    /**
-     * 上位のサロゲートペアの判定
-     * @param {String} text - 対象テキスト
-     * @param {number} index - インデックス
-     * @returns {Boolean} 確認結果
-     */
-    static isHighSurrogateAt(text: string, index: number): boolean;
-    /**
-     * 下位のサロゲートペアの判定
-     * @param {String} text - 対象テキスト
-     * @param {number} index - インデックス
-     * @returns {Boolean} 確認結果
-     */
-    static isLowSurrogateAt(text: string, index: number): boolean;
-    /**
-     * サロゲートペアの判定
-     * @param {String} text - 対象テキスト
-     * @param {number} index - インデックス
-     * @returns {Boolean} 確認結果
-     */
-    static isSurrogatePairAt(text: string, index: number): boolean;
-    /**
-     * サロゲートペア対応のコードポイント取得
-     * @param {String} text - 対象テキスト
-     * @param {number} [index = 0] - インデックス
-     * @returns {number} コードポイント
-     */
-    static codePointAt(text: string, index?: number): number;
-    /**
-     * インデックスの前にあるコードポイント
-     * @param {String} text - 対象テキスト
-     * @param {number} index - インデックス
-     * @returns {number} コードポイント
-     */
-    static codePointBefore(text: string, index: number): number;
-    /**
-     * コードポイント換算で文字列数をカウント
-     * @param {string} text - 対象テキスト
-     * @param {number} [beginIndex=0] - 最初のインデックス（省略可）
-     * @param {number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
-     * @returns {number} 文字数
-     */
-    static codePointCount(text: string, beginIndex?: number, endIndex?: number): number;
-    /**
-     * コードポイント換算で文字列配列の位置を計算
-     * @param {string} text - 対象テキスト
-     * @param {number} index - オフセット
-     * @param {number} codePointOffset - ずらすコードポイント数
-     * @returns {number} ずらしたインデックス
-     */
-    static offsetByCodePoints(text: string, index: number, codePointOffset: number): number;
-    /**
-     * コードポイントの数値データを文字列に変換
-     * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-     * @returns {string} 変換後のテキスト
-     */
-    static fromCodePoint(...codepoint: (number | number[])[]): string;
-    /**
-     * @param {string} text
-     * @param {string} prefix
-     * @returns {boolean}
-     */
-    static startsWith(text: string, prefix: string): boolean;
-    /**
-     * @param {string} text
-     * @param {string} suffix
-     * @returns {boolean}
-     */
-    static endsWith(text: string, suffix: string): boolean;
 }
 
 
@@ -742,16 +684,19 @@ declare class StringWSH {
 declare class SystemOut {
 
 	/**
+	 * 文字列を表示（最終行で自動で改行されない）
 	 * @param {any} text
 	 */
     static print(text);
     
 	/**
+	 * 文字列を表示（最終行で自動で改行される）
 	 * @param {any} text
 	 */
 	static println(text);
 
 	/**
+	 * 指定したフォーマットで整形した文字列を表示
 	 * @param {any} text 
 	 * @param {...any} parm パラメータは可変引数
 	 */
@@ -763,49 +708,71 @@ declare class SystemOut {
  */
 declare class System {
 
+	/**
+	 * 出力
+	 */
     static out: typeof SystemOut;
 
 	/**
+	 * キーボードのテキスト入力を取得
 	 * @returns {string}
 	 */
     static readLine();
     
 	/**
+	 * UNIX時間をミリ秒で取得
 	 * @returns {number}
 	 */
     static currentTimeMillis();
     
 	/**
-	 * @param {number} time
+	 * 処理を一時停止
+	 * @param {number} time_sec
 	 */
-    static sleep(time);
+    static sleep(time_sec);
     
+	/**
+	 * 処理を停止
+	 */
 	static stop();
 
-    static executeOnCScript();
-    
+	/**
+	 * CUIで起動しなおす
+	 */
     static executeOnCScript();
     
 	/**
+	 * GUIで起動しなおす
+	 */
+    static executeOnCScript();
+    
+	/**
+	 * スクリプトファイルへの引数を取得
 	 * @returns {string[]}
 	 */
     static getArguments();
     
 	/**
+	 * カレントディレクトリを設定
 	 * @param {string} filename
 	 */
 	static setCurrentDirectory(filename);
 
 	/**
+	 * カレントディレクトリを取得
 	 * @returns {string}
 	 */
     static getCurrentDirectory();
     
 	/**
+	 * 実行中のスクリプトがあるカレントディレクトリを取得
 	 * @returns {string}
 	 */
     static getScriptDirectory();
-    
+	
+	/**
+	 * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
+	 */
     static initializeCurrentDirectory();
     
 }

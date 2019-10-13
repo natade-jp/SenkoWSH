@@ -8,10 +8,14 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * 文字列と任意のデータを組み合わせるハッシュマップ
+ */
 export default class HashMap {
 	
 	/**
-	 * @param {HashMap} [hash_map]
+	 * 初期化
+	 * @param {HashMap|Object<string, any>} [hash_map]
 	 */
 	constructor(hash_map) {
 
@@ -28,14 +32,33 @@ export default class HashMap {
 		this._size = 0;
 		
 		if(hash_map !== undefined) {
-			for(const key in hash_map.map) {
-				this.map[key] = hash_map.map[key];
+			if(hash_map.map && hash_map._size) {
+				for(const key in hash_map.map) {
+					this.map[key] = hash_map.map[key];
+				}
+				this._size = hash_map._size;
 			}
-			this._size = hash_map._size;
+			else if(typeof hash_map === "object") {
+				for(const key in hash_map) {
+					if(typeof key === "string") {
+						// @ts-ignore
+						this.map[key] = hash_map[key];
+					}
+				}
+			}
 		}
 	}
 
 	/**
+	 * 内部で利用しているArrayデータのディープコピーを取得する
+	 * @return {any}
+	 */
+	getArray() {
+		return this.clone().map;
+	}
+
+	/**
+	 * 各要素に指定した関数を実行する
 	 * @param {function(number, any): boolean} func 
 	 * @returns {boolean} result
 	 */
@@ -52,6 +75,7 @@ export default class HashMap {
 	}
 	
 	/**
+	 * 文字列化
 	 * @returns {string}
 	 */
 	toString() {
@@ -68,6 +92,7 @@ export default class HashMap {
 	}
 	
 	/**
+	 * 指定したキーが含まれるか
 	 * @param {string} key 
 	 * @returns {boolean}
 	 */
@@ -76,6 +101,7 @@ export default class HashMap {
 	}
 	
 	/**
+	 * 指定した値が含まれるか
 	 * @param {any} value 
 	 * @returns {boolean}
 	 */
@@ -89,18 +115,23 @@ export default class HashMap {
 	}
 	
 	/**
+	 * 空かどうか
 	 * @returns {boolean}
 	 */
 	isEmpty() {
 		return this._size === 0;
 	}
 	
+	/**
+	 * 空にする
+	 */
 	clear() {
 		this.map = [];
 		this._size = 0;
 	}
 	
 	/**
+	 * ディープコピー
 	 * @returns {HashMap}
 	 */
 	clone() {
@@ -113,6 +144,7 @@ export default class HashMap {
 	}
 	
 	/**
+	 * ハッシュの長さ
 	 * @returns {number}
 	 */
 	size() {
@@ -120,6 +152,7 @@ export default class HashMap {
 	}
 	
 	/**
+	 * 指定したキーに対して対応する値を取得
 	 * @param {string} key 
 	 * @returns {any}
 	 */
@@ -128,6 +161,7 @@ export default class HashMap {
 	}
 	
 	/**
+	 * 指定したキー、その値を登録
 	 * @param {string} key 
 	 * @param {any} value 
 	 * @returns {null|any}
@@ -146,18 +180,27 @@ export default class HashMap {
 	}
 	
 	/**
-	 * @param {HashMap} hashmap 
+	 * 指定したキー、その値を全て登録
+	 * @param {HashMap|Object<string, any>} hashmap 
 	 */
 	putAll(hashmap) {
-		for(const key in hashmap.map) {
+		let list;
+		if(hashmap instanceof HashMap) {
+			list = hashmap.map;
+		}
+		else {
+			list = hashmap;
+		}
+		for(const key in list) {
 			if(typeof this.map[key] === "undefined") {
-				this.map[key] = hashmap.map[key];
+				this.map[key] = list[key];
 				this._size = this._size + 1;
 			}
 		}
 	}
 	
 	/**
+	 * 指定したキーの値を削除
 	 * @param {string} key 
 	 * @returns {null|any}
 	 */

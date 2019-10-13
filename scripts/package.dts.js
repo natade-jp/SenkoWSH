@@ -16,10 +16,17 @@ const dts_auto = File.loadTextFile("./tmp/types.d.ts");
 const dts_manual = File.loadTextFile("./src/Typedef.d.ts");
 
 // データを結合
-const dts_join = dts_auto + "\n" + dts_manual;
+let dts_text = dts_auto + "\n" + dts_manual;
+
+// 不要なデータを削除
+{
+	// 以下のようなコードが原因不明で入り込む場合があるので削除する
+	// declare var default: any;
+	dts_text = dts_text.replace(/\ndeclare var default: any;\n/g, "\n");
+}
 
 // 保存
-File.saveTextFileWithBOM("./build/SenkoWSH.d.ts", dts_join)
+File.saveTextFileWithBOM("./build/SenkoWSH.d.ts", dts_text);
 
 // 作成用ディレクトリを削除
 File.deleteDirectory("./tmp");

@@ -8,12 +8,15 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * 書式に合わせて文字列を組み立てるメソッドを提供
+ */
 export default class Format {
 
 	/**
-	 * C言語のprintfを再現
-	 * ロケール、日付時刻等はサポートしていません。
-	 * sprintfの変換指定子のpとnはサポートしていません。
+	 * 書式に合わせて文字列を組み立てる
+	 * - ロケール、日付時刻等はサポートしていません。
+	 * - sprintfの変換指定子のpとnはサポートしていません。
 	 * @param {String} text 
 	 * @param {...any} parm パラメータは可変引数
 	 * @returns {String}

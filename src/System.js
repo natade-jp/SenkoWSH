@@ -22,11 +22,18 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
  */
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
+/**
+ * システム関数
+ */
 const System = {
 
+	/**
+	 * 出力用途
+	 */
 	out : {
 		
 		/**
+		 * 文字列を表示（最終行で自動で改行されない）
 		 * @param {any} text
 		 */
 		print : function(text) {
@@ -40,6 +47,7 @@ const System = {
 		},
 
 		/**
+		 * 文字列を表示（最終行で自動で改行される）
 		 * @param {any} text
 		 */
 		println : function(text) {
@@ -53,6 +61,7 @@ const System = {
 		},
 
 		/**
+		 * 指定したフォーマットで整形した文字列を表示
 		 * @param {any} text 
 		 * @param {...any} parm パラメータは可変引数
 		 */
@@ -70,6 +79,7 @@ const System = {
 	},
 
 	/**
+	 * キーボードのテキスト入力を取得
 	 * @returns {string}
 	 */
 	readLine : function() {
@@ -77,6 +87,7 @@ const System = {
 	},
 	
 	/**
+	 * UNIX時間をミリ秒で取得
 	 * @returns {number}
 	 */
 	currentTimeMillis : function() {
@@ -85,18 +96,25 @@ const System = {
 	},
 
 	/**
-	 * @param {number} time
+	 * 処理を一時停止
+	 * @param {number} time_sec
 	 */
-	sleep : function(time) {
-		WScript.Sleep(time);
+	sleep : function(time_sec) {
+		WScript.Sleep((time_sec * 1000) | 0);
 	},
 	
+	/**
+	 * 処理を停止
+	 */
 	stop : function() {
 		while(true) {
 			WScript.Sleep(1000);
 		}
 	},
 	
+	/**
+	 * CUIで起動しなおす
+	 */
 	executeOnCScript : function() {
 		if(is_wscript) {
 			// CScript で起動しなおす
@@ -115,6 +133,9 @@ const System = {
 		}
 	},
 	
+	/**
+	 * GUIで起動しなおす
+	 */
 	executeOnWScript : function() {
 		// cscriptで起動しているか
 		if(is_cscript) {
@@ -133,6 +154,7 @@ const System = {
 	},
 	
 	/**
+	 * スクリプトファイルへの引数を取得
 	 * @returns {string[]}
 	 */
 	getArguments : function() {
@@ -144,6 +166,7 @@ const System = {
 	},
 	
 	/**
+	 * カレントディレクトリを設定
 	 * @param {string} filename
 	 */
 	setCurrentDirectory : function(filename) {
@@ -152,6 +175,7 @@ const System = {
 	},
 	
 	/**
+	 * カレントディレクトリを取得
 	 * @returns {string}
 	 */
 	getCurrentDirectory : function() {
@@ -160,6 +184,7 @@ const System = {
 	},
 
 	/**
+	 * 実行中のスクリプトがあるカレントディレクトリを取得
 	 * @returns {string}
 	 */
 	getScriptDirectory : function() {
@@ -167,6 +192,9 @@ const System = {
 		return(x.substring(0 ,x.length - 1));
 	},
 	
+	/**
+	 * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
+	 */
 	initializeCurrentDirectory : function() {
 		const shell = new ActiveXObject("WScript.Shell");
 		shell.CurrentDirectory = System.getScriptDirectory();

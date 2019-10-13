@@ -173,15 +173,3 @@ String.prototype.endsWith = function(prefix) {
 	// @ts-ignore
 	return StringWSH.endsWith(this, prefix);
 };
-
-// @ts-ignore
-String.format = function() {
-	const x = [];
-	for(let i = 0 ; i < arguments.length ; i++) {
-		x[i] = arguments[i];
-	}
-	// @ts-ignore
-	return StringWSH.format.apply(this, x);
-};
-
-

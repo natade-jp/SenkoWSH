@@ -8,6 +8,9 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * CSVを扱う
+ */
 export default class CSV {
 	
 	/**
