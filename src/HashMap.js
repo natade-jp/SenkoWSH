@@ -1,112 +1,176 @@
-﻿"use strict";
-
 /**
- * SenkoWSH HashMap.js
+ * The script is part of SenkoWSH.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
- *
+ * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- *
- * DEPENDENT LIBRARIES:
- *  なし
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
-var HashMap = function() {
-	this.map = [];
-	this.size_ = 0;
-	if(arguments.length === 1) {
-		for(var key in arguments[0].map) {
-			this.map[key] =arguments[0].map[key];
-		}
-		this.size_ = arguments[0].size_;
-	}
-};
+export default class HashMap {
+	
+	/**
+	 * @param {HashMap} [hash_map]
+	 */
+	constructor(hash_map) {
 
-HashMap.prototype.each = function(func) {
-	var out = true;
-	for(var key in this.map) {
-		var x = this.map[key];
-		if(func.call(x, key, x) === false) {
-			out = false;
-			break;
+		/**
+		 * @type {Object<string, any>}
+		 * @private
+		 */
+		this.map = {};
+
+		/**
+		 * @type {number}
+		 * @private
+		 */
+		this._size = 0;
+		
+		if(hash_map !== undefined) {
+			for(const key in hash_map.map) {
+				this.map[key] = hash_map.map[key];
+			}
+			this._size = hash_map._size;
 		}
 	}
-	return(out);
-};
-HashMap.prototype.toString = function() {
-	var output = "";
-	var i = 0;
-	for(var key in this.map) {
-		output += key + "=>" + this.map[key];
-		i++;
-		if(i !== this.size_) {
-			output += "\n";
+
+	/**
+	 * @param {function(number, any): boolean} func 
+	 * @returns {boolean} result
+	 */
+	each(func) {
+		let out = true;
+		for(const key in this.map) {
+			const x = this.map[key];
+			if(func.call(x, key, x) === false) {
+				out = false;
+				break;
+			}
+		}
+		return out;
+	}
+	
+	/**
+	 * @returns {string}
+	 */
+	toString() {
+		let output = "";
+		let i = 0;
+		for(const key in this.map) {
+			output += key + "=>" + this.map[key];
+			i++;
+			if(i !== this._size) {
+				output += "\n";
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * @param {string} key 
+	 * @returns {boolean}
+	 */
+	containsKey(key) {
+		return typeof this.map[key] !== "undefined";
+	}
+	
+	/**
+	 * @param {any} value 
+	 * @returns {boolean}
+	 */
+	containsValue(value) {
+		for(const key in this.map) {
+			if(this.map[key] === value) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * @returns {boolean}
+	 */
+	isEmpty() {
+		return this._size === 0;
+	}
+	
+	clear() {
+		this.map = [];
+		this._size = 0;
+	}
+	
+	/**
+	 * @returns {HashMap}
+	 */
+	clone() {
+		const out = new HashMap();
+		for(const key in this.map) {
+			out.map[key] = this.map[key];
+		}
+		out._size = this._size;
+		return out;
+	}
+	
+	/**
+	 * @returns {number}
+	 */
+	size() {
+		return this._size;
+	}
+	
+	/**
+	 * @param {string} key 
+	 * @returns {any}
+	 */
+	get(key) {
+		return this.map[key];
+	}
+	
+	/**
+	 * @param {string} key 
+	 * @param {any} value 
+	 * @returns {null|any}
+	 */
+	put(key, value) {
+		if(this.containsKey(key) === false) {
+			this.map[key] = value;
+			this._size = this._size + 1;
+			return null;
+		}
+		else {
+			const output = this.map[key];
+			this.map[key] = value;
+			return output;
 		}
 	}
-	return(output);
-};
-HashMap.prototype.containsKey = function(key) {
-	return(typeof this.map[key] !== "undefined");
-};
-HashMap.prototype.containsValue = function(value) {
-	for(var key in this.map) {
-		if(this.map[key] === value) {
-			return(true);
+	
+	/**
+	 * @param {HashMap} hashmap 
+	 */
+	putAll(hashmap) {
+		for(const key in hashmap.map) {
+			if(typeof this.map[key] === "undefined") {
+				this.map[key] = hashmap.map[key];
+				this._size = this._size + 1;
+			}
 		}
 	}
-	return(false);
-};
-HashMap.prototype.isEmpty = function() {
-	return(this.size_ === 0);
-};
-HashMap.prototype.clear = function() {
-	this.map   = [];
-	this.size_ = 0;
-};
-HashMap.prototype.clone = function() {
-	var out = new HashMap();
-	for(var key in this.map) {
-		out.map[key] = this.map[key];
-	}
-	out.size_ = this.size_;
-	return(out);
-};
-HashMap.prototype.size = function() {
-	return(this.size_);
-};
-HashMap.prototype.get = function(key) {
-	return(this.map[key]);
-};
-HashMap.prototype.put = function(key, value) {
-	if(this.containsKey(key) === false) {
-		this.map[key] = value;
-		this.size_ = this.size_ + 1;
-		return(null);
-	}
-	else {
-		var output = this.map[key];
-		this.map[key] = value;
-		return(output);
-	}
-};
-HashMap.prototype.putAll = function(hashmap) {
-	for(var key in hashmap.map) {
-		if(typeof this.map[key] === "undefined") {
-			this.map[key] = hashmap.map[key];
-			this.size_ = this.size_ + 1;
+	
+	/**
+	 * @param {string} key 
+	 * @returns {null|any}
+	 */
+	remove(key) {
+		if(this.containsKey(key) === false) {
+			return null;
+		}
+		else {
+			const output = this.map[key];
+			delete this.map[key];
+			this._size = this._size - 1;
+			return output;
 		}
 	}
-};
-HashMap.prototype.remove = function(key) {
-	if(this.containsKey(key) === false) {
-		return(null);
-	}
-	else {
-		var output = this.map[key];
-		delete this.map[key];
-		this.size_ = this.size_ - 1;
-		return(output);
-	}
-};
+}
+
