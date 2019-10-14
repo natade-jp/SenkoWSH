@@ -12,6 +12,7 @@ JScriptによるバッチ処理で以下のような処理が作れます
 
 ## 使い方 ##
 - とりあえず`examples`の`Example.wsf`を実行してみればわかります
+- 詳しい関数の説明は、[ヘルプファイル](https://natade-jp.github.io/SenkoWSH/)を参照すること
 - ビルドは、`npm run build`
 - 型定義ファイル(`d.ts`)の作成は、`npm run dts`
 - ヘルプファイルの作成は、`npm run doc`
