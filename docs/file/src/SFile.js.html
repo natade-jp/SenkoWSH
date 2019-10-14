@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/SFile.js | senkowsh</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="JScirpt library for WSH that gathers various functions."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="senkowsh"><meta property="twitter:description" content="JScirpt library for WSH that gathers various functions."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/SenkoWSH"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/SFile.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#xFF0F;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#xFF0F;URL
+ */
+export default class SFile {
+
+	/**
+	 * &#x521D;&#x671F;&#x5316;
+	 * @param {string|SFile} pathname &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#xFF0F;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x540D;&#xFF0F;URL&#x30A2;&#x30C9;&#x30EC;&#x30B9;
+	 */
+	constructor(pathname) {
+		if(arguments.length !== 1) {
+			throw &quot;IllegalArgumentException&quot;;
+		}
+
+		/**
+		 * @type {string}
+		 * @private
+		 */
+		this.pathname = &quot;&quot;;
+
+		if((typeof pathname === &quot;string&quot;)||(pathname instanceof String)) {
+			// \&#x3092;/&#x306B;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x308B;
+			this.pathname = pathname.replace(/\\/g, &quot;/&quot; );
+		}
+		else if(pathname instanceof SFile) {
+			this.pathname = pathname.getAbsolutePath();
+		}
+		else {
+			throw &quot;IllegalArgumentException&quot;;
+		}
+		
+		/**
+		 * @type {boolean}
+		 * @private
+		 */
+		this.is_http = /^htt/.test(this.pathname);
+
+		/**
+		 * @type {any}
+		 * @private
+		 */
+		this.fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x524A;&#x9664;
+	 * @returns {boolean}
+	 */
+	remove() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(this.isFile()) {
+			return this.fso.DeleteFile(this.pathname);
+		}
+		else if(this.isDirectory()) {
+			return this.fso.DeleteFolder(this.pathname);
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x5B58;&#x5728;&#x3059;&#x308B;&#x304B;
+	 * @returns {boolean}
+	 */
+	exists() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		let out = this.isFile();
+		if(out === false) {
+			out = this.isDirectory();
+		}
+		return out;
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x30B3;&#x30D4;&#x30FC;
+	 * @param {string|SFile} file_obj
+	 * @returns {boolean}
+	 */
+	copy(file_obj) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const file = new SFile(file_obj);
+		if(this.isFile()) {
+			return this.fso.CopyFile(this.pathname, file.getAbsolutePath(), true);
+		}
+		else if(this.isDirectory()) {
+			return this.fso.CopyFolder(this.pathname, file.getAbsolutePath(), true);
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x79FB;&#x52D5;
+	 * @param {string|SFile} file_obj
+	 * @returns {boolean}
+	 */
+	move(file_obj) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const file = new SFile(file_obj);
+		if(this.isFile()) {
+			this.fso.MoveFile(this.pathname, file.getAbsolutePath());
+			this.pathname = file.getAbsolutePath();
+			return true;
+		}
+		else if(this.isDirectory()) {
+			this.fso.MoveFolder(this.pathname, file.getAbsolutePath());
+			this.pathname = file.getAbsolutePath();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5909;&#x66F4;
+	 * @param {string|SFile} file_obj
+	 * @returns {boolean}
+	 */
+	renameTo(file_obj) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const name = new SFile(file_obj);
+		if(this.isFile()) {
+			// &#x4F8B;&#x3048;&#x3070;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5927;&#x6587;&#x5B57;&#x304B;&#x3089;&#x5C0F;&#x6587;&#x5B57;&#x306B;&#x5909;&#x63DB;&#x3068;&#x3044;&#x3063;&#x305F;&#x5834;&#x5408;&#x3001;
+			// Scripting.FileSystemObject &#x306E;&#x4ED5;&#x69D8;&#x306B;&#x3088;&#x308A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;
+			// &#x5225;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x7D4C;&#x7531;&#x3059;&#x308B;
+			const file = this.fso.getFile(this.pathname);
+			const key = ((Math.random() * 0x7FFFFFFF) &amp; 0x7FFFFFFF).toString(16);
+			file.Name = name.getName() + key;
+			file.Name = name.getName();
+			this.pathname = name.getAbsolutePath();
+			return true;
+		}
+		else if(this.isDirectory()) {
+			const file = this.fso.getFolder(this.pathname);
+			const key = ((Math.random() * 0x7FFFFFFF) &amp; 0x7FFFFFFF).toString(16);
+			file.Name = name.getName() + key;
+			file.Name = name.getName();
+			this.pathname = name.getAbsolutePath();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * &#x6587;&#x5B57;&#x5217;&#x5316;
+	 * @returns {string}
+	 */
+	toString() {
+		return this.getAbsolutePath();
+	}
+
+	/**
+	 * &#x540D;&#x524D;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string}
+	 */
+	getName() {
+		if(this.is_http) {
+			// &#x6700;&#x5F8C;&#x304C;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3067;&#x7D42;&#x3048;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;
+			if(this.isDirectory()) {
+				return &quot;&quot;;
+			}
+			const slashsplit = this.pathname.split(&quot;/&quot;);
+			return slashsplit[slashsplit.length - 1];
+		}
+		else {
+			return this.fso.GetFileName(this.pathname);
+		}
+	}
+
+	/**
+	 * &#x89AA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x7D76;&#x5BFE;&#x30D1;&#x30B9;
+	 * @returns {string}
+	 */
+	getParent() {
+		const x = this.getAbsolutePath().match(/.*[/\\]/)[0];
+		return x.substring(0 ,x.length - 1);
+	}
+
+	/**
+	 * &#x89AA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;
+	 * @returns {SFile}
+	 */
+	getParentFile() {
+		return new SFile(this.getParent());
+	}
+
+	/**
+	 * &#x62E1;&#x5F35;&#x5B50;&#xFF08;&#x30C9;&#x30C3;&#x30C8;&#x3092;&#x542B;&#x307E;&#x306A;&#x3044;&#xFF09;
+	 * @returns {string}
+	 */
+	getExtensionName() {
+		if(this.is_http) {
+			const dotlist = this.getName().split(&quot;.&quot;);
+			return dotlist[dotlist.length - 1];
+		}
+		else {
+			return this.fso.GetExtensionName(this.pathname);
+		}
+	}
+
+	/**
+	 * &#x7D76;&#x5BFE;&#x30D1;&#x30B9;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {boolean}
+	 */
+	isAbsolute() {
+		if(this.is_http) {
+			return this.getAbsolutePath() === this.pathname;
+		}
+		else {
+			const name = this.pathname.replace(&quot;/&quot;, &quot;\\&quot;);
+			return this.fso.GetAbsolutePathName(this.pathname) === name;
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {boolean}
+	 */
+	isDirectory() {
+		if(this.is_http) {
+			// &#x6700;&#x5F8C;&#x304C;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3067;&#x7D42;&#x3048;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;
+			return /\/$/.test(this.pathname);
+		}
+		else {
+			return this.fso.FolderExists(this.pathname);
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {boolean}
+	 */
+	isFile() {
+		if(this.is_http) {
+			// &#x6700;&#x5F8C;&#x304C;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3067;&#x7D42;&#x3048;&#x3066;&#x3044;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;
+			return /[^/]$/.test(this.pathname);
+		}
+		else {
+			return this.fso.FileExists(this.pathname);
+		}
+	}
+
+	/**
+	 * &#x96A0;&#x3057;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {boolean}
+	 */
+	isHidden() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(this.isFile()) {
+			const file = this.fso.getFile(this.pathname);
+			return (file.Attributes &amp; 2) !== 0;
+		}
+		else if(this.isDirectory()) {
+			const folder = this.fso.getFolder(this.pathname);
+			return (folder.Attributes &amp; 2) !== 0;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * &#x66F4;&#x65B0;&#x65E5;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {Date}
+	 */
+	lastModified() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(this.isFile()) {
+			return new Date(this.fso.getFile(this.pathname).DateLastModified);
+		}
+		else if(this.isDirectory()) {
+			return new Date(this.fso.getFolder(this.pathname).DateLastModified);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * &#x66F4;&#x65B0;&#x65E5;&#x3092;&#x8A2D;&#x5B9A;&#xFF08;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x307F;&#x5BFE;&#x5FDC;&#xFF09;
+	 * @param {Date} date
+	 * @returns {boolean}
+	 */
+	setLastModified(date) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(this.isFile()) {
+			const shell = new ActiveXObject(&quot;Shell.Application&quot;);
+			const folder = shell.NameSpace(this.getParent());
+			const file = folder.ParseName(this.getName());
+			const date_string =
+				date.getFullYear() + &quot;/&quot; + (date.getMonth() + 1) + &quot;/&quot; + (date.getDate()) + &quot; &quot; +
+				date.getHours() + &quot;:&quot; + date.getMinutes() + &quot;:&quot; + date.getSeconds();
+			file.ModifyDate = date_string;
+			return true;
+		}
+		else if(this.isDirectory()) {
+			return false;
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x30B5;&#x30A4;&#x30BA;
+	 * @returns {number}
+	 */
+	length() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(this.isFile()) {
+			return this.fso.getFile(this.pathname).Size;
+		}
+		else if(this.isDirectory()) {
+			return this.fso.getFolder(this.pathname).Size;
+		}
+		else {
+			return -1;
+		}
+	}
+
+	/**
+	 * &#x914D;&#x4E0B;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x306E;&#x4E00;&#x89A7;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string[]}
+	 */
+	getFiles() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isDirectory) {
+			return null;
+		}
+		const out = [];
+		const list = new Enumerator(this.fso.getFolder(this.pathname).Files);
+		for(let i = 0; !list.atEnd(); list.moveNext()) {
+			out[i++] = list.item().Name;
+		}
+		return out;
+	}
+
+	/**
+	 * &#x914D;&#x4E0B;&#x306E;&#x30B5;&#x30D6;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x540D;&#x306E;&#x4E00;&#x89A7;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string[]}
+	 */
+	getSubFolders() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isDirectory) {
+			return null;
+		}
+		const out = [];
+		const list = new Enumerator(this.fso.getFolder(this.pathname).SubFolders);
+		for(let i = 0; !list.atEnd(); list.moveNext()) {
+			out[i++] = list.item().Name;
+		}
+		return out;
+	}
+
+	/**
+	 * &#x533A;&#x5207;&#x308A;&#x6587;&#x5B57;&#x3068;&#x7D42;&#x7AEF;&#x3092;&#x6B63;&#x898F;&#x5316;&#x3057;&#x305F;&#x6587;&#x5B57;&#x5217;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string}
+	 */
+	getNormalizedPathName() {
+		if(this.pathname === &quot;&quot;) {
+			return &quot;.\\&quot;;
+		}
+		let name = this.pathname.replace(/\//g, &quot;\\&quot;);
+		if(name.slice(-1) !== &quot;\\&quot;) {
+			name += &quot;\\&quot;;
+		}
+		return name;
+	}
+
+	/**
+	 * &#x30B5;&#x30D6;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x4E2D;&#x307E;&#x3067;&#x63A2;&#x7D22;&#x3057;&#x3066;&#x5168;&#x3066;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3068;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string[]}
+	 */
+	getAllFiles() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isDirectory) {
+			return null;
+		}
+		const out = [];
+		const path = [];
+		const collection = [];
+		let pointer = 0;
+		let list;
+		let targetfolder;
+		path[pointer] = this.getNormalizedPathName();
+		targetfolder = this.fso.getFolder(path[pointer]);
+		list = new Enumerator(this.fso.getFolder(targetfolder).Files);
+		for(; !list.atEnd(); list.moveNext()) {
+			out.push(path[pointer] + list.item().Name);
+		}
+		if(targetfolder.SubFolders.Count === 0) {
+			return out;
+		}
+		collection[pointer] = new Enumerator(targetfolder.SubFolders);
+		pointer++;
+		while(true) {
+			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;
+			out.push(path[pointer]);
+			path[pointer] += &quot;\\&quot;;
+			targetfolder = this.fso.getFolder(path[pointer]);
+			list = new Enumerator(targetfolder.Files);
+			for(; !list.atEnd(); list.moveNext()) {
+				out.push(path[pointer] + list.item().Name);
+			}
+			if(targetfolder.SubFolders.Count === 0) {
+				while(true) {
+					if(pointer === 0) {
+						break;
+					}
+					collection[pointer - 1].moveNext();
+					if(collection[pointer - 1].atEnd()) {
+						pointer--;
+						continue;
+					}
+					else {
+						break;
+					}
+				}
+				if(pointer === 0) {
+					break;
+				}
+			}
+			else {
+				collection[pointer] = new Enumerator(targetfolder.SubFolders);
+				pointer++;
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * &#x914D;&#x4E0B;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x540D;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string[]}
+	 */
+	list() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isDirectory) {
+			return null;
+		}
+		const files = this.getFiles();
+		const subfolders = this.getSubFolders();
+		const out = [];
+		for(let j = 0; j &lt; subfolders.length;) {
+			out.push(subfolders[j++]);
+		}
+		for(let j = 0; j &lt; files.length;) {
+			out.push(files[j++]);
+		}
+		return out;
+	}
+
+	/**
+	 * &#x7D76;&#x5BFE;&#x30D1;&#x30B9;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {string}
+	 */
+	getAbsolutePath() {
+		if(this.is_http) {
+			// &#x30DB;&#x30B9;&#x30C8;&#x3068;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306B;&#x5206;&#x3051;&#x308B;
+			const hosttext = this.pathname.match(/^http[^/]+\/\/[^/]+\//)[0];
+			const filetext = this.pathname.substr(hosttext.length);
+			// &#x30D1;&#x30B9;&#x3092;1&#x3064;&#x305A;&#x3064;&#x89E3;&#x6790;&#x3057;&#x306A;&#x304C;&#x3089;&#x8FBF;&#x3063;&#x3066;&#x3044;&#x304F;
+			let name = hosttext;
+			const namelist = filetext.split(&quot;/&quot;);
+			let i;
+			for(i = 0; i &lt; namelist.length; i++) {
+				if((namelist[i] === &quot;&quot;) || (namelist[i] === &quot;.&quot;)) {
+					continue;
+				}
+				if(namelist[i] === &quot;..&quot;) {
+					name = name.substring(0 ,name.length - 1).match(/.*\//)[0];
+					continue;
+				}
+				name += namelist[i];
+				if(i !== namelist.length - 1) {
+					name += &quot;/&quot;;
+				}
+			}
+			return name;
+		}
+		else {
+			return this.fso.GetAbsolutePathName(this.pathname);
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x4F5C;&#x6210;
+	 * - &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306F;1&#x3064;&#x306E;&#x307F;&#x6307;&#x5B9A;&#x53EF;&#x80FD;
+	 * - &#x3059;&#x3067;&#x306B;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x30A8;&#x30E9;&#x30FC;&#x3092;&#x8FD4;&#x3059;&#x3002;
+	 * @returns {boolean}
+	 */
+	mkdir() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const filename = this.getAbsolutePath();
+		if(this.fso.FileExists(filename)) {
+			// &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x4F5C;&#x308C;&#x306A;&#x3044;
+			return false;
+		}
+		else if(this.fso.FolderExists(filename)) {
+			// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x65E2;&#x306B;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;TRUE&#x3067;&#x8FD4;&#x3059;
+			return true;
+		}
+		// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x306A;&#x3044;&#x306E;&#x3067;&#x4F5C;&#x6210;&#x3059;&#x308B;
+		this.fso.CreateFolder(filename);
+		// 10&#x79D2;&#x9593;&#x4F5C;&#x3089;&#x308C;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
+		for(let i = 0; i &lt; (20 * 10); i++) {
+			if(this.fso.FolderExists(filename)) {
+				return true;
+			}
+			WScript.Sleep(50); // 50ms
+		}
+		// &#x3044;&#x3064;&#x307E;&#x3067;&#x5F85;&#x3063;&#x3066;&#x3082;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x4F5C;&#x3089;&#x308C;&#x306A;&#x3044;&#x306E;&#x3067;&#x5931;&#x6557;
+		return false;
+	}
+
+	/**
+	 * &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x4F5C;&#x6210;
+	 * - &#x4F5C;&#x6210;&#x3057;&#x305F;&#x3044;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x7D9A;&#x3051;&#x3066;&#x8A18;&#x8F09;&#x304C;&#x53EF;&#x80FD;
+	 * - &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3066;&#x3044;&#x304F;
+	 * @returns {boolean}
+	 */
+	mkdirs() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const name = this.pathname.replace(&quot;/&quot;, &quot;\\&quot;).split(&quot;\\&quot;);
+		let dir  = &quot;&quot;;
+		for(let i = 0; i &lt; name.length; i++) {
+			dir += name[i];
+			if(!(new SFile(dir)).mkdir()) {
+				return false;
+			}
+			dir += &quot;\\&quot;;
+		}
+		return true;
+	}
+
+	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;
+	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+	 * @param {boolean} [is_wait=false] - &#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x304C;&#x7D42;&#x4E86;&#x3059;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
+	 * @returns {void}
+	 */
+	run(style, is_wait) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const NormalFocus = 1;
+		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
+		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		// @ts-ignore
+		objWShell.Run(this.getAbsolutePath(), intWindowStyle, bWaitOnReturn);
+	}
+
+	/**
+	 * 1&#x884C;&#x66F8;&#x304D;&#x52A0;&#x3048;&#x308B;
+	 * @param {string} text
+	 * @returns {boolean}
+	 */
+	writeLine(text) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		let file;
+		if(this.isFile()) {
+			const ForAppending = 8;
+			file = this.fso.OpenTextFile(this.pathname, ForAppending);
+		}
+		else if(this.isDirectory()) {
+			return false;
+		}
+		else {
+			file = this.fso.CreateTextFile(this.pathname, true);
+		}
+		file.WriteLine(text);
+		file.Close();
+		return true;
+	}
+
+	/**
+	 * &#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;
+	 * @param {string} [charset=&quot;_autodetect_all&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
+	 * @returns {string}
+	 */
+	getTextFile(charset) {
+		const icharset = charset !== undefined ? charset : &quot;_autodetect_all&quot;;
+		const inewline = &quot;\n&quot;; //javascript&#x4E0A;&#x3067;&#x306E;&#x6539;&#x884C;
+		let text = null;
+		if(/^htt/.test(this.pathname)) {
+			const http = SFile.createXMLHttpRequest();
+			if(http === null) {
+				return null;
+			}
+			http.open(&quot;GET&quot;, this.pathname, false);
+			try {
+				http.send(null);
+				text = http.responseText;
+			}
+			catch (e) {
+				text = &quot;error&quot;;
+			}
+		}
+		else {
+			if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+				// Scripting.FileSystemObject &#x3067;&#x958B;&#x304F;
+				const forreading = 1;
+				let tristate = 0;
+				if(/ascii/i.test(icharset)) {
+					// ASCII
+					tristate = 0;
+				}
+				else if(/shift_jis|sjis/i.test(icharset)) {
+					// &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;(&#x65E5;&#x672C;&#x8A9E;&#x306E;OS&#x3060;&#x3068;&#x4EEE;&#x5B9A;)
+					tristate = -2;
+				}
+				else {
+					// utf-16le
+					tristate = -1;
+				}
+				const open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );
+				text = open_file.ReadAll();
+				open_file.Close();
+			}
+			else {
+				// &#x3088;&#x308A;&#x81EA;&#x7531;&#x306A;&#x30B3;&#x30FC;&#x30C9;&#x3067;&#x958B;&#x304F;&#xFF08;&#x901F;&#x5EA6;&#x306F;&#x9045;&#x3044;&#xFF09;
+				// &#x4F7F;&#x7528;&#x53EF;&#x80FD;&#x306A; charset &#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x4E0B;&#x8A18;&#x3092;&#x53C2;&#x7167;
+				// HKEY_CLASSES_ROOT\MIME\Database\Charset
+				const adTypeText = 2;
+				const adReadAll = -1;
+				const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.type = adTypeText;
+				stream.charset = icharset;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				text = stream.readText(adReadAll);
+				stream.close();
+				// &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x81EA;&#x52D5;&#x53D6;&#x5F97;&#x306E;&#x5834;&#x5408;&#x3001;BOM&#x307E;&#x3067;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3067;&#x3057;&#x307E;&#x3046;&#x306E;&#x3092;&#x9632;&#x6B62;&#x3059;&#x308B;
+				if((icharset === &quot;_autodetect_all&quot;)||(icharset === &quot;_autodetect&quot;)) {
+					let newcharset = &quot;&quot;;
+					// 1&#x6587;&#x5B57;&#x4EE5;&#x4E0A;&#x306E;&#x3068;&#x304D;
+					if(text.length &gt; 1) {
+						// utf-16le
+						if(text.charCodeAt(0) === 0xfeff) {
+							// &#x901A;&#x5E38;&#x306F;&#x3001;&#x3053;&#x306E;&#x30EB;&#x30FC;&#x30C8;&#x306F;BOM&#x4ED8;&#x304D;utf-16le&#x306E;&#x3068;&#x304D;&#x306B;&#x901A;&#x308B;&#x304C;&#x3001;
+							// BOM&#x4ED8;&#x304D;utf-8&#x3067;&#x3082;&#x901A;&#x308B;&#x5834;&#x5408;&#x304C;&#x306A;&#x305C;&#x304B;&#x3042;&#x308B;&#x3002;&#xFF08;&#x5F8C;&#x8FF0;&#xFF09;
+							newcharset = &quot;unicode&quot;;
+						}
+						// utf-16be
+						else if(text.charCodeAt(0) === 0xfffe) {
+							newcharset = &quot;unicodeFFFE&quot;;
+						}
+					}
+					// 2&#x6587;&#x5B57;&#x4EE5;&#x4E0A;&#x306E;&#x3068;&#x304D;
+					if(text.length &gt; 2) {
+						// BOM&#x4ED8;&#x304D;utf-8&#x3067;&#x306A;&#x305C;&#x304B;&#x3053;&#x306E;&#x6587;&#x5B57;&#x304C;&#x304F;&#x3063;&#x3064;&#x304F;&#x5834;&#x5408;&#x304C;&#x3042;&#x308B;&#x3002;
+						if(	(text.charCodeAt(0) === 0x30fb) &amp;&amp;
+							(text.charCodeAt(1) === 0xff7f)) {
+							newcharset = &quot;utf-8&quot;;
+						}
+					}
+					// 3&#x6587;&#x5B57;&#x4EE5;&#x4E0A;&#x306E;&#x3068;&#x304D;
+					if(text.length &gt; 3) {
+						// utf-8
+						if(	(text.charCodeAt(0) === 0xef) &amp;&amp;
+							(text.charCodeAt(1) === 0xbb) &amp;&amp;
+							(text.charCodeAt(2) === 0xbf)) {
+							newcharset = &quot;utf-8&quot;;
+						}
+					}
+					// &#x4E0A;&#x5224;&#x5B9A;&#x3067;BOM&#x4ED8;&#x304D;&#x304C;&#x5206;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x3001;&#x6B63;&#x3057;&#x3044;&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x3067;&#x53D6;&#x5F97;&#x3059;&#x308B;
+					if(newcharset !== &quot;&quot;) {
+						const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+						stream.type = adTypeText;
+						stream.charset = newcharset;
+						stream.open();
+						stream.loadFromFile(this.pathname);
+						text = stream.readText(adReadAll);
+						stream.close();
+					}
+					// BOM&#x4ED8;&#x304D;utf-8 &#x3067;&#x3082; BOM&#x4ED8;&#x304D;utf-16le &#x3068;&#x5224;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306E;&#x5BFE;&#x51E6;
+					if((text.length &gt; 1) &amp;&amp; (text.charCodeAt(0) === 0xbbef)) {
+						const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+						stream.type = adTypeText;
+						stream.charset = &quot;utf-8&quot;;
+						stream.open();
+						stream.loadFromFile(this.pathname);
+						text = stream.readText(adReadAll);
+						stream.close();
+					}
+				}
+			}
+		}
+		if(text !== null) {
+			return text.replace(/\r\n?|\n/g, inewline); //&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7D71;&#x4E00;
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * &#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;
+	 * @param {string} text
+	 * @param {string} [charset=&quot;utf-8&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
+	 * @param {string} [newline=&quot;\n&quot;] - &#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;
+	 * @param {boolean} [issetBOM=true] - BOM&#x306E;&#x6709;&#x7121;(utf-8&#x306E;&#x307F;&#x6709;&#x52B9; )
+	 * @returns {boolean}
+	 */
+	setTextFile(text, charset, newline, issetBOM) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const icharset = charset !== undefined ? charset : &quot;utf-8&quot;;
+		const inewline = newline !== undefined ? newline : &quot;\n&quot;;
+		const iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8&#x306E;&#x307F;&#x6709;&#x52B9; BOM&#x3042;&#x308A;&#x304B;&#x306A;&#x3057;
+		if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+			// Scripting.FileSystemObject &#x3067;&#x66F8;&#x304D;&#x8FBC;&#x3080;
+			const forwriting = 2;
+			let tristate = 0;
+			if(/ascii/i.test(icharset)) {
+				// ASCII
+				tristate = 0;
+			}
+			else if(/shift_jis|sjis/i.test(icharset)) {
+				// &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;(&#x65E5;&#x672C;&#x8A9E;&#x306E;OS&#x3060;&#x3068;&#x4EEE;&#x5B9A;)
+				tristate = -2;
+			}
+			else {
+				// utf-16le
+				tristate = -1;
+			}
+			const open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );
+			open_file.Write(text.replace(/\r\n?|\n/g, inewline));
+			open_file.Close();
+		}
+		else {
+			// ADODB.Stream&#x3067;&#x66F8;&#x304D;&#x8FBC;&#x3080;
+			const adTypeBinary = 1;
+			const adTypeText = 2;
+			const adSaveCreateOverWrite = 2;
+			// &#x4F7F;&#x7528;&#x53EF;&#x80FD;&#x306A; charset &#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x4E0B;&#x8A18;&#x3092;&#x53C2;&#x7167;
+			// HKEY_CLASSES_ROOT\MIME\Database\Charset
+			let stream;
+			stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+			stream.type = adTypeText;
+			stream.charset = icharset;
+			stream.open();
+			stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7D71;&#x4E00;
+			if(/utf-8/.test(icharset.toLowerCase()) &amp;&amp; (!iissetBOM)) {
+				stream.position = 0;
+				stream.type = adTypeBinary;
+				stream.position = 3;
+				const binary = stream.read();
+				stream.close();
+				stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.type = adTypeBinary;
+				stream.open();
+				stream.write(binary);
+			}
+			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+			stream.close();
+		}
+		return true;
+	}
+
+	/**
+	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;&#xFF08;&#x6FC0;&#x91CD;&#xFF09;
+	 * @returns {number[]}
+	 */
+	getBinaryFile() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const adTypeText = 2;
+		const adReadAll = -1;
+		const charset = &quot;iso-8859-1&quot;;
+		
+		/**
+		 * @type {Object&lt;number, number&gt;}
+		 * @private
+		 */
+		const map = {
+			0x20AC	:	0x80	,	//	8364	128
+			0x201A	:	0x82	,	//	8218	130
+			0x0192	:	0x83	,	//	402	131
+			0x201E	:	0x84	,	//	8222	132
+			0x2026	:	0x85	,	//	8230	133
+			0x2020	:	0x86	,	//	8224	134
+			0x2021	:	0x87	,	//	8225	135
+			0x02C6	:	0x88	,	//	710	136
+			0x2030	:	0x89	,	//	8240	137
+			0x0160	:	0x8A	,	//	352	138
+			0x2039	:	0x8B	,	//	8249	139
+			0x0152	:	0x8C	,	//	338	140
+			0x017D	:	0x8E	,	//	381	142
+			0x2018	:	0x91	,	//	8216	145
+			0x2019	:	0x92	,	//	8217	146
+			0x201C	:	0x93	,	//	8220	147
+			0x201D	:	0x94	,	//	8221	148
+			0x2022	:	0x95	,	//	8226	149
+			0x2013	:	0x96	,	//	8211	150
+			0x2014	:	0x97	,	//	8212	151
+			0x02DC	:	0x98	,	//	732	152
+			0x2122	:	0x99	,	//	8482	153
+			0x0161	:	0x9A	,	//	353	154
+			0x203A	:	0x9B	,	//	8250	155
+			0x0153	:	0x9C	,	//	339	156
+			0x017E	:	0x9E	,	//	382	158
+			0x0178	:	0x9F		//	376	159
+		};
+		const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+		stream.type = adTypeText;
+		stream.charset = charset;
+		stream.open();
+		stream.loadFromFile(this.pathname);
+		const text = stream.readText(adReadAll);
+		stream.close();
+		const out = new Array(text.length);
+		for(let i = 0;i &lt; text.length;i++) {
+			const x = text.charCodeAt(i);
+			if(0xFF &lt; x) {
+				out[i] = map[x];
+			}
+			else {
+				out[i] = x;
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;&#xFF08;&#x6FC0;&#x91CD;&#xFF09;
+	 * @param {number[]} array_
+	 */
+	setBinaryFile(array_) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		const adTypeText = 2;
+		const adSaveCreateOverWrite = 2;
+		const charset = &quot;iso-8859-1&quot;;
+		const buffersize = 512;
+		const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+		stream.type = adTypeText;
+		stream.charset = charset;
+		stream.open();
+		for(let i = 0;i &lt; array_.length;) {
+			const text = [];
+			for(let j = 0; (j &lt; buffersize) &amp;&amp; (i &lt; array_.length); j++, i++) {
+				text[j] = String.fromCharCode(array_[i]);
+			}
+			stream.writeText(text.join(&quot;&quot;));
+		}
+		stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+		stream.close();
+	}
+
+	/**
+	 * XMLHttpRequest&#x3092;&#x4F5C;&#x6210;
+	 * @returns {XMLHttpRequest}
+	 */
+	static createXMLHttpRequest() {
+		try {
+			return new XMLHttpRequest();
+		}
+		catch (e) {
+			const MSXMLHTTP = [
+				&quot;WinHttp.WinHttpRequest.5.1&quot;,
+				&quot;WinHttp.WinHttpRequest.5&quot;,
+				&quot;WinHttp.WinHttpRequest&quot;,
+				&quot;Msxml2.ServerXMLHTTP.6.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP.5.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP.4.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP.3.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP&quot;,
+				&quot;Microsoft.ServerXMLHTTP&quot;,
+				&quot;Msxml2.XMLHTTP.6.0&quot;,
+				&quot;Msxml2.XMLHTTP.5.0&quot;,
+				&quot;Msxml2.XMLHTTP.4.0&quot;,
+				&quot;Msxml2.XMLHTTP.3.0&quot;,
+				&quot;Msxml2.XMLHTTP&quot;,
+				&quot;Microsoft.XMLHTTP&quot;
+			];
+			// &#x203B; WinHttp.WinHttpRequest &#x306F; onreadystatechange &#x306E;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x304C;&#x3067;&#x304D;&#x306A;&#x3044;
+			let i;
+			for(i = 0; i &lt; MSXMLHTTP.length; i++) {
+				try {
+					return new ActiveXObject(MSXMLHTTP[i]);
+				}
+				catch (e) {
+					continue;
+				}
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * &#x30C6;&#x30F3;&#x30DD;&#x30E9;&#x30EA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x5185;&#x306E;&#x9069;&#x5F53;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {SFile}
+	 */
+	static createTempFile() {
+		const TemporaryFolder = 2;
+		const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
+		// &#x30C6;&#x30F3;&#x30DD;&#x30E9;&#x30EA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x5185;&#x306E;&#x9069;&#x5F53;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x53D6;&#x5F97;&#x3057;&#x307E;&#x3059;
+		return new SFile(fso.GetSpecialFolder(TemporaryFolder) + &quot;\\&quot; + fso.GetTempName());
+	}
+
+	/**
+	 * &#x30AB;&#x30EC;&#x30F3;&#x30C8;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {SFile}
+	 */
+	static getCurrentDirectory() {
+		const shell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		return new SFile(shell.CurrentDirectory);
+	}
+
+	/**
+	 * &#x30AB;&#x30EC;&#x30F3;&#x30C8;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x8A2D;&#x5B9A;
+	 * @param {string|SFile} file_obj
+	 */
+	static setCurrentDirectory(file_obj) {
+		const file = new SFile(file_obj);
+		const shell = WScript.CreateObject (&quot;WScript.Shell&quot;);
+		const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
+		shell.CurrentDirectory = fso.getFolder(file.getAbsolutePath()).Name;
+	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
+	 * @param {string|SFile|function(string, string): boolean} file_obj
+	 * @returns {SFile|null}
+	 */
+	static searchFile(file_obj) {
+		const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
+		const path = [];
+		const collection = [];
+		let pointer = 0;
+		let list;
+		let targetfolder;
+		/**
+		 * @type {function(string, string): boolean}
+		 * @private
+		 */
+		let isTarget;
+		if(typeof file_obj !== &quot;function&quot;) {
+			const file = new SFile(file_obj);
+			const buffer = file.getName();
+			isTarget = function(name, fullpath) {
+				return name === buffer;
+			};
+		}
+		else {
+			isTarget = file_obj;
+		}
+		path[pointer] = SFile.getCurrentDirectory().getNormalizedPathName();
+		targetfolder = fso.getFolder(path[pointer]);
+		list = new Enumerator(fso.getFolder(targetfolder).Files);
+		for(let i = 0; !list.atEnd(); list.moveNext()) {
+			if(isTarget(list.item().Name, path[pointer] + list.item().Name)) {
+				return new SFile(path[pointer] + list.item().Name);
+			}
+		}
+		if(targetfolder.SubFolders.Count === 0) {
+			return null;
+		}
+		collection[pointer] = new Enumerator(targetfolder.SubFolders);
+		pointer++;
+		while(true) {
+			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name + &quot;\\&quot;;
+			targetfolder = fso.getFolder(path[pointer]);
+			list = new Enumerator(targetfolder.Files);
+			for(; !list.atEnd(); list.moveNext()) {
+				if(isTarget(list.item().Name, path[pointer] + list.item().Name)) {
+					return new SFile(path[pointer] + list.item().Name);
+				}
+			}
+			if(targetfolder.SubFolders.Count === 0) {
+				while(true) {
+					if(pointer === 0) {
+						break;
+					}
+					collection[pointer - 1].moveNext();
+					if(collection[pointer - 1].atEnd()) {
+						pointer--;
+						continue;
+					}
+					else {
+						break;
+					}
+				}
+				if(pointer === 0) {
+					break;
+				}
+			}
+			else {
+				collection[pointer] = new Enumerator(targetfolder.SubFolders);
+				pointer++;
+			}
+		}
+		return null;
+	}
+
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

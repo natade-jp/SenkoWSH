@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Format.js | senkowsh</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="JScirpt library for WSH that gathers various functions."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="senkowsh"><meta property="twitter:description" content="JScirpt library for WSH that gathers various functions."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/SenkoWSH"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Format.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * &#x66F8;&#x5F0F;&#x306B;&#x5408;&#x308F;&#x305B;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x308B;&#x30E1;&#x30BD;&#x30C3;&#x30C9;&#x3092;&#x63D0;&#x4F9B;
+ */
+export default class Format {
+
+	/**
+	 * &#x66F8;&#x5F0F;&#x306B;&#x5408;&#x308F;&#x305B;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x308B;
+	 * - &#x30ED;&#x30B1;&#x30FC;&#x30EB;&#x3001;&#x65E5;&#x4ED8;&#x6642;&#x523B;&#x7B49;&#x306F;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3057;&#x3066;&#x3044;&#x307E;&#x305B;&#x3093;&#x3002;
+	 * - sprintf&#x306E;&#x5909;&#x63DB;&#x6307;&#x5B9A;&#x5B50;&#x306E;p&#x3068;n&#x306F;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3057;&#x3066;&#x3044;&#x307E;&#x305B;&#x3093;&#x3002;
+	 * @param {String} text 
+	 * @param {...any} parm &#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x306F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+	 * @returns {String}
+	 */
+	static textf() {
+		let parm_number = 1;
+		const parm = arguments;
+		/**
+		 * @param {number} x
+		 * @returns {number}
+		 * @private
+		 */
+		const toUnsign  = function(x) {
+			if(x &gt;= 0) {
+				return x;
+			}
+			else {
+				const ix = -x;
+				//16&#x30D3;&#x30C3;&#x30C8;&#x3054;&#x3068;&#x306B;&#x5206;&#x3051;&#x3066;&#x30D3;&#x30C3;&#x30C8;&#x53CD;&#x8EE2;
+				let high = ((~ix) &gt;&gt; 16) &amp; 0xFFFF;
+				high *= 0x00010000;
+				const low  =  (~ix) &amp; 0xFFFF;
+				return high + low + 1;
+			}
+		};
+		/**
+		 * @param {string} istr
+		 * @returns {string}
+		 * @private
+		 */
+		const func = function(istr) {
+			// 1&#x6587;&#x5B57;&#x76EE;&#x306E;%&#x3092;&#x9664;&#x53BB;
+			let str = istr.substring(1, istr.length);
+			let buff;
+			// [6] &#x5909;&#x63DB;&#x6307;&#x5B9A;&#x5B50;(&#x6700;&#x5F8C;&#x306E;1&#x6587;&#x5B57;&#x3092;&#x53D6;&#x5F97;)
+			buff = str.match(/.$/);
+			const type = buff[0];
+			if(type === &quot;%&quot;) {
+				return(&quot;%&quot;);
+			}
+			// &#x3053;&#x3053;&#x304B;&#x3089;&#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x306E;&#x89E3;&#x6790;&#x958B;&#x59CB;
+			// [1] &#x5F15;&#x6570;&#x9806;
+			buff = str.match(/^[0-9]+\$/);
+			if(buff !== null) {
+				buff = buff[0];
+				// &#x6B8B;&#x308A;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x53D6;&#x5F97;
+				str = str.substring(buff.length, str.length);
+				// &#x6570;&#x5B57;&#x3060;&#x3051;&#x5207;&#x308A;&#x51FA;&#x3059;
+				buff = buff.substring(0, buff.length - 1);
+				// &#x6574;&#x6570;&#x3078;
+				parm_number = parseInt(buff , 10);
+			}
+			// &#x5F15;&#x6570;&#x3092;&#x53D6;&#x5F97;
+			let parameter = parm[parm_number];
+			if(typeof parameter !== &quot;string&quot; &amp;&amp; typeof parameter !== &quot;number&quot;) {
+				parameter = parameter.toString();
+			}
+			parm_number = parm_number + 1;
+			// [2] &#x30D5;&#x30E9;&#x30B0;
+			buff = str.match(/^[-+ #0]+/);
+			let isFlagSharp = false;
+			let isFlagTextAlignLeft = false;
+			const isFlagFill = false;
+			let sFillCharacter = &quot; &quot;;
+			let isFlagFillZero = false;
+			let isFlagDrawSign = false;
+			let sSignCharacter = &quot;&quot;;
+			if(buff !== null) {
+				buff = buff[0];
+				// &#x6B8B;&#x308A;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x53D6;&#x5F97;
+				str = str.substring(buff.length, str.length);
+				if(buff.indexOf(&quot;#&quot;) !== -1) {
+					isFlagSharp = true;
+				}
+				if(buff.indexOf(&quot;-&quot;) !== -1) {
+					isFlagTextAlignLeft = true;
+				}
+				if(buff.indexOf(&quot; &quot;) !== -1) {
+					isFlagDrawSign = true;
+					sSignCharacter = &quot; &quot;;
+				}
+				if(buff.indexOf(&quot;+&quot;) !== -1) {
+					isFlagDrawSign = true;
+					sSignCharacter = &quot;+&quot;;
+				}
+				if(buff.indexOf(&quot;0&quot;) !== -1) {
+					isFlagFillZero = true;
+					sFillCharacter = &quot;0&quot;;
+				}
+			}
+			// [3] &#x6700;&#x5C0F;&#x30D5;&#x30A3;&#x30FC;&#x30EB;&#x30C9;&#x5E45;
+			let width = 0;
+			buff = str.match(/^([0-9]+|\*)/);
+			if(buff !== null) {
+				buff = buff[0];
+				// &#x6B8B;&#x308A;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x53D6;&#x5F97;
+				str = str.substring(buff.length, str.length);
+				if(buff.indexOf(&quot;*&quot;) !== -1) { // &#x5F15;&#x6570;&#x3067;&#x6700;&#x5C0F;&#x30D5;&#x30A3;&#x30FC;&#x30EB;&#x30C9;&#x5E45;&#x3092;&#x6307;&#x5B9A;
+					width = parameter;
+					parameter = parm[parm_number];
+					parm_number = parm_number + 1;
+				}
+				else { // &#x6570;&#x5B57;&#x3067;&#x6307;&#x5B9A;
+					width = parseInt(buff , 10);
+				}
+			}
+			// [4] &#x7CBE;&#x5EA6;&#x306E;&#x6307;&#x5B9A;
+			let isPrecision = false;
+			let precision = 0;
+			buff = str.match(/^(\.((-?[0-9]+)|\*)|\.)/); //.-3, .* , .
+			if(buff !== null) {
+				buff = buff[0];
+				// &#x6B8B;&#x308A;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x53D6;&#x5F97;
+				str = str.substring(buff.length, str.length);
+				isPrecision = true;
+				if(buff.indexOf(&quot;*&quot;) !== -1) { // &#x5F15;&#x6570;&#x3067;&#x7CBE;&#x5EA6;&#x3092;&#x6307;&#x5B9A;
+					precision = parameter;
+					parameter = parm[parm_number];
+					parm_number = parm_number + 1;
+				}
+				else if(buff.length === 1) { // &#x5C0F;&#x6570;&#x70B9;&#x3060;&#x3051;&#x306E;&#x6307;&#x5B9A;
+					precision = 0;
+				}
+				else { // &#x6570;&#x5B57;&#x3067;&#x6307;&#x5B9A;
+					buff = buff.substring(1, buff.length);
+					precision = parseInt(buff , 10);
+				}
+			}
+			// &#x9577;&#x3055;&#x4FEE;&#x98FE;&#x5B50;(&#x975E;&#x30B5;&#x30DD;&#x30FC;&#x30C8;)
+			buff = str.match(/^hh|h|ll|l|L|z|j|t/);
+			if(buff !== null) {
+				str = str.substring(buff.length, str.length);
+			}
+			// &#x6587;&#x5B57;&#x5217;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;
+			let output = &quot;&quot;;
+			let isInteger = false;
+			switch(type.toLowerCase()) {
+				// &#x6570;&#x5B57;&#x95A2;&#x9023;
+				case &quot;d&quot;:
+				case &quot;i&quot;:
+				case &quot;u&quot;:
+				case &quot;b&quot;:
+				case &quot;o&quot;:
+				case &quot;x&quot;:
+					isInteger = true;
+					// falls through
+				case &quot;e&quot;:
+				case &quot;f&quot;:
+				case &quot;g&quot;:
+				{
+					let sharpdata = &quot;&quot;;
+					let textlength = 0; // &#x73FE;&#x5728;&#x306E;&#x6587;&#x5B57;&#x3092;&#x69CB;&#x6210;&#x3059;&#x308B;&#x305F;&#x3081;&#x306B;&#x5FC5;&#x8981;&#x306A;&#x9577;&#x3055;
+					let spacesize;  // &#x8FFD;&#x52A0;&#x3059;&#x308B;&#x6A2A;&#x5E45;
+					// &#x6574;&#x6570;
+					if(isInteger) {
+						// &#x6570;&#x5B57;&#x306B;&#x5909;&#x63DB;
+						if(isNaN(parameter)) {
+							parameter = parseInt(parameter, 10);
+						}
+						// &#x6B63;&#x8CA0;&#x5224;&#x5B9A;
+						if((type === &quot;d&quot;) || (type === &quot;i&quot;)) {
+							if(parameter &lt; 0) {
+								sSignCharacter = &quot;-&quot;;
+								parameter  = -parameter;
+							}
+							parameter  = Math.floor(parameter);
+						}
+						else {
+							if(parameter &gt;= 0) {
+								parameter  = Math.floor(parameter);
+							}
+							else {
+								parameter  = Math.ceil(parameter);
+							}
+						}
+					}
+					// &#x5B9F;&#x6570;
+					else {
+						// &#x6570;&#x5B57;&#x306B;&#x5909;&#x63DB;
+						if(isNaN(parameter)) {
+							parameter = parseFloat(parameter);
+						}
+						// &#x6B63;&#x8CA0;&#x5224;&#x5B9A;
+						if(parameter &lt; 0) {
+							sSignCharacter = &quot;-&quot;;
+							parameter  = -parameter;
+						}
+						if(!isPrecision) {
+							precision = 6;
+						}
+					}
+					// &#x6587;&#x5B57;&#x5217;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x3066;&#x3044;&#x304F;
+					switch(type.toLowerCase()) {
+						case &quot;d&quot;:
+						case &quot;i&quot;:
+							output += parameter.toString(10);
+							break;
+						case &quot;u&quot;:
+							output += toUnsign(parameter).toString(10);
+							break;
+						case &quot;b&quot;:
+							output += toUnsign(parameter).toString(2);
+							if(isFlagSharp) {
+								sharpdata = &quot;0b&quot;;
+							}
+							break;
+						case &quot;o&quot;:
+							output  += toUnsign(parameter).toString(8);
+							if(isFlagSharp) {
+								sharpdata = &quot;0&quot;;
+							}
+							break;
+						case &quot;x&quot;:
+						case &quot;X&quot;:
+							output  += toUnsign(parameter).toString(16);
+							if(isFlagSharp) {
+								sharpdata = &quot;0x&quot;;
+							}
+							break;
+						case &quot;e&quot;:
+							output += parameter.toExponential(precision);
+							break;
+						case &quot;f&quot;:
+							output += parameter.toFixed(precision);
+							break;
+						case &quot;g&quot;:
+							if(precision === 0) { // 0&#x306F;1&#x3068;&#x3059;&#x308B;
+								precision = 1;
+							}
+							output += parameter.toPrecision(precision);
+							// &#x5C0F;&#x6570;&#x70B9;&#x4EE5;&#x4E0B;&#x306E;&#x8A9E;&#x5C3E;&#x306E;0&#x306E;&#x524A;&#x9664;
+							if((!isFlagSharp) &amp;&amp; (output.indexOf(&quot;.&quot;) !== -1)) {
+								output = output.replace(/\.?0+$/, &quot;&quot;);  // 1.00 , 1.10
+								output = output.replace(/\.?0+e/, &quot;e&quot;); // 1.0e , 1.10e
+							}
+							break;
+						default:
+							// &#x4E0A;&#x3067;&#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x3057;&#x3066;&#x3044;&#x308B;&#x305F;&#x3081;&#x3001;&#x3042;&#x308A;&#x3048;&#x306A;&#x3044;
+							break;
+					}
+					// &#x6574;&#x6570;&#x3067;&#x306E;&#x5F8C;&#x51E6;&#x7406;
+					if(isInteger) {
+						if(isPrecision) { // &#x7CBE;&#x5EA6;&#x306E;&#x4ED8;&#x3051;&#x8DB3;&#x3057;
+							spacesize  = precision - output.length;
+							for(let i = 0; i &lt; spacesize; i++) {
+								output = &quot;0&quot; + output;
+							}
+						}
+					}
+					// &#x5B9F;&#x6570;&#x3067;&#x306E;&#x5F8C;&#x51E6;&#x7406;
+					else {
+						if(isFlagSharp) { 
+							// sharp&#x6307;&#x5B9A;&#x306E;&#x6642;&#x306F;&#x5C0F;&#x6570;&#x70B9;&#x3092;&#x5FC5;&#x305A;&#x6B8B;&#x3059;
+							if(output.indexOf(&quot;.&quot;) === -1) {
+								if(output.indexOf(&quot;e&quot;) !== -1) {
+									output = output.replace(&quot;e&quot;, &quot;.e&quot;);
+								}
+								else {
+									output += &quot;.&quot;;
+								}
+							}
+						}
+					}
+					// &#x6307;&#x6570;&#x8868;&#x8A18;&#x306F;&#x3001;3&#x6841;&#x8868;&#x793A;(double&#x578B;&#x306E;&#x305F;&#x3081;)
+					if(output.indexOf(&quot;e&quot;) !== -1) {
+						/**
+						 * @param {string} str
+						 * @returns {string}
+						 * @private
+						 */
+						const buff = function(str) {
+							const l   = str.length;
+							if(str.length === 3) { // e+1 -&gt; e+001
+								return(str.substring(0, l - 1) + &quot;00&quot; + str.substring(l - 1, l));
+							}
+							else { // e+10 -&gt; e+010
+								return(str.substring(0, l - 2) + &quot;0&quot; + str.substring(l - 2, l));
+							}
+						};
+						output = output.replace(/e[+-][0-9]{1,2}$/, buff);
+					}
+					textlength = output.length + sharpdata.length + sSignCharacter.length;
+					spacesize  = width - textlength;
+					// &#x5DE6;&#x3088;&#x305B;
+					if(isFlagTextAlignLeft) {
+						for(let i = 0; i &lt; spacesize; i++) {
+							output = output + &quot; &quot;;
+						}
+					}
+					// 0&#x3092;&#x57CB;&#x3081;&#x308B;&#x5834;&#x5408;
+					if(isFlagFillZero) {
+						for(let i = 0; i &lt; spacesize; i++) {
+							output = &quot;0&quot; + output;
+						}
+					}
+					// &#x30DE;&#x30A4;&#x30CA;&#x30B9;&#x3084;&#x3001;&#x300C;0x&#x300D;&#x306A;&#x3069;&#x3092;&#x63A5;&#x7D9A;
+					output = sharpdata + output;
+					output = sSignCharacter + output;
+					// 0 &#x3067;&#x57CB;&#x3081;&#x306A;&#x3044;&#x5834;&#x5408;
+					if((!isFlagFillZero) &amp;&amp; (!isFlagTextAlignLeft)) {
+						for(let i = 0; i &lt; spacesize; i++) {
+							output = &quot; &quot; + output;
+						}
+					}
+					// &#x5927;&#x6587;&#x5B57;&#x5316;
+					if(type.toUpperCase() === type) {
+						output = output.toUpperCase();
+					}
+					break;
+				}
+				// &#x6587;&#x5B57;&#x5217;&#x306E;&#x5834;&#x5408;
+				case &quot;c&quot;:
+					if(!isNaN(parameter)) {
+						parameter = String.fromCharCode(parameter);
+					}
+					// falls through
+				case &quot;s&quot;:
+				{
+					if(!isNaN(parameter)) {
+						parameter = parameter.toString(10);
+					}
+					output = parameter;
+					if(isPrecision) { // &#x6700;&#x5927;&#x8868;&#x793A;&#x6587;&#x5B57;&#x6570;
+						if(output.length &gt; precision) {
+							output = output.substring(0, precision);
+						}
+					}
+					const s_textlength = output.length; // &#x73FE;&#x5728;&#x306E;&#x6587;&#x5B57;&#x3092;&#x69CB;&#x6210;&#x3059;&#x308B;&#x305F;&#x3081;&#x306B;&#x5FC5;&#x8981;&#x306A;&#x9577;&#x3055;
+					const s_spacesize  = width - s_textlength;  // &#x8FFD;&#x52A0;&#x3059;&#x308B;&#x6A2A;&#x5E45;
+					// &#x5DE6;&#x3088;&#x305B; / &#x53F3;&#x3088;&#x305B;
+					if(isFlagTextAlignLeft) {
+						for(let i = 0; i &lt; s_spacesize; i++) {
+							output = output + &quot; &quot;;
+						}
+					}
+					else {
+						// &#x62E1;&#x5F35;
+						const s = isFlagFillZero ? &quot;0&quot; : &quot; &quot;;
+						for(let i = 0; i &lt; s_spacesize; i++) {
+							output = s + output;
+						}
+					}
+					break;
+				}
+				// &#x30D1;&#x30FC;&#x30BB;&#x30F3;&#x30C8;
+				case &quot;%&quot;:
+					output = &quot;%&quot;;
+					break;
+				// &#x672A;&#x30B5;&#x30DD;&#x30FC;&#x30C8;
+				case &quot;p&quot;:
+				case &quot;n&quot;:
+					output = &quot;(unsupported)&quot;;
+					break;
+				default:
+					// &#x6B63;&#x898F;&#x8868;&#x73FE;&#x3067;&#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x3057;&#x3066;&#x3044;&#x308B;&#x305F;&#x3081;&#x3001;&#x3042;&#x308A;&#x3048;&#x306A;&#x3044;
+					break;
+			}
+			return (output);	
+		};
+		return (parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));
+	}
+
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

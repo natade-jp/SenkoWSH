@@ -1,0 +1,150 @@
+[
+  {
+    "name": "Dialog.popup",
+    "filePath": "src/Dialog.js",
+    "lines": [
+      {
+        "lineNumber": 15,
+        "line": "\t/**"
+      },
+      {
+        "lineNumber": 16,
+        "line": "\t * ダイアログを表示する"
+      },
+      {
+        "lineNumber": 17,
+        "line": "\t * "
+      },
+      {
+        "lineNumber": 18,
+        "line": "\t * 利用例"
+      },
+      {
+        "lineNumber": 19,
+        "line": "\t * - Dialog.popup(\"test\", 0, \"test\", Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3);"
+      },
+      {
+        "lineNumber": 20,
+        "line": "\t * @param {string} text "
+      },
+      {
+        "lineNumber": 21,
+        "line": "\t * @param {number} [secondstowait=0]"
+      },
+      {
+        "lineNumber": 22,
+        "line": "\t * @param {string} [caption=\"\"]"
+      },
+      {
+        "lineNumber": 23,
+        "line": "\t * @param {number} [type=0]"
+      },
+      {
+        "lineNumber": 24,
+        "line": "\t * @returns {number}"
+      },
+      {
+        "lineNumber": 25,
+        "line": "\t */"
+      },
+      {
+        "lineNumber": 26,
+        "line": "\tstatic popup(text) {"
+      }
+    ],
+    "codeParams": [
+      "text"
+    ],
+    "docParams": [
+      "text",
+      "secondstowait",
+      "caption",
+      "type"
+    ]
+  },
+  {
+    "name": "Format.textf",
+    "filePath": "src/Format.js",
+    "lines": [
+      {
+        "lineNumber": 15,
+        "line": "\t/**"
+      },
+      {
+        "lineNumber": 16,
+        "line": "\t * 書式に合わせて文字列を組み立てる"
+      },
+      {
+        "lineNumber": 17,
+        "line": "\t * - ロケール、日付時刻等はサポートしていません。"
+      },
+      {
+        "lineNumber": 18,
+        "line": "\t * - sprintfの変換指定子のpとnはサポートしていません。"
+      },
+      {
+        "lineNumber": 19,
+        "line": "\t * @param {String} text "
+      },
+      {
+        "lineNumber": 20,
+        "line": "\t * @param {...any} parm パラメータは可変引数"
+      },
+      {
+        "lineNumber": 21,
+        "line": "\t * @returns {String}"
+      },
+      {
+        "lineNumber": 22,
+        "line": "\t */"
+      },
+      {
+        "lineNumber": 23,
+        "line": "\tstatic textf() {"
+      }
+    ],
+    "codeParams": [],
+    "docParams": [
+      "text",
+      "parm"
+    ]
+  },
+  {
+    "name": "StringWSH.toUTF16ArrayfromCodePoint",
+    "filePath": "src/StringWSH.js",
+    "lines": [
+      {
+        "lineNumber": 184,
+        "line": "\t/**"
+      },
+      {
+        "lineNumber": 185,
+        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
+      },
+      {
+        "lineNumber": 186,
+        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
+      },
+      {
+        "lineNumber": 187,
+        "line": "\t * @returns {Array<number>} 変換後のテキスト"
+      },
+      {
+        "lineNumber": 188,
+        "line": "\t * @private"
+      },
+      {
+        "lineNumber": 189,
+        "line": "\t */"
+      },
+      {
+        "lineNumber": 190,
+        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
+      }
+    ],
+    "codeParams": [],
+    "docParams": [
+      "codepoint"
+    ]
+  }
+]

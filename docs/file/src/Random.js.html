@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Random.js | senkowsh</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="JScirpt library for WSH that gathers various functions."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="senkowsh"><meta property="twitter:description" content="JScirpt library for WSH that gathers various functions."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/SenkoWSH"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Random.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * Collection of tools used in the Random.
+ * @private
+ */
+class RandomTool {
+
+	/**
+	 * Create a 32-bit nonnegative integer.
+	 * @param {number} x 
+	 * @returns {number}
+	 * @private
+	 */
+	static unsigned32(x) {
+		return ((x &lt; 0) ? ((x &amp; 0x7FFFFFFF) + 0x80000000) : x);
+	}
+
+	/**
+	 * Multiply two 32-bit integers and output a 32-bit integer.
+	 * @param {number} x1 
+	 * @param {number} x2 
+	 * @returns {number}
+	 * @private
+	 */
+	static multiplication32(x1, x2) {
+		let b = (x1 &amp; 0xFFFF) * (x2 &amp; 0xFFFF);
+		let y = RandomTool.unsigned32(b);
+		b = (x1 &amp; 0xFFFF) * (x2 &gt;&gt;&gt; 16);
+		y = RandomTool.unsigned32(y + ((b &amp; 0xFFFF) &lt;&lt; 16));
+		b = (x1 &gt;&gt;&gt; 16) * (x2 &amp; 0xFFFF);
+		y = RandomTool.unsigned32(y + ((b &amp; 0xFFFF) &lt;&lt; 16));
+		return (y &amp; 0xFFFFFFFF);
+	}
+
+}
+
+/**
+ * &#x4E71;&#x6570;
+ */
+export default class Random {
+	
+	/**
+	 * &#x521D;&#x671F;&#x5316;
+	 * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
+	 */
+	constructor(seed) {
+		// &#x300C;M&#x7CFB;&#x5217;&#x4E71;&#x6570;&#x300D;&#x3067;&#x4E71;&#x6570;&#x3092;&#x4F5C;&#x6210;&#x3057;&#x307E;&#x3059;&#x3002;
+		// &#x53C2;&#x8003;&#xFF1A;&#x5965;&#x6751;&#x6674;&#x5F66; (1991). C&#x8A00;&#x8A9E;&#x306B;&#x3088;&#x308B;&#x6700;&#x65B0;&#x30A2;&#x30EB;&#x30B4;&#x30EA;&#x30BA;&#x30E0;&#x4E8B;&#x5178;.
+		// &#x6BD4;&#x8F03;&#x7684;&#x9577;&#x3044; 2^521 - 1&#x901A;&#x308A;&#x3092;&#x51FA;&#x529B;&#x3057;&#x307E;&#x3059;&#x3002;
+		// &#x4E71;&#x6570;&#x306F;C&#x3067;&#x306E;&#x52D5;&#x4F5C;&#x3068;&#x540C;&#x3058;&#x5024;&#x304C;&#x51FA;&#x308B;&#x3053;&#x3068;&#x3092;&#x78BA;&#x8A8D;&#x3002;(seed = 1&#x3068;&#x3057;&#x3066;1000&#x756A;&#x76EE;&#x306E;&#x5024;&#x304C;&#x7B49;&#x3057;&#x3044;&#x3053;&#x3068;&#x3092;&#x78BA;&#x8A8D;)
+
+		/**
+		 * Random number array.
+		 * @private
+		 * @type {Array&lt;number&gt;}
+		 */
+		this.x = [];
+		for(let i = 0;i &lt; 521;i++) {
+			this.x[i] = 0;
+		}
+		if(arguments.length &gt;= 1) {
+			this.setSeed(seed);
+		}
+		else {
+			// &#x7DDA;&#x5F62;&#x5408;&#x540C;&#x6CD5;&#x3067;&#x9069;&#x5F53;&#x306B;&#x4E71;&#x6570;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;
+			const seed = ((new Date()).getTime() + Random.seedUniquifier) &amp; 0xFFFFFFFF;
+			Random.seedUniquifier = (Random.seedUniquifier + 1) &amp; 0xFFFFFFFF;
+			this.setSeed(seed);
+		}
+	}
+
+	/**
+	 * &#x5185;&#x90E8;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x30B7;&#x30E3;&#x30C3;&#x30D5;&#x30EB;
+	 * @private
+	 */
+	_rnd521() {
+		const x = this.x;
+		for(let i = 0; i &lt; 32; i++) {
+			x[i] ^= x[i + 489];
+		}
+		for(let i = 32; i &lt; 521; i++) {
+			x[i] ^= x[i - 32];
+		}
+	}
+
+	/**
+	 * &#x30B7;&#x30FC;&#x30C9;&#x5024;&#x306E;&#x521D;&#x671F;&#x5316;
+	 * @param {number} seed
+	 */
+	setSeed(seed) {
+		// &#x4F0F;&#x898B;&#x300C;&#x4E71;&#x6570;&#x300D;&#x6771;&#x4EAC;&#x5927;&#x5B66;&#x51FA;&#x7248;&#x4F1A;,1989 &#x306E;&#x65B9;&#x6CD5;&#x306B;&#x3088;&#x308A;&#x521D;&#x671F;&#x5024;&#x3092;&#x8A2D;&#x5B9A;
+		let u = 0;
+		const x = this.x;
+		// seed&#x3092;&#x4F7F;&#x7528;&#x3057;&#x3066;&#x7DDA;&#x5F62;&#x5408;&#x540C;&#x6CD5;&#x3067;x[0-16]&#x307E;&#x3067;&#x521D;&#x671F;&#x5024;&#x3092;&#x8A2D;&#x5B9A;
+		let random_seed = seed;
+		for(let i = 0; i &lt;= 16; i++) {
+			for(let j = 0; j &lt; 32; j++) {
+				random_seed = RandomTool.multiplication32(random_seed, 0x5D588B65) + 1;
+				u = (u &gt;&gt;&gt; 1) + ((random_seed &lt; 0) ? 0x80000000 : 0);
+			}
+			x[i] = u;
+		}
+		// &#x6B8B;&#x308A;&#x306E;&#x30D3;&#x30C3;&#x30C8;&#x306F;x[i] = x[i-32] ^ x[i-521]&#x3067;&#x751F;&#x6210;
+		for(let i = 16; i &lt; 521; i++) {
+			u = (i === 16) ? i : (i - 17);
+			x[i] = ((x[u] &lt;&lt; 23) &amp; 0xFFFFFFFF) ^ (x[i - 16] &gt;&gt;&gt; 9) ^ x[i - 1];
+		}
+		// &#x30D3;&#x30C3;&#x30C8;&#x3092;&#x30B7;&#x30E3;&#x30C3;&#x30D5;&#x30EB;
+		for(let i = 0; i &lt; 4; i++) {
+			this._rnd521();
+		}
+		
+		/**
+		 * Number of random number array to use.
+		 * @private
+		 * @type {number}
+		 */
+		this.xi = 0;
+		
+		/**
+		 * Is keep random numbers based on Gaussian distribution.
+		 * @private
+		 * @type {boolean}
+		 */
+		this.haveNextNextGaussian = false;
+		
+		/**
+		 * Next random number based on Gaussian distribution.
+		 * @private
+		 * @type {number}
+		 */
+		this.nextNextGaussian = 0;
+	}
+
+	/**
+	 * 32-bit random number.
+	 * @returns {number} - 32&#x30D3;&#x30C3;&#x30C8;&#x306E;&#x4E71;&#x6570;
+	 * @private
+	 */
+	genrand_int32() {
+		// &#x5168;&#x3066;&#x4F7F;&#x7528;&#x3057;&#x305F;&#x3089;&#x3001;&#x518D;&#x3073;&#x6DF7;&#x305C;&#x308B;
+		if(this.xi === 521) {
+			this._rnd521();
+			this.xi = 0;
+		}
+		const y = RandomTool.unsigned32(this.x[this.xi]);
+		this.xi = this.xi + 1;
+		return y;
+	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x4EE5;&#x4E0B;&#x3067;&#x8868;&#x305B;&#x3089;&#x308C;&#x308B;&#x4E71;&#x6570;&#x751F;&#x6210;
+	 * @param {number} bits - Required number of bits (up to 64 possible).
+	 * @returns {number}
+	 */
+	next(bits) {
+		if(bits === 0) {
+			return 0;
+		}
+		else if(bits === 32) {
+			return this.genrand_int32();
+		}
+		else if(bits &lt; 32) {
+			// &#x7DDA;&#x5F62;&#x5408;&#x540C;&#x6CD5;&#x3067;&#x306F;&#x306A;&#x3044;&#x305F;&#x3081;
+
+			// &#x4E0A;&#x4F4D;&#x306E;&#x30D3;&#x30C3;&#x30C8;&#x3092;&#x4F7F;&#x7528;&#x3057;&#x306A;&#x304F;&#x3066;&#x3082;&#x3044;&#x3044;&#x304C;Java&#x3063;&#x307D;&#x304F;&#x3002;
+			return (this.genrand_int32() &gt;&gt;&gt; (32 - bits));
+		}
+		// double&#x578B;&#x306E;&#x305F;&#x3081;&#x3001;52&#x30D3;&#x30C3;&#x30C8;&#x307E;&#x3067;&#x306F;&#x3001;&#x6574;&#x6570;&#x3068;&#x3057;&#x3066;&#x51FA;&#x529B;&#x53EF;&#x80FD;
+		else if(bits === 63) {
+			// &#x6B63;&#x306E;&#x5024;&#x3092;&#x51FA;&#x529B;&#x3059;&#x308B;&#x3088;&#x3046;&#x306B;&#x8ABF;&#x7BC0;
+			return (this.next(32) * 0x80000000 + this.next(32));
+		}
+		else if(bits === 64) {
+			return (this.next(32) * 0x100000000 + this.next(32));
+		}
+		else if(bits &lt; 64) {
+			return (this.genrand_int32() * (1 &lt;&lt; (bits - 32)) + (this.genrand_int32()  &gt;&gt;&gt; (64 - bits)));
+		}
+	}
+
+	/**
+	 * 8&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;&#x306E;&#x914D;&#x5217;
+	 * @param {number} size - &#x5FC5;&#x8981;&#x306A;&#x9577;&#x3055;
+	 * @returns {Array&lt;number&gt;}
+	 */
+	nextBytes(size) {
+		const y = new Array(size);
+		// &#x914D;&#x5217;y&#x306B;&#x4E71;&#x6570;&#x3092;&#x5165;&#x308C;&#x308B;
+		// 8&#x30D3;&#x30C3;&#x30C8;&#x306E;&#x305F;&#x3081;&#x306B;&#x3001;32&#x30D3;&#x30C3;&#x30C8;&#x4E71;&#x6570;&#x3092;1&#x56DE;&#x56DE;&#x3059;&#x306E;&#x306F;&#x3082;&#x3063;&#x305F;&#x3044;&#x306A;&#x3044;
+		for(let i = 0;i &lt; y.length; i++) {
+			y[i] = this.next(8);
+		}
+		return y;
+	}
+
+	/**
+	 * 16&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;
+	 * @returns {number}
+	 */
+	nextShort() {
+		return (this.next(16));
+	}
+
+	/**
+	 * 32&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;
+	 * @param {number} [x] - &#x6307;&#x5B9A;&#x3057;&#x305F;&#x5024;&#x672A;&#x6E80;&#x306E;&#x6570;&#x5024;&#x3092;&#x4F5C;&#x308B;
+	 * @returns {number}
+	 */
+	nextInt(x) {
+		if((x !== undefined) &amp;&amp; (typeof x === &quot;number&quot;)) {
+			let r, y;
+			do {
+				r = RandomTool.unsigned32(this.genrand_int32());
+				y = r % x;
+			} while((r - y + x) &gt; 0x100000000 );
+			return y;
+		}
+		return (this.next(32) &amp; 0xFFFFFFFF);
+	}
+
+	/**
+	 * 64&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;
+	 * @returns {number}
+	 */
+	nextLong() {
+		return this.next(64);
+	}
+
+	/**
+	 * bool&#x5024;&#x306E;&#x4E71;&#x6570;
+	 * @returns {boolean}
+	 */
+	nextBoolean() {
+		// 1&#x30D3;&#x30C3;&#x30C8;&#x306E;&#x305F;&#x3081;&#x306B;&#x3001;32&#x30D3;&#x30C3;&#x30C8;&#x4E71;&#x6570;&#x3092;1&#x56DE;&#x56DE;&#x3059;&#x306E;&#x306F;&#x3082;&#x3063;&#x305F;&#x3044;&#x306A;&#x3044;
+		return (this.next(1) !== 0);
+	}
+
+	/**
+	 * float&#x7CBE;&#x5EA6;&#x306E;&#x5B9F;&#x6570;
+	 * @returns {number}
+	 */
+	nextFloat() {
+		return (this.next(24) / 0x1000000);
+	}
+
+	/**
+	 * double&#x7CBE;&#x5EA6;&#x306E;&#x5B9F;&#x6570;
+	 * @returns {number}
+	 */
+	nextDouble() {
+		const a1 = this.next(26) * 0x8000000 + this.next(27);
+		const a2 = 0x8000000 * 0x4000000;
+		return (a1 / a2);
+	}
+
+	/**
+	 * &#x30AC;&#x30A6;&#x30B7;&#x30A2;&#x30F3;&#x5206;&#x5E03;&#x306B;&#x5F93;&#x3046;&#x4E71;&#x6570;
+	 * @returns {number}
+	 */
+	nextGaussian() {
+		if(this.haveNextNextGaussian) {
+			this.haveNextNextGaussian = false;
+			return this.nextNextGaussian;
+		}
+		// Box-Muller&#x6CD5;
+		const a = Math.sqrt( -2 * Math.log( this.nextDouble() ) );
+		const b = 2 * Math.PI * this.nextDouble();
+		const y = a * Math.sin(b);
+		this.nextNextGaussian = a * Math.cos(b);
+		this.haveNextNextGaussian = true;
+		return y;
+	}
+}
+
+/**
+ * &#x4E71;&#x6570;&#x751F;&#x6210;&#x7528;&#x306E;&#x521D;&#x671F;&#x30B7;&#x30FC;&#x30C9;&#x5024;
+ * @type {number}
+ * @ignore
+ */
+Random.seedUniquifier = 0x87654321;
+
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

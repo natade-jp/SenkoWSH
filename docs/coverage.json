@@ -1,0 +1,71 @@
+{
+  "coverage": "90.84%",
+  "expectCount": 142,
+  "actualCount": 129,
+  "files": {
+    "src/ArrayList.js": {
+      "expectCount": 23,
+      "actualCount": 23,
+      "undocumentLines": []
+    },
+    "src/CSV.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/Dialog.js": {
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
+    },
+    "src/Format.js": {
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
+    },
+    "src/HashMap.js": {
+      "expectCount": 17,
+      "actualCount": 17,
+      "undocumentLines": []
+    },
+    "src/Random.js": {
+      "expectCount": 21,
+      "actualCount": 21,
+      "undocumentLines": []
+    },
+    "src/SenkoWSH.js": {
+      "expectCount": 13,
+      "actualCount": 0,
+      "undocumentLines": [
+        100,
+        106,
+        112,
+        118,
+        124,
+        130,
+        136,
+        142,
+        148,
+        154,
+        160,
+        166,
+        172
+      ]
+    },
+    "src/SFile.js": {
+      "expectCount": 41,
+      "actualCount": 41,
+      "undocumentLines": []
+    },
+    "src/StringWSH.js": {
+      "expectCount": 15,
+      "actualCount": 15,
+      "undocumentLines": []
+    },
+    "src/System.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    }
+  }
+}

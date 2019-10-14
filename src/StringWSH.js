@@ -8,6 +8,10 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * ES3相当のJScirptのString拡張用
+ * - String.prototypeに拡張します
+ */
 export default class StringWSH {
 
 	/**

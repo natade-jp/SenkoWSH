@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/CSV.js | senkowsh</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="JScirpt library for WSH that gathers various functions."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="senkowsh"><meta property="twitter:description" content="JScirpt library for WSH that gathers various functions."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/SenkoWSH"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/CSV.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * CSV&#x3092;&#x6271;&#x3046;
+ */
+export default class CSV {
+	
+	/**
+	 * CSV&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x304B;&#x3089;&#x914D;&#x5217;&#x3092;&#x4F5C;&#x6210;
+	 * @param {string} text 
+	 * @param {string} [separator=&quot;,&quot;]
+	 * @returns {Array&lt;Array&lt;string&gt;&gt;}
+	 */
+	static parse(text, separator) {
+		const iseparator = separator === undefined ? &quot;,&quot; : separator;
+		// &#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x6B63;&#x898F;&#x5316;
+		const itext = text.replace(/\r\n?|\n/g, &quot;\n&quot;);
+		const CODE_SEPARATOR = iseparator.charCodeAt(0);
+		const CODE_CR    = 0x0D;
+		const CODE_LF    = 0x0A;
+		const CODE_DOUBLEQUOTES = 0x22;
+		const out = [];
+		const length = itext.length;
+		let element = &quot;&quot;;
+		let count_rows    = 0;
+		let count_columns = 0;
+		let isnextelement = false;
+		let isnextline    = false;
+		for(let i = 0; i &lt; length; i++) {
+			let code = itext.charCodeAt(i);
+			// &#x8907;&#x6570;&#x884C;&#x306A;&#x3089;&#x4E00;&#x6C17;&#x306B;&#x5168;&#x3066;&#x8AAD;&#x307F;&#x8FBC;&#x3093;&#x3067;&#x3057;&#x307E;&#x3046;(1&#x6587;&#x5B57;&#x76EE;&#x304C;&#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x304B;&#x3069;&#x3046;&#x304B;)
+			if((code === CODE_DOUBLEQUOTES)&amp;&amp;(element.length === 0)) {
+				i++;
+				for(;i &lt; length;i++) {
+					code = itext.charCodeAt(i);
+					if(code === CODE_DOUBLEQUOTES) {
+						// &#x30D5;&#x30A3;&#x30FC;&#x30EB;&#x30C9;&#x306E;&#x7D42;&#x4E86;&#x304B;&#xFF1F;
+						// &#x6587;&#x5B57;&#x3068;&#x3057;&#x3066;&#x306E;&#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x306A;&#x306E;&#x304B;
+						if((i + 1) !== (length - 1)) {
+							if(itext.charCodeAt(i + 1) === CODE_DOUBLEQUOTES) {
+								i++;
+								element += &quot;\&quot;&quot;; 
+							}
+							else {
+								break;
+							}
+						}
+						else {
+							break;
+						}
+					}
+					else {
+						element += itext.charAt(i);
+					}
+				}
+			}
+			// &#x8907;&#x6570;&#x884C;&#x4EE5;&#x5916;&#x306A;&#x3089;1&#x6587;&#x5B57;&#x305A;&#x3064;&#x89E3;&#x6790;
+			else {
+				switch(code) {
+					case(CODE_SEPARATOR):
+						isnextelement = true;
+						break;
+					case(CODE_CR):
+					case(CODE_LF):
+						isnextline = true;
+						break;
+					default:
+						break;
+				}
+				if(isnextelement) {
+					isnextelement = false;
+					if(out[count_rows] === undefined) {
+						out[count_rows] = [];
+					}
+					out[count_rows][count_columns] = element;
+					element = &quot;&quot;;
+					count_columns += 1;
+				}
+				else if(isnextline) {
+					isnextline = false;
+					//&#x6587;&#x5B57;&#x304C;&#x3042;&#x3063;&#x305F;&#x308A;&#x3001;&#x6539;&#x884C;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x51E6;&#x7406;
+					//&#x4F8B;&#x3048;&#x3070; CR+LF &#x3084; &#x6700;&#x5F8C;&#x306E;&#x30D5;&#x30A3;&#x30FC;&#x30EB;&#x30C9; &#x3067;&#x6539;&#x884C;&#x3057;&#x3066;&#x3044;&#x308B;&#x3060;&#x3051;&#x306A;&#x3069;&#x306F;&#x7121;&#x8996;&#x3067;&#x304D;&#x308B;
+					if((element !== &quot;&quot;)||(count_columns !== 0)) {
+						if(out[count_rows] === undefined) {
+							out[count_rows] = [];
+						}
+						out[count_rows][count_columns] = element;
+						element = &quot;&quot;;
+						count_rows    += 1;
+						count_columns  = 0;
+					}
+				}
+				else {
+					element += itext.charAt(i);
+				}
+			}
+			// &#x6700;&#x7D42;&#x884C;&#x306B;&#x6539;&#x884C;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;
+			if(i === length - 1) {
+				if(count_columns !== 0) {
+					out[count_rows][count_columns] = element;
+				}
+			}
+		}
+		return out;
+	}
+	
+	/**
+	 * &#x914D;&#x5217;&#x304B;&#x3089;CSV&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x4F5C;&#x6210;
+	 * @param {Array&lt;Array&lt;string&gt;&gt;} csv_array 
+	 * @param {string} [separator=&quot;,&quot;]
+	 * @param {string} [newline=&quot;\r\n&quot;]
+	 * @returns {string}
+	 */
+	static create(csv_array, separator, newline) {
+		const iseparator = separator === undefined ? &quot;,&quot; : separator;
+		const inewline = newline === undefined ? &quot;\r\n&quot; : newline;
+		let out = &quot;&quot;;
+		const escape = /[&quot;\r\n,\t]/;
+		if(csv_array !== undefined) {
+			for(let i = 0;i &lt; csv_array.length;i++) {
+				if(csv_array[i] !== undefined) {
+					for(let j = 0;j &lt; csv_array[i].length;j++) {
+						let element = csv_array[i][j];
+						if(escape.test(element)) {
+							element = element.replace(/&quot;/g, &quot;\&quot;\&quot;&quot;);
+							element = &quot;\&quot;&quot; + element + &quot;\&quot;&quot;;
+						}
+						out += element;
+						if(j !== csv_array[i].length - 1) {
+							out += iseparator;
+						}
+					}
+				}
+				out += inewline;
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * 1&#x884C;&#x76EE;&#x306B;&#x5217;&#x540D;&#x304C;&#x8A18;&#x8F09;&#x3057;&#x3066;&#x3044;&#x308B;CSV&#x3092;JSON&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {Array&lt;Array&lt;string&gt;&gt;} csv_array 
+	 * @returns {Array&lt;Object&lt;string, string&gt;&gt;}
+	 */
+	static toJSONArrayFromCSVArray(csv_array) {
+		const title_line = csv_array[0];
+		const key_name = [];
+		for(let i = 0; i &lt; title_line.length; i++) {
+			key_name.push(title_line[i]);
+		}
+		const json_array = [];
+		for(let i = 1; i &lt; csv_array.length; i++) {
+			const line = csv_array[i];
+			/**
+			 * @type {Object&lt;string, string&gt;}
+			 * @private
+			 */
+			const json_data = {};
+			for(let j = 0; j &lt; line.length; j++) {
+				json_data[key_name[j]] = line[j];
+			}
+			json_array.push(json_data);
+		}
+		return json_array;
+	}
+
+	/**
+	 * &#x5171;&#x901A;&#x306E;&#x578B;&#x306E;JSON&#x914D;&#x5217;&#x3092;CSV&#x914D;&#x5217;&#x3078;&#x5909;&#x63DB;
+	 * @param {Array&lt;Object&lt;string, string&gt;&gt;} json_array 
+	 * @param {Array&lt;string&gt;} [title_array] 
+	 * @returns {Array&lt;Array&lt;string&gt;&gt;}
+	 */
+	static toCSVArrayFromJSONArray(json_array, title_array) {
+		const csv_array = [];
+		let title_list = null;
+		if(title_array === undefined) {
+			title_list = [];
+			for(const key in json_array[0]) {
+				title_list.push(key);
+			}
+		}
+		else {
+			title_list = title_array;
+		}
+		csv_array.push(title_list);
+		for(let i = 0; i &lt; json_array.length; i++) {
+			const line = json_array[i];
+			const data_list = [];
+			for(let j = 0; j &lt; title_list.length; j++) {
+				data_list.push(line[title_list[j]]);
+			}
+			csv_array.push(data_list);
+		}
+		return csv_array;
+	}
+
+}
+
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

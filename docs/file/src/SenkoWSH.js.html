@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/SenkoWSH.js | senkowsh</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="JScirpt library for WSH that gathers various functions."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="senkowsh"><meta property="twitter:description" content="JScirpt library for WSH that gathers various functions."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/SenkoWSH"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/SenkoWSH.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+import typeArrayList from &quot;./ArrayList.js&quot;;
+import typeCSV from &quot;./CSV.js&quot;;
+import typeDialog from &quot;./Dialog.js&quot;;
+import typeSFile from &quot;./SFile.js&quot;;
+import typeFormat from &quot;./Format.js&quot;;
+import typeHashMap from &quot;./HashMap.js&quot;;
+import typeRandom from &quot;./Random.js&quot;;
+import typeSystem from &quot;./System.js&quot;;
+
+/**
+ * @type {typeof typeArrayList}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+ArrayList = typeArrayList;
+
+/**
+ * @type {typeof typeCSV}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+CSV = typeCSV;
+
+/**
+ * @type {typeof typeDialog}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+Dialog = typeDialog;
+
+/**
+ * @type {typeof typeSFile}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+SFile = typeSFile;
+
+/**
+ * @type {typeof typeFormat}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+Format = typeFormat;
+
+/**
+ * @type {typeof typeHashMap}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+HashMap = typeHashMap;
+
+/**
+ * @type {typeof typeRandom}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+Random = typeRandom;
+
+/**
+ * @type {typeof typeSystem}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+System = typeSystem;
+
+import StringWSH from &quot;./StringWSH.js&quot;;
+
+/**
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-global-assign
+console = {
+	// @ts-ignore
+	log : function(text) {
+		// eslint-disable-next-line no-undef
+		System.out.println(text);
+	}
+};
+
+// @ts-ignore
+String.prototype.replaceAll = function(target, replacement) {
+	// @ts-ignore
+	return StringWSH.replaceAll(this, target, replacement);
+};
+
+// @ts-ignore
+String.prototype.trim = function() {
+	// @ts-ignore
+	return StringWSH.trim(this);
+};
+
+// @ts-ignore
+String.prototype.each = function(func) {
+	// @ts-ignore
+	return StringWSH.each(this, func);
+};
+
+// @ts-ignore
+String.prototype.isHighSurrogateAt = function(index) {
+	// @ts-ignore
+	return StringWSH.isHighSurrogateAt(this, index);
+};
+
+// @ts-ignore
+String.prototype.isLowSurrogateAt = function(index) {
+	// @ts-ignore
+	return StringWSH.isLowSurrogateAt(this, index);
+};
+
+// @ts-ignore
+String.prototype.isSurrogatePairAt = function(index) {
+	// @ts-ignore
+	return StringWSH.isSurrogatePairAt(this, index);
+};
+
+// @ts-ignore
+String.prototype.codePointAt = function(index) {
+	// @ts-ignore
+	return StringWSH.codePointAt(this, index);
+};
+
+// @ts-ignore
+String.prototype.codePointBefore = function(index) {
+	// @ts-ignore
+	return StringWSH.codePointBefore(this, index);
+};
+
+// @ts-ignore
+String.prototype.codePointCount = function(beginIndex, endIndex) {
+	// @ts-ignore
+	return StringWSH.codePointCount(this, beginIndex, endIndex);
+};
+
+// @ts-ignore
+String.prototype.offsetByCodePoints = function(index, codePointOffset) {
+	// @ts-ignore
+	return StringWSH.codePointoffsetByCodePointsCount(this, index, codePointOffset);
+};
+
+// @ts-ignore
+String.fromCodePoint = function(codepoint) {
+	// @ts-ignore
+	return StringWSH.fromCodePoint(codepoint);
+};
+
+// @ts-ignore
+String.prototype.startsWith = function(prefix) {
+	// @ts-ignore
+	return StringWSH.startsWith(this, prefix);
+};
+
+// @ts-ignore
+String.prototype.endsWith = function(prefix) {
+	// @ts-ignore
+	return StringWSH.endsWith(this, prefix);
+};
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

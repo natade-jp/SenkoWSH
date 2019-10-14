@@ -68,8 +68,9 @@ declare class System {
 
 	/**
 	 * CUIで起動しなおす
+	 * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
 	 */
-    static executeOnCScript();
+    static executeOnCScript(is_use_chakra);
     
 	/**
 	 * GUIで起動しなおす

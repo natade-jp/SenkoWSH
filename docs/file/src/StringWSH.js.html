@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/StringWSH.js | senkowsh</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="JScirpt library for WSH that gathers various functions."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="senkowsh"><meta property="twitter:description" content="JScirpt library for WSH that gathers various functions."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/SenkoWSH"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/StringWSH.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * ES3&#x76F8;&#x5F53;&#x306E;JScirpt&#x306E;String&#x62E1;&#x5F35;&#x7528;
+ * - String.prototype&#x306B;&#x62E1;&#x5F35;&#x3057;&#x307E;&#x3059;
+ */
+export default class StringWSH {
+
+	/**
+	 * @param {string} text
+	 * @param {string} target
+	 * @param {string} replacement
+	 * @returns {string}
+	 */
+	static replaceAll(text, target, replacement) {
+		//&#x6B63;&#x898F;&#x8868;&#x73FE;&#x306E;g&#x3092;&#x4F7F;&#x3063;&#x3066;&#x5168;&#x7F6E;&#x63DB;&#x3059;&#x308B;
+		//&#x5F93;&#x3063;&#x3066;&#x6B63;&#x898F;&#x8868;&#x73FE;&#x306B;&#x306A;&#x3089;&#x306A;&#x3044;&#x3088;&#x3046;&#x306B;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x3057;&#x3066;&#x304A;&#x304F;
+		const regex = new RegExp(target.replace(/([\\/*+.?{}()[\]^$\-|])/g, &quot;\\$1&quot; ), &quot;g&quot;);
+		const ireplacement = replacement.replace(/\$/g, &quot;$$$$&quot;);
+		return text.replace(regex, ireplacement);
+	}
+
+	/**
+	 * @param {string} text
+	 * @returns {string}
+	 */
+	static trim(text) {
+		return text.replace(/^\s+|\s+$/g, &quot;&quot;);
+	}
+
+	/**
+	 * @param {string} text
+	 * @param {function(number, string, number): boolean} func
+	 * @returns {boolean} result
+	 */
+	static each(text, func) {
+		let out = true;
+		const len = this.length;
+		for(let i = 0; i &lt; len; i = StringWSH.offsetByCodePoints(text, i, 1)) {
+			const codepoint = StringWSH.codePointAt(text, i);
+			const str = StringWSH.fromCodePoint(codepoint);
+			if(func.call(func, i, str, codepoint) === false) {
+				out = false;
+				break;
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * &#x4E0A;&#x4F4D;&#x306E;&#x30B5;&#x30ED;&#x30B2;&#x30FC;&#x30C8;&#x30DA;&#x30A2;&#x306E;&#x5224;&#x5B9A;
+	 * @param {String} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} index - &#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;
+	 * @returns {Boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isHighSurrogateAt(text, index) {
+		const ch = text.charCodeAt(index);
+		return (0xD800 &lt;= ch) &amp;&amp; (ch &lt;= 0xDBFF);
+	}
+
+	/**
+	 * &#x4E0B;&#x4F4D;&#x306E;&#x30B5;&#x30ED;&#x30B2;&#x30FC;&#x30C8;&#x30DA;&#x30A2;&#x306E;&#x5224;&#x5B9A;
+	 * @param {String} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} index - &#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;
+	 * @returns {Boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isLowSurrogateAt(text, index) {
+		const ch = text.charCodeAt(index);
+		return (0xDC00 &lt;= ch) &amp;&amp; (ch &lt;= 0xDFFF);
+	}
+	
+	/**
+	 * &#x30B5;&#x30ED;&#x30B2;&#x30FC;&#x30C8;&#x30DA;&#x30A2;&#x306E;&#x5224;&#x5B9A;
+	 * @param {String} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} index - &#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;
+	 * @returns {Boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isSurrogatePairAt(text, index) {
+		const ch = text.charCodeAt(index);
+		return (0xD800 &lt;= ch) &amp;&amp; (ch &lt;= 0xDFFF);
+	}
+	
+	/**
+	 * &#x30B5;&#x30ED;&#x30B2;&#x30FC;&#x30C8;&#x30DA;&#x30A2;&#x5BFE;&#x5FDC;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x53D6;&#x5F97;
+	 * @param {String} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} [index = 0] - &#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;
+	 * @returns {number} &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 */
+	static codePointAt(text, index) {
+		const index_ = (index !== undefined) ? index : 0;
+		if(StringWSH.isHighSurrogateAt(text, index_)) {
+			const high = text.charCodeAt(index_);
+			const low  = text.charCodeAt(index_ + 1);
+			return (((high - 0xD800) &lt;&lt; 10) | (low - 0xDC00)) + 0x10000;
+		}
+		else {
+			return text.charCodeAt(index_);
+		}
+	}
+
+	/**
+	 * &#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;&#x306E;&#x524D;&#x306B;&#x3042;&#x308B;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @param {String} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} index - &#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;
+	 * @returns {number} &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 */
+	static codePointBefore(text, index) {
+		if(!StringWSH.isLowSurrogateAt(text, index - 1)) {
+			return text.charCodeAt(index - 1);
+		}
+		else {
+			return text.codePointAt(index - 2);
+		}
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x63DB;&#x7B97;&#x3067;&#x6587;&#x5B57;&#x5217;&#x6570;&#x3092;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
+	 * @param {string} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} [beginIndex=0] - &#x6700;&#x521D;&#x306E;&#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;&#xFF08;&#x7701;&#x7565;&#x53EF;&#xFF09;
+	 * @param {number} [endIndex] - &#x6700;&#x5F8C;&#x306E;&#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;&#xFF08;&#x3053;&#x3053;&#x306F;&#x542B;&#x3081;&#x306A;&#x3044;&#xFF09;&#xFF08;&#x7701;&#x7565;&#x53EF;&#xFF09;
+	 * @returns {number} &#x6587;&#x5B57;&#x6570;
+	 */
+	static codePointCount(text, beginIndex, endIndex) {
+		let ibeginIndex = beginIndex !== undefined ? beginIndex : 0;
+		let iendIndex = endIndex !== undefined ? endIndex : text.length;
+		let count = 0;
+		for(;beginIndex &lt; iendIndex;ibeginIndex++) {
+			count++;
+			if(StringWSH.isSurrogatePairAt(text, beginIndex)) {
+				iendIndex++;
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x63DB;&#x7B97;&#x3067;&#x6587;&#x5B57;&#x5217;&#x914D;&#x5217;&#x306E;&#x4F4D;&#x7F6E;&#x3092;&#x8A08;&#x7B97;
+	 * @param {string} text - &#x5BFE;&#x8C61;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {number} index - &#x30AA;&#x30D5;&#x30BB;&#x30C3;&#x30C8;
+	 * @param {number} codePointOffset - &#x305A;&#x3089;&#x3059;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x6570;
+	 * @returns {number} &#x305A;&#x3089;&#x3057;&#x305F;&#x30A4;&#x30F3;&#x30C7;&#x30C3;&#x30AF;&#x30B9;
+	 */
+	static offsetByCodePoints(text, index, codePointOffset) {
+		let count = 0;
+		let icodePointOffset = codePointOffset;
+		let i = index;
+		if(icodePointOffset === 0) {
+			return i;
+		}
+		if(icodePointOffset &gt; 0) {
+			for(;i &lt; text.length;i++) {
+				count++;
+				if(StringWSH.isHighSurrogateAt(text, i)) {
+					i++;
+				}
+				if(count === icodePointOffset) {
+					return i + 1;
+				}
+			}
+
+		}
+		else {
+			icodePointOffset = -icodePointOffset;
+			for(;i &gt;= 0;i--) {
+				count++;
+				if(StringWSH.isLowSurrogateAt(text, i - 1)) {
+					i--;
+				}
+				if(count === icodePointOffset) {
+					return i - 1;
+				}
+			}
+		}
+		throw &quot;error offsetByCodePoints&quot;;
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;UTF16&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;UTF-32&#x306E;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+	 * @returns {Array&lt;number&gt;} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @private
+	 */
+	static toUTF16ArrayfromCodePoint() {
+		/**
+		 * @type {Array&lt;number&gt;}
+		 * @private
+		 */
+		const utf16_array = [];
+		/**
+		 * @type {Array&lt;number&gt;}
+		 * @private
+		 */
+		let codepoint_array = [];
+		if(arguments[0].length) {
+			codepoint_array = arguments[0];
+		}
+		else {
+			for(let i = 0;i &lt; arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
+			}
+		}
+		for(let i = 0;i &lt; codepoint_array.length;i++) {
+			const codepoint = codepoint_array[i];
+			if(0x10000 &lt;= codepoint) {
+				const high = (( codepoint - 0x10000 ) &gt;&gt; 10) + 0xD800;
+				const low  = (codepoint &amp; 0x3FF) + 0xDC00;
+				utf16_array.push(high);
+				utf16_array.push(low);
+			}
+			else {
+				utf16_array.push(codepoint);
+			}
+		}
+		return utf16_array;
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x6570;&#x5024;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+	 * @returns {string} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static fromCodePoint(codepoint) {
+		let utf16_array = null;
+		if(codepoint instanceof Array) {
+			utf16_array = StringWSH.toUTF16ArrayfromCodePoint(codepoint);
+		}
+		else {
+			const codepoint_array = [];
+			for(let i = 0;i &lt; arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
+			}
+			utf16_array = StringWSH.toUTF16ArrayfromCodePoint(codepoint_array);
+		}
+		const text = [];
+		for(let i = 0;i &lt; utf16_array.length;i++) {
+			text[text.length] = String.fromCharCode(utf16_array[i]);
+		}
+		return text.join(&quot;&quot;);
+	}
+
+	/**
+	 * @param {string} text
+	 * @param {string} prefix
+	 * @returns {boolean}
+	 */
+	static startsWith(text, prefix) {
+		return text.indexOf(prefix) === 0;
+	}
+
+	/**
+	 * @param {string} text
+	 * @param {string} suffix
+	 * @returns {boolean}
+	 */
+	static endsWith(text, suffix) {
+		if(text.length &lt; suffix.length) {
+			return(false);
+		}
+		return text.indexOf(suffix) === (text.length - suffix.length);
+	}
+
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

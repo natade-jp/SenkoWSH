@@ -23,7 +23,33 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
 /**
+ * 出力関数
+ * @typedef {Object} _OUTPUT_
+ * @property {function(any): void} print 文字列を表示（最終行で自動で改行されない）
+ * @property {function(any): void} println 文字列を表示（最終行で自動で改行される）
+ * @property {function(string, ...any): void} printf 指定したフォーマットで整形した文字列を表示
+ */
+
+/**
  * システム関数
+ * @typedef {Object} _SYSTEM_
+ * @property {_OUTPUT_} out
+ * @property {function(): string} readLine キーボードのテキスト入力を取得
+ * @property {function(): number} currentTimeMillis UNIX時間をミリ秒で取得
+ * @property {function(number): void} sleep 処理を一時停止
+ * @property {function(): void} stop 処理を停止
+ * @property {function(boolean): void} executeOnCScript CUIで起動しなおす
+ * @property {function(): void} executeOnWScript GUIで起動しなおす
+ * @property {function(): string[]} getArguments スクリプトファイルへの引数を取得
+ * @property {function(string): void} setCurrentDirectory カレントディレクトリを設定
+ * @property {function(): string} getCurrentDirectory カレントディレクトリを取得
+ * @property {function(): string} getScriptDirectory 実行中のスクリプトがあるカレントディレクトリを取得
+ * @property {function(string): void} initializeCurrentDirectory 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
+ */
+
+/**
+ * システム関数
+ * @type {_SYSTEM_}
  */
 const System = {
 

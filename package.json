@@ -20,6 +20,7 @@
 	"scripts": {
 		"build": "node ./scripts/package.build.js",
 		"dts": "node ./scripts/package.dts.js",
+		"doc": "node ./scripts/package.doc.js",
 		"start": "node ./scripts/execExample.js"
 	},
 	"devDependencies": {
