@@ -74,7 +74,7 @@ declare class System {
 	/**
 	 * GUIで起動しなおす
 	 */
-    static executeOnCScript();
+    static executeOnWScript();
     
 	/**
 	 * スクリプトファイルへの引数を取得

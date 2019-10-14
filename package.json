@@ -19,7 +19,8 @@
 	},
 	"scripts": {
 		"build": "node ./scripts/package.build.js",
-		"dts": "node ./scripts/package.dts.js"
+		"dts": "node ./scripts/package.dts.js",
+		"start": "node ./scripts/execExample.js"
 	},
 	"devDependencies": {
 		"@types/windows-script-host": "^5.8.3",

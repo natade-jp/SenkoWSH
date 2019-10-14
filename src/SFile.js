@@ -8,10 +8,14 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * ファイル／フォルダ／URL
+ */
 export default class SFile {
 
 	/**
-	 * @param {string|SFile} pathname
+	 * 初期化
+	 * @param {string|SFile} pathname ファイル名／フォルダ名／URLアドレス
 	 */
 	constructor(pathname) {
 		if(arguments.length !== 1) {
@@ -49,6 +53,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルの削除
 	 * @returns {boolean}
 	 */
 	remove() {
@@ -64,6 +69,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルが存在するか
 	 * @returns {boolean}
 	 */
 	exists() {
@@ -78,6 +84,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルのコピー
 	 * @param {string|SFile} file_obj
 	 * @returns {boolean}
 	 */
@@ -98,6 +105,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルの移動
 	 * @param {string|SFile} file_obj
 	 * @returns {boolean}
 	 */
@@ -122,6 +130,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイル名を変更
 	 * @param {string|SFile} file_obj
 	 * @returns {boolean}
 	 */
@@ -155,6 +164,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 文字列化
 	 * @returns {string}
 	 */
 	toString() {
@@ -162,6 +172,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 名前を取得
 	 * @returns {string}
 	 */
 	getName() {
@@ -179,7 +190,7 @@ export default class SFile {
 	}
 
 	/**
-	 * 親フォルダの絶対パス名
+	 * 親フォルダの絶対パス
 	 * @returns {string}
 	 */
 	getParent() {
@@ -188,6 +199,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 親フォルダ
 	 * @returns {SFile}
 	 */
 	getParentFile() {
@@ -195,6 +207,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 拡張子（ドットを含まない）
 	 * @returns {string}
 	 */
 	getExtensionName() {
@@ -208,6 +221,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 絶対パスかどうか
 	 * @returns {boolean}
 	 */
 	isAbsolute() {
@@ -221,6 +235,7 @@ export default class SFile {
 	}
 
 	/**
+	 * フォルダかどうか
 	 * @returns {boolean}
 	 */
 	isDirectory() {
@@ -234,6 +249,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルかどうか
 	 * @returns {boolean}
 	 */
 	isFile() {
@@ -247,6 +263,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 隠しファイルかどうか
 	 * @returns {boolean}
 	 */
 	isHidden() {
@@ -267,6 +284,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 更新日を取得
 	 * @returns {Date}
 	 */
 	lastModified() {
@@ -285,6 +303,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 更新日を設定（ファイルのみ対応）
 	 * @param {Date} date
 	 * @returns {boolean}
 	 */
@@ -308,6 +327,7 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルサイズ
 	 * @returns {number}
 	 */
 	length() {
@@ -326,6 +346,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 配下のファイル名の一覧を取得
 	 * @returns {string[]}
 	 */
 	getFiles() {
@@ -344,6 +365,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 配下のサブフォルダ名の一覧を取得
 	 * @returns {string[]}
 	 */
 	getSubFolders() {
@@ -362,6 +384,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 区切り文字と終端を正規化した文字列を取得
 	 * @returns {string}
 	 */
 	getNormalizedPathName() {
@@ -376,6 +399,7 @@ export default class SFile {
 	}
 
 	/**
+	 * サブフォルダの中まで探索して全てのファイルとフォルダを取得
 	 * @returns {string[]}
 	 */
 	getAllFiles() {
@@ -438,6 +462,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 配下のファイル名とフォルダ名を取得
 	 * @returns {string[]}
 	 */
 	list() {
@@ -460,6 +485,7 @@ export default class SFile {
 	}
 
 	/**
+	 * 絶対パスを取得
 	 * @returns {string}
 	 */
 	getAbsolutePath() {
@@ -492,6 +518,9 @@ export default class SFile {
 	}
 
 	/**
+	 * フォルダを作成
+	 * - フォルダは1つのみ指定可能
+	 * - すでにフォルダがある場合はエラーを返す。
 	 * @returns {boolean}
 	 */
 	mkdir() {
@@ -521,6 +550,9 @@ export default class SFile {
 	}
 
 	/**
+	 * フォルダを作成
+	 * - 作成したいフォルダを続けて記載が可能
+	 * - フォルダがない場合はフォルダを作成していく
 	 * @returns {boolean}
 	 */
 	mkdirs() {
@@ -540,19 +572,25 @@ export default class SFile {
 	}
 
 	/**
+	 * ファイルを開く
+	 * @param {number} [style=1] - 起動オプション
+	 * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
 	 * @returns {void}
 	 */
-	run() {
+	run(style, is_wait) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		const objWShell = new ActiveXObject("WScript.Shell");
 		const NormalFocus = 1;
+		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
+		const objWShell = new ActiveXObject("WScript.Shell");
 		// @ts-ignore
-		objWShell.Run(this.getAbsolutePath(), NormalFocus, false);
+		objWShell.Run(this.getAbsolutePath(), intWindowStyle, bWaitOnReturn);
 	}
 
 	/**
+	 * 1行書き加える
 	 * @param {string} text
 	 * @returns {boolean}
 	 */
@@ -577,13 +615,13 @@ export default class SFile {
 	}
 
 	/**
-	 * @param {string} [charset="_autodetect_all"]
-	 * @param {string} [newline="\n"]
+	 * テキストファイルを開く
+	 * @param {string} [charset="_autodetect_all"] - 文字コード
 	 * @returns {string}
 	 */
-	getText(charset, newline) {
+	getTextFile(charset) {
 		const icharset = charset !== undefined ? charset : "_autodetect_all";
-		const inewline = newline !== undefined ? newline :  "\n"; //javascript上での改行
+		const inewline = "\n"; //javascript上での改行
 		let text = null;
 		if(/^htt/.test(this.pathname)) {
 			const http = SFile.createXMLHttpRequest();
@@ -600,69 +638,92 @@ export default class SFile {
 			}
 		}
 		else {
-			// 使用可能な charset については下記を参照
-			// HKEY_CLASSES_ROOT\MIME\Database\Charset
-			const adTypeText = 2;
-			const adReadAll = -1;
-			const stream = new ActiveXObject("ADODB.Stream");
-			stream.type = adTypeText;
-			stream.charset = icharset;
-			stream.open();
-			stream.loadFromFile(this.pathname);
-			text = stream.readText(adReadAll);
-			stream.close();
-			// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する
-			if((icharset === "_autodetect_all")||(icharset === "_autodetect")) {
-				let newcharset = "";
-				// 1文字以上のとき
-				if(text.length > 1) {
+			if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+				// Scripting.FileSystemObject で開く
+				const forreading = 1;
+				let tristate = 0;
+				if(/ascii/i.test(icharset)) {
+					// ASCII
+					tristate = 0;
+				}
+				else if(/shift_jis|sjis/i.test(icharset)) {
+					// システムのデフォルト(日本語のOSだと仮定)
+					tristate = -2;
+				}
+				else {
 					// utf-16le
-					if(text.charCodeAt(0) === 0xfeff) {
-						// 通常は、このルートはBOM付きutf-16leのときに通るが、
-						// BOM付きutf-8でも通る場合がなぜかある。（後述）
-						newcharset = "unicode";
-					}
-					// utf-16be
-					else if(text.charCodeAt(0) === 0xfffe) {
-						newcharset = "unicodeFFFE";
-					}
+					tristate = -1;
 				}
-				// 2文字以上のとき
-				if(text.length > 2) {
-					// BOM付きutf-8でなぜかこの文字がくっつく場合がある。
-					if(	(text.charCodeAt(0) === 0x30fb) &&
-						(text.charCodeAt(1) === 0xff7f)) {
-						newcharset = "utf-8";
+				const open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );
+				text = open_file.ReadAll();
+				open_file.Close();
+			}
+			else {
+				// より自由なコードで開く（速度は遅い）
+				// 使用可能な charset については下記を参照
+				// HKEY_CLASSES_ROOT\MIME\Database\Charset
+				const adTypeText = 2;
+				const adReadAll = -1;
+				const stream = new ActiveXObject("ADODB.Stream");
+				stream.type = adTypeText;
+				stream.charset = icharset;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				text = stream.readText(adReadAll);
+				stream.close();
+				// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する
+				if((icharset === "_autodetect_all")||(icharset === "_autodetect")) {
+					let newcharset = "";
+					// 1文字以上のとき
+					if(text.length > 1) {
+						// utf-16le
+						if(text.charCodeAt(0) === 0xfeff) {
+							// 通常は、このルートはBOM付きutf-16leのときに通るが、
+							// BOM付きutf-8でも通る場合がなぜかある。（後述）
+							newcharset = "unicode";
+						}
+						// utf-16be
+						else if(text.charCodeAt(0) === 0xfffe) {
+							newcharset = "unicodeFFFE";
+						}
 					}
-				}
-				// 3文字以上のとき
-				if(text.length > 3) {
-					// utf-8
-					if(	(text.charCodeAt(0) === 0xef) &&
-						(text.charCodeAt(1) === 0xbb) &&
-						(text.charCodeAt(2) === 0xbf)) {
-						newcharset = "utf-8";
+					// 2文字以上のとき
+					if(text.length > 2) {
+						// BOM付きutf-8でなぜかこの文字がくっつく場合がある。
+						if(	(text.charCodeAt(0) === 0x30fb) &&
+							(text.charCodeAt(1) === 0xff7f)) {
+							newcharset = "utf-8";
+						}
 					}
-				}
-				// 上判定でBOM付きが分かった場合、正しい文字コードで取得する
-				if(newcharset !== "") {
-					const stream = new ActiveXObject("ADODB.Stream");
-					stream.type = adTypeText;
-					stream.charset = newcharset;
-					stream.open();
-					stream.loadFromFile(this.pathname);
-					text = stream.readText(adReadAll);
-					stream.close();
-				}
-				// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処
-				if((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {
-					const stream = new ActiveXObject("ADODB.Stream");
-					stream.type = adTypeText;
-					stream.charset = "utf-8";
-					stream.open();
-					stream.loadFromFile(this.pathname);
-					text = stream.readText(adReadAll);
-					stream.close();
+					// 3文字以上のとき
+					if(text.length > 3) {
+						// utf-8
+						if(	(text.charCodeAt(0) === 0xef) &&
+							(text.charCodeAt(1) === 0xbb) &&
+							(text.charCodeAt(2) === 0xbf)) {
+							newcharset = "utf-8";
+						}
+					}
+					// 上判定でBOM付きが分かった場合、正しい文字コードで取得する
+					if(newcharset !== "") {
+						const stream = new ActiveXObject("ADODB.Stream");
+						stream.type = adTypeText;
+						stream.charset = newcharset;
+						stream.open();
+						stream.loadFromFile(this.pathname);
+						text = stream.readText(adReadAll);
+						stream.close();
+					}
+					// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処
+					if((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {
+						const stream = new ActiveXObject("ADODB.Stream");
+						stream.type = adTypeText;
+						stream.charset = "utf-8";
+						stream.open();
+						stream.loadFromFile(this.pathname);
+						text = stream.readText(adReadAll);
+						stream.close();
+					}
 				}
 			}
 		}
@@ -675,50 +736,75 @@ export default class SFile {
 	}
 
 	/**
+	 * テキストファイルを保存
 	 * @param {string} text
-	 * @param {string} [charset="utf-8"]
-	 * @param {string} [newline="\r\n"]
-	 * @param {boolean} [issetBOM=false]
+	 * @param {string} [charset="utf-8"] - 文字コード
+	 * @param {string} [newline="\n"] - 改行コード
+	 * @param {boolean} [issetBOM=true] - BOMの有無(utf-8のみ有効 )
 	 * @returns {boolean}
 	 */
-	setText(text, charset, newline, issetBOM) {
+	setTextFile(text, charset, newline, issetBOM) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		const icharset = charset !== undefined ? charset : "_autodetect_all";
+		const icharset = charset !== undefined ? charset : "utf-8";
 		const inewline = newline !== undefined ? newline : "\n";
-		const iissetBOM = issetBOM !== undefined ? issetBOM : false; //utf-8のみ有効 BOMありかなし
-		const adTypeBinary = 1;
-		const adTypeText = 2;
-		const adSaveCreateOverWrite = 2;
-		// 使用可能な charset については下記を参照
-		// HKEY_CLASSES_ROOT\MIME\Database\Charset
-		let stream;
-		stream = new ActiveXObject("ADODB.Stream");
-		stream.type = adTypeText;
-		stream.charset = icharset;
-		stream.open();
-		stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //改行コードを統一
-		if(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {
-			stream.position = 0;
-			stream.type = adTypeBinary;
-			stream.position = 3;
-			const binary = stream.read();
-			stream.close();
-			stream = new ActiveXObject("ADODB.Stream");
-			stream.type = adTypeBinary;
-			stream.open();
-			stream.write(binary);
+		const iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし
+		if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+			// Scripting.FileSystemObject で書き込む
+			const forwriting = 2;
+			let tristate = 0;
+			if(/ascii/i.test(icharset)) {
+				// ASCII
+				tristate = 0;
+			}
+			else if(/shift_jis|sjis/i.test(icharset)) {
+				// システムのデフォルト(日本語のOSだと仮定)
+				tristate = -2;
+			}
+			else {
+				// utf-16le
+				tristate = -1;
+			}
+			const open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );
+			open_file.Write(text.replace(/\r\n?|\n/g, inewline));
+			open_file.Close();
 		}
-		stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-		stream.close();
+		else {
+			// ADODB.Streamで書き込む
+			const adTypeBinary = 1;
+			const adTypeText = 2;
+			const adSaveCreateOverWrite = 2;
+			// 使用可能な charset については下記を参照
+			// HKEY_CLASSES_ROOT\MIME\Database\Charset
+			let stream;
+			stream = new ActiveXObject("ADODB.Stream");
+			stream.type = adTypeText;
+			stream.charset = icharset;
+			stream.open();
+			stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //改行コードを統一
+			if(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {
+				stream.position = 0;
+				stream.type = adTypeBinary;
+				stream.position = 3;
+				const binary = stream.read();
+				stream.close();
+				stream = new ActiveXObject("ADODB.Stream");
+				stream.type = adTypeBinary;
+				stream.open();
+				stream.write(binary);
+			}
+			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+			stream.close();
+		}
 		return true;
 	}
 
 	/**
+	 * バイナリファイルを開く（激重）
 	 * @returns {number[]}
 	 */
-	getByte() {
+	getBinaryFile() {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
@@ -780,10 +866,10 @@ export default class SFile {
 	}
 
 	/**
-	 * 時間すごいかかります
+	 * バイナリファイルを保存（激重）
 	 * @param {number[]} array_
 	 */
-	setByte(array_) {
+	setBinaryFile(array_) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
@@ -807,6 +893,7 @@ export default class SFile {
 	}
 
 	/**
+	 * XMLHttpRequestを作成
 	 * @returns {XMLHttpRequest}
 	 */
 	static createXMLHttpRequest() {
@@ -846,6 +933,7 @@ export default class SFile {
 	}
 	
 	/**
+	 * テンポラリフォルダ内の適当なファイル名を取得
 	 * @returns {SFile}
 	 */
 	static createTempFile() {
@@ -856,6 +944,7 @@ export default class SFile {
 	}
 
 	/**
+	 * カレントディレクトリを取得
 	 * @returns {SFile}
 	 */
 	static getCurrentDirectory() {
@@ -864,6 +953,7 @@ export default class SFile {
 	}
 
 	/**
+	 * カレントディレクトリを設定
 	 * @param {string|SFile} file_obj
 	 */
 	static setCurrentDirectory(file_obj) {
@@ -874,7 +964,9 @@ export default class SFile {
 	}
 
 	/**
+	 * 指定した条件にあうファイルを探す
 	 * @param {string|SFile|function(string, string): boolean} file_obj
+	 * @returns {SFile|null}
 	 */
 	static searchFile(file_obj) {
 		const fso = new ActiveXObject("Scripting.FileSystemObject");

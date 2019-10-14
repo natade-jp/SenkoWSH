@@ -114,8 +114,10 @@ const System = {
 	
 	/**
 	 * CUIで起動しなおす
+	 * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
 	 */
-	executeOnCScript : function() {
+	executeOnCScript : function(is_use_chakra) {
+		const iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;
 		if(is_wscript) {
 			// CScript で起動しなおす
 			const shell = WScript.CreateObject("WScript.Shell");
@@ -123,7 +125,9 @@ const System = {
 			const args = WScript.Arguments; // 引数
 			run.push("\"C:\\Windows\\System32\\cscript.exe\"");
 			run.push("//NoLogo");
-			run.push("//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}");
+			if(iis_use_chakra) {
+				run.push("//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}");
+			}
 			run.push("\"" + WSH.ScriptFullName + "\"");
 			for(let i = 0; i < args.length; i++) {
 				run.push("\"" + args(i) + "\"");
