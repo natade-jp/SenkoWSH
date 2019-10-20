@@ -8,12 +8,12 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import typeCSV from "./CSV.js";
-import typeDialog from "./Dialog.js";
-import typeSFile from "./SFile.js";
-import typeFormat from "./Format.js";
-import typeRandom from "./Random.js";
-import typeSystem from "./System.js";
+import typeCSV from "./senko/CSV.js";
+import typeDialog from "./senko/Dialog.js";
+import typeSFile from "./senko/SFile.js";
+import typeFormat from "./senko/Format.js";
+import typeRandom from "./konpeito/Random.js";
+import typeSystem from "./senko/System.js";
 
 /**
  * @type {typeof typeCSV}
@@ -76,9 +76,9 @@ console = {
 	}
 };
 
-import typeExtendsArray from "./ExtendsArray.js";
-import typeExtendsObject from "./ExtendsObject.js";
-import typeExtendsString from "./ExtendsString.js";
+import typeExtendsArray from "./senko/ExtendsArray.js";
+import typeExtendsObject from "./senko/ExtendsObject.js";
+import typeExtendsString from "./senko/ExtendsString.js";
 
 /**
  * @type {typeof typeExtendsArray}
