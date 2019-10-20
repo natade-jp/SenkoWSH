@@ -185,6 +185,146 @@ declare class Dialog {
 }
 
 /**
+ * ES3相当のJScirptのArray拡張用
+ * - Array.prototypeに拡張します
+ */
+declare class ExtendsArray {
+    /**
+     * @param {any[]} array
+     * @param {any} object
+     * @returns {boolean}
+     */
+    static includes(array: any[], object: any): boolean;
+    /**
+     * @param {any[]} array
+     * @param {any} object
+     * @param {number} [fromIndex=0]
+     * @returns {number}
+     */
+    static indexOf(array: any[], object: any, fromIndex?: number): number;
+    /**
+     * @param {any[]} array
+     * @param {any} object
+     * @param {number} [fromIndex]
+     * @returns {number}
+     */
+    static lastIndexOf(array: any[], object: any, fromIndex?: number): number;
+    /**
+     * 安定ソート
+     * @param {any[]} array
+     * @param {function(any, any): number} [compareFunction]
+     * @returns {any[]}
+     */
+    static sort(array: any[], compareFunction?: (...params: any[]) => any): any[];
+    /**
+     * @param {any[]} array
+     * @returns {string}
+     */
+    static toString(array: any[]): string;
+    /**
+     * ディープコピー
+     * @param {any[]} array
+     * @returns {any[]}
+     */
+    static clone(array: any[]): any[];
+    /**
+     * 指定したデータを挿入
+     * @param {any[]} array
+     * @param {any|number} index_or_object
+     * @param {any} [object]
+     */
+    static add(array: any[], index_or_object: any | number, object?: any): void;
+    /**
+     * 指定した配列を挿入
+     * @param {any[]} array
+     * @param {any[]|number} index_or_arraylist
+     * @param {any[]} [arraylist]
+     */
+    static addAll(array: any[], index_or_arraylist: any[] | number, arraylist?: any[]): void;
+    /**
+     * 指定した位置のデータを削除
+     * @param {any[]} array
+     * @param {number} index
+     */
+    static remove(array: any[], index: number): void;
+    /**
+     * 指定した範囲を削除
+     * @param {any[]} array
+     * @param {number} fromIndex
+     * @param {number} toIndex
+     */
+    static removeRange(array: any[], fromIndex: number, toIndex: number): void;
+    /**
+     * 空かどうか
+     * @param {any[]} array
+     * @returns {boolean}
+     */
+    static isEmpty(array: any[]): boolean;
+}
+
+/**
+ * ES3相当のJScirptのObject拡張用
+ * - Object.prototypeに拡張します
+ */
+declare class ExtendsObject {
+    /**
+     * 指定したキーが含まれるか
+     * @param {Object} obj
+     * @param {any} key
+     * @returns {boolean}
+     */
+    static containsKey(obj: any, key: any): boolean;
+    /**
+     * 指定した値が含まれるか
+     * @param {Object} obj
+     * @param {any} value
+     * @returns {boolean}
+     */
+    static containsValue(obj: any, value: any): boolean;
+    /**
+     * 名前の配列
+     * @param {Object} obj
+     * @returns {string[]}
+     */
+    static keys(obj: any): string[];
+    /**
+     * 空かどうか
+     * @param {Object} obj
+     * @returns {boolean}
+     */
+    static isEmpty(obj: any): boolean;
+    /**
+     * 文字列化
+     * @param {Object} obj
+     * @returns {string}
+     */
+    static toString(obj: any): string;
+    /**
+     * 指定したキー、その値を登録
+     * @param {Object} obj
+     * @param {string} key
+     * @param {any} value
+     * @returns {null|any}
+     */
+    static put(obj: any, key: string, value: any): null | any;
+    /**
+     * 指定したキー、その値を全て登録
+     * @param {Object} obj
+     * @param {Object<string, any>} hashmap
+     */
+    static putAll(obj: any, hashmap: {
+        [key: string]: any;
+    }): void;
+    /**
+     * 指定したキーの値を削除
+     * @param {Object} obj
+     * @param {string} key
+     * @returns {null|any}
+     */
+    static remove(obj: any, key: string): null | any;
+}
+
+/**
  * ES3相当のJScirptのString拡張用
  * - String.prototypeに拡張します
  */
