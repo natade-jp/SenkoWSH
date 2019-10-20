@@ -1,6 +1,11 @@
 # History
 
-## 2019/10/14 SenkoWSH 2
+## SenkoWSH v3.0.0b
+### 更新点
+- 自己学習用に作っていた使用頻度が低いメソッドを削除
+- いくつかのメソッドをArrayとObjectへ拡張させるように変更（例えば、Array.prototype.sort()が安定ソートになります）
+
+## 2019/10/14 SenkoWSH v2.0.0
 ### 更新点
 - Visual Studio Code で JScript 開発を意識した作りに構成を変更
 - JScript 開発で不要なライブラリを除去して軽量化

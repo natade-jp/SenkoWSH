@@ -12,7 +12,7 @@
  * ES3相当のJScirptのString拡張用
  * - String.prototypeに拡張します
  */
-export default class StringWSH {
+export default class ExtendsString {
 
 	/**
 	 * @param {string} text
@@ -44,9 +44,9 @@ export default class StringWSH {
 	static each(text, func) {
 		let out = true;
 		const len = this.length;
-		for(let i = 0; i < len; i = StringWSH.offsetByCodePoints(text, i, 1)) {
-			const codepoint = StringWSH.codePointAt(text, i);
-			const str = StringWSH.fromCodePoint(codepoint);
+		for(let i = 0; i < len; i = ExtendsString.offsetByCodePoints(text, i, 1)) {
+			const codepoint = ExtendsString.codePointAt(text, i);
+			const str = ExtendsString.fromCodePoint(codepoint);
 			if(func.call(func, i, str, codepoint) === false) {
 				out = false;
 				break;
@@ -96,7 +96,7 @@ export default class StringWSH {
 	 */
 	static codePointAt(text, index) {
 		const index_ = (index !== undefined) ? index : 0;
-		if(StringWSH.isHighSurrogateAt(text, index_)) {
+		if(ExtendsString.isHighSurrogateAt(text, index_)) {
 			const high = text.charCodeAt(index_);
 			const low  = text.charCodeAt(index_ + 1);
 			return (((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000;
@@ -113,7 +113,7 @@ export default class StringWSH {
 	 * @returns {number} コードポイント
 	 */
 	static codePointBefore(text, index) {
-		if(!StringWSH.isLowSurrogateAt(text, index - 1)) {
+		if(!ExtendsString.isLowSurrogateAt(text, index - 1)) {
 			return text.charCodeAt(index - 1);
 		}
 		else {
@@ -134,7 +134,7 @@ export default class StringWSH {
 		let count = 0;
 		for(;beginIndex < iendIndex;ibeginIndex++) {
 			count++;
-			if(StringWSH.isSurrogatePairAt(text, beginIndex)) {
+			if(ExtendsString.isSurrogatePairAt(text, beginIndex)) {
 				iendIndex++;
 			}
 		}
@@ -158,7 +158,7 @@ export default class StringWSH {
 		if(icodePointOffset > 0) {
 			for(;i < text.length;i++) {
 				count++;
-				if(StringWSH.isHighSurrogateAt(text, i)) {
+				if(ExtendsString.isHighSurrogateAt(text, i)) {
 					i++;
 				}
 				if(count === icodePointOffset) {
@@ -171,7 +171,7 @@ export default class StringWSH {
 			icodePointOffset = -icodePointOffset;
 			for(;i >= 0;i--) {
 				count++;
-				if(StringWSH.isLowSurrogateAt(text, i - 1)) {
+				if(ExtendsString.isLowSurrogateAt(text, i - 1)) {
 					i--;
 				}
 				if(count === icodePointOffset) {
@@ -230,14 +230,14 @@ export default class StringWSH {
 	static fromCodePoint(codepoint) {
 		let utf16_array = null;
 		if(codepoint instanceof Array) {
-			utf16_array = StringWSH.toUTF16ArrayfromCodePoint(codepoint);
+			utf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint);
 		}
 		else {
 			const codepoint_array = [];
 			for(let i = 0;i < arguments.length;i++) {
 				codepoint_array[i] = arguments[i];
 			}
-			utf16_array = StringWSH.toUTF16ArrayfromCodePoint(codepoint_array);
+			utf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint_array);
 		}
 		const text = [];
 		for(let i = 0;i < utf16_array.length;i++) {

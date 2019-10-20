@@ -9,134 +9,6 @@
  */
 
 /**
- * 配列
- * @param {{element: any[]}} [array]
- */
-declare class ArrayList {
-    constructor(array?: any);
-    /**
-     * 内部で利用しているArrayデータのディープコピーを取得する
-     * @return {any[]}
-     */
-    getArray(): any[];
-    /**
-     * 各要素に指定した関数を実行する
-     * @param {function(number, any): boolean} func
-     * @returns {boolean} result
-     */
-    each(func: (...params: any[]) => any): boolean;
-    /**
-     * 文字列化
-     * @returns {string}
-     */
-    toString(): string;
-    /**
-     * 空にする
-     * @returns {boolean}
-     */
-    isEmpty(): boolean;
-    /**
-     * 指定したデータが含まれるか
-     * @param {any} object
-     * @returns {boolean}
-     */
-    contains(object: any): boolean;
-    /**
-     * 配列長
-     * @returns {number}
-     */
-    size(): number;
-    /**
-     * 配列を空にする
-     */
-    clear(): void;
-    /**
-     * 結合する
-     * @param {string} [separator = ","]
-     * @returns {string}
-     */
-    join(separator?: string): string;
-    /**
-     * ディープコピー
-     * @returns {ArrayList}
-     */
-    clone(): ArrayList;
-    /**
-     * 指定したデータが何番目に含まれるか
-     * @param {any} object
-     * @returns {number}
-     */
-    indexOf(object: any): number;
-    /**
-     * 配列長
-     * @returns {number}
-     */
-    length(): number;
-    /**
-     * 指定したデータが何番目に含まれるか（後ろから調べる）
-     * @param {any} object
-     * @returns {number}
-     */
-    lastIndexOf(object: any): number;
-    /**
-     * 指定した位置の配列値を取得
-     * @param {number} index
-     */
-    get(index: number): void;
-    /**
-     * 指定したデータを挿入
-     * @param {any|number} index_or_object
-     * @param {any} [object]
-     */
-    add(index_or_object: any | number, object?: any): void;
-    /**
-     * 指定した配列を挿入
-     * @param {ArrayList|any[]|number} index_or_arraylist
-     * @param {ArrayList|any[]} [arraylist]
-     */
-    addAll(index_or_arraylist: ArrayList | any[] | number, arraylist?: ArrayList | any[]): void;
-    /**
-     * 指定したデータで置き換える
-     * @param {number} index
-     * @param {any} object
-     */
-    set(index: number, object: any): void;
-    /**
-     * 指定した位置のデータを削除
-     * @param {number} index
-     */
-    remove(index: number): void;
-    /**
-     * 指定した範囲を削除
-     * @param {number} fromIndex
-     * @param {number} toIndex
-     */
-    removeRange(fromIndex: number, toIndex: number): void;
-    /**
-     * 安定ソート
-     * @param { function(any, any): number } [compareFunction]
-     */
-    sort(compareFunction?: (...params: any[]) => any): void;
-    /**
-     * 昇順ソート用の関数
-     * @param {any} a
-     * @param {any} b
-     * @returns {number}
-     */
-    static COMPARE_DEFAULT(a: any, b: any): number;
-}
-
-/**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-
-/**
  * CSVを扱う
  */
 declare class CSV {
@@ -313,6 +185,100 @@ declare class Dialog {
 }
 
 /**
+ * ES3相当のJScirptのString拡張用
+ * - String.prototypeに拡張します
+ */
+declare class ExtendsString {
+    /**
+     * @param {string} text
+     * @param {string} target
+     * @param {string} replacement
+     * @returns {string}
+     */
+    static replaceAll(text: string, target: string, replacement: string): string;
+    /**
+     * @param {string} text
+     * @returns {string}
+     */
+    static trim(text: string): string;
+    /**
+     * @param {string} text
+     * @param {function(number, string, number): boolean} func
+     * @returns {boolean} result
+     */
+    static each(text: string, func: (...params: any[]) => any): boolean;
+    /**
+     * 上位のサロゲートペアの判定
+     * @param {String} text - 対象テキスト
+     * @param {number} index - インデックス
+     * @returns {Boolean} 確認結果
+     */
+    static isHighSurrogateAt(text: string, index: number): boolean;
+    /**
+     * 下位のサロゲートペアの判定
+     * @param {String} text - 対象テキスト
+     * @param {number} index - インデックス
+     * @returns {Boolean} 確認結果
+     */
+    static isLowSurrogateAt(text: string, index: number): boolean;
+    /**
+     * サロゲートペアの判定
+     * @param {String} text - 対象テキスト
+     * @param {number} index - インデックス
+     * @returns {Boolean} 確認結果
+     */
+    static isSurrogatePairAt(text: string, index: number): boolean;
+    /**
+     * サロゲートペア対応のコードポイント取得
+     * @param {String} text - 対象テキスト
+     * @param {number} [index = 0] - インデックス
+     * @returns {number} コードポイント
+     */
+    static codePointAt(text: string, index?: number): number;
+    /**
+     * インデックスの前にあるコードポイント
+     * @param {String} text - 対象テキスト
+     * @param {number} index - インデックス
+     * @returns {number} コードポイント
+     */
+    static codePointBefore(text: string, index: number): number;
+    /**
+     * コードポイント換算で文字列数をカウント
+     * @param {string} text - 対象テキスト
+     * @param {number} [beginIndex=0] - 最初のインデックス（省略可）
+     * @param {number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
+     * @returns {number} 文字数
+     */
+    static codePointCount(text: string, beginIndex?: number, endIndex?: number): number;
+    /**
+     * コードポイント換算で文字列配列の位置を計算
+     * @param {string} text - 対象テキスト
+     * @param {number} index - オフセット
+     * @param {number} codePointOffset - ずらすコードポイント数
+     * @returns {number} ずらしたインデックス
+     */
+    static offsetByCodePoints(text: string, index: number, codePointOffset: number): number;
+    /**
+     * コードポイントの数値データを文字列に変換
+     * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
+     * @returns {string} 変換後のテキスト
+     */
+    static fromCodePoint(...codepoint: (number | number[])[]): string;
+    /**
+     * @param {string} text
+     * @param {string} prefix
+     * @returns {boolean}
+     */
+    static startsWith(text: string, prefix: string): boolean;
+    /**
+     * @param {string} text
+     * @param {string} suffix
+     * @returns {boolean}
+     */
+    static endsWith(text: string, suffix: string): boolean;
+}
+
+/**
  * The script is part of SenkoWSH.
  *
  * AUTHOR:
@@ -335,99 +301,6 @@ declare class Format {
      * @returns {String}
      */
     static textf(text: string, ...parm: any[]): string;
-}
-
-/**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-
-/**
- * 初期化
- * @param {HashMap|Object<string, any>} [hash_map]
- */
-declare class HashMap {
-    constructor(hash_map?: HashMap | {
-        [key: string]: any;
-    });
-    /**
-     * 内部で利用しているArrayデータのディープコピーを取得する
-     * @return {any}
-     */
-    getArray(): any;
-    /**
-     * 各要素に指定した関数を実行する
-     * @param {function(number, any): boolean} func
-     * @returns {boolean} result
-     */
-    each(func: (...params: any[]) => any): boolean;
-    /**
-     * 文字列化
-     * @returns {string}
-     */
-    toString(): string;
-    /**
-     * 指定したキーが含まれるか
-     * @param {string} key
-     * @returns {boolean}
-     */
-    containsKey(key: string): boolean;
-    /**
-     * 指定した値が含まれるか
-     * @param {any} value
-     * @returns {boolean}
-     */
-    containsValue(value: any): boolean;
-    /**
-     * 空かどうか
-     * @returns {boolean}
-     */
-    isEmpty(): boolean;
-    /**
-     * 空にする
-     */
-    clear(): void;
-    /**
-     * ディープコピー
-     * @returns {HashMap}
-     */
-    clone(): HashMap;
-    /**
-     * ハッシュの長さ
-     * @returns {number}
-     */
-    size(): number;
-    /**
-     * 指定したキーに対して対応する値を取得
-     * @param {string} key
-     * @returns {any}
-     */
-    get(key: string): any;
-    /**
-     * 指定したキー、その値を登録
-     * @param {string} key
-     * @param {any} value
-     * @returns {null|any}
-     */
-    put(key: string, value: any): null | any;
-    /**
-     * 指定したキー、その値を全て登録
-     * @param {HashMap|Object<string, any>} hashmap
-     */
-    putAll(hashmap: HashMap | {
-        [key: string]: any;
-    }): void;
-    /**
-     * 指定したキーの値を削除
-     * @param {string} key
-     * @returns {null|any}
-     */
-    remove(key: string): null | any;
 }
 
 /**

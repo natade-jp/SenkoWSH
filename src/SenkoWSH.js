@@ -8,22 +8,12 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import typeArrayList from "./ArrayList.js";
 import typeCSV from "./CSV.js";
 import typeDialog from "./Dialog.js";
 import typeSFile from "./SFile.js";
 import typeFormat from "./Format.js";
-import typeHashMap from "./HashMap.js";
 import typeRandom from "./Random.js";
 import typeSystem from "./System.js";
-
-/**
- * @type {typeof typeArrayList}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ArrayList = typeArrayList;
 
 /**
  * @type {typeof typeCSV}
@@ -58,14 +48,6 @@ SFile = typeSFile;
 Format = typeFormat;
 
 /**
- * @type {typeof typeHashMap}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-HashMap = typeHashMap;
-
-/**
  * @type {typeof typeRandom}
  * @private
  */
@@ -81,8 +63,6 @@ Random = typeRandom;
 // eslint-disable-next-line no-undef
 System = typeSystem;
 
-import StringWSH from "./StringWSH.js";
-
 /**
  * @private
  */
@@ -96,80 +76,54 @@ console = {
 	}
 };
 
+import typeExtendsArray from "./ExtendsArray.js";
+import typeExtendsObject from "./ExtendsObject.js";
+import typeExtendsString from "./ExtendsString.js";
+
+/**
+ * @type {typeof typeExtendsArray}
+ * @private
+ */
 // @ts-ignore
-String.prototype.replaceAll = function(target, replacement) {
-	// @ts-ignore
-	return StringWSH.replaceAll(this, target, replacement);
+// eslint-disable-next-line no-undef
+ExtendsArray = typeExtendsArray;
+
+/**
+ * @type {typeof typeExtendsObject}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+ExtendsObject = typeExtendsObject;
+
+/**
+ * @type {typeof typeExtendsString}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+ExtendsString = typeExtendsString;
+
+/**
+ * @param {any} original 
+ * @param {any} extension
+ * @returns {any}
+ * @private
+ * @ignore
+ */
+const extendClass = function(original, extension) {
+	for(const key in extension) {
+		original.prototype[key] = function() {
+			const x = [];
+			x.push(this);
+			for(let i = 0 ; i < arguments.length ; i++) {
+				x.push(arguments[i]);
+			}
+			return extension[key].apply(this, x);
+		};
+	}
 };
 
-// @ts-ignore
-String.prototype.trim = function() {
-	// @ts-ignore
-	return StringWSH.trim(this);
-};
-
-// @ts-ignore
-String.prototype.each = function(func) {
-	// @ts-ignore
-	return StringWSH.each(this, func);
-};
-
-// @ts-ignore
-String.prototype.isHighSurrogateAt = function(index) {
-	// @ts-ignore
-	return StringWSH.isHighSurrogateAt(this, index);
-};
-
-// @ts-ignore
-String.prototype.isLowSurrogateAt = function(index) {
-	// @ts-ignore
-	return StringWSH.isLowSurrogateAt(this, index);
-};
-
-// @ts-ignore
-String.prototype.isSurrogatePairAt = function(index) {
-	// @ts-ignore
-	return StringWSH.isSurrogatePairAt(this, index);
-};
-
-// @ts-ignore
-String.prototype.codePointAt = function(index) {
-	// @ts-ignore
-	return StringWSH.codePointAt(this, index);
-};
-
-// @ts-ignore
-String.prototype.codePointBefore = function(index) {
-	// @ts-ignore
-	return StringWSH.codePointBefore(this, index);
-};
-
-// @ts-ignore
-String.prototype.codePointCount = function(beginIndex, endIndex) {
-	// @ts-ignore
-	return StringWSH.codePointCount(this, beginIndex, endIndex);
-};
-
-// @ts-ignore
-String.prototype.offsetByCodePoints = function(index, codePointOffset) {
-	// @ts-ignore
-	return StringWSH.codePointoffsetByCodePointsCount(this, index, codePointOffset);
-};
-
-// @ts-ignore
-String.fromCodePoint = function(codepoint) {
-	// @ts-ignore
-	return StringWSH.fromCodePoint(codepoint);
-};
-
-// @ts-ignore
-String.prototype.startsWith = function(prefix) {
-	// @ts-ignore
-	return StringWSH.startsWith(this, prefix);
-};
-
-// @ts-ignore
-String.prototype.endsWith = function(prefix) {
-	// @ts-ignore
-	return StringWSH.endsWith(this, prefix);
-};
+extendClass(String, typeExtendsArray);
+extendClass(String, typeExtendsObject);
+extendClass(String, typeExtendsString);
