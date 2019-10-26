@@ -9,7 +9,7 @@
  */
 
 /**
- * ファイル／フォルダ／URL
+ * ファイル／フォルダ／URLを扱うクラス
  */
 export default class SFile {
 

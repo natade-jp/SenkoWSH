@@ -1,70 +1,71 @@
 {
-  "coverage": "90.84%",
-  "expectCount": 142,
-  "actualCount": 129,
+  "coverage": "100%",
+  "expectCount": 154,
+  "actualCount": 154,
   "files": {
-    "src/ArrayList.js": {
-      "expectCount": 23,
-      "actualCount": 23,
+    "src/konpeito/Random.js": {
+      "expectCount": 20,
+      "actualCount": 20,
       "undocumentLines": []
     },
-    "src/CSV.js": {
-      "expectCount": 5,
-      "actualCount": 5,
-      "undocumentLines": []
-    },
-    "src/Dialog.js": {
-      "expectCount": 2,
-      "actualCount": 2,
-      "undocumentLines": []
-    },
-    "src/Format.js": {
-      "expectCount": 2,
-      "actualCount": 2,
-      "undocumentLines": []
-    },
-    "src/HashMap.js": {
+    "src/mojijs/Japanese.js": {
       "expectCount": 17,
       "actualCount": 17,
       "undocumentLines": []
     },
-    "src/Random.js": {
-      "expectCount": 21,
-      "actualCount": 21,
+    "src/mojijs/StringComparator.js": {
+      "expectCount": 8,
+      "actualCount": 8,
       "undocumentLines": []
     },
-    "src/SenkoWSH.js": {
-      "expectCount": 13,
-      "actualCount": 0,
-      "undocumentLines": [
-        100,
-        106,
-        112,
-        118,
-        124,
-        130,
-        136,
-        142,
-        148,
-        154,
-        160,
-        166,
-        172
-      ]
-    },
-    "src/SFile.js": {
-      "expectCount": 41,
-      "actualCount": 41,
+    "src/mojijs/Unicode.js": {
+      "expectCount": 5,
+      "actualCount": 5,
       "undocumentLines": []
     },
-    "src/StringWSH.js": {
+    "src/senko/CSV.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/senko/Dialog.js": {
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
+    },
+    "src/senko/ExtendsArray.js": {
+      "expectCount": 12,
+      "actualCount": 12,
+      "undocumentLines": []
+    },
+    "src/senko/ExtendsObject.js": {
+      "expectCount": 9,
+      "actualCount": 9,
+      "undocumentLines": []
+    },
+    "src/senko/ExtendsString.js": {
       "expectCount": 15,
       "actualCount": 15,
       "undocumentLines": []
     },
-    "src/System.js": {
-      "expectCount": 3,
-      "actualCount": 3,
+    "src/senko/Format.js": {
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
+    },
+    "src/senko/SFile.js": {
+      "expectCount": 41,
+      "actualCount": 41,
+      "undocumentLines": []
+    },
+    "src/senko/System.js": {
+      "expectCount": 17,
+      "actualCount": 17,
+      "undocumentLines": []
+    },
+    "src/SenkoWSH.js": {
+      "expectCount": 1,
+      "actualCount": 1,
       "undocumentLines": []
     }
   }

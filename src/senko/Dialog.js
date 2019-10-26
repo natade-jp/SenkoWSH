@@ -9,7 +9,7 @@
  */
 
 /**
- * ダイアログ
+ * ダイアログを扱うクラス
  */
 export default class Dialog {
 	

@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/SenkoWSH.js | senkowsh</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/mojijs/Unicode.js | senkowsh</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -44,9 +44,9 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/SenkoWSH.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
- * The script is part of SenkoWSH.
+<div class="content" data-ice="content"><h1 data-ice="title">src/mojijs/Unicode.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&#xFEFF;/**
+ * The script is part of MojiJS.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -55,144 +55,63 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import typeCSV from &quot;./senko/CSV.js&quot;;
-import typeDialog from &quot;./senko/Dialog.js&quot;;
-import typeSFile from &quot;./senko/SFile.js&quot;;
-import typeFormat from &quot;./senko/Format.js&quot;;
-import typeRandom from &quot;./konpeito/Random.js&quot;;
-import typeJapanese from &quot;./mojijs/Japanese.js&quot;;
-import typeStringComparator from &quot;./mojijs/StringComparator.js&quot;;
-import typeSystem from &quot;./senko/System.js&quot;;
+import ExtendsString from &quot;../senko/ExtendsString.js&quot;;
 
 /**
- * @type {typeof typeCSV}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-CSV = typeCSV;
-
-/**
- * @type {typeof typeDialog}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Dialog = typeDialog;
-
-/**
- * @type {typeof typeSFile}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-SFile = typeSFile;
-
-/**
- * @type {typeof typeFormat}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Format = typeFormat;
-
-/**
- * @type {typeof typeRandom}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Random = typeRandom;
-
-/**
- * @type {typeof typeJapanese}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Japanese = typeJapanese;
-
-/**
- * @type {typeof typeStringComparator}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-StringComparator = typeStringComparator;
-
-/**
- * @type {typeof typeSystem}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-System = typeSystem;
-
-/**
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-global-assign
-console = {
-	// @ts-ignore
-	log : function(text) {
-		// @ts-ignore
-		// eslint-disable-next-line no-undef
-		System.println(text);
-	}
-};
-
-import typeExtendsArray from &quot;./senko/ExtendsArray.js&quot;;
-import typeExtendsObject from &quot;./senko/ExtendsObject.js&quot;;
-import typeExtendsString from &quot;./senko/ExtendsString.js&quot;;
-
-/**
- * @type {typeof typeExtendsArray}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsArray = typeExtendsArray;
-
-/**
- * @type {typeof typeExtendsObject}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsObject = typeExtendsObject;
-
-/**
- * @type {typeof typeExtendsString}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsString = typeExtendsString;
-
-/**
- * @param {any} original 
- * @param {any} extension
- * @returns {any}
- * @private
+ * Unicode&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
  * @ignore
  */
-const extendClass = function(original, extension) {
-	for(const key in extension) {
-		original.prototype[key] = function() {
-			const x = [];
-			x.push(this);
-			for(let i = 0 ; i &lt; arguments.length ; i++) {
-				x.push(arguments[i]);
-			}
-			return extension[key].apply(this, x);
-		};
-	}
-};
+export default class Unicode {
 
-extendClass(String, typeExtendsArray);
-extendClass(String, typeExtendsObject);
-extendClass(String, typeExtendsString);
+	/**
+	 * &#x6587;&#x5B57;&#x5217;&#x3092;UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {Array&lt;number&gt;} UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 */
+	static toUTF32Array(text) {
+		const utf32 = [];
+		for(let i = 0; i &lt; text.length; i = ExtendsString.offsetByCodePoints(text, i, 1)) {
+			utf32.push(ExtendsString.codePointAt(text, i));
+		}
+		return utf32;
+	}
+
+	/**
+	 * UTF32&#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {Array&lt;number&gt;} utf32 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static fromUTF32Array(utf32) {
+		return ExtendsString.fromCodePoint(utf32);
+	}
+
+	/**
+	 * &#x6587;&#x5B57;&#x5217;&#x3092;UTF16&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {Array&lt;number&gt;} UTF16&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 */
+	static toUTF16Array(text) {
+		const utf16 = [];
+		for(let i = 0; i &lt; text.length; i++) {
+			utf16[i] = text.charCodeAt(i);
+		}
+		return utf16;
+	}
+
+	/**
+	 * UTF16&#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {Array&lt;number&gt;} utf16 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static fromUTF16Array(utf16) {
+		const text = [];
+		for(let i = 0; i &lt; utf16.length; i++) {
+			text[i] = String.fromCharCode(utf16[i]);
+		}
+		return text.join(&quot;&quot;);
+	}
+
+}
 </code></pre>
 
 </div>

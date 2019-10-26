@@ -9,7 +9,7 @@
  */
 
 /**
- * ES3相当のJScirptのArray拡張用
+ * ES3相当のJScirptのArray拡張用クラス
  * - Array.prototypeに拡張します
  */
 export default class ExtendsArray {

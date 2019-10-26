@@ -9,7 +9,7 @@
  */
 
 /**
- * CSVを扱う
+ * CSV形式のテキストなどを扱うクラス
  */
 export default class CSV {
 	

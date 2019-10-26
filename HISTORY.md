@@ -1,10 +1,12 @@
 # History
 
-## SenkoWSH v3.0.0b
+## SenkoWSH v3.0.0
 ### 更新点
 - 自己学習用に作っていた使用頻度が低いメソッドを削除
 - いくつかのメソッドをArrayとObjectへ拡張させるように変更（例えば、Array.prototype.sort()が安定ソートになります）
 - RandomのアルゴリズムをM系列乱数からxorshiftに変更しリファクタリング
+- MojiJSから自然順ソートなどを利用できるように機能を追加
+- "System.out"内のメソッドを"System"直下に移動
 
 ## 2019/10/14 SenkoWSH v2.0.0
 ### 更新点

@@ -13,6 +13,8 @@ import typeDialog from "./senko/Dialog.js";
 import typeSFile from "./senko/SFile.js";
 import typeFormat from "./senko/Format.js";
 import typeRandom from "./konpeito/Random.js";
+import typeJapanese from "./mojijs/Japanese.js";
+import typeStringComparator from "./mojijs/StringComparator.js";
 import typeSystem from "./senko/System.js";
 
 /**
@@ -56,6 +58,22 @@ Format = typeFormat;
 Random = typeRandom;
 
 /**
+ * @type {typeof typeJapanese}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+Japanese = typeJapanese;
+
+/**
+ * @type {typeof typeStringComparator}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+StringComparator = typeStringComparator;
+
+/**
  * @type {typeof typeSystem}
  * @private
  */
@@ -71,8 +89,9 @@ System = typeSystem;
 console = {
 	// @ts-ignore
 	log : function(text) {
+		// @ts-ignore
 		// eslint-disable-next-line no-undef
-		System.out.println(text);
+		System.println(text);
 	}
 };
 

@@ -26,7 +26,7 @@ const multiplication32 = function(x1, x2) {
 };
 
 /**
- * 乱数
+ * 乱数を扱うクラス
  */
 export default class Random {
 	

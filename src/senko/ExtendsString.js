@@ -9,7 +9,7 @@
  */
 
 /**
- * ES3相当のJScirptのString拡張用
+ * ES3相当のJScirptのString拡張用クラス
  * - String.prototypeに拡張します
  */
 export default class ExtendsString {

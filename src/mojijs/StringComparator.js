@@ -12,15 +12,17 @@ import Japanese from "./Japanese.js";
 import Unicode from "./Unicode.js";
 
 /**
- * 文字列比較関数を作成用のツールクラス
- * @ignore
+ * 日本語の文字列比較用関数を提供するクラス
+ * - sortの引数で利用できます
  */
-class ComparatorTool {
+export default class StringComparator {
 
 	/**
 	 * 文字列の揺れを除去し正規化します。
 	 * @param {String} string_data - 正規化したいテキスト
 	 * @returns {String} 正規化後のテキスト
+	 * @private
+	 * @ignore
 	 */
 	static toNormalizeString(string_data) {
 		let normalize_text = null;
@@ -41,6 +43,8 @@ class ComparatorTool {
 	 * ASCIIコードが半角数値かどうかを判定する
 	 * @param {number} string_number - ASCIIコード
 	 * @returns {Boolean} 数値ならTRUE
+	 * @private
+	 * @ignore
 	 */
 	static isNumberAscii(string_number) {
 		const ASCII_0 = 0x30;
@@ -53,10 +57,12 @@ class ComparatorTool {
 	 * @param {Array<number>} string_number_array - ASCIIコードの配列
 	 * @param {number} offset - どの位置から調べるか
 	 * @returns {number} 数値ならTRUE
+	 * @private
+	 * @ignore
 	 */
 	static getNumberAsciiLength(string_number_array, offset) {
 		for(let i = offset; i < string_number_array.length; i++) {
-			if(!ComparatorTool.isNumberAscii(string_number_array[i])) {
+			if(!StringComparator.isNumberAscii(string_number_array[i])) {
 				return (i - offset);
 			}
 		}
@@ -72,6 +78,8 @@ class ComparatorTool {
 	 * @param {number} t2off - どの位置から調べるか
 	 * @param {number} t2size - 調べるサイズ
 	 * @returns {number} Compare結果
+	 * @private
+	 * @ignore
 	 */
 	static compareNumber(t1, t1off, t1size, t2, t2off, t2size) {
 		const ASCII_0 = 0x30;
@@ -132,6 +140,8 @@ class ComparatorTool {
 	 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
 	 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
 	 * @returns {number} Compare結果
+	 * @private
+	 * @ignore
 	 */
 	static compareText(t1, t2) {
 		const l1 = t1.length;
@@ -149,8 +159,8 @@ class ComparatorTool {
 		let t1off = 0;
 		let t2off = 0;
 		while(t1off <= l1 && t2off <= l2) {
-			const t1isnum = ComparatorTool.isNumberAscii(t1[t1off]);
-			const t2isnum = ComparatorTool.isNumberAscii(t2[t2off]);
+			const t1isnum = StringComparator.isNumberAscii(t1[t1off]);
+			const t2isnum = StringComparator.isNumberAscii(t2[t2off]);
 			//文字目の種類が違う
 			if(t1isnum !== t2isnum) {
 				if(t1isnum) {
@@ -162,9 +172,9 @@ class ComparatorTool {
 			}
 			//両方とも数値
 			if(t1isnum) {
-				const t1size = ComparatorTool.getNumberAsciiLength(t1, t1off);
-				const t2size = ComparatorTool.getNumberAsciiLength(t2, t2off);
-				const r = ComparatorTool.compareNumber(t1,t1off,t1size,t2,t2off,t2size);
+				const t1size = StringComparator.getNumberAsciiLength(t1, t1off);
+				const t2size = StringComparator.getNumberAsciiLength(t2, t2off);
+				const r = StringComparator.compareNumber(t1,t1off,t1size,t2,t2off,t2size);
 				if(r !== 0) {
 					return r;
 				}
@@ -213,7 +223,7 @@ class ComparatorTool {
 	 * @param {String} b - 比較先
 	 * @returns {number} Compare結果
 	 */
-	static compareToForDefault(a, b) {
+	static DEFAULT(a, b) {
 		if(a === b) {
 			return 0;
 		}
@@ -229,39 +239,15 @@ class ComparatorTool {
 	 * @param {String} b - 比較先
 	 * @returns {number} Compare結果
 	 */
-	static compareToForNatural(a, b) {
+	static NATURAL(a, b) {
 		if((typeof a === typeof b) && (typeof a === "string")) {
-			const a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a));
-			const b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b));
-			return ComparatorTool.compareText(a_str, b_str);
+			const a_str = Unicode.toUTF16Array(StringComparator.toNormalizeString(a));
+			const b_str = Unicode.toUTF16Array(StringComparator.toNormalizeString(b));
+			return StringComparator.compareText(a_str, b_str);
 		}
 		else {
-			return ComparatorTool.compareToForDefault(a, b);
+			return StringComparator.DEFAULT(a, b);
 		}
 	}
 
 }
-
-/**
- * 日本語の文字列比較用の関数
- * - sortの引数で利用できます
- * @ignore
- */
-const StringComparator = {
-
-	/**
-	 * 2つの文字列を比較する関数
-	 * @type {function(string, string): number}
-	 */
-	DEFAULT : ComparatorTool.compareToForDefault,
-
-	/**
-	 * 2つの文字列を自然順ソートで比較する関数
-	 * @type {function(string, string): number}
-	 */
-	NATURAL : ComparatorTool.compareToForNatural
-
-};
-
-export default StringComparator;
-

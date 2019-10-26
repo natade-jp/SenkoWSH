@@ -23,126 +23,98 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
 /**
- * 出力関数
- * @typedef {Object} _OUTPUT_
- * @property {function(any): void} print 文字列を表示（最終行で自動で改行されない）
- * @property {function(any): void} println 文字列を表示（最終行で自動で改行される）
- * @property {function(string, ...any): void} printf 指定したフォーマットで整形した文字列を表示
+ * システム用のクラス
+ * - 文字列の入出力
+ * - スリープ、停止
+ * - GUIモード、CUIモードの切り替え
+ * - バッチファイルへの引数の情報
+ * - カレントディレクトリ情報
  */
-
-/**
- * システム関数
- * @typedef {Object} _SYSTEM_
- * @property {_OUTPUT_} out
- * @property {function(): string} readLine キーボードのテキスト入力を取得
- * @property {function(): number} currentTimeMillis UNIX時間をミリ秒で取得
- * @property {function(number): void} sleep 処理を一時停止
- * @property {function(): void} stop 処理を停止
- * @property {function(boolean): void} executeOnCScript CUIで起動しなおす
- * @property {function(): void} executeOnWScript GUIで起動しなおす
- * @property {function(): string[]} getArguments スクリプトファイルへの引数を取得
- * @property {function(string): void} setCurrentDirectory カレントディレクトリを設定
- * @property {function(): string} getCurrentDirectory カレントディレクトリを取得
- * @property {function(): string} getScriptDirectory 実行中のスクリプトがあるカレントディレクトリを取得
- * @property {function(string): void} initializeCurrentDirectory 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
- */
-
-/**
- * システム関数
- * @type {_SYSTEM_}
- */
-const System = {
+export default class System {
 
 	/**
-	 * 出力用途
+	 * 文字列を表示（最終行で自動で改行されない）
+	 * @param {any} text
 	 */
-	out : {
-		
-		/**
-		 * 文字列を表示（最終行で自動で改行されない）
-		 * @param {any} text
-		 */
-		print : function(text) {
-			const output = text.toString();
-			if(is_cscript) {
-				WSH.StdOut.Write(output);
-			}
-			else {
-				WScript.Echo(output);
-			}
-		},
-
-		/**
-		 * 文字列を表示（最終行で自動で改行される）
-		 * @param {any} text
-		 */
-		println : function(text) {
-			const output = text.toString();
-			if(is_cscript) {
-				WSH.StdOut.Write(output + "\n");
-			}
-			else {
-				WScript.Echo(output);
-			}
-		},
-
-		/**
-		 * 指定したフォーマットで整形した文字列を表示
-		 * @param {any} text 
-		 * @param {...any} parm パラメータは可変引数
-		 */
-		printf : function() {
-			const x = [];
-			for(let i = 0 ; i < arguments.length ; i++) {
-				x[i] = arguments[i];
-				if(i === 0) {
-					x[i] = x[i].toString();
-				}
-			}
-			System.out.println(Format.textf.apply(this, x));
+	static print(text) {
+		const output = text.toString();
+		if(is_cscript) {
+			WSH.StdOut.Write(output);
 		}
+		else {
+			WScript.Echo(output);
+		}
+	}
 
-	},
+	/**
+	 * 文字列を表示（最終行で自動で改行される）
+	 * @param {any} text
+	 */
+	static println(text) {
+		const output = text.toString();
+		if(is_cscript) {
+			WSH.StdOut.Write(output + "\n");
+		}
+		else {
+			WScript.Echo(output);
+		}
+	}
+
+	/**
+	 * 指定したフォーマットで整形した文字列を表示
+	 * @param {any} text 
+	 * @param {...any} parm パラメータは可変引数
+	 */
+	static printf() {
+		const x = [];
+		for(let i = 0 ; i < arguments.length ; i++) {
+			x[i] = arguments[i];
+			if(i === 0) {
+				x[i] = x[i].toString();
+			}
+		}
+		System.println(Format.textf.apply(this, x));
+	}
 
 	/**
 	 * キーボードのテキスト入力を取得
 	 * @returns {string}
 	 */
-	readLine : function() {
+	static readLine() {
 		return WScript.StdIn.ReadLine();
-	},
+	}
 	
 	/**
 	 * UNIX時間をミリ秒で取得
 	 * @returns {number}
 	 */
-	currentTimeMillis : function() {
+	static currentTimeMillis() {
 		const date = new Date();
 		return date.getTime();
-	},
+	}
 
 	/**
 	 * 処理を一時停止
 	 * @param {number} time_sec
 	 */
-	sleep : function(time_sec) {
+	static sleep(time_sec) {
 		WScript.Sleep((time_sec * 1000) | 0);
-	},
+	}
 	
 	/**
 	 * 処理を停止
 	 */
-	stop : function() {
+	static stop() {
 		while(true) {
 			WScript.Sleep(1000);
 		}
-	},
+	}
 	
 	/**
 	 * CUIで起動しなおす
 	 * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
 	 */
-	executeOnCScript : function(is_use_chakra) {
+	static executeOnCScript(is_use_chakra) {
 		const iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;
 		if(is_wscript) {
 			// CScript で起動しなおす
@@ -161,12 +133,12 @@ const System = {
 			shell.Run( run.join(" ") );
 			WSH.Quit();
 		}
-	},
+	}
 	
 	/**
 	 * GUIで起動しなおす
 	 */
-	executeOnWScript : function() {
+	static executeOnWScript() {
 		// cscriptで起動しているか
 		if(is_cscript) {
 			// WScript で起動しなおす
@@ -181,54 +153,54 @@ const System = {
 			shell.Run( run.join(" ") );
 			WSH.Quit();
 		}
-	},
+	}
 	
 	/**
 	 * スクリプトファイルへの引数を取得
 	 * @returns {string[]}
 	 */
-	getArguments : function() {
+	static getArguments() {
 		const args = [];
 		for(let i = 0; i < WScript.Arguments.length; i++) {
 			args[i] = WScript.Arguments(i);
 		}
 		return args;
-	},
+	}
 	
 	/**
 	 * カレントディレクトリを設定
 	 * @param {string} filename
 	 */
-	setCurrentDirectory : function(filename) {
+	static setCurrentDirectory(filename) {
 		const shell = new ActiveXObject("WScript.Shell");
 		shell.CurrentDirectory = filename.toString();
-	},
+	}
 	
 	/**
 	 * カレントディレクトリを取得
 	 * @returns {string}
 	 */
-	getCurrentDirectory : function() {
+	static getCurrentDirectory() {
 		const shell = new ActiveXObject("WScript.Shell");
 		return shell.CurrentDirectory;
-	},
+	}
 
 	/**
 	 * 実行中のスクリプトがあるカレントディレクトリを取得
 	 * @returns {string}
 	 */
-	getScriptDirectory : function() {
+	static getScriptDirectory() {
 		const x = WSH.ScriptFullName.match(/.*\\/)[0];
 		return(x.substring(0 ,x.length - 1));
-	},
+	}
 	
 	/**
 	 * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
 	 */
-	initializeCurrentDirectory : function() {
+	static initializeCurrentDirectory() {
 		const shell = new ActiveXObject("WScript.Shell");
 		shell.CurrentDirectory = System.getScriptDirectory();
 	}
-};
+}
 
-export default System;
+

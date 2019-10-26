@@ -9,7 +9,7 @@
  */
 
 /**
- * ES3相当のJScirptのObject拡張用
+ * ES3相当のJScirptのObject拡張用クラス
  * - Object.prototypeに拡張します
  */
 export default class ExtendsObject {

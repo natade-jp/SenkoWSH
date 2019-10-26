@@ -11,7 +11,7 @@
 import ExtendsString from "../senko/ExtendsString.js";
 
 /**
- * Unicode を扱うクラス
+ * Unicodeを扱うクラス
  * @ignore
  */
 export default class Unicode {

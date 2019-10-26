@@ -1,7 +1,7 @@
 [
   {
     "name": "Dialog.popup",
-    "filePath": "src/Dialog.js",
+    "filePath": "src/senko/Dialog.js",
     "lines": [
       {
         "lineNumber": 15,
@@ -63,8 +63,46 @@
     ]
   },
   {
+    "name": "ExtendsString.toUTF16ArrayfromCodePoint",
+    "filePath": "src/senko/ExtendsString.js",
+    "lines": [
+      {
+        "lineNumber": 184,
+        "line": "\t/**"
+      },
+      {
+        "lineNumber": 185,
+        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
+      },
+      {
+        "lineNumber": 186,
+        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
+      },
+      {
+        "lineNumber": 187,
+        "line": "\t * @returns {Array<number>} 変換後のテキスト"
+      },
+      {
+        "lineNumber": 188,
+        "line": "\t * @private"
+      },
+      {
+        "lineNumber": 189,
+        "line": "\t */"
+      },
+      {
+        "lineNumber": 190,
+        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
+      }
+    ],
+    "codeParams": [],
+    "docParams": [
+      "codepoint"
+    ]
+  },
+  {
     "name": "Format.textf",
-    "filePath": "src/Format.js",
+    "filePath": "src/senko/Format.js",
     "lines": [
       {
         "lineNumber": 15,
@@ -110,41 +148,38 @@
     ]
   },
   {
-    "name": "StringWSH.toUTF16ArrayfromCodePoint",
-    "filePath": "src/StringWSH.js",
+    "name": "System.printf",
+    "filePath": "src/senko/System.js",
     "lines": [
       {
-        "lineNumber": 184,
+        "lineNumber": 62,
         "line": "\t/**"
       },
       {
-        "lineNumber": 185,
-        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
+        "lineNumber": 63,
+        "line": "\t * 指定したフォーマットで整形した文字列を表示"
       },
       {
-        "lineNumber": 186,
-        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
+        "lineNumber": 64,
+        "line": "\t * @param {any} text "
       },
       {
-        "lineNumber": 187,
-        "line": "\t * @returns {Array<number>} 変換後のテキスト"
+        "lineNumber": 65,
+        "line": "\t * @param {...any} parm パラメータは可変引数"
       },
       {
-        "lineNumber": 188,
-        "line": "\t * @private"
-      },
-      {
-        "lineNumber": 189,
+        "lineNumber": 66,
         "line": "\t */"
       },
       {
-        "lineNumber": 190,
-        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
+        "lineNumber": 67,
+        "line": "\tstatic printf() {"
       }
     ],
     "codeParams": [],
     "docParams": [
-      "codepoint"
+      "text",
+      "parm"
     ]
   }
 ]

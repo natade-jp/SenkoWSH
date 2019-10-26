@@ -1,4 +1,194 @@
 ﻿/**
+ * 初期化
+ * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
+ */
+declare class Random {
+    constructor(seed?: number);
+    /**
+     * シード値の初期化
+     * @param {number} seed
+     */
+    setSeed(seed: number): void;
+    /**
+     * 指定したビット長以下で表せられる乱数生成
+     * @param {number} bits - Required number of bits (up to 64 possible).
+     * @returns {number}
+     */
+    next(bits: number): number;
+    /**
+     * 8ビット長整数の乱数の配列
+     * @param {number} size - 必要な長さ
+     * @returns {Array<number>}
+     */
+    nextBytes(size: number): number[];
+    /**
+     * 16ビット長整数の乱数
+     * @returns {number}
+     */
+    nextShort(): number;
+    /**
+     * 32ビット長整数の乱数
+     * @param {number} [x] - 指定した値未満の数値を作る
+     * @returns {number}
+     */
+    nextInt(x?: number): number;
+    /**
+     * 64ビット長整数の乱数
+     * @returns {number}
+     */
+    nextLong(): number;
+    /**
+     * bool値の乱数
+     * @returns {boolean}
+     */
+    nextBoolean(): boolean;
+    /**
+     * float精度の実数
+     * @returns {number}
+     */
+    nextFloat(): number;
+    /**
+     * double精度の実数
+     * @returns {number}
+     */
+    nextDouble(): number;
+    /**
+     * ガウシアン分布に従う乱数
+     * @returns {number}
+     */
+    nextGaussian(): number;
+}
+
+/**
+ * 日本語の変換を扱うクラス
+ */
+declare class Japanese {
+    /**
+     * カタカナをひらがなに変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHiragana(text: string): string;
+    /**
+     * ひらがなをカタカナに変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toKatakana(text: string): string;
+    /**
+     * スペースを半角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHalfWidthSpace(text: string): string;
+    /**
+     * スペースを全角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toFullWidthSpace(text: string): string;
+    /**
+     * 英数記号を半角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHalfWidthAsciiCode(text: string): string;
+    /**
+     * 英数記号を全角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toFullWidthAsciiCode(text: string): string;
+    /**
+     * アルファベットを半角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHalfWidthAlphabet(text: string): string;
+    /**
+     * アルファベットを全角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toFullWidthAlphabet(text: string): string;
+    /**
+     * 数値を半角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHalfWidthNumber(text: string): string;
+    /**
+     * 数値を全角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toFullWidthNumber(text: string): string;
+    /**
+     * カタカナを半角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHalfWidthKana(text: string): string;
+    /**
+     * カタカナを全角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toFullWidthKana(text: string): string;
+    /**
+     * 半角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toHalfWidth(text: string): string;
+    /**
+     * 全角に変換
+     * @param {String} text - 変換したいテキスト
+     * @returns {String} 変換後のテキスト
+     */
+    static toFullWidth(text: string): string;
+    /**
+     * 指定したテキストの横幅を半角／全角でカウント
+     * - 半角を1、全角を2としてカウント
+     * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+     * @param {String} text - カウントしたいテキスト
+     * @returns {Number} 文字の横幅
+     */
+    static getWidth(text: string): number;
+    /**
+     * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
+     * - 半角を1、全角を2としてカウント
+     * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+     * @param {String} text - 切り出したいテキスト
+     * @param {Number} offset - 切り出し位置
+     * @param {Number} size - 切り出す長さ
+     * @returns {String} 切り出したテキスト
+     */
+    static cutTextForWidth(text: string, offset: number, size: number): string;
+}
+
+/**
+ * 日本語の文字列比較用関数を提供するクラス
+ * - sortの引数で利用できます
+ */
+declare class StringComparator {
+    /**
+     * 2つの文字列を比較する
+     * @param {String} a - 比較元
+     * @param {String} b - 比較先
+     * @returns {number} Compare結果
+     */
+    static DEFAULT(a: string, b: string): number;
+    /**
+     * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
+     * @param {String} a - 比較元
+     * @param {String} b - 比較先
+     * @returns {number} Compare結果
+     */
+    static NATURAL(a: string, b: string): number;
+}
+
+/**
  * The script is part of SenkoWSH.
  *
  * AUTHOR:
@@ -9,7 +199,7 @@
  */
 
 /**
- * CSVを扱う
+ * CSV形式のテキストなどを扱うクラス
  */
 declare class CSV {
     /**
@@ -57,7 +247,7 @@ declare class CSV {
  */
 
 /**
- * ダイアログ
+ * ダイアログを扱うクラス
  */
 declare class Dialog {
     /**
@@ -185,7 +375,7 @@ declare class Dialog {
 }
 
 /**
- * ES3相当のJScirptのArray拡張用
+ * ES3相当のJScirptのArray拡張用クラス
  * - Array.prototypeに拡張します
  */
 declare class ExtendsArray {
@@ -263,7 +453,7 @@ declare class ExtendsArray {
 }
 
 /**
- * ES3相当のJScirptのObject拡張用
+ * ES3相当のJScirptのObject拡張用クラス
  * - Object.prototypeに拡張します
  */
 declare class ExtendsObject {
@@ -325,7 +515,7 @@ declare class ExtendsObject {
 }
 
 /**
- * ES3相当のJScirptのString拡張用
+ * ES3相当のJScirptのString拡張用クラス
  * - String.prototypeに拡張します
  */
 declare class ExtendsString {
@@ -429,7 +619,7 @@ declare class ExtendsString {
  */
 
 /**
- * 書式に合わせて文字列を組み立てるメソッドを提供
+ * 書式に合わせて文字列を組み立てる関数を提供するクラス
  */
 declare class Format {
     /**
@@ -441,67 +631,6 @@ declare class Format {
      * @returns {String}
      */
     static textf(text: string, ...parm: any[]): string;
-}
-
-/**
- * 初期化
- * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
- */
-declare class Random {
-    constructor(seed?: number);
-    /**
-     * シード値の初期化
-     * @param {number} seed
-     */
-    setSeed(seed: number): void;
-    /**
-     * 指定したビット長以下で表せられる乱数生成
-     * @param {number} bits - Required number of bits (up to 64 possible).
-     * @returns {number}
-     */
-    next(bits: number): number;
-    /**
-     * 8ビット長整数の乱数の配列
-     * @param {number} size - 必要な長さ
-     * @returns {Array<number>}
-     */
-    nextBytes(size: number): number[];
-    /**
-     * 16ビット長整数の乱数
-     * @returns {number}
-     */
-    nextShort(): number;
-    /**
-     * 32ビット長整数の乱数
-     * @param {number} [x] - 指定した値未満の数値を作る
-     * @returns {number}
-     */
-    nextInt(x?: number): number;
-    /**
-     * 64ビット長整数の乱数
-     * @returns {number}
-     */
-    nextLong(): number;
-    /**
-     * bool値の乱数
-     * @returns {boolean}
-     */
-    nextBoolean(): boolean;
-    /**
-     * float精度の実数
-     * @returns {number}
-     */
-    nextFloat(): number;
-    /**
-     * double精度の実数
-     * @returns {number}
-     */
-    nextDouble(): number;
-    /**
-     * ガウシアン分布に従う乱数
-     * @returns {number}
-     */
-    nextGaussian(): number;
 }
 
 /**
@@ -719,113 +848,83 @@ declare class SFile {
     static searchFile(file_obj: string | SFile | ((...params: any[]) => any)): SFile | null;
 }
 
-
 /**
- * The script is part of SenkoWSH.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-
-/**
- * 出力
- */
-declare class SystemOut {
-
-	/**
-	 * 文字列を表示（最終行で自動で改行されない）
-	 * @param {any} text
-	 */
-    static print(text);
-    
-	/**
-	 * 文字列を表示（最終行で自動で改行される）
-	 * @param {any} text
-	 */
-	static println(text);
-
-	/**
-	 * 指定したフォーマットで整形した文字列を表示
-	 * @param {any} text 
-	 * @param {...any} parm パラメータは可変引数
-	 */
-	static printf();
-}
-
-/**
- * システム
+ * システム用のクラス
+ * - 文字列の入出力
+ * - スリープ、停止
+ * - GUIモード、CUIモードの切り替え
+ * - バッチファイルへの引数の情報
+ * - カレントディレクトリ情報
  */
 declare class System {
-
-	/**
-	 * 出力
-	 */
-    static out: typeof SystemOut;
-
-	/**
-	 * キーボードのテキスト入力を取得
-	 * @returns {string}
-	 */
-    static readLine();
-    
-	/**
-	 * UNIX時間をミリ秒で取得
-	 * @returns {number}
-	 */
-    static currentTimeMillis();
-    
-	/**
-	 * 処理を一時停止
-	 * @param {number} time_sec
-	 */
-    static sleep(time_sec);
-    
-	/**
-	 * 処理を停止
-	 */
-	static stop();
-
-	/**
-	 * CUIで起動しなおす
-	 * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
-	 */
-    static executeOnCScript(is_use_chakra);
-    
-	/**
-	 * GUIで起動しなおす
-	 */
-    static executeOnWScript();
-    
-	/**
-	 * スクリプトファイルへの引数を取得
-	 * @returns {string[]}
-	 */
-    static getArguments();
-    
-	/**
-	 * カレントディレクトリを設定
-	 * @param {string} filename
-	 */
-	static setCurrentDirectory(filename);
-
-	/**
-	 * カレントディレクトリを取得
-	 * @returns {string}
-	 */
-    static getCurrentDirectory();
-    
-	/**
-	 * 実行中のスクリプトがあるカレントディレクトリを取得
-	 * @returns {string}
-	 */
-    static getScriptDirectory();
-	
-	/**
-	 * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
-	 */
-    static initializeCurrentDirectory();
-    
+    /**
+     * 文字列を表示（最終行で自動で改行されない）
+     * @param {any} text
+     */
+    static print(text: any): void;
+    /**
+     * 文字列を表示（最終行で自動で改行される）
+     * @param {any} text
+     */
+    static println(text: any): void;
+    /**
+     * 指定したフォーマットで整形した文字列を表示
+     * @param {any} text
+     * @param {...any} parm パラメータは可変引数
+     */
+    static printf(text: any, ...parm: any[]): void;
+    /**
+     * キーボードのテキスト入力を取得
+     * @returns {string}
+     */
+    static readLine(): string;
+    /**
+     * UNIX時間をミリ秒で取得
+     * @returns {number}
+     */
+    static currentTimeMillis(): number;
+    /**
+     * 処理を一時停止
+     * @param {number} time_sec
+     */
+    static sleep(time_sec: number): void;
+    /**
+     * 処理を停止
+     */
+    static stop(): void;
+    /**
+     * CUIで起動しなおす
+     * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
+     */
+    static executeOnCScript(is_use_chakra: boolean): void;
+    /**
+     * GUIで起動しなおす
+     */
+    static executeOnWScript(): void;
+    /**
+     * スクリプトファイルへの引数を取得
+     * @returns {string[]}
+     */
+    static getArguments(): string[];
+    /**
+     * カレントディレクトリを設定
+     * @param {string} filename
+     */
+    static setCurrentDirectory(filename: string): void;
+    /**
+     * カレントディレクトリを取得
+     * @returns {string}
+     */
+    static getCurrentDirectory(): string;
+    /**
+     * 実行中のスクリプトがあるカレントディレクトリを取得
+     * @returns {string}
+     */
+    static getScriptDirectory(): string;
+    /**
+     * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
+     */
+    static initializeCurrentDirectory(): void;
 }
+
+

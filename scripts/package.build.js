@@ -48,7 +48,7 @@ for(let i = 0; i < list.length; i++) {
 const output = addHeader() + text_array.join("");
 
 // ファイルを作成する
-const output_data = MojiJS.encode(output.replace(/\n/g, "\r\n"), "Shift_JIS");
+const output_data = MojiJS.encode(output.replace(/\n/g, "\r\n"), "UTF16-LE");
 
 // 作成
 File.saveBinaryFile("./build/SenkoWSH.js", output_data);

@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/StringWSH.js | senkowsh</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/senko/ExtendsString.js | senkowsh</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -29,22 +29,22 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/ArrayList.js~ArrayList.html">ArrayList</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/CSV.js~CSV.html">CSV</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Dialog.js~Dialog.html">Dialog</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Format.js~Format.html">Format</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/HashMap.js~HashMap.html">HashMap</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Random.js~Random.html">Random</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/SFile.js~SFile.html">SFile</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/StringWSH.js~StringWSH.html">StringWSH</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-System">System</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_OUTPUT_">_OUTPUT_</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-_SYSTEM_">_SYSTEM_</a></span></span></li>
+  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
 </ul>
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/StringWSH.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/senko/ExtendsString.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * The script is part of SenkoWSH.
  * 
@@ -56,10 +56,10 @@
  */
 
 /**
- * ES3&#x76F8;&#x5F53;&#x306E;JScirpt&#x306E;String&#x62E1;&#x5F35;&#x7528;
+ * ES3&#x76F8;&#x5F53;&#x306E;JScirpt&#x306E;String&#x62E1;&#x5F35;&#x7528;&#x30AF;&#x30E9;&#x30B9;
  * - String.prototype&#x306B;&#x62E1;&#x5F35;&#x3057;&#x307E;&#x3059;
  */
-export default class StringWSH {
+export default class ExtendsString {
 
 	/**
 	 * @param {string} text
@@ -91,9 +91,9 @@ export default class StringWSH {
 	static each(text, func) {
 		let out = true;
 		const len = this.length;
-		for(let i = 0; i &lt; len; i = StringWSH.offsetByCodePoints(text, i, 1)) {
-			const codepoint = StringWSH.codePointAt(text, i);
-			const str = StringWSH.fromCodePoint(codepoint);
+		for(let i = 0; i &lt; len; i = ExtendsString.offsetByCodePoints(text, i, 1)) {
+			const codepoint = ExtendsString.codePointAt(text, i);
+			const str = ExtendsString.fromCodePoint(codepoint);
 			if(func.call(func, i, str, codepoint) === false) {
 				out = false;
 				break;
@@ -143,7 +143,7 @@ export default class StringWSH {
 	 */
 	static codePointAt(text, index) {
 		const index_ = (index !== undefined) ? index : 0;
-		if(StringWSH.isHighSurrogateAt(text, index_)) {
+		if(ExtendsString.isHighSurrogateAt(text, index_)) {
 			const high = text.charCodeAt(index_);
 			const low  = text.charCodeAt(index_ + 1);
 			return (((high - 0xD800) &lt;&lt; 10) | (low - 0xDC00)) + 0x10000;
@@ -160,7 +160,7 @@ export default class StringWSH {
 	 * @returns {number} &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 */
 	static codePointBefore(text, index) {
-		if(!StringWSH.isLowSurrogateAt(text, index - 1)) {
+		if(!ExtendsString.isLowSurrogateAt(text, index - 1)) {
 			return text.charCodeAt(index - 1);
 		}
 		else {
@@ -181,7 +181,7 @@ export default class StringWSH {
 		let count = 0;
 		for(;beginIndex &lt; iendIndex;ibeginIndex++) {
 			count++;
-			if(StringWSH.isSurrogatePairAt(text, beginIndex)) {
+			if(ExtendsString.isSurrogatePairAt(text, beginIndex)) {
 				iendIndex++;
 			}
 		}
@@ -205,7 +205,7 @@ export default class StringWSH {
 		if(icodePointOffset &gt; 0) {
 			for(;i &lt; text.length;i++) {
 				count++;
-				if(StringWSH.isHighSurrogateAt(text, i)) {
+				if(ExtendsString.isHighSurrogateAt(text, i)) {
 					i++;
 				}
 				if(count === icodePointOffset) {
@@ -218,7 +218,7 @@ export default class StringWSH {
 			icodePointOffset = -icodePointOffset;
 			for(;i &gt;= 0;i--) {
 				count++;
-				if(StringWSH.isLowSurrogateAt(text, i - 1)) {
+				if(ExtendsString.isLowSurrogateAt(text, i - 1)) {
 					i--;
 				}
 				if(count === icodePointOffset) {
@@ -277,14 +277,14 @@ export default class StringWSH {
 	static fromCodePoint(codepoint) {
 		let utf16_array = null;
 		if(codepoint instanceof Array) {
-			utf16_array = StringWSH.toUTF16ArrayfromCodePoint(codepoint);
+			utf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint);
 		}
 		else {
 			const codepoint_array = [];
 			for(let i = 0;i &lt; arguments.length;i++) {
 				codepoint_array[i] = arguments[i];
 			}
-			utf16_array = StringWSH.toUTF16ArrayfromCodePoint(codepoint_array);
+			utf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint_array);
 		}
 		const text = [];
 		for(let i = 0;i &lt; utf16_array.length;i++) {
