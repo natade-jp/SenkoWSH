@@ -143,6 +143,6 @@ const extendClass = function(original, extension) {
 	}
 };
 
-extendClass(String, typeExtendsArray);
-extendClass(String, typeExtendsObject);
+extendClass(Array, typeExtendsArray);
+extendClass(Object, typeExtendsObject);
 extendClass(String, typeExtendsString);
