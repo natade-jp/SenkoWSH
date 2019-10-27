@@ -3,6 +3,7 @@
 ## SenkoWSH v3.0.1
 ### 更新点
 - Objectへの拡張方法が誤っていたのを修正
+- サンプルファイル（ChangeFileName）を追加
 
 ## SenkoWSH v3.0.0
 ### 更新点
