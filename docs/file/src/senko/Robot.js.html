@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/mojijs/Unicode.js | senkowsh</title>
+  <title data-ice="title">src/senko/Robot.js | senkowsh</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -45,9 +45,9 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/mojijs/Unicode.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&#xFEFF;/**
- * The script is part of MojiJS.
+<div class="content" data-ice="content"><h1 data-ice="title">src/senko/Robot.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of SenkoWSH.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -56,63 +56,43 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import ExtendsString from &quot;../senko/ExtendsString.js&quot;;
+import System from &quot;./System&quot;;
 
 /**
- * Unicode&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
- * @ignore
+ * Robot&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
  */
-export default class Unicode {
+export default class Robot {
 
 	/**
-	 * &#x6587;&#x5B57;&#x5217;&#x3092;UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Array&lt;number&gt;} UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30AF;&#x30E9;&#x30B9;&#x540D;&#x306E;&#x30CF;&#x30F3;&#x30C9;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * @param {string} classname 
+	 * @returns {number}
 	 */
-	static toUTF32Array(text) {
-		const utf32 = [];
-		for(let i = 0; i &lt; text.length; i = ExtendsString.offsetByCodePoints(text, i, 1)) {
-			utf32.push(ExtendsString.codePointAt(text, i));
-		}
-		return utf32;
+	static getHandleOfClassName(classname) {
+		return parseFloat(System.WindowsAPI(
+			&quot;user32.dll&quot;,
+			&quot;IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)&quot;,
+			&quot;FindWindow(\&quot;&quot; + classname + &quot;\&quot;, 0)&quot;
+		));
 	}
 
 	/**
-	 * UTF32&#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {Array&lt;number&gt;} utf32 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30A6;&#x30A3;&#x30F3;&#x30C9;&#x30A6;&#x540D;&#x306E;&#x30CF;&#x30F3;&#x30C9;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * @param {string} windowname 
+	 * @returns {number}
 	 */
-	static fromUTF32Array(utf32) {
-		return ExtendsString.fromCodePoint(utf32);
+	static getHandleOfWindowName(windowname) {
+		return parseFloat(System.WindowsAPI(
+			&quot;user32.dll&quot;,
+			&quot;IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)&quot;,
+			&quot;FindWindow(0 , \&quot;&quot; + windowname + &quot;\&quot;)&quot;
+		));
 	}
 
-	/**
-	 * &#x6587;&#x5B57;&#x5217;&#x3092;UTF16&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Array&lt;number&gt;} UTF16&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
-	 */
-	static toUTF16Array(text) {
-		const utf16 = [];
-		for(let i = 0; i &lt; text.length; i++) {
-			utf16[i] = text.charCodeAt(i);
-		}
-		return utf16;
-	}
-
-	/**
-	 * UTF16&#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {Array&lt;number&gt;} utf16 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 */
-	static fromUTF16Array(utf16) {
-		const text = [];
-		for(let i = 0; i &lt; utf16.length; i++) {
-			text[i] = String.fromCharCode(utf16[i]);
-		}
-		return text.join(&quot;&quot;);
-	}
+	// TODO &#x30DE;&#x30A6;&#x30B9;&#x3092;&#x79FB;&#x52D5;&#x3055;&#x305B;&#x305F;&#x308A;&#x3001;&#x30AD;&#x30FC;&#x30DC;&#x30FC;&#x30C9;&#x3092;&#x5165;&#x529B;&#x3059;&#x308B;&#x64CD;&#x4F5C;&#x3092;&#x8FFD;&#x52A0;&#x3059;&#x308B;&#x4E88;&#x5B9A;
 
 }
+
 </code></pre>
 
 </div>

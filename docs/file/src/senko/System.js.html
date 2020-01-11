@@ -38,6 +38,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
 </ul>
@@ -70,6 +71,23 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
 /**
+ * &#x6587;&#x5B57;&#x5217;&#x3078;&#x5909;&#x63DB;&#x3057;&#x307E;&#x3059;&#x3002;
+ * @param {any} data 
+ * @private
+ */
+const toString = function(data) {
+	const string_data = data.toString();
+	if(string_data === &quot;[object Error]&quot;) {
+		const e = data;
+		const error_name	= e.name ? e.name : &quot;Error&quot;;
+		const error_number	= e.number ? Format.textf(&quot;0x%08X&quot;, e.number) : &quot;0x00000000&quot;;
+		const error_message	= e.message ? e.message : &quot;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3057;&#x305F;&#x3002;&quot;;
+		return Format.textf(&quot;%s(%s) %s&quot;, error_name, error_number, error_message);
+	}
+	return string_data;
+};
+
+/**
  * &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x7528;&#x306E;&#x30AF;&#x30E9;&#x30B9;
  * - &#x6587;&#x5B57;&#x5217;&#x306E;&#x5165;&#x51FA;&#x529B;
  * - &#x30B9;&#x30EA;&#x30FC;&#x30D7;&#x3001;&#x505C;&#x6B62;
@@ -84,7 +102,7 @@ export default class System {
 	 * @param {any} text
 	 */
 	static print(text) {
-		const output = text.toString();
+		const output = toString(text);
 		if(is_cscript) {
 			WSH.StdOut.Write(output);
 		}
@@ -98,12 +116,12 @@ export default class System {
 	 * @param {any} text
 	 */
 	static println(text) {
-		const output = text.toString();
+		const output = toString(text);
 		if(is_cscript) {
-			WSH.StdOut.Write(output + &quot;\n&quot;);
+			System.print(output + &quot;\n&quot;);
 		}
 		else {
-			WScript.Echo(output);
+			System.print(output);
 		}
 	}
 
@@ -117,7 +135,7 @@ export default class System {
 		for(let i = 0 ; i &lt; arguments.length ; i++) {
 			x[i] = arguments[i];
 			if(i === 0) {
-				x[i] = x[i].toString();
+				x[i] = toString(x[i]);
 			}
 		}
 		System.println(Format.textf.apply(this, x));
@@ -155,6 +173,19 @@ export default class System {
 		while(true) {
 			WScript.Sleep(1000);
 		}
+	}
+	
+	/**
+	 * &#x30D3;&#x30FC;&#x30D7;&#x97F3;&#x3092;&#x9CF4;&#x3089;&#x3059;
+	 * @param {number} frequency_hz - &#x5468;&#x6CE2;&#x6570;
+	 * @param {number} time_sec - &#x9CF4;&#x3089;&#x3059;&#x79D2;&#x6570;
+	 */
+	static beep(frequency_hz, time_sec) {
+		System.WindowsAPI(
+			&quot;kernel32.dll&quot;,
+			&quot;bool Beep(uint dwFreq, uint dwDuration)&quot;,
+			&quot;Beep(&quot; + (frequency_hz | 0) + &quot;, &quot; + ((time_sec * 1000) | 0) + &quot;)&quot;
+		);
 	}
 	
 	/**
@@ -248,6 +279,78 @@ export default class System {
 		const shell = new ActiveXObject(&quot;WScript.Shell&quot;);
 		shell.CurrentDirectory = System.getScriptDirectory();
 	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * @param {string} command - &#x30B3;&#x30DE;&#x30F3;&#x30C9;
+	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+	 * @param {boolean} [is_wait=false] - &#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x304C;&#x7D42;&#x4E86;&#x3059;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
+	 */
+	static run(command, style, is_wait) {
+		const NormalFocus = 1;
+		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
+		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		// @ts-ignore
+		return objWShell.Run(command, intWindowStyle, bWaitOnReturn);
+	}
+
+	/**
+	 * &#x30AF;&#x30EA;&#x30C3;&#x30D7;&#x30DC;&#x30FC;&#x30C9;&#x304B;&#x3089;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * @returns {string}
+	 */
+	static getClipBoardText() {
+		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		const command = &quot;powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();&quot;;
+		const oe = objWShell.Exec(command);
+		oe.StdIn.Close();
+		// @ts-ignore
+		return oe.StdOut.ReadAll();
+	}
+
+	/**
+	 * &#x30AF;&#x30EA;&#x30C3;&#x30D7;&#x30DC;&#x30FC;&#x30C9;&#x3078;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;
+	 * @param {string} text
+	 */
+	static setClipBoardText(text) {
+		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		// PowerShell 5.0&#x4EE5;&#x964D;
+		// oe = objWShell.Exec(&quot;powershell.exe -sta -Command Set-Clipboard \&quot;&#x3053;&#x308C;&#x3067;&#x3082;&#x30B3;&#x30D4;&#x30FC;&#x53EF;&#x80FD;\&quot;;&quot;);
+		const command = &quot;powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);&quot;.replace(/([\\&quot;])/g, &quot;\\$1&quot;);
+		const oe = objWShell.Exec(command);
+		oe.StdIn.Close();
+	}
+
+	/**
+	 * WindowsAPI &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * 
+	 * &#x4F8B;
+	 * - dll_name : user32.dll
+	 * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
+	 * - exec_text : MessageBox(0, &quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&quot;, &quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&quot;, 0)
+	 * @param {string} dll_name - &#x5229;&#x7528;&#x3059;&#x308B;dll
+	 * @param {string} function_text - &#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;
+	 * @param {string} exec_text - &#x5B9F;&#x884C;&#x30B3;&#x30DE;&#x30F3;&#x30C9;
+	 * @returns {string}
+	 */
+	static WindowsAPI(dll_name, function_text, exec_text) {
+		// &#x5229;&#x7528;&#x4F8B;
+		// System.WindowsAPI(
+		// 	&quot;user32.dll&quot;,
+		// 	&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;,
+		// 	&quot;MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0)&quot;
+		// );
+		const powershell_base = &quot;powershell -sta -Command&quot;;
+		const api_base = &quot;$api = Add-Type -Name \&quot;api\&quot; -MemberDefinition \&quot;[DllImport(\&quot;\&quot;&quot; + dll_name + &quot;\&quot;\&quot;)] public extern static &quot; + function_text + &quot;;\&quot; -PassThru;&quot;;
+		const exec_base = &quot;$api::&quot; + exec_text + &quot;;&quot;;
+		const command = (powershell_base + &quot; &quot; + api_base + &quot; &quot; + exec_base).replace(/([\\&quot;])/g, &quot;\\$1&quot;);
+		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		const oe = objWShell.Exec(command);
+		oe.StdIn.Close();
+		// @ts-ignore
+		return oe.StdOut.ReadAll();
+	}
+
 }
 
 

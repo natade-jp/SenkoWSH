@@ -1,6 +1,9 @@
 const File = require("./File.js");
 const MojiJS = require("MojiJS");
 
+// パッケージ情報を取得
+const package_info = JSON.parse(File.loadTextFile("./package.json"));
+
 /**
  * 
  * @param {string} filename 
@@ -9,7 +12,7 @@ const addHeader = function() {
 	const build_date = new Date();
 	const header = [];
 	header.push("/*!");
-	header.push(" * SenkoWSH.js");
+	header.push(" * SenkoWSH.js (version " + package_info["version"] + ", " + build_date.getFullYear() + "/" + (build_date.getMonth() + 1) + "/" + build_date.getDay() + ")");
 	header.push(" * https://github.com/natade-jp/SenkoWSH");
 	header.push(" * Copyright 2013-" + build_date.getFullYear() + " natade < https://github.com/natade-jp >");
 	header.push(" *");

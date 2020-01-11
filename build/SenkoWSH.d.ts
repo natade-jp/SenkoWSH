@@ -532,8 +532,9 @@ declare class ExtendsString {
      */
     static trim(text: string): string;
     /**
+     * 指定した関数を全ての文字に一律に処理を行う
      * @param {string} text
-     * @param {function(number, string, number): boolean} func
+     * @param {function(number, string, number): boolean} func - 文字番号, 文字列, 文字コード。戻り値がfalseで処理を終了。
      * @returns {boolean} result
      */
     static each(text: string, func: (...params: any[]) => any): boolean;
@@ -623,14 +624,40 @@ declare class ExtendsString {
  */
 declare class Format {
     /**
-     * 書式に合わせて文字列を組み立てる
+     * printf に似た書式に合わせて文字列を組み立てる
      * - ロケール、日付時刻等はサポートしていません。
-     * - sprintfの変換指定子のpとnはサポートしていません。
+     * - 変換指定子のpとnはサポートしていません。
      * @param {String} text
      * @param {...any} parm パラメータは可変引数
      * @returns {String}
      */
     static textf(text: string, ...parm: any[]): string;
+    /**
+     * 時刻用の書式に合わせて文字列を組み立てる
+     * - YYYY-MM-DD hh:mm:ss のように指定できる。
+     * @param {String} text
+     * @param {Date} date 時刻情報
+     * @returns {String}
+     */
+    static datef(text: string, date: Date): string;
+}
+
+/**
+ * Robotを扱うクラス
+ */
+declare class Robot {
+    /**
+     * 指定したクラス名のハンドルを取得する
+     * @param {string} classname
+     * @returns {number}
+     */
+    static getHandleOfClassName(classname: string): number;
+    /**
+     * 指定したウィンドウ名のハンドルを取得する
+     * @param {string} windowname
+     * @returns {number}
+     */
+    static getHandleOfWindowName(windowname: string): number;
 }
 
 /**
@@ -650,10 +677,11 @@ declare class Format {
 declare class SFile {
     constructor(pathname: string | SFile);
     /**
-     * ファイルの削除
+     * ファイルの削除（ゴミ箱には入りません）
+     * @param {boolean} is_force - 読み取り専用でも削除する
      * @returns {boolean}
      */
-    remove(): boolean;
+    remove(is_force: boolean): boolean;
     /**
      * ファイルが存在するか
      * @returns {boolean}
@@ -718,10 +746,29 @@ declare class SFile {
      */
     isFile(): boolean;
     /**
+     * 読み取り専用ファイルかどうか
+     * @returns {boolean}
+     */
+    isReadOnly(): boolean;
+    /**
+     * 読み取り専用ファイルかどうかを設定する
+     * @param {boolean} is_readonly
+     * @param {boolean} [is_allfiles=false]
+     * @returns {boolean}
+     */
+    setReadOnly(is_readonly: boolean, is_allfiles?: boolean): boolean;
+    /**
      * 隠しファイルかどうか
      * @returns {boolean}
      */
     isHidden(): boolean;
+    /**
+     *隠しファイルかどうかを設定する
+     * @param {boolean} is_hidden
+     * @param {boolean} [is_allfiles=false]
+     * @returns {boolean}
+     */
+    setHidden(is_hidden: boolean, is_allfiles?: boolean): boolean;
     /**
      * 更新日を取得
      * @returns {Date}
@@ -754,11 +801,6 @@ declare class SFile {
      */
     getNormalizedPathName(): string;
     /**
-     * サブフォルダの中まで探索して全てのファイルとフォルダを取得
-     * @returns {string[]}
-     */
-    getAllFiles(): string[];
-    /**
      * 配下のファイル名とフォルダ名を取得
      * @returns {string[]}
      */
@@ -783,7 +825,7 @@ declare class SFile {
      */
     mkdirs(): boolean;
     /**
-     * ファイルを開く
+     * 実行ファイルを起動する
      * @param {number} [style=1] - 起動オプション
      * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
      * @returns {void}
@@ -818,8 +860,9 @@ declare class SFile {
     /**
      * バイナリファイルを保存（激重）
      * @param {number[]} array_
+     * @returns {boolean}
      */
-    setBinaryFile(array_: number[]): void;
+    setBinaryFile(array_: number[]): boolean;
     /**
      * XMLHttpRequestを作成
      * @returns {XMLHttpRequest}
@@ -841,11 +884,23 @@ declare class SFile {
      */
     static setCurrentDirectory(file_obj: string | SFile): void;
     /**
+     * フォルダの中のフォルダとファイルに対して指定した関数を実行する
+     * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。
+     * @returns {boolean} result
+     */
+    each(func: (...params: any[]) => any): boolean;
+    /**
+     * サブフォルダの中まで探索して全てのファイルとフォルダを取得
+     * @returns {SFile[]}
+     */
+    getAllFiles(): SFile[];
+    /**
      * 指定した条件にあうファイルを探す
+     * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
      * @param {string|SFile|function(string, string): boolean} file_obj
      * @returns {SFile|null}
      */
-    static searchFile(file_obj: string | SFile | ((...params: any[]) => any)): SFile | null;
+    searchFile(file_obj: string | SFile | ((...params: any[]) => any)): SFile | null;
 }
 
 /**
@@ -893,6 +948,12 @@ declare class System {
      */
     static stop(): void;
     /**
+     * ビープ音を鳴らす
+     * @param {number} frequency_hz - 周波数
+     * @param {number} time_sec - 鳴らす秒数
+     */
+    static beep(frequency_hz: number, time_sec: number): void;
+    /**
      * CUIで起動しなおす
      * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
      */
@@ -925,6 +986,36 @@ declare class System {
      * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
      */
     static initializeCurrentDirectory(): void;
+    /**
+     * 指定したコマンドを実行する
+     * @param {string} command - コマンド
+     * @param {number} [style=1] - 起動オプション
+     * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
+     */
+    static run(command: string, style?: number, is_wait?: boolean): void;
+    /**
+     * クリップボードからテキストを取得する
+     * @returns {string}
+     */
+    static getClipBoardText(): string;
+    /**
+     * クリップボードへテキストを設定する
+     * @param {string} text
+     */
+    static setClipBoardText(text: string): void;
+    /**
+     * WindowsAPI を実行する
+     *
+     * 例
+     * - dll_name : user32.dll
+     * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
+     * - exec_text : MessageBox(0, "テキスト", "キャプション", 0)
+     * @param {string} dll_name - 利用するdll
+     * @param {string} function_text - 関数の定義データ
+     * @param {string} exec_text - 実行コマンド
+     * @returns {string}
+     */
+    static WindowsAPI(dll_name: string, function_text: string, exec_text: string): string;
 }
 
 

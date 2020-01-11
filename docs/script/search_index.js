@@ -48,6 +48,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "senkowsh/src/senko/robot.js~robot",
+    "class/src/senko/Robot.js~Robot.html",
+    "<span>Robot</span> <span class=\"search-result-import-path\">senkowsh/src/senko/Robot.js</span>",
+    "class"
+  ],
+  [
     "senkowsh/src/senko/sfile.js~sfile",
     "class/src/senko/SFile.js~SFile.html",
     "<span>SFile</span> <span class=\"search-result-import-path\">senkowsh/src/senko/SFile.js</span>",
@@ -834,9 +840,33 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/senko/format.js~format.datef",
+    "class/src/senko/Format.js~Format.html#static-method-datef",
+    "src/senko/Format.js~Format.datef",
+    "method"
+  ],
+  [
     "src/senko/format.js~format.textf",
     "class/src/senko/Format.js~Format.html#static-method-textf",
     "src/senko/Format.js~Format.textf",
+    "method"
+  ],
+  [
+    "src/senko/robot.js",
+    "file/src/senko/Robot.js.html",
+    "src/senko/Robot.js",
+    "file"
+  ],
+  [
+    "src/senko/robot.js~robot.gethandleofclassname",
+    "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfClassName",
+    "src/senko/Robot.js~Robot.getHandleOfClassName",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.gethandleofwindowname",
+    "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfWindowName",
+    "src/senko/Robot.js~Robot.getHandleOfWindowName",
     "method"
   ],
   [
@@ -855,6 +885,12 @@ window.esdocSearchIndex = [
     "src/senko/sfile.js~sfile#copy",
     "class/src/senko/SFile.js~SFile.html#instance-method-copy",
     "src/senko/SFile.js~SFile#copy",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile#each",
+    "class/src/senko/SFile.js~SFile.html#instance-method-each",
+    "src/senko/SFile.js~SFile#each",
     "method"
   ],
   [
@@ -960,6 +996,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile#isreadonly",
+    "class/src/senko/SFile.js~SFile.html#instance-method-isReadOnly",
+    "src/senko/SFile.js~SFile#isReadOnly",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#is_http",
     "class/src/senko/SFile.js~SFile.html#instance-member-is_http",
     "src/senko/SFile.js~SFile#is_http",
@@ -1026,15 +1068,33 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile#searchfile",
+    "class/src/senko/SFile.js~SFile.html#instance-method-searchFile",
+    "src/senko/SFile.js~SFile#searchFile",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#setbinaryfile",
     "class/src/senko/SFile.js~SFile.html#instance-method-setBinaryFile",
     "src/senko/SFile.js~SFile#setBinaryFile",
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile#sethidden",
+    "class/src/senko/SFile.js~SFile.html#instance-method-setHidden",
+    "src/senko/SFile.js~SFile#setHidden",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#setlastmodified",
     "class/src/senko/SFile.js~SFile.html#instance-method-setLastModified",
     "src/senko/SFile.js~SFile#setLastModified",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile#setreadonly",
+    "class/src/senko/SFile.js~SFile.html#instance-method-setReadOnly",
+    "src/senko/SFile.js~SFile#setReadOnly",
     "method"
   ],
   [
@@ -1074,12 +1134,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/sfile.js~sfile.searchfile",
-    "class/src/senko/SFile.js~SFile.html#static-method-searchFile",
-    "src/senko/SFile.js~SFile.searchFile",
-    "method"
-  ],
-  [
     "src/senko/sfile.js~sfile.setcurrentdirectory",
     "class/src/senko/SFile.js~SFile.html#static-method-setCurrentDirectory",
     "src/senko/SFile.js~SFile.setCurrentDirectory",
@@ -1090,6 +1144,18 @@ window.esdocSearchIndex = [
     "file/src/senko/System.js.html",
     "src/senko/System.js",
     "file"
+  ],
+  [
+    "src/senko/system.js~system.windowsapi",
+    "class/src/senko/System.js~System.html#static-method-WindowsAPI",
+    "src/senko/System.js~System.WindowsAPI",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.beep",
+    "class/src/senko/System.js~System.html#static-method-beep",
+    "src/senko/System.js~System.beep",
+    "method"
   ],
   [
     "src/senko/system.js~system.currenttimemillis",
@@ -1113,6 +1179,12 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.getarguments",
     "class/src/senko/System.js~System.html#static-method-getArguments",
     "src/senko/System.js~System.getArguments",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.getclipboardtext",
+    "class/src/senko/System.js~System.html#static-method-getClipBoardText",
+    "src/senko/System.js~System.getClipBoardText",
     "method"
   ],
   [
@@ -1155,6 +1227,18 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.readline",
     "class/src/senko/System.js~System.html#static-method-readLine",
     "src/senko/System.js~System.readLine",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.run",
+    "class/src/senko/System.js~System.html#static-method-run",
+    "src/senko/System.js~System.run",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.setclipboardtext",
+    "class/src/senko/System.js~System.html#static-method-setClipBoardText",
+    "src/senko/System.js~System.setClipBoardText",
     "method"
   ],
   [

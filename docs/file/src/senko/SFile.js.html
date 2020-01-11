@@ -38,6 +38,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
 </ul>
@@ -45,7 +46,9 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/senko/SFile.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Format from &quot;./Format.js&quot;;
+
+/**
  * The script is part of SenkoWSH.
  * 
  * AUTHOR:
@@ -100,18 +103,29 @@ export default class SFile {
 	}
 
 	/**
-	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x524A;&#x9664;
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x524A;&#x9664;&#xFF08;&#x30B4;&#x30DF;&#x7BB1;&#x306B;&#x306F;&#x5165;&#x308A;&#x307E;&#x305B;&#x3093;&#xFF09;
+	 * @param {boolean} is_force - &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x3067;&#x3082;&#x524A;&#x9664;&#x3059;&#x308B;
 	 * @returns {boolean}
 	 */
-	remove() {
+	remove(is_force) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		if(this.isFile()) {
-			return this.fso.DeleteFile(this.pathname);
+		try {
+			if(is_force) {
+				// &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x3092;&#x30AA;&#x30D5;&#x306B;&#x3059;&#x308B;
+				this.setReadOnly(false, true);
+			}
+			if(this.isFile()) {
+				return this.fso.DeleteFile(this.pathname);
+			}
+			else if(this.isDirectory()) {
+				return this.fso.DeleteFolder(this.pathname);
+			}
 		}
-		else if(this.isDirectory()) {
-			return this.fso.DeleteFolder(this.pathname);
+		catch (e) {
+			console.log(e);
+			return false;
 		}
 	}
 
@@ -185,29 +199,19 @@ export default class SFile {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		const name = new SFile(file_obj);
-		if(this.isFile()) {
-			// &#x4F8B;&#x3048;&#x3070;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5927;&#x6587;&#x5B57;&#x304B;&#x3089;&#x5C0F;&#x6587;&#x5B57;&#x306B;&#x5909;&#x63DB;&#x3068;&#x3044;&#x3063;&#x305F;&#x5834;&#x5408;&#x3001;
-			// Scripting.FileSystemObject &#x306E;&#x4ED5;&#x69D8;&#x306B;&#x3088;&#x308A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;
-			// &#x5225;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x7D4C;&#x7531;&#x3059;&#x308B;
-			const file = this.fso.getFile(this.pathname);
-			const key = ((Math.random() * 0x7FFFFFFF) &amp; 0x7FFFFFFF).toString(16);
-			file.Name = name.getName() + key;
-			file.Name = name.getName();
-			this.pathname = name.getAbsolutePath();
-			return true;
-		}
-		else if(this.isDirectory()) {
-			const file = this.fso.getFolder(this.pathname);
-			const key = ((Math.random() * 0x7FFFFFFF) &amp; 0x7FFFFFFF).toString(16);
-			file.Name = name.getName() + key;
-			file.Name = name.getName();
-			this.pathname = name.getAbsolutePath();
-			return true;
-		}
-		else {
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return false;
 		}
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		const name = new SFile(file_obj);
+		// &#x4F8B;&#x3048;&#x3070;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5927;&#x6587;&#x5B57;&#x304B;&#x3089;&#x5C0F;&#x6587;&#x5B57;&#x306B;&#x5909;&#x63DB;&#x3068;&#x3044;&#x3063;&#x305F;&#x5834;&#x5408;&#x3001;
+		// Scripting.FileSystemObject &#x306E;&#x4ED5;&#x69D8;&#x306B;&#x3088;&#x308A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;
+		// &#x5225;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x7D4C;&#x7531;&#x3059;&#x308B;
+		const key = ((Math.random() * 0x7FFFFFFF) &amp; 0x7FFFFFFF).toString(16);
+		file.Name = name.getName() + key;
+		file.Name = name.getName();
+		this.pathname = name.getAbsolutePath();
+		return true;
 	}
 
 	/**
@@ -310,6 +314,64 @@ export default class SFile {
 	}
 
 	/**
+	 * &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {boolean}
+	 */
+	isReadOnly() {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
+			return false;
+		}
+		const ATTRIBUTES_READONLY = 1;
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return (file.Attributes &amp; ATTRIBUTES_READONLY) !== 0;
+	}
+	
+	/**
+	 * &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304B;&#x3069;&#x3046;&#x304B;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;
+	 * @param {boolean} is_readonly
+	 * @param {boolean} [is_allfiles=false]
+	 * @returns {boolean}
+	 */
+	setReadOnly(is_readonly, is_allfiles) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
+			return false;
+		}
+		try {
+			const ATTRIBUTES_READONLY = 1;
+			const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+			if(is_readonly) {
+				file.Attributes = file.Attributes | ATTRIBUTES_READONLY;
+			}
+			else {
+				file.Attributes = file.Attributes &amp; ~ATTRIBUTES_READONLY;
+			}
+		}
+		catch (e) {
+			console.log(e);
+			return false;
+		}
+		if(this.isFile() || !is_allfiles) {
+			return true;
+		}
+		let ret = true;
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			ret = ret &amp;&amp; file.setReadOnly(is_readonly, false);
+			return true;
+		};
+		this.each(func);
+		return ret;
+	}
+
+	/**
 	 * &#x96A0;&#x3057;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304B;&#x3069;&#x3046;&#x304B;
 	 * @returns {boolean}
 	 */
@@ -317,17 +379,54 @@ export default class SFile {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		if(this.isFile()) {
-			const file = this.fso.getFile(this.pathname);
-			return (file.Attributes &amp; 2) !== 0;
-		}
-		else if(this.isDirectory()) {
-			const folder = this.fso.getFolder(this.pathname);
-			return (folder.Attributes &amp; 2) !== 0;
-		}
-		else {
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return false;
 		}
+		const ATTRIBUTES_HIDDEN = 2;
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return (file.Attributes &amp; ATTRIBUTES_HIDDEN) !== 0;
+	}
+	
+	/**
+	 *&#x96A0;&#x3057;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304B;&#x3069;&#x3046;&#x304B;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;
+	 * @param {boolean} is_hidden
+	 * @param {boolean} [is_allfiles=false]
+	 * @returns {boolean}
+	 */
+	setHidden(is_hidden, is_allfiles) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
+			return false;
+		}
+		try {
+			const ATTRIBUTES_HIDDEN = 2;
+			const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+			if(is_hidden) {
+				file.Attributes = file.Attributes | ATTRIBUTES_HIDDEN;
+			}
+			else {
+				file.Attributes = file.Attributes &amp; ~ATTRIBUTES_HIDDEN;
+			}
+		}
+		catch (e) {
+			console.log(e);
+			return false;
+		}
+		if(this.isFile() || !is_allfiles) {
+			return true;
+		}
+		let ret = true;
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			ret = ret &amp;&amp; file.setHidden(is_hidden, false);
+			return true;
+		};
+		this.each(func);
+		return ret;
 	}
 
 	/**
@@ -338,15 +437,11 @@ export default class SFile {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		if(this.isFile()) {
-			return new Date(this.fso.getFile(this.pathname).DateLastModified);
-		}
-		else if(this.isDirectory()) {
-			return new Date(this.fso.getFolder(this.pathname).DateLastModified);
-		}
-		else {
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return null;
 		}
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return file.DateLastModified;
 	}
 
 	/**
@@ -358,17 +453,19 @@ export default class SFile {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		if(this.isFile()) {
+		if(!this.isFile()) {
+			return false;
+		}
+		try {
 			const shell = new ActiveXObject(&quot;Shell.Application&quot;);
 			const folder = shell.NameSpace(this.getParent());
 			const file = folder.ParseName(this.getName());
-			const date_string =
-				date.getFullYear() + &quot;/&quot; + (date.getMonth() + 1) + &quot;/&quot; + (date.getDate()) + &quot; &quot; +
-				date.getHours() + &quot;:&quot; + date.getMinutes() + &quot;:&quot; + date.getSeconds();
+			const date_string = Format.datef(&quot;YYYY/MM/DD hh:mm:ss&quot;, date);
 			file.ModifyDate = date_string;
 			return true;
 		}
-		else if(this.isDirectory()) {
+		catch (e) {
+			console.log(e);
 			return false;
 		}
 	}
@@ -381,15 +478,11 @@ export default class SFile {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		if(this.isFile()) {
-			return this.fso.getFile(this.pathname).Size;
-		}
-		else if(this.isDirectory()) {
-			return this.fso.getFolder(this.pathname).Size;
-		}
-		else {
+		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return -1;
 		}
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return file.Size;
 	}
 
 	/**
@@ -443,69 +536,6 @@ export default class SFile {
 			name += &quot;\\&quot;;
 		}
 		return name;
-	}
-
-	/**
-	 * &#x30B5;&#x30D6;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x4E2D;&#x307E;&#x3067;&#x63A2;&#x7D22;&#x3057;&#x3066;&#x5168;&#x3066;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3068;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x53D6;&#x5F97;
-	 * @returns {string[]}
-	 */
-	getAllFiles() {
-		if(this.is_http) {
-			throw &quot;IllegalMethod&quot;;
-		}
-		if(!this.isDirectory) {
-			return null;
-		}
-		const out = [];
-		const path = [];
-		const collection = [];
-		let pointer = 0;
-		let list;
-		let targetfolder;
-		path[pointer] = this.getNormalizedPathName();
-		targetfolder = this.fso.getFolder(path[pointer]);
-		list = new Enumerator(this.fso.getFolder(targetfolder).Files);
-		for(; !list.atEnd(); list.moveNext()) {
-			out.push(path[pointer] + list.item().Name);
-		}
-		if(targetfolder.SubFolders.Count === 0) {
-			return out;
-		}
-		collection[pointer] = new Enumerator(targetfolder.SubFolders);
-		pointer++;
-		while(true) {
-			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;
-			out.push(path[pointer]);
-			path[pointer] += &quot;\\&quot;;
-			targetfolder = this.fso.getFolder(path[pointer]);
-			list = new Enumerator(targetfolder.Files);
-			for(; !list.atEnd(); list.moveNext()) {
-				out.push(path[pointer] + list.item().Name);
-			}
-			if(targetfolder.SubFolders.Count === 0) {
-				while(true) {
-					if(pointer === 0) {
-						break;
-					}
-					collection[pointer - 1].moveNext();
-					if(collection[pointer - 1].atEnd()) {
-						pointer--;
-						continue;
-					}
-					else {
-						break;
-					}
-				}
-				if(pointer === 0) {
-					break;
-				}
-			}
-			else {
-				collection[pointer] = new Enumerator(targetfolder.SubFolders);
-				pointer++;
-			}
-		}
-		return out;
 	}
 
 	/**
@@ -606,7 +636,7 @@ export default class SFile {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		const name = this.pathname.replace(&quot;/&quot;, &quot;\\&quot;).split(&quot;\\&quot;);
+		const name = this.pathname.replace(/\//g, &quot;\\&quot;).split(&quot;\\&quot;);
 		let dir  = &quot;&quot;;
 		for(let i = 0; i &lt; name.length; i++) {
 			dir += name[i];
@@ -619,7 +649,7 @@ export default class SFile {
 	}
 
 	/**
-	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;
+	 * &#x5B9F;&#x884C;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8D77;&#x52D5;&#x3059;&#x308B;
 	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
 	 * @param {boolean} [is_wait=false] - &#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x304C;&#x7D42;&#x4E86;&#x3059;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
 	 * @returns {void}
@@ -681,6 +711,7 @@ export default class SFile {
 				text = http.responseText;
 			}
 			catch (e) {
+				console.log(e);
 				text = &quot;error&quot;;
 			}
 		}
@@ -892,51 +923,66 @@ export default class SFile {
 			0x017E	:	0x9E	,	//	382	158
 			0x0178	:	0x9F		//	376	159
 		};
-		const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
-		stream.type = adTypeText;
-		stream.charset = charset;
-		stream.open();
-		stream.loadFromFile(this.pathname);
-		const text = stream.readText(adReadAll);
-		stream.close();
-		const out = new Array(text.length);
-		for(let i = 0;i &lt; text.length;i++) {
-			const x = text.charCodeAt(i);
-			if(0xFF &lt; x) {
-				out[i] = map[x];
+		try {
+			const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+			stream.type = adTypeText;
+			stream.charset = charset;
+			stream.open();
+			stream.loadFromFile(this.pathname);
+			const text = stream.readText(adReadAll);
+			stream.close();
+			const out = new Array(text.length);
+			for(let i = 0;i &lt; text.length;i++) {
+				const x = text.charCodeAt(i);
+				if(0xFF &lt; x) {
+					out[i] = map[x];
+				}
+				else {
+					out[i] = x;
+				}
 			}
-			else {
-				out[i] = x;
-			}
+			return out;
 		}
-		return out;
+		catch (e) {
+			console.log(e);
+			return [];
+		}
 	}
 
 	/**
 	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;&#xFF08;&#x6FC0;&#x91CD;&#xFF09;
 	 * @param {number[]} array_
+	 * @returns {boolean}
 	 */
 	setBinaryFile(array_) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
+		let is_write = true;
 		const adTypeText = 2;
 		const adSaveCreateOverWrite = 2;
 		const charset = &quot;iso-8859-1&quot;;
 		const buffersize = 512;
-		const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
-		stream.type = adTypeText;
-		stream.charset = charset;
-		stream.open();
-		for(let i = 0;i &lt; array_.length;) {
-			const text = [];
-			for(let j = 0; (j &lt; buffersize) &amp;&amp; (i &lt; array_.length); j++, i++) {
-				text[j] = String.fromCharCode(array_[i]);
+		try {
+			const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+			stream.type = adTypeText;
+			stream.charset = charset;
+			stream.open();
+			for(let i = 0;i &lt; array_.length;) {
+				const text = [];
+				for(let j = 0; (j &lt; buffersize) &amp;&amp; (i &lt; array_.length); j++, i++) {
+					text[j] = String.fromCharCode(array_[i]);
+				}
+				stream.writeText(text.join(&quot;&quot;));
 			}
-			stream.writeText(text.join(&quot;&quot;));
+			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+			stream.close();
 		}
-		stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-		stream.close();
+		catch (e) {
+			console.log(e);
+			is_write = false;
+		}
+		return is_write;
 	}
 
 	/**
@@ -1011,52 +1057,54 @@ export default class SFile {
 	}
 
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
-	 * @param {string|SFile|function(string, string): boolean} file_obj
-	 * @returns {SFile|null}
+	 * &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x4E2D;&#x306E;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3068;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x95A2;&#x6570;&#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * @param {function(SFile): boolean} func &#x623B;&#x308A;&#x5024;&#x304C;false&#x3067;&#x51E6;&#x7406;&#x3092;&#x7D42;&#x4E86;&#x3002;
+	 * @returns {boolean} result
 	 */
-	static searchFile(file_obj) {
-		const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
+	each(func) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isDirectory) {
+			return func.call(func, this);
+		}
 		const path = [];
 		const collection = [];
+		let file;
 		let pointer = 0;
 		let list;
 		let targetfolder;
-		/**
-		 * @type {function(string, string): boolean}
-		 * @private
-		 */
-		let isTarget;
-		if(typeof file_obj !== &quot;function&quot;) {
-			const file = new SFile(file_obj);
-			const buffer = file.getName();
-			isTarget = function(name, fullpath) {
-				return name === buffer;
-			};
-		}
-		else {
-			isTarget = file_obj;
-		}
-		path[pointer] = SFile.getCurrentDirectory().getNormalizedPathName();
-		targetfolder = fso.getFolder(path[pointer]);
-		list = new Enumerator(fso.getFolder(targetfolder).Files);
-		for(let i = 0; !list.atEnd(); list.moveNext()) {
-			if(isTarget(list.item().Name, path[pointer] + list.item().Name)) {
-				return new SFile(path[pointer] + list.item().Name);
+		path[pointer] = this.getNormalizedPathName();
+
+		// 1&#x968E;&#x5C64;&#x76EE;&#x3092;&#x51E6;&#x7406;&#x3059;&#x308B;
+		targetfolder = this.fso.getFolder(path[pointer]);
+		list = new Enumerator(this.fso.getFolder(targetfolder).Files);
+		for(; !list.atEnd(); list.moveNext()) {
+			file = new SFile(path[pointer] + list.item().Name);
+			if(!func.call(func, file)) {
+				return false;
 			}
 		}
+
+		// 2&#x968E;&#x5C64;&#x76EE;&#x4EE5;&#x964D;&#x3092;&#x51E6;&#x7406;&#x3059;&#x308B;
 		if(targetfolder.SubFolders.Count === 0) {
-			return null;
+			return false;
 		}
 		collection[pointer] = new Enumerator(targetfolder.SubFolders);
 		pointer++;
 		while(true) {
-			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name + &quot;\\&quot;;
-			targetfolder = fso.getFolder(path[pointer]);
+			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;
+			file = new SFile(path[pointer]);
+			if(!func.call(func, file)) {
+				return false;
+			}
+			path[pointer] += &quot;\\&quot;;
+			targetfolder = this.fso.getFolder(path[pointer]);
 			list = new Enumerator(targetfolder.Files);
 			for(; !list.atEnd(); list.moveNext()) {
-				if(isTarget(list.item().Name, path[pointer] + list.item().Name)) {
-					return new SFile(path[pointer] + list.item().Name);
+				file = new SFile(path[pointer] + list.item().Name);
+				if(!func.call(func, file)) {
+					return false;
 				}
 			}
 			if(targetfolder.SubFolders.Count === 0) {
@@ -1082,7 +1130,64 @@ export default class SFile {
 				pointer++;
 			}
 		}
-		return null;
+		return true;
+	}
+
+	/**
+	 * &#x30B5;&#x30D6;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x4E2D;&#x307E;&#x3067;&#x63A2;&#x7D22;&#x3057;&#x3066;&#x5168;&#x3066;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3068;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x53D6;&#x5F97;
+	 * @returns {SFile[]}
+	 */
+	getAllFiles() {
+		/**
+		 * @type {SFile[]}
+		 */
+		const out = [];
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			out.push(file);
+			return true;
+		};
+		this.each(func);
+		return out;
+	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
+	 * &#x95A2;&#x6570;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30D5;&#x30EB;&#x30D1;&#x30B9;&#x304C;&#x5F15;&#x6570;&#x306B;&#x6E21;&#x3055;&#x308C;&#x307E;&#x3059;
+	 * @param {string|SFile|function(string, string): boolean} file_obj
+	 * @returns {SFile|null}
+	 */
+	searchFile(file_obj) {
+		let target_file = null;
+		/**
+		 * @type {function(string, string): boolean}
+		 * @private
+		 */
+		let isTarget;
+		if(typeof file_obj !== &quot;function&quot;) {
+			const file = new SFile(file_obj);
+			const buffer = file.getName();
+			isTarget = function(name, fullpath) {
+				return name === buffer;
+			};
+		}
+		else {
+			isTarget = file_obj;
+		}
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			if(isTarget(file.getName(), file.getAbsolutePath())) {
+				target_file = file;
+				return false;
+			}
+			return true;
+		};
+		this.each(func);
+		return target_file;
 	}
 
 }

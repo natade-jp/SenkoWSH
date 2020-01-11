@@ -37,8 +37,9 @@ export default class ExtendsString {
 	}
 
 	/**
+	 * 指定した関数を全ての文字に一律に処理を行う
 	 * @param {string} text
-	 * @param {function(number, string, number): boolean} func
+	 * @param {function(number, string, number): boolean} func - 文字番号, 文字列, 文字コード。戻り値がfalseで処理を終了。
 	 * @returns {boolean} result
 	 */
 	static each(text, func) {

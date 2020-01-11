@@ -1,5 +1,14 @@
 # History
 
+## SenkoWSH v3.1.0
+### 更新点
+- SFileの「mkdirs」が正しく動作していなかったのを修正
+- SFileの「remove」に読み取り専用でも削除できる引数を追加
+- SFileに「setBinaryFile」や「remove」の実行が失敗した場合のエラー処理を追加
+- SFileに「setReadOnly」「isReadOnly」「setHidden」「each」関数を追加
+- Formatに、日付専用のフォーマット関数を追加
+- Systemに、クリップボード操作、コマンドを実行、ビープ音、WindowsAPI関数を追加
+
 ## SenkoWSH v3.0.1
 ### 更新点
 - Objectへの拡張方法が誤っていたのを修正

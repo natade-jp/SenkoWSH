@@ -38,6 +38,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
 </ul>
@@ -84,8 +85,9 @@ export default class ExtendsString {
 	}
 
 	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x95A2;&#x6570;&#x3092;&#x5168;&#x3066;&#x306E;&#x6587;&#x5B57;&#x306B;&#x4E00;&#x5F8B;&#x306B;&#x51E6;&#x7406;&#x3092;&#x884C;&#x3046;
 	 * @param {string} text
-	 * @param {function(number, string, number): boolean} func
+	 * @param {function(number, string, number): boolean} func - &#x6587;&#x5B57;&#x756A;&#x53F7;, &#x6587;&#x5B57;&#x5217;, &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x3002;&#x623B;&#x308A;&#x5024;&#x304C;false&#x3067;&#x51E6;&#x7406;&#x3092;&#x7D42;&#x4E86;&#x3002;
 	 * @returns {boolean} result
 	 */
 	static each(text, func) {

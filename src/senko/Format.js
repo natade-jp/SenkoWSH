@@ -1,3 +1,5 @@
+import System from "./System";
+
 /**
  * The script is part of SenkoWSH.
  * 
@@ -14,9 +16,9 @@
 export default class Format {
 
 	/**
-	 * 書式に合わせて文字列を組み立てる
+	 * printf に似た書式に合わせて文字列を組み立てる
 	 * - ロケール、日付時刻等はサポートしていません。
-	 * - sprintfの変換指定子のpとnはサポートしていません。
+	 * - 変換指定子のpとnはサポートしていません。
 	 * @param {String} text 
 	 * @param {...any} parm パラメータは可変引数
 	 * @returns {String}
@@ -377,6 +379,48 @@ export default class Format {
 			return (output);	
 		};
 		return (parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));
+	}
+
+	/**
+	 * 時刻用の書式に合わせて文字列を組み立てる
+	 * - YYYY-MM-DD hh:mm:ss のように指定できる。
+	 * @param {String} text 
+	 * @param {Date} date 時刻情報
+	 * @returns {String}
+	 */
+	static datef(text, date) {
+		const Y = date.getFullYear();
+		const M = date.getMonth() + 1;
+		const D = date.getDate();
+		const h = date.getHours();
+		const m = date.getMinutes();
+		const s = date.getSeconds();
+		const ms = date.getMilliseconds();
+		const day = date.getDay(); // 曜日
+		const aaa_array = [26085, 26376, 28779, 27700, 26408, 37329, 22303];
+		const aaaa_str = String.fromCharCode(26332) + String.fromCharCode(26085);
+		const ddd_array = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+		const dddd_array = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+		let output = text;
+		output = output.replace(/YYYY/g, Y.toString());
+		output = output.replace(/YY/g, (Y % 100).toString());
+		output = output.replace(/MM/g, Format.textf("%02d", M));
+		output = output.replace(/M/g, M.toString());
+		output = output.replace(/DD/g, Format.textf("%02d", D));
+		output = output.replace(/D/g, D.toString());
+		output = output.replace(/hh/g, Format.textf("%02d", h));
+		output = output.replace(/h/g, h.toString());
+		output = output.replace(/mm/g, Format.textf("%02d", m));
+		output = output.replace(/m/g, m.toString());
+		output = output.replace(/ss/g, Format.textf("%02d", s));
+		output = output.replace(/s/g, s.toString());
+		output = output.replace(/000/g, Format.textf("%03d", ms));
+		output = output.replace(/aaaa/g, String.fromCharCode(aaa_array[day]) + aaaa_str);
+		output = output.replace(/aaa/g, String.fromCharCode(aaa_array[day]));
+		output = output.replace(/dddd/g, dddd_array[day]);
+		output = output.replace(/ddd/g, ddd_array[day]);
+		output = output.replace(/day/g, day.toString());
+		return output;
 	}
 
 }

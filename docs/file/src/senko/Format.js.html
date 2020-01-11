@@ -38,6 +38,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
 </ul>
@@ -45,7 +46,9 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/senko/Format.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import System from &quot;./System&quot;;
+
+/**
  * The script is part of SenkoWSH.
  * 
  * AUTHOR:
@@ -61,9 +64,9 @@
 export default class Format {
 
 	/**
-	 * &#x66F8;&#x5F0F;&#x306B;&#x5408;&#x308F;&#x305B;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x308B;
+	 * printf &#x306B;&#x4F3C;&#x305F;&#x66F8;&#x5F0F;&#x306B;&#x5408;&#x308F;&#x305B;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x308B;
 	 * - &#x30ED;&#x30B1;&#x30FC;&#x30EB;&#x3001;&#x65E5;&#x4ED8;&#x6642;&#x523B;&#x7B49;&#x306F;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3057;&#x3066;&#x3044;&#x307E;&#x305B;&#x3093;&#x3002;
-	 * - sprintf&#x306E;&#x5909;&#x63DB;&#x6307;&#x5B9A;&#x5B50;&#x306E;p&#x3068;n&#x306F;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3057;&#x3066;&#x3044;&#x307E;&#x305B;&#x3093;&#x3002;
+	 * - &#x5909;&#x63DB;&#x6307;&#x5B9A;&#x5B50;&#x306E;p&#x3068;n&#x306F;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3057;&#x3066;&#x3044;&#x307E;&#x305B;&#x3093;&#x3002;
 	 * @param {String} text 
 	 * @param {...any} parm &#x30D1;&#x30E9;&#x30E1;&#x30FC;&#x30BF;&#x306F;&#x53EF;&#x5909;&#x5F15;&#x6570;
 	 * @returns {String}
@@ -424,6 +427,48 @@ export default class Format {
 			return (output);	
 		};
 		return (parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));
+	}
+
+	/**
+	 * &#x6642;&#x523B;&#x7528;&#x306E;&#x66F8;&#x5F0F;&#x306B;&#x5408;&#x308F;&#x305B;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x7D44;&#x307F;&#x7ACB;&#x3066;&#x308B;
+	 * - YYYY-MM-DD hh:mm:ss &#x306E;&#x3088;&#x3046;&#x306B;&#x6307;&#x5B9A;&#x3067;&#x304D;&#x308B;&#x3002;
+	 * @param {String} text 
+	 * @param {Date} date &#x6642;&#x523B;&#x60C5;&#x5831;
+	 * @returns {String}
+	 */
+	static datef(text, date) {
+		const Y = date.getFullYear();
+		const M = date.getMonth() + 1;
+		const D = date.getDate();
+		const h = date.getHours();
+		const m = date.getMinutes();
+		const s = date.getSeconds();
+		const ms = date.getMilliseconds();
+		const day = date.getDay(); // &#x66DC;&#x65E5;
+		const aaa_array = [26085, 26376, 28779, 27700, 26408, 37329, 22303];
+		const aaaa_str = String.fromCharCode(26332) + String.fromCharCode(26085);
+		const ddd_array = [&quot;Sun&quot;, &quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;];
+		const dddd_array = [&quot;Sunday&quot;, &quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;];
+		let output = text;
+		output = output.replace(/YYYY/g, Y.toString());
+		output = output.replace(/YY/g, (Y % 100).toString());
+		output = output.replace(/MM/g, Format.textf(&quot;%02d&quot;, M));
+		output = output.replace(/M/g, M.toString());
+		output = output.replace(/DD/g, Format.textf(&quot;%02d&quot;, D));
+		output = output.replace(/D/g, D.toString());
+		output = output.replace(/hh/g, Format.textf(&quot;%02d&quot;, h));
+		output = output.replace(/h/g, h.toString());
+		output = output.replace(/mm/g, Format.textf(&quot;%02d&quot;, m));
+		output = output.replace(/m/g, m.toString());
+		output = output.replace(/ss/g, Format.textf(&quot;%02d&quot;, s));
+		output = output.replace(/s/g, s.toString());
+		output = output.replace(/000/g, Format.textf(&quot;%03d&quot;, ms));
+		output = output.replace(/aaaa/g, String.fromCharCode(aaa_array[day]) + aaaa_str);
+		output = output.replace(/aaa/g, String.fromCharCode(aaa_array[day]));
+		output = output.replace(/dddd/g, dddd_array[day]);
+		output = output.replace(/ddd/g, ddd_array[day]);
+		output = output.replace(/day/g, day.toString());
+		return output;
 	}
 
 }

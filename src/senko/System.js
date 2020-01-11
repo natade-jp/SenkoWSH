@@ -23,6 +23,23 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
 /**
+ * 文字列へ変換します。
+ * @param {any} data 
+ * @private
+ */
+const toString = function(data) {
+	const string_data = data.toString();
+	if(string_data === "[object Error]") {
+		const e = data;
+		const error_name	= e.name ? e.name : "Error";
+		const error_number	= e.number ? Format.textf("0x%08X", e.number) : "0x00000000";
+		const error_message	= e.message ? e.message : "エラーが発生しました。";
+		return Format.textf("%s(%s) %s", error_name, error_number, error_message);
+	}
+	return string_data;
+};
+
+/**
  * システム用のクラス
  * - 文字列の入出力
  * - スリープ、停止
@@ -37,7 +54,7 @@ export default class System {
 	 * @param {any} text
 	 */
 	static print(text) {
-		const output = text.toString();
+		const output = toString(text);
 		if(is_cscript) {
 			WSH.StdOut.Write(output);
 		}
@@ -51,12 +68,12 @@ export default class System {
 	 * @param {any} text
 	 */
 	static println(text) {
-		const output = text.toString();
+		const output = toString(text);
 		if(is_cscript) {
-			WSH.StdOut.Write(output + "\n");
+			System.print(output + "\n");
 		}
 		else {
-			WScript.Echo(output);
+			System.print(output);
 		}
 	}
 
@@ -70,7 +87,7 @@ export default class System {
 		for(let i = 0 ; i < arguments.length ; i++) {
 			x[i] = arguments[i];
 			if(i === 0) {
-				x[i] = x[i].toString();
+				x[i] = toString(x[i]);
 			}
 		}
 		System.println(Format.textf.apply(this, x));
@@ -108,6 +125,19 @@ export default class System {
 		while(true) {
 			WScript.Sleep(1000);
 		}
+	}
+	
+	/**
+	 * ビープ音を鳴らす
+	 * @param {number} frequency_hz - 周波数
+	 * @param {number} time_sec - 鳴らす秒数
+	 */
+	static beep(frequency_hz, time_sec) {
+		System.WindowsAPI(
+			"kernel32.dll",
+			"bool Beep(uint dwFreq, uint dwDuration)",
+			"Beep(" + (frequency_hz | 0) + ", " + ((time_sec * 1000) | 0) + ")"
+		);
 	}
 	
 	/**
@@ -201,6 +231,78 @@ export default class System {
 		const shell = new ActiveXObject("WScript.Shell");
 		shell.CurrentDirectory = System.getScriptDirectory();
 	}
+
+	/**
+	 * 指定したコマンドを実行する
+	 * @param {string} command - コマンド
+	 * @param {number} [style=1] - 起動オプション
+	 * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
+	 */
+	static run(command, style, is_wait) {
+		const NormalFocus = 1;
+		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
+		const objWShell = new ActiveXObject("WScript.Shell");
+		// @ts-ignore
+		return objWShell.Run(command, intWindowStyle, bWaitOnReturn);
+	}
+
+	/**
+	 * クリップボードからテキストを取得する
+	 * @returns {string}
+	 */
+	static getClipBoardText() {
+		const objWShell = new ActiveXObject("WScript.Shell");
+		const command = "powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();";
+		const oe = objWShell.Exec(command);
+		oe.StdIn.Close();
+		// @ts-ignore
+		return oe.StdOut.ReadAll();
+	}
+
+	/**
+	 * クリップボードへテキストを設定する
+	 * @param {string} text
+	 */
+	static setClipBoardText(text) {
+		const objWShell = new ActiveXObject("WScript.Shell");
+		// PowerShell 5.0以降
+		// oe = objWShell.Exec("powershell.exe -sta -Command Set-Clipboard \"これでもコピー可能\";");
+		const command = "powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);".replace(/([\\"])/g, "\\$1");
+		const oe = objWShell.Exec(command);
+		oe.StdIn.Close();
+	}
+
+	/**
+	 * WindowsAPI を実行する
+	 * 
+	 * 例
+	 * - dll_name : user32.dll
+	 * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
+	 * - exec_text : MessageBox(0, "テキスト", "キャプション", 0)
+	 * @param {string} dll_name - 利用するdll
+	 * @param {string} function_text - 関数の定義データ
+	 * @param {string} exec_text - 実行コマンド
+	 * @returns {string}
+	 */
+	static WindowsAPI(dll_name, function_text, exec_text) {
+		// 利用例
+		// System.WindowsAPI(
+		// 	"user32.dll",
+		// 	"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)",
+		// 	"MessageBox(0, \"テキスト\", \"キャプション\", 0)"
+		// );
+		const powershell_base = "powershell -sta -Command";
+		const api_base = "$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"" + dll_name + "\"\")] public extern static " + function_text + ";\" -PassThru;";
+		const exec_base = "$api::" + exec_text + ";";
+		const command = (powershell_base + " " + api_base + " " + exec_base).replace(/([\\"])/g, "\\$1");
+		const objWShell = new ActiveXObject("WScript.Shell");
+		const oe = objWShell.Exec(command);
+		oe.StdIn.Close();
+		// @ts-ignore
+		return oe.StdOut.ReadAll();
+	}
+
 }
 
 

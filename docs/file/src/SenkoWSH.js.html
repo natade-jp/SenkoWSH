@@ -38,6 +38,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
 </ul>
@@ -58,6 +59,7 @@
 import typeCSV from &quot;./senko/CSV.js&quot;;
 import typeDialog from &quot;./senko/Dialog.js&quot;;
 import typeSFile from &quot;./senko/SFile.js&quot;;
+import typeRobot from &quot;./senko/Robot.js&quot;;
 import typeFormat from &quot;./senko/Format.js&quot;;
 import typeRandom from &quot;./konpeito/Random.js&quot;;
 import typeJapanese from &quot;./mojijs/Japanese.js&quot;;
@@ -87,6 +89,14 @@ Dialog = typeDialog;
 // @ts-ignore
 // eslint-disable-next-line no-undef
 SFile = typeSFile;
+
+/**
+ * @type {typeof typeRobot}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+Robot = typeRobot;
 
 /**
  * @type {typeof typeFormat}

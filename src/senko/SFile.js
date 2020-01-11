@@ -1,3 +1,5 @@
+import Format from "./Format.js";
+
 /**
  * The script is part of SenkoWSH.
  * 
@@ -53,18 +55,29 @@ export default class SFile {
 	}
 
 	/**
-	 * ファイルの削除
+	 * ファイルの削除（ゴミ箱には入りません）
+	 * @param {boolean} is_force - 読み取り専用でも削除する
 	 * @returns {boolean}
 	 */
-	remove() {
+	remove(is_force) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		if(this.isFile()) {
-			return this.fso.DeleteFile(this.pathname);
+		try {
+			if(is_force) {
+				// 読み取り専用をオフにする
+				this.setReadOnly(false, true);
+			}
+			if(this.isFile()) {
+				return this.fso.DeleteFile(this.pathname);
+			}
+			else if(this.isDirectory()) {
+				return this.fso.DeleteFolder(this.pathname);
+			}
 		}
-		else if(this.isDirectory()) {
-			return this.fso.DeleteFolder(this.pathname);
+		catch (e) {
+			console.log(e);
+			return false;
 		}
 	}
 
@@ -138,29 +151,19 @@ export default class SFile {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		const name = new SFile(file_obj);
-		if(this.isFile()) {
-			// 例えばファイル名を大文字から小文字に変換といった場合、
-			// Scripting.FileSystemObject の仕様によりエラーが発生するため、
-			// 別のファイル名を経由する
-			const file = this.fso.getFile(this.pathname);
-			const key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);
-			file.Name = name.getName() + key;
-			file.Name = name.getName();
-			this.pathname = name.getAbsolutePath();
-			return true;
-		}
-		else if(this.isDirectory()) {
-			const file = this.fso.getFolder(this.pathname);
-			const key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);
-			file.Name = name.getName() + key;
-			file.Name = name.getName();
-			this.pathname = name.getAbsolutePath();
-			return true;
-		}
-		else {
+		if(!this.isFile() && !this.isDirectory()) {
 			return false;
 		}
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		const name = new SFile(file_obj);
+		// 例えばファイル名を大文字から小文字に変換といった場合、
+		// Scripting.FileSystemObject の仕様によりエラーが発生するため、
+		// 別のファイル名を経由する
+		const key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);
+		file.Name = name.getName() + key;
+		file.Name = name.getName();
+		this.pathname = name.getAbsolutePath();
+		return true;
 	}
 
 	/**
@@ -263,6 +266,64 @@ export default class SFile {
 	}
 
 	/**
+	 * 読み取り専用ファイルかどうか
+	 * @returns {boolean}
+	 */
+	isReadOnly() {
+		if(this.is_http) {
+			throw "IllegalMethod";
+		}
+		if(!this.isFile() && !this.isDirectory()) {
+			return false;
+		}
+		const ATTRIBUTES_READONLY = 1;
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return (file.Attributes & ATTRIBUTES_READONLY) !== 0;
+	}
+	
+	/**
+	 * 読み取り専用ファイルかどうかを設定する
+	 * @param {boolean} is_readonly
+	 * @param {boolean} [is_allfiles=false]
+	 * @returns {boolean}
+	 */
+	setReadOnly(is_readonly, is_allfiles) {
+		if(this.is_http) {
+			throw "IllegalMethod";
+		}
+		if(!this.isFile() && !this.isDirectory()) {
+			return false;
+		}
+		try {
+			const ATTRIBUTES_READONLY = 1;
+			const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+			if(is_readonly) {
+				file.Attributes = file.Attributes | ATTRIBUTES_READONLY;
+			}
+			else {
+				file.Attributes = file.Attributes & ~ATTRIBUTES_READONLY;
+			}
+		}
+		catch (e) {
+			console.log(e);
+			return false;
+		}
+		if(this.isFile() || !is_allfiles) {
+			return true;
+		}
+		let ret = true;
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			ret = ret && file.setReadOnly(is_readonly, false);
+			return true;
+		};
+		this.each(func);
+		return ret;
+	}
+
+	/**
 	 * 隠しファイルかどうか
 	 * @returns {boolean}
 	 */
@@ -270,17 +331,54 @@ export default class SFile {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		if(this.isFile()) {
-			const file = this.fso.getFile(this.pathname);
-			return (file.Attributes & 2) !== 0;
-		}
-		else if(this.isDirectory()) {
-			const folder = this.fso.getFolder(this.pathname);
-			return (folder.Attributes & 2) !== 0;
-		}
-		else {
+		if(!this.isFile() && !this.isDirectory()) {
 			return false;
 		}
+		const ATTRIBUTES_HIDDEN = 2;
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return (file.Attributes & ATTRIBUTES_HIDDEN) !== 0;
+	}
+	
+	/**
+	 *隠しファイルかどうかを設定する
+	 * @param {boolean} is_hidden
+	 * @param {boolean} [is_allfiles=false]
+	 * @returns {boolean}
+	 */
+	setHidden(is_hidden, is_allfiles) {
+		if(this.is_http) {
+			throw "IllegalMethod";
+		}
+		if(!this.isFile() && !this.isDirectory()) {
+			return false;
+		}
+		try {
+			const ATTRIBUTES_HIDDEN = 2;
+			const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+			if(is_hidden) {
+				file.Attributes = file.Attributes | ATTRIBUTES_HIDDEN;
+			}
+			else {
+				file.Attributes = file.Attributes & ~ATTRIBUTES_HIDDEN;
+			}
+		}
+		catch (e) {
+			console.log(e);
+			return false;
+		}
+		if(this.isFile() || !is_allfiles) {
+			return true;
+		}
+		let ret = true;
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			ret = ret && file.setHidden(is_hidden, false);
+			return true;
+		};
+		this.each(func);
+		return ret;
 	}
 
 	/**
@@ -291,15 +389,11 @@ export default class SFile {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		if(this.isFile()) {
-			return new Date(this.fso.getFile(this.pathname).DateLastModified);
-		}
-		else if(this.isDirectory()) {
-			return new Date(this.fso.getFolder(this.pathname).DateLastModified);
-		}
-		else {
+		if(!this.isFile() && !this.isDirectory()) {
 			return null;
 		}
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return file.DateLastModified;
 	}
 
 	/**
@@ -311,17 +405,19 @@ export default class SFile {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		if(this.isFile()) {
+		if(!this.isFile()) {
+			return false;
+		}
+		try {
 			const shell = new ActiveXObject("Shell.Application");
 			const folder = shell.NameSpace(this.getParent());
 			const file = folder.ParseName(this.getName());
-			const date_string =
-				date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + (date.getDate()) + " " +
-				date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+			const date_string = Format.datef("YYYY/MM/DD hh:mm:ss", date);
 			file.ModifyDate = date_string;
 			return true;
 		}
-		else if(this.isDirectory()) {
+		catch (e) {
+			console.log(e);
 			return false;
 		}
 	}
@@ -334,15 +430,11 @@ export default class SFile {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		if(this.isFile()) {
-			return this.fso.getFile(this.pathname).Size;
-		}
-		else if(this.isDirectory()) {
-			return this.fso.getFolder(this.pathname).Size;
-		}
-		else {
+		if(!this.isFile() && !this.isDirectory()) {
 			return -1;
 		}
+		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		return file.Size;
 	}
 
 	/**
@@ -396,69 +488,6 @@ export default class SFile {
 			name += "\\";
 		}
 		return name;
-	}
-
-	/**
-	 * サブフォルダの中まで探索して全てのファイルとフォルダを取得
-	 * @returns {string[]}
-	 */
-	getAllFiles() {
-		if(this.is_http) {
-			throw "IllegalMethod";
-		}
-		if(!this.isDirectory) {
-			return null;
-		}
-		const out = [];
-		const path = [];
-		const collection = [];
-		let pointer = 0;
-		let list;
-		let targetfolder;
-		path[pointer] = this.getNormalizedPathName();
-		targetfolder = this.fso.getFolder(path[pointer]);
-		list = new Enumerator(this.fso.getFolder(targetfolder).Files);
-		for(; !list.atEnd(); list.moveNext()) {
-			out.push(path[pointer] + list.item().Name);
-		}
-		if(targetfolder.SubFolders.Count === 0) {
-			return out;
-		}
-		collection[pointer] = new Enumerator(targetfolder.SubFolders);
-		pointer++;
-		while(true) {
-			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;
-			out.push(path[pointer]);
-			path[pointer] += "\\";
-			targetfolder = this.fso.getFolder(path[pointer]);
-			list = new Enumerator(targetfolder.Files);
-			for(; !list.atEnd(); list.moveNext()) {
-				out.push(path[pointer] + list.item().Name);
-			}
-			if(targetfolder.SubFolders.Count === 0) {
-				while(true) {
-					if(pointer === 0) {
-						break;
-					}
-					collection[pointer - 1].moveNext();
-					if(collection[pointer - 1].atEnd()) {
-						pointer--;
-						continue;
-					}
-					else {
-						break;
-					}
-				}
-				if(pointer === 0) {
-					break;
-				}
-			}
-			else {
-				collection[pointer] = new Enumerator(targetfolder.SubFolders);
-				pointer++;
-			}
-		}
-		return out;
 	}
 
 	/**
@@ -559,7 +588,7 @@ export default class SFile {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		const name = this.pathname.replace("/", "\\").split("\\");
+		const name = this.pathname.replace(/\//g, "\\").split("\\");
 		let dir  = "";
 		for(let i = 0; i < name.length; i++) {
 			dir += name[i];
@@ -572,7 +601,7 @@ export default class SFile {
 	}
 
 	/**
-	 * ファイルを開く
+	 * 実行ファイルを起動する
 	 * @param {number} [style=1] - 起動オプション
 	 * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
 	 * @returns {void}
@@ -634,6 +663,7 @@ export default class SFile {
 				text = http.responseText;
 			}
 			catch (e) {
+				console.log(e);
 				text = "error";
 			}
 		}
@@ -845,51 +875,66 @@ export default class SFile {
 			0x017E	:	0x9E	,	//	382	158
 			0x0178	:	0x9F		//	376	159
 		};
-		const stream = new ActiveXObject("ADODB.Stream");
-		stream.type = adTypeText;
-		stream.charset = charset;
-		stream.open();
-		stream.loadFromFile(this.pathname);
-		const text = stream.readText(adReadAll);
-		stream.close();
-		const out = new Array(text.length);
-		for(let i = 0;i < text.length;i++) {
-			const x = text.charCodeAt(i);
-			if(0xFF < x) {
-				out[i] = map[x];
+		try {
+			const stream = new ActiveXObject("ADODB.Stream");
+			stream.type = adTypeText;
+			stream.charset = charset;
+			stream.open();
+			stream.loadFromFile(this.pathname);
+			const text = stream.readText(adReadAll);
+			stream.close();
+			const out = new Array(text.length);
+			for(let i = 0;i < text.length;i++) {
+				const x = text.charCodeAt(i);
+				if(0xFF < x) {
+					out[i] = map[x];
+				}
+				else {
+					out[i] = x;
+				}
 			}
-			else {
-				out[i] = x;
-			}
+			return out;
 		}
-		return out;
+		catch (e) {
+			console.log(e);
+			return [];
+		}
 	}
 
 	/**
 	 * バイナリファイルを保存（激重）
 	 * @param {number[]} array_
+	 * @returns {boolean}
 	 */
 	setBinaryFile(array_) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
+		let is_write = true;
 		const adTypeText = 2;
 		const adSaveCreateOverWrite = 2;
 		const charset = "iso-8859-1";
 		const buffersize = 512;
-		const stream = new ActiveXObject("ADODB.Stream");
-		stream.type = adTypeText;
-		stream.charset = charset;
-		stream.open();
-		for(let i = 0;i < array_.length;) {
-			const text = [];
-			for(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {
-				text[j] = String.fromCharCode(array_[i]);
+		try {
+			const stream = new ActiveXObject("ADODB.Stream");
+			stream.type = adTypeText;
+			stream.charset = charset;
+			stream.open();
+			for(let i = 0;i < array_.length;) {
+				const text = [];
+				for(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {
+					text[j] = String.fromCharCode(array_[i]);
+				}
+				stream.writeText(text.join(""));
 			}
-			stream.writeText(text.join(""));
+			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+			stream.close();
 		}
-		stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-		stream.close();
+		catch (e) {
+			console.log(e);
+			is_write = false;
+		}
+		return is_write;
 	}
 
 	/**
@@ -964,52 +1009,54 @@ export default class SFile {
 	}
 
 	/**
-	 * 指定した条件にあうファイルを探す
-	 * @param {string|SFile|function(string, string): boolean} file_obj
-	 * @returns {SFile|null}
+	 * フォルダの中のフォルダとファイルに対して指定した関数を実行する
+	 * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。
+	 * @returns {boolean} result
 	 */
-	static searchFile(file_obj) {
-		const fso = new ActiveXObject("Scripting.FileSystemObject");
+	each(func) {
+		if(this.is_http) {
+			throw "IllegalMethod";
+		}
+		if(!this.isDirectory) {
+			return func.call(func, this);
+		}
 		const path = [];
 		const collection = [];
+		let file;
 		let pointer = 0;
 		let list;
 		let targetfolder;
-		/**
-		 * @type {function(string, string): boolean}
-		 * @private
-		 */
-		let isTarget;
-		if(typeof file_obj !== "function") {
-			const file = new SFile(file_obj);
-			const buffer = file.getName();
-			isTarget = function(name, fullpath) {
-				return name === buffer;
-			};
-		}
-		else {
-			isTarget = file_obj;
-		}
-		path[pointer] = SFile.getCurrentDirectory().getNormalizedPathName();
-		targetfolder = fso.getFolder(path[pointer]);
-		list = new Enumerator(fso.getFolder(targetfolder).Files);
-		for(let i = 0; !list.atEnd(); list.moveNext()) {
-			if(isTarget(list.item().Name, path[pointer] + list.item().Name)) {
-				return new SFile(path[pointer] + list.item().Name);
+		path[pointer] = this.getNormalizedPathName();
+
+		// 1階層目を処理する
+		targetfolder = this.fso.getFolder(path[pointer]);
+		list = new Enumerator(this.fso.getFolder(targetfolder).Files);
+		for(; !list.atEnd(); list.moveNext()) {
+			file = new SFile(path[pointer] + list.item().Name);
+			if(!func.call(func, file)) {
+				return false;
 			}
 		}
+
+		// 2階層目以降を処理する
 		if(targetfolder.SubFolders.Count === 0) {
-			return null;
+			return false;
 		}
 		collection[pointer] = new Enumerator(targetfolder.SubFolders);
 		pointer++;
 		while(true) {
-			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name + "\\";
-			targetfolder = fso.getFolder(path[pointer]);
+			path[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;
+			file = new SFile(path[pointer]);
+			if(!func.call(func, file)) {
+				return false;
+			}
+			path[pointer] += "\\";
+			targetfolder = this.fso.getFolder(path[pointer]);
 			list = new Enumerator(targetfolder.Files);
 			for(; !list.atEnd(); list.moveNext()) {
-				if(isTarget(list.item().Name, path[pointer] + list.item().Name)) {
-					return new SFile(path[pointer] + list.item().Name);
+				file = new SFile(path[pointer] + list.item().Name);
+				if(!func.call(func, file)) {
+					return false;
 				}
 			}
 			if(targetfolder.SubFolders.Count === 0) {
@@ -1035,7 +1082,64 @@ export default class SFile {
 				pointer++;
 			}
 		}
-		return null;
+		return true;
+	}
+
+	/**
+	 * サブフォルダの中まで探索して全てのファイルとフォルダを取得
+	 * @returns {SFile[]}
+	 */
+	getAllFiles() {
+		/**
+		 * @type {SFile[]}
+		 */
+		const out = [];
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			out.push(file);
+			return true;
+		};
+		this.each(func);
+		return out;
+	}
+
+	/**
+	 * 指定した条件にあうファイルを探す
+	 * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
+	 * @param {string|SFile|function(string, string): boolean} file_obj
+	 * @returns {SFile|null}
+	 */
+	searchFile(file_obj) {
+		let target_file = null;
+		/**
+		 * @type {function(string, string): boolean}
+		 * @private
+		 */
+		let isTarget;
+		if(typeof file_obj !== "function") {
+			const file = new SFile(file_obj);
+			const buffer = file.getName();
+			isTarget = function(name, fullpath) {
+				return name === buffer;
+			};
+		}
+		else {
+			isTarget = file_obj;
+		}
+		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			if(isTarget(file.getName(), file.getAbsolutePath())) {
+				target_file = file;
+				return false;
+			}
+			return true;
+		};
+		this.each(func);
+		return target_file;
 	}
 
 }

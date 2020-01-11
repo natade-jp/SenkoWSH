@@ -11,6 +11,7 @@
 import typeCSV from "./senko/CSV.js";
 import typeDialog from "./senko/Dialog.js";
 import typeSFile from "./senko/SFile.js";
+import typeRobot from "./senko/Robot.js";
 import typeFormat from "./senko/Format.js";
 import typeRandom from "./konpeito/Random.js";
 import typeJapanese from "./mojijs/Japanese.js";
@@ -40,6 +41,14 @@ Dialog = typeDialog;
 // @ts-ignore
 // eslint-disable-next-line no-undef
 SFile = typeSFile;
+
+/**
+ * @type {typeof typeRobot}
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+Robot = typeRobot;
 
 /**
  * @type {typeof typeFormat}
