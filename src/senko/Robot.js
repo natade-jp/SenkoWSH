@@ -11,6 +11,15 @@
 import System from "./System";
 
 /**
+ * 型のみの情報
+ * @typedef {Object} WSHRobotRect
+ * @property {number} x 左上の座標x
+ * @property {number} y 左上の座標y
+ * @property {number} width 横幅
+ * @property {number} height 縦幅
+ */
+
+/**
  * ウィンドウやマウスなどを自動操作するためのクラス
  */
 export default class Robot {
@@ -25,28 +34,54 @@ export default class Robot {
 		return parseFloat(System.WindowsAPI(
 			"user32.dll",
 			"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)",
-			"FindWindow(\"" + classname + "\", 0)"
+			"$api::FindWindow(\"" + classname + "\", 0);"
 		));
 	}
 
 	/**
+	 * 指定したハンドルのクラス名を取得する
+	 * @param {number} handle 
+	 * @returns {string}
+	 */
+	static getClassName(handle) {
+		return System.WindowsAPI(
+			"user32.dll",
+			"IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)",
+			"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetClassName(" + handle + ", $buff, 256);$($buff.ToString());"
+		);
+	}
+
+	/**
 	 * 指定したウィンドウ名のハンドルを取得する
-	 * @param {string} windowname 
+	 * @param {string} windowtext 
 	 * @returns {number}
 	 */
-	static getHandleOfWindowName(windowname) {
+	static getHandleOfWindowText(windowtext) {
 		// console.log(Robot.getHandleOfWindowName("Notepad"));
 		return parseFloat(System.WindowsAPI(
 			"user32.dll",
 			"IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)",
-			"FindWindow(0 , \"" + windowname + "\")"
+			"$api::FindWindow(0 , \"" + windowtext + "\");"
 		));
+	}
+
+	/**
+	 * 指定したハンドルのウィンドウ名を取得する
+	 * @param {number} handle 
+	 * @returns {string}
+	 */
+	static getWindowText(handle) {
+		return System.WindowsAPI(
+			"user32.dll",
+			"IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)",
+			"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetWindowText(" + handle + ", $buff, 256);$($buff.ToString());"
+		);
 	}
 
 	/**
 	 * 指定したハンドルの位置とサイズを取得する
 	 * @param {number} handle 
-	 * @returns {{x:number, y:number, width:number, height:number}}
+	 * @returns {WSHRobotRect}
 	 */
 	static getWindowRect(handle) {
 		/*
@@ -54,11 +89,11 @@ export default class Robot {
 		Add-Type -TypeDefinition @"
 		using System;
 		using System.Runtime.InteropServices;
-			public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
-			public class API {
-				[DllImport("user32.dll")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-				public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }
-			}
+		public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+		public class API {
+			[DllImport("user32.dll")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+			public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }
+		}
 		"@
 		$rect = [API]::getrect(x);
 		"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)"
@@ -85,14 +120,14 @@ export default class Robot {
 	/**
 	 * 指定したハンドルの位置とサイズを設定する
 	 * @param {number} handle 
-	 * @param {{x:number, y:number, width:number, height:number}} rect 
+	 * @param {WSHRobotRect} rect 
 	 * @returns {void}
 	 */
 	static setWindowRect(handle, rect) {
 		System.WindowsAPI(
 			"user32.dll",
 			"bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)",
-			"MoveWindow(" + handle + " , " + (rect.x|0) + ", " + (rect.y|0) + ", " + (rect.width|0) + ", " + (rect.height|0) + ", 1 )"
+			"$api::MoveWindow(" + handle + " , " + (rect.x|0) + ", " + (rect.y|0) + ", " + (rect.width|0) + ", " + (rect.height|0) + ", 1 );"
 		);
 	}
 
@@ -104,7 +139,7 @@ export default class Robot {
 		return parseFloat(System.WindowsAPI(
 			"user32.dll",
 			"IntPtr GetForegroundWindow()",
-			"GetForegroundWindow()"
+			"$api::GetForegroundWindow();"
 		));
 	}
 
@@ -117,7 +152,7 @@ export default class Robot {
 		System.WindowsAPI(
 			"user32.dll",
 			"bool SetForegroundWindow(IntPtr hWnd)",
-			"SetForegroundWindow(" + handle + ")"
+			"$api::SetForegroundWindow(" + handle + ");"
 		);
 	}
 
@@ -127,16 +162,11 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getPID(handle) {
-		/*
-		以下の行を1行で実行する
-		$api = Add-Type -Name "api" -MemberDefinition "[DllImport(""user32.dll"")] public extern static IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId);" -PassThru;
-		$getpid = 0;
-		$null = $api::GetWindowThreadProcessId(x, [ref] $getpid);
-		$getpid;
-		*/
-		// eslint-disable-next-line quotes
-		const command = `$api = Add-Type -Name "api" -MemberDefinition "[DllImport(""user32.dll"")] public extern static IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId);" -PassThru;$getpid = 0;$null = $api::GetWindowThreadProcessId(` + handle + `, [ref] $getpid);$getpid`;
-		return parseFloat(System.PowerShell(command));
+		return parseFloat(System.WindowsAPI(
+			"user32.dll",
+			"IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)",
+			"$getpid = 0;$null = $api::GetWindowThreadProcessId(" + handle + ", [ref] $getpid);$getpid;"
+		));
 	}
 
 	/**
@@ -146,7 +176,6 @@ export default class Robot {
 	static terminateProcess(pid) {
 		return System.run("taskkill /PID " + pid, 0, true);
 	}
-
 
 
 	// TODO マウスを移動させたり、キーボードを入力する操作を追加する予定

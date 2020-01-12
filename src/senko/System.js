@@ -136,7 +136,7 @@ export default class System {
 		System.WindowsAPI(
 			"kernel32.dll",
 			"bool Beep(uint dwFreq, uint dwDuration)",
-			"Beep(" + (frequency_hz | 0) + ", " + ((time_sec * 1000) | 0) + ")"
+			"$api::Beep(" + (frequency_hz | 0) + ", " + ((time_sec * 1000) | 0) + ");"
 		);
 	}
 	
@@ -268,9 +268,9 @@ export default class System {
 	 * 例
 	 * - dll_name : user32.dll
 	 * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
-	 * - exec_text : MessageBox(0, "テキスト", "キャプション", 0)
+	 * - exec_text : $api::MessageBox(0, "テキスト", "キャプション", 0);
 	 * @param {string} dll_name - 利用するdll
-	 * @param {string} function_text - 関数の定義データ
+	 * @param {string} function_text - 関数の定義データ($apiに代入されます。)
 	 * @param {string} exec_text - 実行コマンド
 	 * @returns {string}
 	 */
@@ -279,13 +279,12 @@ export default class System {
 		// System.WindowsAPI(
 		// 	"user32.dll",
 		// 	"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)",
-		// 	"MessageBox(0, \"テキスト\", \"キャプション\", 0)"
+		// 	"$api::MessageBox(0, \"テキスト\", \"キャプション\", 0);"
 		// );
 		// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する
 		// eslint-disable-next-line quotes
 		const api_base = `$api = Add-Type -Name "api" -MemberDefinition "[DllImport(""` + dll_name + `"")] public extern static ` + function_text + `;" -PassThru;`;
-		const exec_base = "$api::" + exec_text + ";";
-		const command = api_base + " " + exec_base;
+		const command = api_base + " " + exec_text;
 		return System.PowerShell(command);
 	}
 

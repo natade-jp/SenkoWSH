@@ -864,15 +864,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/robot.js~robot.getclassname",
+    "class/src/senko/Robot.js~Robot.html#static-method-getClassName",
+    "src/senko/Robot.js~Robot.getClassName",
+    "method"
+  ],
+  [
     "src/senko/robot.js~robot.gethandleofclassname",
     "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfClassName",
     "src/senko/Robot.js~Robot.getHandleOfClassName",
     "method"
   ],
   [
-    "src/senko/robot.js~robot.gethandleofwindowname",
-    "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfWindowName",
-    "src/senko/Robot.js~Robot.getHandleOfWindowName",
+    "src/senko/robot.js~robot.gethandleofwindowtext",
+    "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfWindowText",
+    "src/senko/Robot.js~Robot.getHandleOfWindowText",
     "method"
   ],
   [
@@ -885,6 +891,12 @@ window.esdocSearchIndex = [
     "src/senko/robot.js~robot.getwindowrect",
     "class/src/senko/Robot.js~Robot.html#static-method-getWindowRect",
     "src/senko/Robot.js~Robot.getWindowRect",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.getwindowtext",
+    "class/src/senko/Robot.js~Robot.html#static-method-getWindowText",
+    "src/senko/Robot.js~Robot.getWindowText",
     "method"
   ],
   [
@@ -904,6 +916,12 @@ window.esdocSearchIndex = [
     "class/src/senko/Robot.js~Robot.html#static-method-terminateProcess",
     "src/senko/Robot.js~Robot.terminateProcess",
     "method"
+  ],
+  [
+    "src/senko/robot.js~wshrobotrect",
+    "typedef/index.html#static-typedef-WSHRobotRect",
+    "src/senko/Robot.js~WSHRobotRect",
+    "typedef"
   ],
   [
     "src/senko/sfile.js",

@@ -643,6 +643,21 @@ declare class Format {
 }
 
 /**
+ * 型のみの情報
+ * @typedef {Object} WSHRobotRect
+ * @property {number} x 左上の座標x
+ * @property {number} y 左上の座標y
+ * @property {number} width 横幅
+ * @property {number} height 縦幅
+ */
+declare type WSHRobotRect = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
+
+/**
  * ウィンドウやマウスなどを自動操作するためのクラス
  */
 declare class Robot {
@@ -653,24 +668,36 @@ declare class Robot {
      */
     static getHandleOfClassName(classname: string): number;
     /**
+     * 指定したハンドルのクラス名を取得する
+     * @param {number} handle
+     * @returns {string}
+     */
+    static getClassName(handle: number): string;
+    /**
      * 指定したウィンドウ名のハンドルを取得する
-     * @param {string} windowname
+     * @param {string} windowtext
      * @returns {number}
      */
-    static getHandleOfWindowName(windowname: string): number;
+    static getHandleOfWindowText(windowtext: string): number;
+    /**
+     * 指定したハンドルのウィンドウ名を取得する
+     * @param {number} handle
+     * @returns {string}
+     */
+    static getWindowText(handle: number): string;
     /**
      * 指定したハンドルの位置とサイズを取得する
      * @param {number} handle
-     * @returns {{x:number, y:number, width:number, height:number}}
+     * @returns {WSHRobotRect}
      */
-    static getWindowRect(handle: number): any;
+    static getWindowRect(handle: number): WSHRobotRect;
     /**
      * 指定したハンドルの位置とサイズを設定する
      * @param {number} handle
-     * @param {{x:number, y:number, width:number, height:number}} rect
+     * @param {WSHRobotRect} rect
      * @returns {void}
      */
-    static setWindowRect(handle: number, rect: any): void;
+    static setWindowRect(handle: number, rect: WSHRobotRect): void;
     /**
      * アクティブなウィンドウのハンドルを取得する
      * @returns {number}
@@ -1040,9 +1067,9 @@ declare class System {
      * 例
      * - dll_name : user32.dll
      * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
-     * - exec_text : MessageBox(0, "テキスト", "キャプション", 0)
+     * - exec_text : $api::MessageBox(0, "テキスト", "キャプション", 0);
      * @param {string} dll_name - 利用するdll
-     * @param {string} function_text - 関数の定義データ
+     * @param {string} function_text - 関数の定義データ($apiに代入されます。)
      * @param {string} exec_text - 実行コマンド
      * @returns {string}
      */

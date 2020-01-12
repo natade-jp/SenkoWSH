@@ -41,6 +41,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -184,7 +185,7 @@ export default class System {
 		System.WindowsAPI(
 			&quot;kernel32.dll&quot;,
 			&quot;bool Beep(uint dwFreq, uint dwDuration)&quot;,
-			&quot;Beep(&quot; + (frequency_hz | 0) + &quot;, &quot; + ((time_sec * 1000) | 0) + &quot;)&quot;
+			&quot;$api::Beep(&quot; + (frequency_hz | 0) + &quot;, &quot; + ((time_sec * 1000) | 0) + &quot;);&quot;
 		);
 	}
 	
@@ -316,9 +317,9 @@ export default class System {
 	 * &#x4F8B;
 	 * - dll_name : user32.dll
 	 * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
-	 * - exec_text : MessageBox(0, &quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&quot;, &quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&quot;, 0)
+	 * - exec_text : $api::MessageBox(0, &quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&quot;, &quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&quot;, 0);
 	 * @param {string} dll_name - &#x5229;&#x7528;&#x3059;&#x308B;dll
-	 * @param {string} function_text - &#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;
+	 * @param {string} function_text - &#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;($api&#x306B;&#x4EE3;&#x5165;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;)
 	 * @param {string} exec_text - &#x5B9F;&#x884C;&#x30B3;&#x30DE;&#x30F3;&#x30C9;
 	 * @returns {string}
 	 */
@@ -327,13 +328,12 @@ export default class System {
 		// System.WindowsAPI(
 		// 	&quot;user32.dll&quot;,
 		// 	&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;,
-		// 	&quot;MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0)&quot;
+		// 	&quot;$api::MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0);&quot;
 		// );
 		// &#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3060;&#x3068;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x304C;&#x9762;&#x5012;&#x306A;&#x306E;&#x3067;&#x3001;&#x3053;&#x3053;&#x306F;&#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x4F7F;&#x7528;&#x3059;&#x308B;
 		// eslint-disable-next-line quotes
 		const api_base = `$api = Add-Type -Name &quot;api&quot; -MemberDefinition &quot;[DllImport(&quot;&quot;` + dll_name + `&quot;&quot;)] public extern static ` + function_text + `;&quot; -PassThru;`;
-		const exec_base = &quot;$api::&quot; + exec_text + &quot;;&quot;;
-		const command = api_base + &quot; &quot; + exec_base;
+		const command = api_base + &quot; &quot; + exec_text;
 		return System.PowerShell(command);
 	}
 
