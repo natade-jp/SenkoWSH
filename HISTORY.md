@@ -1,5 +1,9 @@
 # History
 
+## SenkoWSH v3.x.x
+### 更新点
+- ウィンドウやマウスなどを自動操作するためのクラスRobotを追加
+
 ## SenkoWSH v3.1.0
 ### 更新点
 - SFileの「mkdirs」が正しく動作していなかったのを修正

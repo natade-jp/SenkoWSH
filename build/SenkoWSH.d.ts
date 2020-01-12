@@ -643,7 +643,7 @@ declare class Format {
 }
 
 /**
- * Robotを扱うクラス
+ * ウィンドウやマウスなどを自動操作するためのクラス
  */
 declare class Robot {
     /**
@@ -658,6 +658,41 @@ declare class Robot {
      * @returns {number}
      */
     static getHandleOfWindowName(windowname: string): number;
+    /**
+     * 指定したハンドルの位置とサイズを取得する
+     * @param {number} handle
+     * @returns {{x:number, y:number, width:number, height:number}}
+     */
+    static getWindowRect(handle: number): any;
+    /**
+     * 指定したハンドルの位置とサイズを設定する
+     * @param {number} handle
+     * @param {{x:number, y:number, width:number, height:number}} rect
+     * @returns {void}
+     */
+    static setWindowRect(handle: number, rect: any): void;
+    /**
+     * アクティブなウィンドウのハンドルを取得する
+     * @returns {number}
+     */
+    static getActiveWindow(): number;
+    /**
+     * アクティブなウィンドウを設定する
+     * @param {number} handle
+     * @returns {void}
+     */
+    static setActiveWindow(handle: number): void;
+    /**
+     * 指定したハンドルのプロセスIDを取得する
+     * @param {number} handle
+     * @returns {number}
+     */
+    static getPID(handle: number): number;
+    /**
+     * 指定したプロセスIDを修了させる
+     * @param {number} pid
+     */
+    static terminateProcess(pid: number): void;
 }
 
 /**
@@ -994,15 +1029,11 @@ declare class System {
      */
     static run(command: string, style?: number, is_wait?: boolean): void;
     /**
-     * クリップボードからテキストを取得する
+     * PowerShell を実行する
+     * @param {string} source
      * @returns {string}
      */
-    static getClipBoardText(): string;
-    /**
-     * クリップボードへテキストを設定する
-     * @param {string} text
-     */
-    static setClipBoardText(text: string): void;
+    static PowerShell(source: string): string;
     /**
      * WindowsAPI を実行する
      *
@@ -1016,6 +1047,16 @@ declare class System {
      * @returns {string}
      */
     static WindowsAPI(dll_name: string, function_text: string, exec_text: string): string;
+    /**
+     * クリップボードからテキストを取得する
+     * @returns {string}
+     */
+    static getClipBoardText(): string;
+    /**
+     * クリップボードへテキストを設定する
+     * @param {string} text
+     */
+    static setClipBoardText(text: string): void;
 }
 
 

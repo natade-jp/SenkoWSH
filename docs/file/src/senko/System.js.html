@@ -296,29 +296,18 @@ export default class System {
 	}
 
 	/**
-	 * &#x30AF;&#x30EA;&#x30C3;&#x30D7;&#x30DC;&#x30FC;&#x30C9;&#x304B;&#x3089;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * @param {string} source
 	 * @returns {string}
 	 */
-	static getClipBoardText() {
+	static PowerShell(source) {
+		const powershell_base = &quot;powershell -sta -Command&quot;;
+		const command = powershell_base + &quot; &quot; + source;
 		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
-		const command = &quot;powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();&quot;;
-		const oe = objWShell.Exec(command);
+		const oe = objWShell.Exec(command.replace(/([\\&quot;])/g, &quot;\\$1&quot;));
 		oe.StdIn.Close();
 		// @ts-ignore
-		return oe.StdOut.ReadAll();
-	}
-
-	/**
-	 * &#x30AF;&#x30EA;&#x30C3;&#x30D7;&#x30DC;&#x30FC;&#x30C9;&#x3078;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;
-	 * @param {string} text
-	 */
-	static setClipBoardText(text) {
-		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
-		// PowerShell 5.0&#x4EE5;&#x964D;
-		// oe = objWShell.Exec(&quot;powershell.exe -sta -Command Set-Clipboard \&quot;&#x3053;&#x308C;&#x3067;&#x3082;&#x30B3;&#x30D4;&#x30FC;&#x53EF;&#x80FD;\&quot;;&quot;);
-		const command = &quot;powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);&quot;.replace(/([\\&quot;])/g, &quot;\\$1&quot;);
-		const oe = objWShell.Exec(command);
-		oe.StdIn.Close();
+		return oe.StdOut.ReadAll().replace(/\r?\n$/, &quot;&quot;);
 	}
 
 	/**
@@ -340,15 +329,32 @@ export default class System {
 		// 	&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;,
 		// 	&quot;MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0)&quot;
 		// );
-		const powershell_base = &quot;powershell -sta -Command&quot;;
-		const api_base = &quot;$api = Add-Type -Name \&quot;api\&quot; -MemberDefinition \&quot;[DllImport(\&quot;\&quot;&quot; + dll_name + &quot;\&quot;\&quot;)] public extern static &quot; + function_text + &quot;;\&quot; -PassThru;&quot;;
+		// &#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3060;&#x3068;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x304C;&#x9762;&#x5012;&#x306A;&#x306E;&#x3067;&#x3001;&#x3053;&#x3053;&#x306F;&#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x4F7F;&#x7528;&#x3059;&#x308B;
+		// eslint-disable-next-line quotes
+		const api_base = `$api = Add-Type -Name &quot;api&quot; -MemberDefinition &quot;[DllImport(&quot;&quot;` + dll_name + `&quot;&quot;)] public extern static ` + function_text + `;&quot; -PassThru;`;
 		const exec_base = &quot;$api::&quot; + exec_text + &quot;;&quot;;
-		const command = (powershell_base + &quot; &quot; + api_base + &quot; &quot; + exec_base).replace(/([\\&quot;])/g, &quot;\\$1&quot;);
-		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
-		const oe = objWShell.Exec(command);
-		oe.StdIn.Close();
-		// @ts-ignore
-		return oe.StdOut.ReadAll();
+		const command = api_base + &quot; &quot; + exec_base;
+		return System.PowerShell(command);
+	}
+
+	/**
+	 * &#x30AF;&#x30EA;&#x30C3;&#x30D7;&#x30DC;&#x30FC;&#x30C9;&#x304B;&#x3089;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * @returns {string}
+	 */
+	static getClipBoardText() {
+		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();&quot;;
+		return System.PowerShell(command);
+	}
+
+	/**
+	 * &#x30AF;&#x30EA;&#x30C3;&#x30D7;&#x30DC;&#x30FC;&#x30C9;&#x3078;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;
+	 * @param {string} text
+	 */
+	static setClipBoardText(text) {
+		// PowerShell 5.0&#x4EE5;&#x964D;
+		// command = &quot;Set-Clipboard \&quot;&#x3053;&#x308C;&#x3067;&#x3082;&#x30B3;&#x30D4;&#x30FC;&#x53EF;&#x80FD;\&quot;&quot;;
+		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);&quot;;
+		System.PowerShell(command);
 	}
 
 }

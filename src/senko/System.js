@@ -248,29 +248,18 @@ export default class System {
 	}
 
 	/**
-	 * クリップボードからテキストを取得する
+	 * PowerShell を実行する
+	 * @param {string} source
 	 * @returns {string}
 	 */
-	static getClipBoardText() {
+	static PowerShell(source) {
+		const powershell_base = "powershell -sta -Command";
+		const command = powershell_base + " " + source;
 		const objWShell = new ActiveXObject("WScript.Shell");
-		const command = "powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();";
-		const oe = objWShell.Exec(command);
+		const oe = objWShell.Exec(command.replace(/([\\"])/g, "\\$1"));
 		oe.StdIn.Close();
 		// @ts-ignore
-		return oe.StdOut.ReadAll();
-	}
-
-	/**
-	 * クリップボードへテキストを設定する
-	 * @param {string} text
-	 */
-	static setClipBoardText(text) {
-		const objWShell = new ActiveXObject("WScript.Shell");
-		// PowerShell 5.0以降
-		// oe = objWShell.Exec("powershell.exe -sta -Command Set-Clipboard \"これでもコピー可能\";");
-		const command = "powershell -sta -Command Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);".replace(/([\\"])/g, "\\$1");
-		const oe = objWShell.Exec(command);
-		oe.StdIn.Close();
+		return oe.StdOut.ReadAll().replace(/\r?\n$/, "");
 	}
 
 	/**
@@ -292,15 +281,32 @@ export default class System {
 		// 	"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)",
 		// 	"MessageBox(0, \"テキスト\", \"キャプション\", 0)"
 		// );
-		const powershell_base = "powershell -sta -Command";
-		const api_base = "$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"" + dll_name + "\"\")] public extern static " + function_text + ";\" -PassThru;";
+		// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する
+		// eslint-disable-next-line quotes
+		const api_base = `$api = Add-Type -Name "api" -MemberDefinition "[DllImport(""` + dll_name + `"")] public extern static ` + function_text + `;" -PassThru;`;
 		const exec_base = "$api::" + exec_text + ";";
-		const command = (powershell_base + " " + api_base + " " + exec_base).replace(/([\\"])/g, "\\$1");
-		const objWShell = new ActiveXObject("WScript.Shell");
-		const oe = objWShell.Exec(command);
-		oe.StdIn.Close();
-		// @ts-ignore
-		return oe.StdOut.ReadAll();
+		const command = api_base + " " + exec_base;
+		return System.PowerShell(command);
+	}
+
+	/**
+	 * クリップボードからテキストを取得する
+	 * @returns {string}
+	 */
+	static getClipBoardText() {
+		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();";
+		return System.PowerShell(command);
+	}
+
+	/**
+	 * クリップボードへテキストを設定する
+	 * @param {string} text
+	 */
+	static setClipBoardText(text) {
+		// PowerShell 5.0以降
+		// command = "Set-Clipboard \"これでもコピー可能\"";
+		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);";
+		System.PowerShell(command);
 	}
 
 }

@@ -858,6 +858,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/senko/robot.js~robot.getactivewindow",
+    "class/src/senko/Robot.js~Robot.html#static-method-getActiveWindow",
+    "src/senko/Robot.js~Robot.getActiveWindow",
+    "method"
+  ],
+  [
     "src/senko/robot.js~robot.gethandleofclassname",
     "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfClassName",
     "src/senko/Robot.js~Robot.getHandleOfClassName",
@@ -867,6 +873,36 @@ window.esdocSearchIndex = [
     "src/senko/robot.js~robot.gethandleofwindowname",
     "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfWindowName",
     "src/senko/Robot.js~Robot.getHandleOfWindowName",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.getpid",
+    "class/src/senko/Robot.js~Robot.html#static-method-getPID",
+    "src/senko/Robot.js~Robot.getPID",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.getwindowrect",
+    "class/src/senko/Robot.js~Robot.html#static-method-getWindowRect",
+    "src/senko/Robot.js~Robot.getWindowRect",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.setactivewindow",
+    "class/src/senko/Robot.js~Robot.html#static-method-setActiveWindow",
+    "src/senko/Robot.js~Robot.setActiveWindow",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.setwindowrect",
+    "class/src/senko/Robot.js~Robot.html#static-method-setWindowRect",
+    "src/senko/Robot.js~Robot.setWindowRect",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.terminateprocess",
+    "class/src/senko/Robot.js~Robot.html#static-method-terminateProcess",
+    "src/senko/Robot.js~Robot.terminateProcess",
     "method"
   ],
   [
@@ -1144,6 +1180,12 @@ window.esdocSearchIndex = [
     "file/src/senko/System.js.html",
     "src/senko/System.js",
     "file"
+  ],
+  [
+    "src/senko/system.js~system.powershell",
+    "class/src/senko/System.js~System.html#static-method-PowerShell",
+    "src/senko/System.js~System.PowerShell",
+    "method"
   ],
   [
     "src/senko/system.js~system.windowsapi",
