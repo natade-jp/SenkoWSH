@@ -858,6 +858,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/senko/robot.js~keyeventoption",
+    "typedef/index.html#static-typedef-KeyEventOption",
+    "src/senko/Robot.js~KeyEventOption",
+    "typedef"
+  ],
+  [
     "src/senko/robot.js~robot.getactivewindow",
     "class/src/senko/Robot.js~Robot.html#static-method-getActiveWindow",
     "src/senko/Robot.js~Robot.getActiveWindow",
@@ -867,6 +873,12 @@ window.esdocSearchIndex = [
     "src/senko/robot.js~robot.getclassname",
     "class/src/senko/Robot.js~Robot.html#static-method-getClassName",
     "src/senko/Robot.js~Robot.getClassName",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.getcursorposition",
+    "class/src/senko/Robot.js~Robot.html#static-method-getCursorPosition",
+    "src/senko/Robot.js~Robot.getCursorPosition",
     "method"
   ],
   [
@@ -888,6 +900,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/robot.js~robot.getvk",
+    "class/src/senko/Robot.js~Robot.html#static-method-getVK",
+    "src/senko/Robot.js~Robot.getVK",
+    "method"
+  ],
+  [
     "src/senko/robot.js~robot.getwindowrect",
     "class/src/senko/Robot.js~Robot.html#static-method-getWindowRect",
     "src/senko/Robot.js~Robot.getWindowRect",
@@ -906,6 +924,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/robot.js~robot.setcursorposition",
+    "class/src/senko/Robot.js~Robot.html#static-method-setCursorPosition",
+    "src/senko/Robot.js~Robot.setCursorPosition",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.setkeyevent",
+    "class/src/senko/Robot.js~Robot.html#static-method-setKeyEvent",
+    "src/senko/Robot.js~Robot.setKeyEvent",
+    "method"
+  ],
+  [
     "src/senko/robot.js~robot.setwindowrect",
     "class/src/senko/Robot.js~Robot.html#static-method-setWindowRect",
     "src/senko/Robot.js~Robot.setWindowRect",
@@ -916,6 +946,24 @@ window.esdocSearchIndex = [
     "class/src/senko/Robot.js~Robot.html#static-method-terminateProcess",
     "src/senko/Robot.js~Robot.terminateProcess",
     "method"
+  ],
+  [
+    "src/senko/robot.js~virtualkeycode",
+    "typedef/index.html#static-typedef-VirtualKeyCode",
+    "src/senko/Robot.js~VirtualKeyCode",
+    "typedef"
+  ],
+  [
+    "src/senko/robot.js~virtualkeycodes",
+    "typedef/index.html#static-typedef-VirtualKeyCodes",
+    "src/senko/Robot.js~VirtualKeyCodes",
+    "typedef"
+  ],
+  [
+    "src/senko/robot.js~wshrobotposition",
+    "typedef/index.html#static-typedef-WSHRobotPosition",
+    "src/senko/Robot.js~WSHRobotPosition",
+    "typedef"
   ],
   [
     "src/senko/robot.js~wshrobotrect",

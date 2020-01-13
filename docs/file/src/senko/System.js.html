@@ -41,6 +41,10 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCode">VirtualKeyCode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 </ul>
 </div>
@@ -306,6 +310,7 @@ export default class System {
 		const command = powershell_base + &quot; &quot; + source;
 		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
 		const oe = objWShell.Exec(command.replace(/([\\&quot;])/g, &quot;\\$1&quot;));
+		// console.log(command.replace(/([\\&quot;])/g, &quot;\\$1&quot;));
 		oe.StdIn.Close();
 		// @ts-ignore
 		return oe.StdOut.ReadAll().replace(/\r?\n$/, &quot;&quot;);

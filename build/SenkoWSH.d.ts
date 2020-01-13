@@ -643,10 +643,10 @@ declare class Format {
 }
 
 /**
- * 型のみの情報
+ * 大きさ情報
  * @typedef {Object} WSHRobotRect
- * @property {number} x 左上の座標x
- * @property {number} y 左上の座標y
+ * @property {number} x 座標x
+ * @property {number} y 座標y
  * @property {number} width 横幅
  * @property {number} height 縦幅
  */
@@ -658,9 +658,424 @@ declare type WSHRobotRect = {
 };
 
 /**
+ * 位置情報
+ * @typedef {Object} WSHRobotPosition
+ * @property {number} x 座標x
+ * @property {number} y 座標y
+ */
+declare type WSHRobotPosition = {
+    x: number;
+    y: number;
+};
+
+/**
+ * 仮想キーコード
+ * @typedef {Object} VirtualKeyCode
+ * @property {number} code
+ */
+declare type VirtualKeyCode = {
+    code: number;
+};
+
+/**
+ * 仮想キーコード一覧
+ * @typedef {Object} VirtualKeyCodes
+ * @property {VirtualKeyCode} VK_LBUTTON
+ * @property {VirtualKeyCode} VK_RBUTTON
+ * @property {VirtualKeyCode} VK_CANCEL
+ * @property {VirtualKeyCode} VK_MBUTTON
+ * @property {VirtualKeyCode} VK_XBUTTON1
+ * @property {VirtualKeyCode} VK_XBUTTON2
+ * @property {VirtualKeyCode} VK_BACK
+ * @property {VirtualKeyCode} VK_TAB
+ * @property {VirtualKeyCode} VK_CLEAR
+ * @property {VirtualKeyCode} VK_RETURN
+ * @property {VirtualKeyCode} VK_SHIFT
+ * @property {VirtualKeyCode} VK_CONTROL
+ * @property {VirtualKeyCode} VK_MENU
+ * @property {VirtualKeyCode} VK_PAUSE
+ * @property {VirtualKeyCode} VK_CAPITAL
+ * @property {VirtualKeyCode} VK_KANA
+ * @property {VirtualKeyCode} VK_HANGEUL
+ * @property {VirtualKeyCode} VK_HANGUL
+ * @property {VirtualKeyCode} VK_JUNJA
+ * @property {VirtualKeyCode} VK_FINAL
+ * @property {VirtualKeyCode} VK_HANJA
+ * @property {VirtualKeyCode} VK_KANJI
+ * @property {VirtualKeyCode} VK_ESCAPE
+ * @property {VirtualKeyCode} VK_CONVERT
+ * @property {VirtualKeyCode} VK_NONCONVERT
+ * @property {VirtualKeyCode} VK_ACCEPT
+ * @property {VirtualKeyCode} VK_MODECHANGE
+ * @property {VirtualKeyCode} VK_SPACE
+ * @property {VirtualKeyCode} VK_PRIOR
+ * @property {VirtualKeyCode} VK_NEXT
+ * @property {VirtualKeyCode} VK_END
+ * @property {VirtualKeyCode} VK_HOME
+ * @property {VirtualKeyCode} VK_LEFT
+ * @property {VirtualKeyCode} VK_UP
+ * @property {VirtualKeyCode} VK_RIGHT
+ * @property {VirtualKeyCode} VK_DOWN
+ * @property {VirtualKeyCode} VK_SELECT
+ * @property {VirtualKeyCode} VK_PRINT
+ * @property {VirtualKeyCode} VK_EXECUTE
+ * @property {VirtualKeyCode} VK_SNAPSHOT
+ * @property {VirtualKeyCode} VK_INSERT
+ * @property {VirtualKeyCode} VK_DELETE
+ * @property {VirtualKeyCode} VK_HELP
+ * @property {VirtualKeyCode} VK_0
+ * @property {VirtualKeyCode} VK_1
+ * @property {VirtualKeyCode} VK_2
+ * @property {VirtualKeyCode} VK_3
+ * @property {VirtualKeyCode} VK_4
+ * @property {VirtualKeyCode} VK_5
+ * @property {VirtualKeyCode} VK_6
+ * @property {VirtualKeyCode} VK_7
+ * @property {VirtualKeyCode} VK_8
+ * @property {VirtualKeyCode} VK_9
+ * @property {VirtualKeyCode} VK_A
+ * @property {VirtualKeyCode} VK_B
+ * @property {VirtualKeyCode} VK_C
+ * @property {VirtualKeyCode} VK_D
+ * @property {VirtualKeyCode} VK_E
+ * @property {VirtualKeyCode} VK_F
+ * @property {VirtualKeyCode} VK_G
+ * @property {VirtualKeyCode} VK_H
+ * @property {VirtualKeyCode} VK_I
+ * @property {VirtualKeyCode} VK_J
+ * @property {VirtualKeyCode} VK_K
+ * @property {VirtualKeyCode} VK_L
+ * @property {VirtualKeyCode} VK_M
+ * @property {VirtualKeyCode} VK_N
+ * @property {VirtualKeyCode} VK_O
+ * @property {VirtualKeyCode} VK_P
+ * @property {VirtualKeyCode} VK_Q
+ * @property {VirtualKeyCode} VK_R
+ * @property {VirtualKeyCode} VK_S
+ * @property {VirtualKeyCode} VK_T
+ * @property {VirtualKeyCode} VK_U
+ * @property {VirtualKeyCode} VK_V
+ * @property {VirtualKeyCode} VK_W
+ * @property {VirtualKeyCode} VK_X
+ * @property {VirtualKeyCode} VK_Y
+ * @property {VirtualKeyCode} VK_Z
+ * @property {VirtualKeyCode} VK_LWIN
+ * @property {VirtualKeyCode} VK_RWIN
+ * @property {VirtualKeyCode} VK_APPS
+ * @property {VirtualKeyCode} VK_SLEEP
+ * @property {VirtualKeyCode} VK_NUMPAD0
+ * @property {VirtualKeyCode} VK_NUMPAD1
+ * @property {VirtualKeyCode} VK_NUMPAD2
+ * @property {VirtualKeyCode} VK_NUMPAD3
+ * @property {VirtualKeyCode} VK_NUMPAD4
+ * @property {VirtualKeyCode} VK_NUMPAD5
+ * @property {VirtualKeyCode} VK_NUMPAD6
+ * @property {VirtualKeyCode} VK_NUMPAD7
+ * @property {VirtualKeyCode} VK_NUMPAD8
+ * @property {VirtualKeyCode} VK_NUMPAD9
+ * @property {VirtualKeyCode} VK_MULTIPLY
+ * @property {VirtualKeyCode} VK_ADD
+ * @property {VirtualKeyCode} VK_SEPARATOR
+ * @property {VirtualKeyCode} VK_SUBTRACT
+ * @property {VirtualKeyCode} VK_DECIMAL
+ * @property {VirtualKeyCode} VK_DIVIDE
+ * @property {VirtualKeyCode} VK_F1
+ * @property {VirtualKeyCode} VK_F2
+ * @property {VirtualKeyCode} VK_F3
+ * @property {VirtualKeyCode} VK_F4
+ * @property {VirtualKeyCode} VK_F5
+ * @property {VirtualKeyCode} VK_F6
+ * @property {VirtualKeyCode} VK_F7
+ * @property {VirtualKeyCode} VK_F8
+ * @property {VirtualKeyCode} VK_F9
+ * @property {VirtualKeyCode} VK_F10
+ * @property {VirtualKeyCode} VK_F11
+ * @property {VirtualKeyCode} VK_F12
+ * @property {VirtualKeyCode} VK_F13
+ * @property {VirtualKeyCode} VK_F14
+ * @property {VirtualKeyCode} VK_F15
+ * @property {VirtualKeyCode} VK_F16
+ * @property {VirtualKeyCode} VK_F17
+ * @property {VirtualKeyCode} VK_F18
+ * @property {VirtualKeyCode} VK_F19
+ * @property {VirtualKeyCode} VK_F20
+ * @property {VirtualKeyCode} VK_F21
+ * @property {VirtualKeyCode} VK_F22
+ * @property {VirtualKeyCode} VK_F23
+ * @property {VirtualKeyCode} VK_F24
+ * @property {VirtualKeyCode} VK_NUMLOCK
+ * @property {VirtualKeyCode} VK_SCROLL
+ * @property {VirtualKeyCode} VK_LSHIFT
+ * @property {VirtualKeyCode} VK_RSHIFT
+ * @property {VirtualKeyCode} VK_LCONTROL
+ * @property {VirtualKeyCode} VK_RCONTROL
+ * @property {VirtualKeyCode} VK_LMENU
+ * @property {VirtualKeyCode} VK_RMENU
+ * @property {VirtualKeyCode} VK_BROWSER_BACK
+ * @property {VirtualKeyCode} VK_BROWSER_FORWARD
+ * @property {VirtualKeyCode} VK_BROWSER_REFRESH
+ * @property {VirtualKeyCode} VK_BROWSER_STOP
+ * @property {VirtualKeyCode} VK_BROWSER_SEARCH
+ * @property {VirtualKeyCode} VK_BROWSER_FAVORITES
+ * @property {VirtualKeyCode} VK_BROWSER_HOME
+ * @property {VirtualKeyCode} VK_VOLUME_MUTE
+ * @property {VirtualKeyCode} VK_VOLUME_DOWN
+ * @property {VirtualKeyCode} VK_VOLUME_UP
+ * @property {VirtualKeyCode} VK_MEDIA_NEXT_TRACK
+ * @property {VirtualKeyCode} VK_MEDIA_PREV_TRACK
+ * @property {VirtualKeyCode} VK_MEDIA_STOP
+ * @property {VirtualKeyCode} VK_MEDIA_PLAY_PAUSE
+ * @property {VirtualKeyCode} VK_LAUNCH_MAIL
+ * @property {VirtualKeyCode} VK_LAUNCH_MEDIA_SELECT
+ * @property {VirtualKeyCode} VK_LAUNCH_APP1
+ * @property {VirtualKeyCode} VK_LAUNCH_APP2
+ * @property {VirtualKeyCode} VK_OEM_1
+ * @property {VirtualKeyCode} VK_OEM_PLUS
+ * @property {VirtualKeyCode} VK_OEM_COMMA
+ * @property {VirtualKeyCode} VK_OEM_MINUS
+ * @property {VirtualKeyCode} VK_OEM_PERIOD
+ * @property {VirtualKeyCode} VK_OEM_2
+ * @property {VirtualKeyCode} VK_OEM_3
+ * @property {VirtualKeyCode} VK_OEM_4
+ * @property {VirtualKeyCode} VK_OEM_5
+ * @property {VirtualKeyCode} VK_OEM_6
+ * @property {VirtualKeyCode} VK_OEM_7
+ * @property {VirtualKeyCode} VK_OEM_8
+ * @property {VirtualKeyCode} VK_PROCESSKEY
+ * @property {VirtualKeyCode} VK_ATTN
+ * @property {VirtualKeyCode} VK_CRSEL
+ * @property {VirtualKeyCode} VK_EXSEL
+ * @property {VirtualKeyCode} VK_EREOF
+ * @property {VirtualKeyCode} VK_PLAY
+ * @property {VirtualKeyCode} VK_ZOOM
+ * @property {VirtualKeyCode} VK_NONAME
+ * @property {VirtualKeyCode} VK_PA1
+ * @property {VirtualKeyCode} VK_OEM_CLEAR
+ */
+declare type VirtualKeyCodes = {
+    VK_LBUTTON: VirtualKeyCode;
+    VK_RBUTTON: VirtualKeyCode;
+    VK_CANCEL: VirtualKeyCode;
+    VK_MBUTTON: VirtualKeyCode;
+    VK_XBUTTON1: VirtualKeyCode;
+    VK_XBUTTON2: VirtualKeyCode;
+    VK_BACK: VirtualKeyCode;
+    VK_TAB: VirtualKeyCode;
+    VK_CLEAR: VirtualKeyCode;
+    VK_RETURN: VirtualKeyCode;
+    VK_SHIFT: VirtualKeyCode;
+    VK_CONTROL: VirtualKeyCode;
+    VK_MENU: VirtualKeyCode;
+    VK_PAUSE: VirtualKeyCode;
+    VK_CAPITAL: VirtualKeyCode;
+    VK_KANA: VirtualKeyCode;
+    VK_HANGEUL: VirtualKeyCode;
+    VK_HANGUL: VirtualKeyCode;
+    VK_JUNJA: VirtualKeyCode;
+    VK_FINAL: VirtualKeyCode;
+    VK_HANJA: VirtualKeyCode;
+    VK_KANJI: VirtualKeyCode;
+    VK_ESCAPE: VirtualKeyCode;
+    VK_CONVERT: VirtualKeyCode;
+    VK_NONCONVERT: VirtualKeyCode;
+    VK_ACCEPT: VirtualKeyCode;
+    VK_MODECHANGE: VirtualKeyCode;
+    VK_SPACE: VirtualKeyCode;
+    VK_PRIOR: VirtualKeyCode;
+    VK_NEXT: VirtualKeyCode;
+    VK_END: VirtualKeyCode;
+    VK_HOME: VirtualKeyCode;
+    VK_LEFT: VirtualKeyCode;
+    VK_UP: VirtualKeyCode;
+    VK_RIGHT: VirtualKeyCode;
+    VK_DOWN: VirtualKeyCode;
+    VK_SELECT: VirtualKeyCode;
+    VK_PRINT: VirtualKeyCode;
+    VK_EXECUTE: VirtualKeyCode;
+    VK_SNAPSHOT: VirtualKeyCode;
+    VK_INSERT: VirtualKeyCode;
+    VK_DELETE: VirtualKeyCode;
+    VK_HELP: VirtualKeyCode;
+    VK_0: VirtualKeyCode;
+    VK_1: VirtualKeyCode;
+    VK_2: VirtualKeyCode;
+    VK_3: VirtualKeyCode;
+    VK_4: VirtualKeyCode;
+    VK_5: VirtualKeyCode;
+    VK_6: VirtualKeyCode;
+    VK_7: VirtualKeyCode;
+    VK_8: VirtualKeyCode;
+    VK_9: VirtualKeyCode;
+    VK_A: VirtualKeyCode;
+    VK_B: VirtualKeyCode;
+    VK_C: VirtualKeyCode;
+    VK_D: VirtualKeyCode;
+    VK_E: VirtualKeyCode;
+    VK_F: VirtualKeyCode;
+    VK_G: VirtualKeyCode;
+    VK_H: VirtualKeyCode;
+    VK_I: VirtualKeyCode;
+    VK_J: VirtualKeyCode;
+    VK_K: VirtualKeyCode;
+    VK_L: VirtualKeyCode;
+    VK_M: VirtualKeyCode;
+    VK_N: VirtualKeyCode;
+    VK_O: VirtualKeyCode;
+    VK_P: VirtualKeyCode;
+    VK_Q: VirtualKeyCode;
+    VK_R: VirtualKeyCode;
+    VK_S: VirtualKeyCode;
+    VK_T: VirtualKeyCode;
+    VK_U: VirtualKeyCode;
+    VK_V: VirtualKeyCode;
+    VK_W: VirtualKeyCode;
+    VK_X: VirtualKeyCode;
+    VK_Y: VirtualKeyCode;
+    VK_Z: VirtualKeyCode;
+    VK_LWIN: VirtualKeyCode;
+    VK_RWIN: VirtualKeyCode;
+    VK_APPS: VirtualKeyCode;
+    VK_SLEEP: VirtualKeyCode;
+    VK_NUMPAD0: VirtualKeyCode;
+    VK_NUMPAD1: VirtualKeyCode;
+    VK_NUMPAD2: VirtualKeyCode;
+    VK_NUMPAD3: VirtualKeyCode;
+    VK_NUMPAD4: VirtualKeyCode;
+    VK_NUMPAD5: VirtualKeyCode;
+    VK_NUMPAD6: VirtualKeyCode;
+    VK_NUMPAD7: VirtualKeyCode;
+    VK_NUMPAD8: VirtualKeyCode;
+    VK_NUMPAD9: VirtualKeyCode;
+    VK_MULTIPLY: VirtualKeyCode;
+    VK_ADD: VirtualKeyCode;
+    VK_SEPARATOR: VirtualKeyCode;
+    VK_SUBTRACT: VirtualKeyCode;
+    VK_DECIMAL: VirtualKeyCode;
+    VK_DIVIDE: VirtualKeyCode;
+    VK_F1: VirtualKeyCode;
+    VK_F2: VirtualKeyCode;
+    VK_F3: VirtualKeyCode;
+    VK_F4: VirtualKeyCode;
+    VK_F5: VirtualKeyCode;
+    VK_F6: VirtualKeyCode;
+    VK_F7: VirtualKeyCode;
+    VK_F8: VirtualKeyCode;
+    VK_F9: VirtualKeyCode;
+    VK_F10: VirtualKeyCode;
+    VK_F11: VirtualKeyCode;
+    VK_F12: VirtualKeyCode;
+    VK_F13: VirtualKeyCode;
+    VK_F14: VirtualKeyCode;
+    VK_F15: VirtualKeyCode;
+    VK_F16: VirtualKeyCode;
+    VK_F17: VirtualKeyCode;
+    VK_F18: VirtualKeyCode;
+    VK_F19: VirtualKeyCode;
+    VK_F20: VirtualKeyCode;
+    VK_F21: VirtualKeyCode;
+    VK_F22: VirtualKeyCode;
+    VK_F23: VirtualKeyCode;
+    VK_F24: VirtualKeyCode;
+    VK_NUMLOCK: VirtualKeyCode;
+    VK_SCROLL: VirtualKeyCode;
+    VK_LSHIFT: VirtualKeyCode;
+    VK_RSHIFT: VirtualKeyCode;
+    VK_LCONTROL: VirtualKeyCode;
+    VK_RCONTROL: VirtualKeyCode;
+    VK_LMENU: VirtualKeyCode;
+    VK_RMENU: VirtualKeyCode;
+    VK_BROWSER_BACK: VirtualKeyCode;
+    VK_BROWSER_FORWARD: VirtualKeyCode;
+    VK_BROWSER_REFRESH: VirtualKeyCode;
+    VK_BROWSER_STOP: VirtualKeyCode;
+    VK_BROWSER_SEARCH: VirtualKeyCode;
+    VK_BROWSER_FAVORITES: VirtualKeyCode;
+    VK_BROWSER_HOME: VirtualKeyCode;
+    VK_VOLUME_MUTE: VirtualKeyCode;
+    VK_VOLUME_DOWN: VirtualKeyCode;
+    VK_VOLUME_UP: VirtualKeyCode;
+    VK_MEDIA_NEXT_TRACK: VirtualKeyCode;
+    VK_MEDIA_PREV_TRACK: VirtualKeyCode;
+    VK_MEDIA_STOP: VirtualKeyCode;
+    VK_MEDIA_PLAY_PAUSE: VirtualKeyCode;
+    VK_LAUNCH_MAIL: VirtualKeyCode;
+    VK_LAUNCH_MEDIA_SELECT: VirtualKeyCode;
+    VK_LAUNCH_APP1: VirtualKeyCode;
+    VK_LAUNCH_APP2: VirtualKeyCode;
+    VK_OEM_1: VirtualKeyCode;
+    VK_OEM_PLUS: VirtualKeyCode;
+    VK_OEM_COMMA: VirtualKeyCode;
+    VK_OEM_MINUS: VirtualKeyCode;
+    VK_OEM_PERIOD: VirtualKeyCode;
+    VK_OEM_2: VirtualKeyCode;
+    VK_OEM_3: VirtualKeyCode;
+    VK_OEM_4: VirtualKeyCode;
+    VK_OEM_5: VirtualKeyCode;
+    VK_OEM_6: VirtualKeyCode;
+    VK_OEM_7: VirtualKeyCode;
+    VK_OEM_8: VirtualKeyCode;
+    VK_PROCESSKEY: VirtualKeyCode;
+    VK_ATTN: VirtualKeyCode;
+    VK_CRSEL: VirtualKeyCode;
+    VK_EXSEL: VirtualKeyCode;
+    VK_EREOF: VirtualKeyCode;
+    VK_PLAY: VirtualKeyCode;
+    VK_ZOOM: VirtualKeyCode;
+    VK_NONAME: VirtualKeyCode;
+    VK_PA1: VirtualKeyCode;
+    VK_OEM_CLEAR: VirtualKeyCode;
+};
+
+/**
+ * 仮想キーコード一覧
+ * @type {VirtualKeyCodes}
+ */
+declare const VK_DATA: VirtualKeyCodes;
+
+/**
+ * キーイベント発生時のオプション
+ * @typedef {Object} KeyEventOption
+ * @property {boolean} [is_not_pushed=false] 押さない
+ * @property {boolean} [is_not_released=false] 離さない
+ * @property {number} [time_sec=0] 押下時間
+ * @property {boolean} [is_pressed_shift=false]
+ * @property {boolean} [is_pressed_alt=false]
+ * @property {boolean} [is_pressed_ctrl=false]
+ */
+declare type KeyEventOption = {
+    is_not_pushed?: boolean;
+    is_not_released?: boolean;
+    time_sec?: number;
+    is_pressed_shift?: boolean;
+    is_pressed_alt?: boolean;
+    is_pressed_ctrl?: boolean;
+};
+
+/**
  * ウィンドウやマウスなどを自動操作するためのクラス
  */
 declare class Robot {
+    /**
+     * キーを入力する
+     * @param {VirtualKeyCode} vkcode
+     * @param {KeyEventOption} [option]
+     */
+    static setKeyEvent(vkcode: VirtualKeyCode, option?: KeyEventOption): void;
+    /**
+     * 仮想キーコードの一覧を取得します
+     * @returns {VirtualKeyCodes}
+     */
+    static getVK(): VirtualKeyCodes;
+    /**
+     * マウスの座標を調べる
+     * @returns {WSHRobotPosition}
+     */
+    static getCursorPosition(): WSHRobotPosition;
+    /**
+     * マウスの座標を設定する
+     * @param {WSHRobotPosition} position
+     */
+    static setCursorPosition(position: WSHRobotPosition): void;
     /**
      * 指定したクラス名のハンドルを取得する
      * @param {string} classname

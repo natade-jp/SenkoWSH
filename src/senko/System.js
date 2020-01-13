@@ -257,6 +257,7 @@ export default class System {
 		const command = powershell_base + " " + source;
 		const objWShell = new ActiveXObject("WScript.Shell");
 		const oe = objWShell.Exec(command.replace(/([\\"])/g, "\\$1"));
+		// console.log(command.replace(/([\\"])/g, "\\$1"));
 		oe.StdIn.Close();
 		// @ts-ignore
 		return oe.StdOut.ReadAll().replace(/\r?\n$/, "");

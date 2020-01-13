@@ -1,6 +1,6 @@
 # History
 
-## SenkoWSH v3.x.x
+## SenkoWSH v3.2.0
 ### 更新点
 - ウィンドウやマウスなどを自動操作するためのクラスRobotを追加
 
