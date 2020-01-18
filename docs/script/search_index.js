@@ -612,10 +612,40 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/senko/dialog.js~dialog.popup",
-    "class/src/senko/Dialog.js~Dialog.html#static-method-popup",
-    "src/senko/Dialog.js~Dialog.popup",
+    "src/senko/dialog.js~dialog.popupmessage",
+    "class/src/senko/Dialog.js~Dialog.html#static-method-popupMessage",
+    "src/senko/Dialog.js~Dialog.popupMessage",
     "method"
+  ],
+  [
+    "src/senko/dialog.js~dialog.popupopen",
+    "class/src/senko/Dialog.js~Dialog.html#static-method-popupOpen",
+    "src/senko/Dialog.js~Dialog.popupOpen",
+    "method"
+  ],
+  [
+    "src/senko/dialog.js~dialog.popupsaveas",
+    "class/src/senko/Dialog.js~Dialog.html#static-method-popupSaveAs",
+    "src/senko/Dialog.js~Dialog.popupSaveAs",
+    "method"
+  ],
+  [
+    "src/senko/dialog.js~openoption",
+    "typedef/index.html#static-typedef-OpenOption",
+    "src/senko/Dialog.js~OpenOption",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~popupoption",
+    "typedef/index.html#static-typedef-PopupOption",
+    "src/senko/Dialog.js~PopupOption",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~saveasoption",
+    "typedef/index.html#static-typedef-SaveAsOption",
+    "src/senko/Dialog.js~SaveAsOption",
+    "typedef"
   ],
   [
     "src/senko/extendsarray.js",

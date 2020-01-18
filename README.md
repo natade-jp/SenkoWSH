@@ -1,8 +1,8 @@
 # SenkoWSH
 
 ## 概要
-- Windows の JScript用汎用ライブラリ
-- Visual Studio Code で JScript での開発を目的とするためのファイル構成
+- Windows 上で動作する WSH JScript 用汎用ライブラリ
+- Visual Studio Code で JScript での開発を目的とする
 - ES3相当の機能しかなかった JScript を強化
 
 本ライブラリを用いることで、`JScript` によるバッチ処理で以下のような機能が利用できます。
@@ -14,6 +14,7 @@
 4. `Format.textf`で`sprintf` のような文字列のフォーマット変換
 5. `StringComparator.DEFAULT` で自然準ソート
 6. `String.prototype.trim()` などES3になかった機能の追加
+7. `Robot`クラスを用いて外部アプリケーションを操作する
 
 とりあえず`examples`の`Example.wsf`を実行してみればわかります。
 詳しい関数の説明は、[ヘルプファイル](https://natade-jp.github.io/SenkoWSH/)を参照すること

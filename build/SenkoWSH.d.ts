@@ -237,14 +237,47 @@ declare class CSV {
 }
 
 /**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
+ * ポップアップ用のオプション
+ * @typedef {Object} PopupOption
+ * @property {number} [secondstowait=0] タイムアウト時間(0で無効)
+ * @property {string} [caption=""] タイトルバー
+ * @property {number} [type=0] Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3 など
  */
+declare type PopupOption = {
+    secondstowait?: number;
+    caption?: string;
+    type?: number;
+};
+
+/**
+ * 「開く」ダイアログ用のオプション
+ * @typedef {Object} OpenOption
+ * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
+ * @property {string} [title] タイトル(「ファイルを選択してください」など)
+ */
+declare type OpenOption = {
+    initial_directory?: string;
+    filter?: string;
+    title?: string;
+};
+
+/**
+ * 「名前を付けて保存する」ダイアログ用のオプション
+ * @typedef {Object} SaveAsOption
+ * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
+ * @property {string} [default_ext] 拡張子を省略した場合の値(".txt"など)
+ * @property {string} [file_name] ファイル名の初期値("新しいファイル.txt"など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
+ * @property {string} [title] タイトル(「保存するファイル名を設定してください」など)
+ */
+declare type SaveAsOption = {
+    initial_directory?: string;
+    default_ext?: string;
+    file_name?: string;
+    filter?: string;
+    title?: string;
+};
 
 /**
  * ダイアログを扱うクラス
@@ -252,16 +285,23 @@ declare class CSV {
 declare class Dialog {
     /**
      * ダイアログを表示する
-     *
-     * 利用例
-     * - Dialog.popup("test", 0, "test", Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3);
      * @param {string} text
-     * @param {number} [secondstowait=0]
-     * @param {string} [caption=""]
-     * @param {number} [type=0]
+     * @param {PopupOption} [option]
      * @returns {number}
      */
-    static popup(text: string, secondstowait?: number, caption?: string, type?: number): number;
+    static popupMessage(text: string, option?: PopupOption): number;
+    /**
+     * 開くダイアログを表示する
+     * @param {OpenOption} [option]
+     * @returns {string}
+     */
+    static popupOpen(option?: OpenOption): string;
+    /**
+     * 名前を付けて保存ダイアログを表示する
+     * @param {SaveAsOption} [option]
+     * @returns {string}
+     */
+    static popupSaveAs(option?: SaveAsOption): string;
     /**
      * 「OK」のボタン配置
      * @type {number}
@@ -1155,10 +1195,10 @@ declare class SFile {
     constructor(pathname: string | SFile);
     /**
      * ファイルの削除（ゴミ箱には入りません）
-     * @param {boolean} is_force - 読み取り専用でも削除する
+     * @param {boolean} [is_force=false] - 読み取り専用でも削除する
      * @returns {boolean}
      */
-    remove(is_force: boolean): boolean;
+    remove(is_force?: boolean): boolean;
     /**
      * ファイルが存在するか
      * @returns {boolean}

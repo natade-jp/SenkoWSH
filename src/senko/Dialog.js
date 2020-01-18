@@ -8,6 +8,35 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import System from "./System";
+
+
+/**
+ * ポップアップ用のオプション
+ * @typedef {Object} PopupOption
+ * @property {number} [secondstowait=0] タイムアウト時間(0で無効)
+ * @property {string} [caption=""] タイトルバー
+ * @property {number} [type=0] Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3 など
+ */
+
+/**
+ * 「開く」ダイアログ用のオプション
+ * @typedef {Object} OpenOption
+ * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
+ * @property {string} [title] タイトル(「ファイルを選択してください」など)
+ */
+
+/**
+ * 「名前を付けて保存する」ダイアログ用のオプション
+ * @typedef {Object} SaveAsOption
+ * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
+ * @property {string} [default_ext] 拡張子を省略した場合の値(".txt"など)
+ * @property {string} [file_name] ファイル名の初期値("新しいファイル.txt"など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
+ * @property {string} [title] タイトル(「保存するファイル名を設定してください」など)
+ */
+
 /**
  * ダイアログを扱うクラス
  */
@@ -15,36 +44,65 @@ export default class Dialog {
 	
 	/**
 	 * ダイアログを表示する
-	 * 
-	 * 利用例
-	 * - Dialog.popup("test", 0, "test", Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3);
 	 * @param {string} text 
-	 * @param {number} [secondstowait=0]
-	 * @param {string} [caption=""]
-	 * @param {number} [type=0]
+	 * @param {PopupOption} [option]
 	 * @returns {number}
 	 */
-	static popup(text) {
-		let secondstowait = 0;
-		let caption = "";
-		let type = 0;
-		let istype = false;
-		for(let j = 1; j < arguments.length; j++) {
-			if(typeof arguments[j] === "string") {
-				caption = arguments[j];
-			}
-			else {
-				if(istype) {
-					secondstowait = type;
-					type = arguments[j];
-				}
-				else {
-					type = arguments[j];
-					istype = true;
-				}
-			}
-		}
+	static popupMessage(text, option) {
+		const secondstowait = option && option.secondstowait ? option.secondstowait : 0;
+		const caption = option && option.caption ? option.caption : "";
+		const type = option && option.type ? option.type : 0;
 		return WScript.CreateObject("WScript.Shell").Popup( text, secondstowait, caption, type );
+	}
+
+	/**
+	 * 開くダイアログを表示する
+	 * @param {OpenOption} [option]
+	 * @returns {string}
+	 */
+	static popupOpen(option) {
+		/*
+		以下の行を1行で実行する
+		Add-Type -AssemblyName System.Windows.Forms;
+		$dialog = New-Object System.Windows.Forms.OpenFileDialog;
+		...
+		if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+			$dialog.FileName;
+		}
+		*/
+		let command = "Add-Type -AssemblyName System.Windows.Forms;$dialog = New-Object System.Windows.Forms.OpenFileDialog;";
+		command += "$dialog.Filter = \"" + ((option && option.filter) ? option.filter.replace(/"/g, "\\\"") : "All files(*.*)|*.*") + "\";";
+		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.title) ? ("$dialog.Title = \"" + option.title.replace(/"/g, "\\\"") + "\";"): "";
+		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
+		return System.PowerShell(command);
+	}
+
+	/**
+	 * 名前を付けて保存ダイアログを表示する
+	 * @param {SaveAsOption} [option]
+	 * @returns {string}
+	 */
+	static popupSaveAs(option) {
+		/*
+		以下の行を1行で実行する
+		Add-Type -AssemblyName System.Windows.Forms;
+		$dialog = New-Object System.Windows.Forms.SaveFileDialog;
+		...
+		if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+			$dialog.FileName;
+		}
+		*/
+		let command = "Add-Type -AssemblyName System.Windows.Forms;$dialog = New-Object System.Windows.Forms.SaveFileDialog;";
+		command += (option && option.default_ext) ? ("$dialog.DefaultExt = \"" + option.default_ext.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.file_name) ? ("$dialog.FileName = \"" + option.file_name.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.filter) ? ("$dialog.Filter = \"" + option.file_name.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.title) ? ("$dialog.Title = \"" + option.title.replace(/"/g, "\\\"") + "\";"): "";
+		command += "$dialog.ShowHelp = true;";
+		command += "$dialog.OverwritePrompt = true;";
+		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
+		return System.PowerShell(command);
 	}
 
 }

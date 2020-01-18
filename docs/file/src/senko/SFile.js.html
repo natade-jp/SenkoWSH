@@ -41,6 +41,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenOption">OpenOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCode">VirtualKeyCode</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
@@ -109,7 +112,7 @@ export default class SFile {
 
 	/**
 	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x524A;&#x9664;&#xFF08;&#x30B4;&#x30DF;&#x7BB1;&#x306B;&#x306F;&#x5165;&#x308A;&#x307E;&#x305B;&#x3093;&#xFF09;
-	 * @param {boolean} is_force - &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x3067;&#x3082;&#x524A;&#x9664;&#x3059;&#x308B;
+	 * @param {boolean} [is_force=false] - &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x3067;&#x3082;&#x524A;&#x9664;&#x3059;&#x308B;
 	 * @returns {boolean}
 	 */
 	remove(is_force) {
@@ -117,15 +120,11 @@ export default class SFile {
 			throw &quot;IllegalMethod&quot;;
 		}
 		try {
-			if(is_force) {
-				// &#x8AAD;&#x307F;&#x53D6;&#x308A;&#x5C02;&#x7528;&#x3092;&#x30AA;&#x30D5;&#x306B;&#x3059;&#x308B;
-				this.setReadOnly(false, true);
-			}
 			if(this.isFile()) {
-				return this.fso.DeleteFile(this.pathname);
+				return this.fso.DeleteFile(this.pathname, is_force ? is_force : false );
 			}
 			else if(this.isDirectory()) {
-				return this.fso.DeleteFolder(this.pathname);
+				return this.fso.DeleteFolder(this.pathname, is_force ? is_force : false );
 			}
 		}
 		catch (e) {

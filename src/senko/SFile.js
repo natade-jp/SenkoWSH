@@ -56,7 +56,7 @@ export default class SFile {
 
 	/**
 	 * ファイルの削除（ゴミ箱には入りません）
-	 * @param {boolean} is_force - 読み取り専用でも削除する
+	 * @param {boolean} [is_force=false] - 読み取り専用でも削除する
 	 * @returns {boolean}
 	 */
 	remove(is_force) {
@@ -64,15 +64,11 @@ export default class SFile {
 			throw "IllegalMethod";
 		}
 		try {
-			if(is_force) {
-				// 読み取り専用をオフにする
-				this.setReadOnly(false, true);
-			}
 			if(this.isFile()) {
-				return this.fso.DeleteFile(this.pathname);
+				return this.fso.DeleteFile(this.pathname, is_force ? is_force : false );
 			}
 			else if(this.isDirectory()) {
-				return this.fso.DeleteFolder(this.pathname);
+				return this.fso.DeleteFolder(this.pathname, is_force ? is_force : false );
 			}
 		}
 		catch (e) {
