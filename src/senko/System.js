@@ -39,6 +39,15 @@ const toString = function(data) {
 	return string_data;
 };
 
+
+/**
+ * 実行結果
+ * @typedef {Object} SystemExecResult
+ * @property {string} out
+ * @property {string} error
+ * @property {number} exit_code
+ */
+
 /**
  * システム用のクラス
  * - 文字列の入出力
@@ -139,6 +148,58 @@ export default class System {
 			"$api::Beep(" + (frequency_hz | 0) + ", " + ((time_sec * 1000) | 0) + ");"
 		);
 	}
+
+	/**
+	 * 指定したコマンドを別プロセスとして実行する
+	 * @param {string} command - コマンド
+	 * @param {number} [style=1] - 起動オプション
+	 * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
+	 */
+	static run(command, style, is_wait) {
+		const NormalFocus = 1;
+		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
+		const shell = WScript.CreateObject("WScript.Shell");
+		// @ts-ignore
+		return shell.Run(command, intWindowStyle, bWaitOnReturn);
+	}
+
+	/**
+	 * 指定したコマンドを子プロセスとして実行する
+	 * @param {string} command 
+	 * @returns {SystemExecResult}
+	 */
+	static exec(command) {
+		const shell = WScript.CreateObject("WScript.Shell");
+		const exec = shell.Exec(command);
+		const stdin = exec.StdIn;
+		const stdout = exec.StdOut;
+		const stderr = exec.StdErr;
+		while(exec.Status == 0) {
+			WScript.Sleep(10);
+		}
+		const exit_code = exec.ExitCode;
+		stdin.Close();
+		// @ts-ignore
+		const out = stdout.ReadAll().replace(/\r?\n$/, "");
+		stdout.Close();
+		// @ts-ignore
+		const error = stderr.ReadAll().replace(/\r?\n$/, "");
+		stderr.Close();
+		return {
+			exit_code : exit_code,
+			out : out,
+			error : error
+		};
+	}
+
+	/**
+	 * プログラムを終了させます。
+	 * @param {number} [exit_code=0] 
+	 */
+	static exit(exit_code) {
+		WScript.Quit(exit_code ? exit_code : 0);
+	}
 	
 	/**
 	 * CUIで起動しなおす
@@ -148,20 +209,19 @@ export default class System {
 		const iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;
 		if(is_wscript) {
 			// CScript で起動しなおす
-			const shell = WScript.CreateObject("WScript.Shell");
-			const run = [];
-			const args = WScript.Arguments; // 引数
-			run.push("\"C:\\Windows\\System32\\cscript.exe\"");
-			run.push("//NoLogo");
+			const code = [];
+			const args = System.getArguments();
+			code.push("\"C:\\Windows\\System32\\cscript.exe\"");
+			code.push("//NoLogo");
 			if(iis_use_chakra) {
-				run.push("//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}");
+				code.push("//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}");
 			}
-			run.push("\"" + WSH.ScriptFullName + "\"");
+			code.push("\"" + WScript.ScriptFullName + "\"");
 			for(let i = 0; i < args.length; i++) {
-				run.push("\"" + args(i) + "\"");
+				code.push("\"" + args[i] + "\"");
 			}
-			shell.Run( run.join(" ") );
-			WSH.Quit();
+			System.run(code.join(" "));
+			System.exit();
 		}
 	}
 	
@@ -172,16 +232,15 @@ export default class System {
 		// cscriptで起動しているか
 		if(is_cscript) {
 			// WScript で起動しなおす
-			const shell = WScript.CreateObject("WScript.Shell");
-			const run = [];
-			const args = WScript.Arguments; // 引数
-			run.push("\"C:\\Windows\\System32\\wscript.exe\"");
-			run.push("\"" + WSH.ScriptFullName + "\"");
+			const code = [];
+			const args = System.getArguments();
+			code.push("\"C:\\Windows\\System32\\wscript.exe\"");
+			code.push("\"" + WScript.ScriptFullName + "\"");
 			for(let i = 0; i < args.length; i++) {
-				run.push("\"" + args(i) + "\"");
+				code.push("\"" + args[i] + "\"");
 			}
-			shell.Run( run.join(" ") );
-			WSH.Quit();
+			System.run(code.join(" "));
+			System.exit();
 		}
 	}
 	
@@ -228,23 +287,8 @@ export default class System {
 	 * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
 	 */
 	static initializeCurrentDirectory() {
-		const shell = new ActiveXObject("WScript.Shell");
+		const shell = WScript.CreateObject("WScript.Shell");
 		shell.CurrentDirectory = System.getScriptDirectory();
-	}
-
-	/**
-	 * 指定したコマンドを実行する
-	 * @param {string} command - コマンド
-	 * @param {number} [style=1] - 起動オプション
-	 * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
-	 */
-	static run(command, style, is_wait) {
-		const NormalFocus = 1;
-		const intWindowStyle = style !== undefined ? style : NormalFocus;
-		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
-		const objWShell = new ActiveXObject("WScript.Shell");
-		// @ts-ignore
-		return objWShell.Run(command, intWindowStyle, bWaitOnReturn);
 	}
 
 	/**
@@ -254,13 +298,8 @@ export default class System {
 	 */
 	static PowerShell(source) {
 		const powershell_base = "powershell -sta -Command";
-		const command = powershell_base + " " + source;
-		const objWShell = new ActiveXObject("WScript.Shell");
-		const oe = objWShell.Exec(command.replace(/([\\"])/g, "\\$1"));
-		// console.log(command.replace(/([\\"])/g, "\\$1"));
-		oe.StdIn.Close();
-		// @ts-ignore
-		return oe.StdOut.ReadAll().replace(/\r?\n$/, "");
+		const command = (powershell_base + " " + source).replace(/([\\"])/g, "\\$1");
+		return System.exec(command).out.replace(/\r?\n$/, "");
 	}
 
 	/**

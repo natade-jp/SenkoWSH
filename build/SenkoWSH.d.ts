@@ -1421,6 +1421,19 @@ declare class SFile {
 }
 
 /**
+ * 実行結果
+ * @typedef {Object} SystemExecResult
+ * @property {string} out
+ * @property {string} error
+ * @property {number} exit_code
+ */
+declare type SystemExecResult = {
+    out: string;
+    error: string;
+    exit_code: number;
+};
+
+/**
  * システム用のクラス
  * - 文字列の入出力
  * - スリープ、停止
@@ -1471,6 +1484,24 @@ declare class System {
      */
     static beep(frequency_hz: number, time_sec: number): void;
     /**
+     * 指定したコマンドを別プロセスとして実行する
+     * @param {string} command - コマンド
+     * @param {number} [style=1] - 起動オプション
+     * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
+     */
+    static run(command: string, style?: number, is_wait?: boolean): void;
+    /**
+     * 指定したコマンドを子プロセスとして実行する
+     * @param {string} command
+     * @returns {SystemExecResult}
+     */
+    static exec(command: string): SystemExecResult;
+    /**
+     * プログラムを終了させます。
+     * @param {number} [exit_code=0]
+     */
+    static exit(exit_code?: number): void;
+    /**
      * CUIで起動しなおす
      * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
      */
@@ -1503,13 +1534,6 @@ declare class System {
      * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定
      */
     static initializeCurrentDirectory(): void;
-    /**
-     * 指定したコマンドを実行する
-     * @param {string} command - コマンド
-     * @param {number} [style=1] - 起動オプション
-     * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
-     */
-    static run(command: string, style?: number, is_wait?: boolean): void;
     /**
      * PowerShell を実行する
      * @param {string} source

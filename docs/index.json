@@ -8657,7 +8657,7 @@
     "__docId__": 241,
     "kind": "file",
     "name": "src/senko/System.js",
-    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Format from \"./Format.js\";\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_wscript = /wscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_cscript = /cscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * 文字列へ変換します。\n * @param {any} data \n * @private\n */\nconst toString = function(data) {\n\tconst string_data = data.toString();\n\tif(string_data === \"[object Error]\") {\n\t\tconst e = data;\n\t\tconst error_name\t= e.name ? e.name : \"Error\";\n\t\tconst error_number\t= e.number ? Format.textf(\"0x%08X\", e.number) : \"0x00000000\";\n\t\tconst error_message\t= e.message ? e.message : \"エラーが発生しました。\";\n\t\treturn Format.textf(\"%s(%s) %s\", error_name, error_number, error_message);\n\t}\n\treturn string_data;\n};\n\n/**\n * システム用のクラス\n * - 文字列の入出力\n * - スリープ、停止\n * - GUIモード、CUIモードの切り替え\n * - バッチファイルへの引数の情報\n * - カレントディレクトリ情報\n */\nexport default class System {\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行されない）\n\t * @param {any} text\n\t */\n\tstatic print(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tWSH.StdOut.Write(output);\n\t\t}\n\t\telse {\n\t\t\tWScript.Echo(output);\n\t\t}\n\t}\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行される）\n\t * @param {any} text\n\t */\n\tstatic println(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tSystem.print(output + \"\\n\");\n\t\t}\n\t\telse {\n\t\t\tSystem.print(output);\n\t\t}\n\t}\n\n\t/**\n\t * 指定したフォーマットで整形した文字列を表示\n\t * @param {any} text \n\t * @param {...any} parm パラメータは可変引数\n\t */\n\tstatic printf() {\n\t\tconst x = [];\n\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\tx[i] = arguments[i];\n\t\t\tif(i === 0) {\n\t\t\t\tx[i] = toString(x[i]);\n\t\t\t}\n\t\t}\n\t\tSystem.println(Format.textf.apply(this, x));\n\t}\n\n\t/**\n\t * キーボードのテキスト入力を取得\n\t * @returns {string}\n\t */\n\tstatic readLine() {\n\t\treturn WScript.StdIn.ReadLine();\n\t}\n\t\n\t/**\n\t * UNIX時間をミリ秒で取得\n\t * @returns {number}\n\t */\n\tstatic currentTimeMillis() {\n\t\tconst date = new Date();\n\t\treturn date.getTime();\n\t}\n\n\t/**\n\t * 処理を一時停止\n\t * @param {number} time_sec\n\t */\n\tstatic sleep(time_sec) {\n\t\tWScript.Sleep((time_sec * 1000) | 0);\n\t}\n\t\n\t/**\n\t * 処理を停止\n\t */\n\tstatic stop() {\n\t\twhile(true) {\n\t\t\tWScript.Sleep(1000);\n\t\t}\n\t}\n\t\n\t/**\n\t * ビープ音を鳴らす\n\t * @param {number} frequency_hz - 周波数\n\t * @param {number} time_sec - 鳴らす秒数\n\t */\n\tstatic beep(frequency_hz, time_sec) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"kernel32.dll\",\n\t\t\t\"bool Beep(uint dwFreq, uint dwDuration)\",\n\t\t\t\"$api::Beep(\" + (frequency_hz | 0) + \", \" + ((time_sec * 1000) | 0) + \");\"\n\t\t);\n\t}\n\t\n\t/**\n\t * CUIで起動しなおす\n\t * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）\n\t */\n\tstatic executeOnCScript(is_use_chakra) {\n\t\tconst iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;\n\t\tif(is_wscript) {\n\t\t\t// CScript で起動しなおす\n\t\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\t\tconst run = [];\n\t\t\tconst args = WScript.Arguments; // 引数\n\t\t\trun.push(\"\\\"C:\\\\Windows\\\\System32\\\\cscript.exe\\\"\");\n\t\t\trun.push(\"//NoLogo\");\n\t\t\tif(iis_use_chakra) {\n\t\t\t\trun.push(\"//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}\");\n\t\t\t}\n\t\t\trun.push(\"\\\"\" + WSH.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\trun.push(\"\\\"\" + args(i) + \"\\\"\");\n\t\t\t}\n\t\t\tshell.Run( run.join(\" \") );\n\t\t\tWSH.Quit();\n\t\t}\n\t}\n\t\n\t/**\n\t * GUIで起動しなおす\n\t */\n\tstatic executeOnWScript() {\n\t\t// cscriptで起動しているか\n\t\tif(is_cscript) {\n\t\t\t// WScript で起動しなおす\n\t\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\t\tconst run = [];\n\t\t\tconst args = WScript.Arguments; // 引数\n\t\t\trun.push(\"\\\"C:\\\\Windows\\\\System32\\\\wscript.exe\\\"\");\n\t\t\trun.push(\"\\\"\" + WSH.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\trun.push(\"\\\"\" + args(i) + \"\\\"\");\n\t\t\t}\n\t\t\tshell.Run( run.join(\" \") );\n\t\t\tWSH.Quit();\n\t\t}\n\t}\n\t\n\t/**\n\t * スクリプトファイルへの引数を取得\n\t * @returns {string[]}\n\t */\n\tstatic getArguments() {\n\t\tconst args = [];\n\t\tfor(let i = 0; i < WScript.Arguments.length; i++) {\n\t\t\targs[i] = WScript.Arguments(i);\n\t\t}\n\t\treturn args;\n\t}\n\t\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string} filename\n\t */\n\tstatic setCurrentDirectory(filename) {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = filename.toString();\n\t}\n\t\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn shell.CurrentDirectory;\n\t}\n\n\t/**\n\t * 実行中のスクリプトがあるカレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getScriptDirectory() {\n\t\tconst x = WSH.ScriptFullName.match(/.*\\\\/)[0];\n\t\treturn(x.substring(0 ,x.length - 1));\n\t}\n\t\n\t/**\n\t * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定\n\t */\n\tstatic initializeCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = System.getScriptDirectory();\n\t}\n\n\t/**\n\t * 指定したコマンドを実行する\n\t * @param {string} command - コマンド\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t */\n\tstatic run(command, style, is_wait) {\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst objWShell = new ActiveXObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\treturn objWShell.Run(command, intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * PowerShell を実行する\n\t * @param {string} source\n\t * @returns {string}\n\t */\n\tstatic PowerShell(source) {\n\t\tconst powershell_base = \"powershell -sta -Command\";\n\t\tconst command = powershell_base + \" \" + source;\n\t\tconst objWShell = new ActiveXObject(\"WScript.Shell\");\n\t\tconst oe = objWShell.Exec(command.replace(/([\\\\\"])/g, \"\\\\$1\"));\n\t\t// console.log(command.replace(/([\\\\\"])/g, \"\\\\$1\"));\n\t\toe.StdIn.Close();\n\t\t// @ts-ignore\n\t\treturn oe.StdOut.ReadAll().replace(/\\r?\\n$/, \"\");\n\t}\n\n\t/**\n\t * WindowsAPI を実行する\n\t * \n\t * 例\n\t * - dll_name : user32.dll\n\t * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n\t * - exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);\n\t * @param {string} dll_name - 利用するdll\n\t * @param {string} function_text - 関数の定義データ($apiに代入されます。)\n\t * @param {string} exec_text - 実行コマンド\n\t * @returns {string}\n\t */\n\tstatic WindowsAPI(dll_name, function_text, exec_text) {\n\t\t// 利用例\n\t\t// System.WindowsAPI(\n\t\t// \t\"user32.dll\",\n\t\t// \t\"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\",\n\t\t// \t\"$api::MessageBox(0, \\\"テキスト\\\", \\\"キャプション\\\", 0);\"\n\t\t// );\n\t\t// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する\n\t\t// eslint-disable-next-line quotes\n\t\tconst api_base = `$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"` + dll_name + `\"\")] public extern static ` + function_text + `;\" -PassThru;`;\n\t\tconst command = api_base + \" \" + exec_text;\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードからテキストを取得する\n\t * @returns {string}\n\t */\n\tstatic getClipBoardText() {\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();\";\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードへテキストを設定する\n\t * @param {string} text\n\t */\n\tstatic setClipBoardText(text) {\n\t\t// PowerShell 5.0以降\n\t\t// command = \"Set-Clipboard \\\"これでもコピー可能\\\"\";\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\\\"\" + text + \"\\\", 1);\";\n\t\tSystem.PowerShell(command);\n\t}\n\n}\n\n\n",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Format from \"./Format.js\";\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_wscript = /wscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_cscript = /cscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * 文字列へ変換します。\n * @param {any} data \n * @private\n */\nconst toString = function(data) {\n\tconst string_data = data.toString();\n\tif(string_data === \"[object Error]\") {\n\t\tconst e = data;\n\t\tconst error_name\t= e.name ? e.name : \"Error\";\n\t\tconst error_number\t= e.number ? Format.textf(\"0x%08X\", e.number) : \"0x00000000\";\n\t\tconst error_message\t= e.message ? e.message : \"エラーが発生しました。\";\n\t\treturn Format.textf(\"%s(%s) %s\", error_name, error_number, error_message);\n\t}\n\treturn string_data;\n};\n\n\n/**\n * 実行結果\n * @typedef {Object} SystemExecResult\n * @property {string} out\n * @property {string} error\n * @property {number} exit_code\n */\n\n/**\n * システム用のクラス\n * - 文字列の入出力\n * - スリープ、停止\n * - GUIモード、CUIモードの切り替え\n * - バッチファイルへの引数の情報\n * - カレントディレクトリ情報\n */\nexport default class System {\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行されない）\n\t * @param {any} text\n\t */\n\tstatic print(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tWSH.StdOut.Write(output);\n\t\t}\n\t\telse {\n\t\t\tWScript.Echo(output);\n\t\t}\n\t}\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行される）\n\t * @param {any} text\n\t */\n\tstatic println(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tSystem.print(output + \"\\n\");\n\t\t}\n\t\telse {\n\t\t\tSystem.print(output);\n\t\t}\n\t}\n\n\t/**\n\t * 指定したフォーマットで整形した文字列を表示\n\t * @param {any} text \n\t * @param {...any} parm パラメータは可変引数\n\t */\n\tstatic printf() {\n\t\tconst x = [];\n\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\tx[i] = arguments[i];\n\t\t\tif(i === 0) {\n\t\t\t\tx[i] = toString(x[i]);\n\t\t\t}\n\t\t}\n\t\tSystem.println(Format.textf.apply(this, x));\n\t}\n\n\t/**\n\t * キーボードのテキスト入力を取得\n\t * @returns {string}\n\t */\n\tstatic readLine() {\n\t\treturn WScript.StdIn.ReadLine();\n\t}\n\t\n\t/**\n\t * UNIX時間をミリ秒で取得\n\t * @returns {number}\n\t */\n\tstatic currentTimeMillis() {\n\t\tconst date = new Date();\n\t\treturn date.getTime();\n\t}\n\n\t/**\n\t * 処理を一時停止\n\t * @param {number} time_sec\n\t */\n\tstatic sleep(time_sec) {\n\t\tWScript.Sleep((time_sec * 1000) | 0);\n\t}\n\t\n\t/**\n\t * 処理を停止\n\t */\n\tstatic stop() {\n\t\twhile(true) {\n\t\t\tWScript.Sleep(1000);\n\t\t}\n\t}\n\t\n\t/**\n\t * ビープ音を鳴らす\n\t * @param {number} frequency_hz - 周波数\n\t * @param {number} time_sec - 鳴らす秒数\n\t */\n\tstatic beep(frequency_hz, time_sec) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"kernel32.dll\",\n\t\t\t\"bool Beep(uint dwFreq, uint dwDuration)\",\n\t\t\t\"$api::Beep(\" + (frequency_hz | 0) + \", \" + ((time_sec * 1000) | 0) + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したコマンドを別プロセスとして実行する\n\t * @param {string} command - コマンド\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t */\n\tstatic run(command, style, is_wait) {\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\treturn shell.Run(command, intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 指定したコマンドを子プロセスとして実行する\n\t * @param {string} command \n\t * @returns {SystemExecResult}\n\t */\n\tstatic exec(command) {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tconst exec = shell.Exec(command);\n\t\tconst stdin = exec.StdIn;\n\t\tconst stdout = exec.StdOut;\n\t\tconst stderr = exec.StdErr;\n\t\twhile(exec.Status == 0) {\n\t\t\tWScript.Sleep(10);\n\t\t}\n\t\tconst exit_code = exec.ExitCode;\n\t\tstdin.Close();\n\t\t// @ts-ignore\n\t\tconst out = stdout.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstdout.Close();\n\t\t// @ts-ignore\n\t\tconst error = stderr.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstderr.Close();\n\t\treturn {\n\t\t\texit_code : exit_code,\n\t\t\tout : out,\n\t\t\terror : error\n\t\t};\n\t}\n\n\t/**\n\t * プログラムを終了させます。\n\t * @param {number} [exit_code=0] \n\t */\n\tstatic exit(exit_code) {\n\t\tWScript.Quit(exit_code ? exit_code : 0);\n\t}\n\t\n\t/**\n\t * CUIで起動しなおす\n\t * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）\n\t */\n\tstatic executeOnCScript(is_use_chakra) {\n\t\tconst iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;\n\t\tif(is_wscript) {\n\t\t\t// CScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\cscript.exe\\\"\");\n\t\t\tcode.push(\"//NoLogo\");\n\t\t\tif(iis_use_chakra) {\n\t\t\t\tcode.push(\"//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}\");\n\t\t\t}\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * GUIで起動しなおす\n\t */\n\tstatic executeOnWScript() {\n\t\t// cscriptで起動しているか\n\t\tif(is_cscript) {\n\t\t\t// WScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\wscript.exe\\\"\");\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * スクリプトファイルへの引数を取得\n\t * @returns {string[]}\n\t */\n\tstatic getArguments() {\n\t\tconst args = [];\n\t\tfor(let i = 0; i < WScript.Arguments.length; i++) {\n\t\t\targs[i] = WScript.Arguments(i);\n\t\t}\n\t\treturn args;\n\t}\n\t\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string} filename\n\t */\n\tstatic setCurrentDirectory(filename) {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = filename.toString();\n\t}\n\t\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn shell.CurrentDirectory;\n\t}\n\n\t/**\n\t * 実行中のスクリプトがあるカレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getScriptDirectory() {\n\t\tconst x = WSH.ScriptFullName.match(/.*\\\\/)[0];\n\t\treturn(x.substring(0 ,x.length - 1));\n\t}\n\t\n\t/**\n\t * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定\n\t */\n\tstatic initializeCurrentDirectory() {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = System.getScriptDirectory();\n\t}\n\n\t/**\n\t * PowerShell を実行する\n\t * @param {string} source\n\t * @returns {string}\n\t */\n\tstatic PowerShell(source) {\n\t\tconst powershell_base = \"powershell -sta -Command\";\n\t\tconst command = (powershell_base + \" \" + source).replace(/([\\\\\"])/g, \"\\\\$1\");\n\t\treturn System.exec(command).out.replace(/\\r?\\n$/, \"\");\n\t}\n\n\t/**\n\t * WindowsAPI を実行する\n\t * \n\t * 例\n\t * - dll_name : user32.dll\n\t * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n\t * - exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);\n\t * @param {string} dll_name - 利用するdll\n\t * @param {string} function_text - 関数の定義データ($apiに代入されます。)\n\t * @param {string} exec_text - 実行コマンド\n\t * @returns {string}\n\t */\n\tstatic WindowsAPI(dll_name, function_text, exec_text) {\n\t\t// 利用例\n\t\t// System.WindowsAPI(\n\t\t// \t\"user32.dll\",\n\t\t// \t\"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\",\n\t\t// \t\"$api::MessageBox(0, \\\"テキスト\\\", \\\"キャプション\\\", 0);\"\n\t\t// );\n\t\t// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する\n\t\t// eslint-disable-next-line quotes\n\t\tconst api_base = `$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"` + dll_name + `\"\")] public extern static ` + function_text + `;\" -PassThru;`;\n\t\tconst command = api_base + \" \" + exec_text;\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードからテキストを取得する\n\t * @returns {string}\n\t */\n\tstatic getClipBoardText() {\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();\";\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードへテキストを設定する\n\t * @param {string} text\n\t */\n\tstatic setClipBoardText(text) {\n\t\t// PowerShell 5.0以降\n\t\t// command = \"Set-Clipboard \\\"これでもコピー可能\\\"\";\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\\\"\" + text + \"\\\", 1);\";\n\t\tSystem.PowerShell(command);\n\t}\n\n}\n\n\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/senko/System.js",
     "access": "public",
@@ -8746,6 +8746,55 @@
   },
   {
     "__docId__": 245,
+    "kind": "typedef",
+    "name": "SystemExecResult",
+    "memberof": "src/senko/System.js",
+    "static": true,
+    "longname": "src/senko/System.js~SystemExecResult",
+    "access": "public",
+    "description": "実行結果",
+    "properties": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "out",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "error",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "exit_code",
+        "description": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "Object"
+      ],
+      "optional": false,
+      "name": "SystemExecResult"
+    }
+  },
+  {
+    "__docId__": 246,
     "kind": "class",
     "name": "System",
     "memberof": "src/senko/System.js",
@@ -8756,11 +8805,11 @@
     "importPath": "senkowsh/src/senko/System.js",
     "importStyle": "System",
     "description": "システム用のクラス\n- 文字列の入出力\n- スリープ、停止\n- GUIモード、CUIモードの切り替え\n- バッチファイルへの引数の情報\n- カレントディレクトリ情報",
-    "lineNumber": 50,
+    "lineNumber": 59,
     "interface": false
   },
   {
-    "__docId__": 246,
+    "__docId__": 247,
     "kind": "method",
     "name": "print",
     "memberof": "src/senko/System.js~System",
@@ -8770,33 +8819,7 @@
     "longname": "src/senko/System.js~System.print",
     "access": "public",
     "description": "文字列を表示（最終行で自動で改行されない）",
-    "lineNumber": 56,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "any"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "text",
-        "description": ""
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 247,
-    "kind": "method",
-    "name": "println",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.println",
-    "access": "public",
-    "description": "文字列を表示（最終行で自動で改行される）",
-    "lineNumber": 70,
+    "lineNumber": 65,
     "params": [
       {
         "nullable": null,
@@ -8814,6 +8837,32 @@
   {
     "__docId__": 248,
     "kind": "method",
+    "name": "println",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.println",
+    "access": "public",
+    "description": "文字列を表示（最終行で自動で改行される）",
+    "lineNumber": 79,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "any"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "text",
+        "description": ""
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 249,
+    "kind": "method",
     "name": "printf",
     "memberof": "src/senko/System.js~System",
     "generator": false,
@@ -8822,7 +8871,7 @@
     "longname": "src/senko/System.js~System.printf",
     "access": "public",
     "description": "指定したフォーマットで整形した文字列を表示",
-    "lineNumber": 85,
+    "lineNumber": 94,
     "params": [
       {
         "nullable": null,
@@ -8848,7 +8897,7 @@
     "return": null
   },
   {
-    "__docId__": 249,
+    "__docId__": 250,
     "kind": "method",
     "name": "readLine",
     "memberof": "src/senko/System.js~System",
@@ -8858,7 +8907,7 @@
     "longname": "src/senko/System.js~System.readLine",
     "access": "public",
     "description": "キーボードのテキスト入力を取得",
-    "lineNumber": 100,
+    "lineNumber": 109,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8876,7 +8925,7 @@
     "params": []
   },
   {
-    "__docId__": 250,
+    "__docId__": 251,
     "kind": "method",
     "name": "currentTimeMillis",
     "memberof": "src/senko/System.js~System",
@@ -8886,7 +8935,7 @@
     "longname": "src/senko/System.js~System.currentTimeMillis",
     "access": "public",
     "description": "UNIX時間をミリ秒で取得",
-    "lineNumber": 108,
+    "lineNumber": 117,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8904,7 +8953,7 @@
     "params": []
   },
   {
-    "__docId__": 251,
+    "__docId__": 252,
     "kind": "method",
     "name": "sleep",
     "memberof": "src/senko/System.js~System",
@@ -8914,7 +8963,7 @@
     "longname": "src/senko/System.js~System.sleep",
     "access": "public",
     "description": "処理を一時停止",
-    "lineNumber": 117,
+    "lineNumber": 126,
     "params": [
       {
         "nullable": null,
@@ -8930,7 +8979,7 @@
     "return": null
   },
   {
-    "__docId__": 252,
+    "__docId__": 253,
     "kind": "method",
     "name": "stop",
     "memberof": "src/senko/System.js~System",
@@ -8940,12 +8989,12 @@
     "longname": "src/senko/System.js~System.stop",
     "access": "public",
     "description": "処理を停止",
-    "lineNumber": 124,
+    "lineNumber": 133,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 253,
+    "__docId__": 254,
     "kind": "method",
     "name": "beep",
     "memberof": "src/senko/System.js~System",
@@ -8955,7 +9004,7 @@
     "longname": "src/senko/System.js~System.beep",
     "access": "public",
     "description": "ビープ音を鳴らす",
-    "lineNumber": 135,
+    "lineNumber": 144,
     "params": [
       {
         "nullable": null,
@@ -8981,173 +9030,7 @@
     "return": null
   },
   {
-    "__docId__": 254,
-    "kind": "method",
-    "name": "executeOnCScript",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.executeOnCScript",
-    "access": "public",
-    "description": "CUIで起動しなおす",
-    "lineNumber": 147,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "boolean"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "is_use_chakra",
-        "description": "高速なChakraエンジンを利用する（wsfが開けなくなる）"
-      }
-    ],
-    "return": null
-  },
-  {
     "__docId__": 255,
-    "kind": "method",
-    "name": "executeOnWScript",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.executeOnWScript",
-    "access": "public",
-    "description": "GUIで起動しなおす",
-    "lineNumber": 171,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 256,
-    "kind": "method",
-    "name": "getArguments",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.getArguments",
-    "access": "public",
-    "description": "スクリプトファイルへの引数を取得",
-    "lineNumber": 192,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{string[]}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "string[]"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 257,
-    "kind": "method",
-    "name": "setCurrentDirectory",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.setCurrentDirectory",
-    "access": "public",
-    "description": "カレントディレクトリを設定",
-    "lineNumber": 204,
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "string"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "filename",
-        "description": ""
-      }
-    ],
-    "return": null
-  },
-  {
-    "__docId__": 258,
-    "kind": "method",
-    "name": "getCurrentDirectory",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.getCurrentDirectory",
-    "access": "public",
-    "description": "カレントディレクトリを取得",
-    "lineNumber": 213,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{string}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "string"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 259,
-    "kind": "method",
-    "name": "getScriptDirectory",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.getScriptDirectory",
-    "access": "public",
-    "description": "実行中のスクリプトがあるカレントディレクトリを取得",
-    "lineNumber": 222,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{string}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "string"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 260,
-    "kind": "method",
-    "name": "initializeCurrentDirectory",
-    "memberof": "src/senko/System.js~System",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/System.js~System.initializeCurrentDirectory",
-    "access": "public",
-    "description": "実行中のスクリプトがあるディレクトリをカレントディレクトリに設定",
-    "lineNumber": 230,
-    "params": [],
-    "return": null
-  },
-  {
-    "__docId__": 261,
     "kind": "method",
     "name": "run",
     "memberof": "src/senko/System.js~System",
@@ -9156,8 +9039,8 @@
     "static": true,
     "longname": "src/senko/System.js~System.run",
     "access": "public",
-    "description": "指定したコマンドを実行する",
-    "lineNumber": 241,
+    "description": "指定したコマンドを別プロセスとして実行する",
+    "lineNumber": 158,
     "params": [
       {
         "nullable": null,
@@ -9201,7 +9084,240 @@
     }
   },
   {
+    "__docId__": 256,
+    "kind": "method",
+    "name": "exec",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.exec",
+    "access": "public",
+    "description": "指定したコマンドを子プロセスとして実行する",
+    "lineNumber": 172,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{SystemExecResult}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "command",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "SystemExecResult"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 257,
+    "kind": "method",
+    "name": "exit",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.exit",
+    "access": "public",
+    "description": "プログラムを終了させます。",
+    "lineNumber": 200,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
+        "name": "exit_code",
+        "description": ""
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 258,
+    "kind": "method",
+    "name": "executeOnCScript",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.executeOnCScript",
+    "access": "public",
+    "description": "CUIで起動しなおす",
+    "lineNumber": 208,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "boolean"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "is_use_chakra",
+        "description": "高速なChakraエンジンを利用する（wsfが開けなくなる）"
+      }
+    ],
+    "return": null
+  },
+  {
+    "__docId__": 259,
+    "kind": "method",
+    "name": "executeOnWScript",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.executeOnWScript",
+    "access": "public",
+    "description": "GUIで起動しなおす",
+    "lineNumber": 231,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 260,
+    "kind": "method",
+    "name": "getArguments",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.getArguments",
+    "access": "public",
+    "description": "スクリプトファイルへの引数を取得",
+    "lineNumber": 251,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string[]}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string[]"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 261,
+    "kind": "method",
+    "name": "setCurrentDirectory",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.setCurrentDirectory",
+    "access": "public",
+    "description": "カレントディレクトリを設定",
+    "lineNumber": 263,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "filename",
+        "description": ""
+      }
+    ],
+    "return": null
+  },
+  {
     "__docId__": 262,
+    "kind": "method",
+    "name": "getCurrentDirectory",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.getCurrentDirectory",
+    "access": "public",
+    "description": "カレントディレクトリを取得",
+    "lineNumber": 272,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 263,
+    "kind": "method",
+    "name": "getScriptDirectory",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.getScriptDirectory",
+    "access": "public",
+    "description": "実行中のスクリプトがあるカレントディレクトリを取得",
+    "lineNumber": 281,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 264,
+    "kind": "method",
+    "name": "initializeCurrentDirectory",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.initializeCurrentDirectory",
+    "access": "public",
+    "description": "実行中のスクリプトがあるディレクトリをカレントディレクトリに設定",
+    "lineNumber": 289,
+    "params": [],
+    "return": null
+  },
+  {
+    "__docId__": 265,
     "kind": "method",
     "name": "PowerShell",
     "memberof": "src/senko/System.js~System",
@@ -9211,7 +9327,7 @@
     "longname": "src/senko/System.js~System.PowerShell",
     "access": "public",
     "description": "PowerShell を実行する",
-    "lineNumber": 255,
+    "lineNumber": 299,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9240,7 +9356,7 @@
     }
   },
   {
-    "__docId__": 263,
+    "__docId__": 266,
     "kind": "method",
     "name": "WindowsAPI",
     "memberof": "src/senko/System.js~System",
@@ -9250,7 +9366,7 @@
     "longname": "src/senko/System.js~System.WindowsAPI",
     "access": "public",
     "description": "WindowsAPI を実行する\n\n例\n- dll_name : user32.dll\n- function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n- exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);",
-    "lineNumber": 278,
+    "lineNumber": 317,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9299,7 +9415,7 @@
     }
   },
   {
-    "__docId__": 264,
+    "__docId__": 267,
     "kind": "method",
     "name": "getClipBoardText",
     "memberof": "src/senko/System.js~System",
@@ -9309,7 +9425,7 @@
     "longname": "src/senko/System.js~System.getClipBoardText",
     "access": "public",
     "description": "クリップボードからテキストを取得する",
-    "lineNumber": 296,
+    "lineNumber": 335,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9327,7 +9443,7 @@
     "params": []
   },
   {
-    "__docId__": 265,
+    "__docId__": 268,
     "kind": "method",
     "name": "setClipBoardText",
     "memberof": "src/senko/System.js~System",
@@ -9337,7 +9453,7 @@
     "longname": "src/senko/System.js~System.setClipBoardText",
     "access": "public",
     "description": "クリップボードへテキストを設定する",
-    "lineNumber": 305,
+    "lineNumber": 344,
     "params": [
       {
         "nullable": null,
@@ -9353,7 +9469,7 @@
     "return": null
   },
   {
-    "__docId__": 266,
+    "__docId__": 269,
     "kind": "file",
     "name": "src/SenkoWSH.js",
     "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport typeCSV from \"./senko/CSV.js\";\nimport typeDialog from \"./senko/Dialog.js\";\nimport typeSFile from \"./senko/SFile.js\";\nimport typeRobot from \"./senko/Robot.js\";\nimport typeFormat from \"./senko/Format.js\";\nimport typeRandom from \"./konpeito/Random.js\";\nimport typeJapanese from \"./mojijs/Japanese.js\";\nimport typeStringComparator from \"./mojijs/StringComparator.js\";\nimport typeSystem from \"./senko/System.js\";\n\n/**\n * @type {typeof typeCSV}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nCSV = typeCSV;\n\n/**\n * @type {typeof typeDialog}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nDialog = typeDialog;\n\n/**\n * @type {typeof typeSFile}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSFile = typeSFile;\n\n/**\n * @type {typeof typeRobot}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRobot = typeRobot;\n\n/**\n * @type {typeof typeFormat}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nFormat = typeFormat;\n\n/**\n * @type {typeof typeRandom}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRandom = typeRandom;\n\n/**\n * @type {typeof typeJapanese}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nJapanese = typeJapanese;\n\n/**\n * @type {typeof typeStringComparator}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nStringComparator = typeStringComparator;\n\n/**\n * @type {typeof typeSystem}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSystem = typeSystem;\n\n/**\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-global-assign\nconsole = {\n\t// @ts-ignore\n\tlog : function(text) {\n\t\t// @ts-ignore\n\t\t// eslint-disable-next-line no-undef\n\t\tSystem.println(text);\n\t}\n};\n\nimport typeExtendsArray from \"./senko/ExtendsArray.js\";\nimport typeExtendsObject from \"./senko/ExtendsObject.js\";\nimport typeExtendsString from \"./senko/ExtendsString.js\";\n\n/**\n * @type {typeof typeExtendsArray}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsArray = typeExtendsArray;\n\n/**\n * @type {typeof typeExtendsObject}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsObject = typeExtendsObject;\n\n/**\n * @type {typeof typeExtendsString}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsString = typeExtendsString;\n\n/**\n * @param {any} original \n * @param {any} extension\n * @returns {any}\n * @private\n * @ignore\n */\nconst extendClass = function(original, extension) {\n\tfor(const key in extension) {\n\t\toriginal.prototype[key] = function() {\n\t\t\tconst x = [];\n\t\t\tx.push(this);\n\t\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\t\tx.push(arguments[i]);\n\t\t\t}\n\t\t\treturn extension[key].apply(this, x);\n\t\t};\n\t}\n};\n\nextendClass(Array, typeExtendsArray);\nextendClass(Object, typeExtendsObject);\nextendClass(String, typeExtendsString);\n",
@@ -9364,7 +9480,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 267,
+    "__docId__": 270,
     "kind": "function",
     "name": "extendClass",
     "memberof": "src/SenkoWSH.js",

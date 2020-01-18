@@ -1,5 +1,9 @@
 # History
 
+## SenkoWSH v3.4.0
+### 更新点
+- Systemに、「exit」と「exec」を追加
+
 ## SenkoWSH v3.3.0
 ### 更新点
 - SFileの「remove」に読み取り専用でも削除する方法のアルゴリズムを変更

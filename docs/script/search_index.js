@@ -1302,6 +1302,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/system.js~system.exec",
+    "class/src/senko/System.js~System.html#static-method-exec",
+    "src/senko/System.js~System.exec",
+    "method"
+  ],
+  [
     "src/senko/system.js~system.executeoncscript",
     "class/src/senko/System.js~System.html#static-method-executeOnCScript",
     "src/senko/System.js~System.executeOnCScript",
@@ -1311,6 +1317,12 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.executeonwscript",
     "class/src/senko/System.js~System.html#static-method-executeOnWScript",
     "src/senko/System.js~System.executeOnWScript",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.exit",
+    "class/src/senko/System.js~System.html#static-method-exit",
+    "src/senko/System.js~System.exit",
     "method"
   ],
   [
@@ -1396,5 +1408,11 @@ window.esdocSearchIndex = [
     "class/src/senko/System.js~System.html#static-method-stop",
     "src/senko/System.js~System.stop",
     "method"
+  ],
+  [
+    "src/senko/system.js~systemexecresult",
+    "typedef/index.html#static-typedef-SystemExecResult",
+    "src/senko/System.js~SystemExecResult",
+    "typedef"
   ]
 ]

@@ -49,6 +49,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -94,6 +95,15 @@ const toString = function(data) {
 	}
 	return string_data;
 };
+
+
+/**
+ * &#x5B9F;&#x884C;&#x7D50;&#x679C;
+ * @typedef {Object} SystemExecResult
+ * @property {string} out
+ * @property {string} error
+ * @property {number} exit_code
+ */
 
 /**
  * &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x7528;&#x306E;&#x30AF;&#x30E9;&#x30B9;
@@ -195,6 +205,58 @@ export default class System {
 			&quot;$api::Beep(&quot; + (frequency_hz | 0) + &quot;, &quot; + ((time_sec * 1000) | 0) + &quot;);&quot;
 		);
 	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * @param {string} command - &#x30B3;&#x30DE;&#x30F3;&#x30C9;
+	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+	 * @param {boolean} [is_wait=false] - &#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x304C;&#x7D42;&#x4E86;&#x3059;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
+	 */
+	static run(command, style, is_wait) {
+		const NormalFocus = 1;
+		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
+		const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
+		// @ts-ignore
+		return shell.Run(command, intWindowStyle, bWaitOnReturn);
+	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5B50;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * @param {string} command 
+	 * @returns {SystemExecResult}
+	 */
+	static exec(command) {
+		const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
+		const exec = shell.Exec(command);
+		const stdin = exec.StdIn;
+		const stdout = exec.StdOut;
+		const stderr = exec.StdErr;
+		while(exec.Status == 0) {
+			WScript.Sleep(10);
+		}
+		const exit_code = exec.ExitCode;
+		stdin.Close();
+		// @ts-ignore
+		const out = stdout.ReadAll().replace(/\r?\n$/, &quot;&quot;);
+		stdout.Close();
+		// @ts-ignore
+		const error = stderr.ReadAll().replace(/\r?\n$/, &quot;&quot;);
+		stderr.Close();
+		return {
+			exit_code : exit_code,
+			out : out,
+			error : error
+		};
+	}
+
+	/**
+	 * &#x30D7;&#x30ED;&#x30B0;&#x30E9;&#x30E0;&#x3092;&#x7D42;&#x4E86;&#x3055;&#x305B;&#x307E;&#x3059;&#x3002;
+	 * @param {number} [exit_code=0] 
+	 */
+	static exit(exit_code) {
+		WScript.Quit(exit_code ? exit_code : 0);
+	}
 	
 	/**
 	 * CUI&#x3067;&#x8D77;&#x52D5;&#x3057;&#x306A;&#x304A;&#x3059;
@@ -204,20 +266,19 @@ export default class System {
 		const iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;
 		if(is_wscript) {
 			// CScript &#x3067;&#x8D77;&#x52D5;&#x3057;&#x306A;&#x304A;&#x3059;
-			const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
-			const run = [];
-			const args = WScript.Arguments; // &#x5F15;&#x6570;
-			run.push(&quot;\&quot;C:\\Windows\\System32\\cscript.exe\&quot;&quot;);
-			run.push(&quot;//NoLogo&quot;);
+			const code = [];
+			const args = System.getArguments();
+			code.push(&quot;\&quot;C:\\Windows\\System32\\cscript.exe\&quot;&quot;);
+			code.push(&quot;//NoLogo&quot;);
 			if(iis_use_chakra) {
-				run.push(&quot;//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}&quot;);
+				code.push(&quot;//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}&quot;);
 			}
-			run.push(&quot;\&quot;&quot; + WSH.ScriptFullName + &quot;\&quot;&quot;);
+			code.push(&quot;\&quot;&quot; + WScript.ScriptFullName + &quot;\&quot;&quot;);
 			for(let i = 0; i &lt; args.length; i++) {
-				run.push(&quot;\&quot;&quot; + args(i) + &quot;\&quot;&quot;);
+				code.push(&quot;\&quot;&quot; + args[i] + &quot;\&quot;&quot;);
 			}
-			shell.Run( run.join(&quot; &quot;) );
-			WSH.Quit();
+			System.run(code.join(&quot; &quot;));
+			System.exit();
 		}
 	}
 	
@@ -228,16 +289,15 @@ export default class System {
 		// cscript&#x3067;&#x8D77;&#x52D5;&#x3057;&#x3066;&#x3044;&#x308B;&#x304B;
 		if(is_cscript) {
 			// WScript &#x3067;&#x8D77;&#x52D5;&#x3057;&#x306A;&#x304A;&#x3059;
-			const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
-			const run = [];
-			const args = WScript.Arguments; // &#x5F15;&#x6570;
-			run.push(&quot;\&quot;C:\\Windows\\System32\\wscript.exe\&quot;&quot;);
-			run.push(&quot;\&quot;&quot; + WSH.ScriptFullName + &quot;\&quot;&quot;);
+			const code = [];
+			const args = System.getArguments();
+			code.push(&quot;\&quot;C:\\Windows\\System32\\wscript.exe\&quot;&quot;);
+			code.push(&quot;\&quot;&quot; + WScript.ScriptFullName + &quot;\&quot;&quot;);
 			for(let i = 0; i &lt; args.length; i++) {
-				run.push(&quot;\&quot;&quot; + args(i) + &quot;\&quot;&quot;);
+				code.push(&quot;\&quot;&quot; + args[i] + &quot;\&quot;&quot;);
 			}
-			shell.Run( run.join(&quot; &quot;) );
-			WSH.Quit();
+			System.run(code.join(&quot; &quot;));
+			System.exit();
 		}
 	}
 	
@@ -284,23 +344,8 @@ export default class System {
 	 * &#x5B9F;&#x884C;&#x4E2D;&#x306E;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x304C;&#x3042;&#x308B;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x30AB;&#x30EC;&#x30F3;&#x30C8;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x306B;&#x8A2D;&#x5B9A;
 	 */
 	static initializeCurrentDirectory() {
-		const shell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
 		shell.CurrentDirectory = System.getScriptDirectory();
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
-	 * @param {string} command - &#x30B3;&#x30DE;&#x30F3;&#x30C9;
-	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
-	 * @param {boolean} [is_wait=false] - &#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x304C;&#x7D42;&#x4E86;&#x3059;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
-	 */
-	static run(command, style, is_wait) {
-		const NormalFocus = 1;
-		const intWindowStyle = style !== undefined ? style : NormalFocus;
-		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
-		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
-		// @ts-ignore
-		return objWShell.Run(command, intWindowStyle, bWaitOnReturn);
 	}
 
 	/**
@@ -310,13 +355,8 @@ export default class System {
 	 */
 	static PowerShell(source) {
 		const powershell_base = &quot;powershell -sta -Command&quot;;
-		const command = powershell_base + &quot; &quot; + source;
-		const objWShell = new ActiveXObject(&quot;WScript.Shell&quot;);
-		const oe = objWShell.Exec(command.replace(/([\\&quot;])/g, &quot;\\$1&quot;));
-		// console.log(command.replace(/([\\&quot;])/g, &quot;\\$1&quot;));
-		oe.StdIn.Close();
-		// @ts-ignore
-		return oe.StdOut.ReadAll().replace(/\r?\n$/, &quot;&quot;);
+		const command = (powershell_base + &quot; &quot; + source).replace(/([\\&quot;])/g, &quot;\\$1&quot;);
+		return System.exec(command).out.replace(/\r?\n$/, &quot;&quot;);
 	}
 
 	/**
