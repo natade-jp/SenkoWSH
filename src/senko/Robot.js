@@ -398,6 +398,13 @@ const VK_DATA = {
  */
 
 /**
+ * ハンドルを取得する際に必要なデータ
+ * @typedef {Object} RobotGetHandleData
+ * @property {string|number} [classname=0] クラス名
+ * @property {string|number} [windowtext=0] ウィンドウ名
+ */
+
+/**
  * ウィンドウやマウスなどを自動操作するためのクラス
  */
 export default class Robot {
@@ -492,17 +499,29 @@ export default class Robot {
 	}
 
 	/**
+	 * 指定したハンドルを取得する
+	 * @param {RobotGetHandleData} get_handle_data 
+	 * @returns {number}
+	 */
+	static getHandle(get_handle_data) {
+		let command = "$api::FindWindow(";
+		command += (get_handle_data.classname ? "\"" + get_handle_data.classname + "\"" : "0") + ",";
+		command += (get_handle_data.windowtext ? "\"" + get_handle_data.windowtext + "\"" : "0") + ");";
+		return parseFloat(System.WindowsAPI(
+			"user32.dll",
+			"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)",
+			command
+		));
+	}
+
+	/**
 	 * 指定したクラス名のハンドルを取得する
 	 * @param {string} classname 
 	 * @returns {number}
 	 */
 	static getHandleOfClassName(classname) {
-		// console.log(Robot.getHandleOfClassName("無題 - メモ帳");
-		return parseFloat(System.WindowsAPI(
-			"user32.dll",
-			"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)",
-			"$api::FindWindow(\"" + classname + "\", 0);"
-		));
+		// console.log(Robot.getHandleOfClassName("Notepad"));
+		return Robot.getHandle({classname : classname});
 	}
 
 	/**
@@ -520,16 +539,12 @@ export default class Robot {
 
 	/**
 	 * 指定したウィンドウ名のハンドルを取得する
-	 * @param {string} windowtext 
+	 * @param {string} windowname 
 	 * @returns {number}
 	 */
-	static getHandleOfWindowText(windowtext) {
-		// console.log(Robot.getHandleOfWindowName("Notepad"));
-		return parseFloat(System.WindowsAPI(
-			"user32.dll",
-			"IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)",
-			"$api::FindWindow(0 , \"" + windowtext + "\");"
-		));
+	static getHandleOfWindowText(windowname) {
+		// console.log(Robot.getHandleOfWindowName("無題 - メモ帳");
+		return Robot.getHandle({windowtext : windowname});
 	}
 
 	/**

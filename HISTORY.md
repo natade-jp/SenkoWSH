@@ -1,5 +1,10 @@
 # History
 
+## SenkoWSH v3.4.1
+### 更新点
+- Robotにウィンドウ名とクラス名を両方してできるメソッドを追加
+- SFile.lastModified がVT_DATE値を返してしまっていたのを修正
+
 ## SenkoWSH v3.4.0
 ### 更新点
 - Systemに、「exit」と「exec」を追加

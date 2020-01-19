@@ -45,6 +45,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RobotGetHandleData">RobotGetHandleData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCode">VirtualKeyCode</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
@@ -455,6 +456,13 @@ const VK_DATA = {
  */
 
 /**
+ * &#x30CF;&#x30F3;&#x30C9;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;&#x969B;&#x306B;&#x5FC5;&#x8981;&#x306A;&#x30C7;&#x30FC;&#x30BF;
+ * @typedef {Object} RobotGetHandleData
+ * @property {string|number} [classname=0] &#x30AF;&#x30E9;&#x30B9;&#x540D;
+ * @property {string|number} [windowtext=0] &#x30A6;&#x30A3;&#x30F3;&#x30C9;&#x30A6;&#x540D;
+ */
+
+/**
  * &#x30A6;&#x30A3;&#x30F3;&#x30C9;&#x30A6;&#x3084;&#x30DE;&#x30A6;&#x30B9;&#x306A;&#x3069;&#x3092;&#x81EA;&#x52D5;&#x64CD;&#x4F5C;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;&#x30AF;&#x30E9;&#x30B9;
  */
 export default class Robot {
@@ -549,17 +557,29 @@ export default class Robot {
 	}
 
 	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30CF;&#x30F3;&#x30C9;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * @param {RobotGetHandleData} get_handle_data 
+	 * @returns {number}
+	 */
+	static getHandle(get_handle_data) {
+		let command = &quot;$api::FindWindow(&quot;;
+		command += (get_handle_data.classname ? &quot;\&quot;&quot; + get_handle_data.classname + &quot;\&quot;&quot; : &quot;0&quot;) + &quot;,&quot;;
+		command += (get_handle_data.windowtext ? &quot;\&quot;&quot; + get_handle_data.windowtext + &quot;\&quot;&quot; : &quot;0&quot;) + &quot;);&quot;;
+		return parseFloat(System.WindowsAPI(
+			&quot;user32.dll&quot;,
+			&quot;IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)&quot;,
+			command
+		));
+	}
+
+	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30AF;&#x30E9;&#x30B9;&#x540D;&#x306E;&#x30CF;&#x30F3;&#x30C9;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
 	 * @param {string} classname 
 	 * @returns {number}
 	 */
 	static getHandleOfClassName(classname) {
-		// console.log(Robot.getHandleOfClassName(&quot;&#x7121;&#x984C; - &#x30E1;&#x30E2;&#x5E33;&quot;);
-		return parseFloat(System.WindowsAPI(
-			&quot;user32.dll&quot;,
-			&quot;IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)&quot;,
-			&quot;$api::FindWindow(\&quot;&quot; + classname + &quot;\&quot;, 0);&quot;
-		));
+		// console.log(Robot.getHandleOfClassName(&quot;Notepad&quot;));
+		return Robot.getHandle({classname : classname});
 	}
 
 	/**
@@ -577,16 +597,12 @@ export default class Robot {
 
 	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30A6;&#x30A3;&#x30F3;&#x30C9;&#x30A6;&#x540D;&#x306E;&#x30CF;&#x30F3;&#x30C9;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
-	 * @param {string} windowtext 
+	 * @param {string} windowname 
 	 * @returns {number}
 	 */
-	static getHandleOfWindowText(windowtext) {
-		// console.log(Robot.getHandleOfWindowName(&quot;Notepad&quot;));
-		return parseFloat(System.WindowsAPI(
-			&quot;user32.dll&quot;,
-			&quot;IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)&quot;,
-			&quot;$api::FindWindow(0 , \&quot;&quot; + windowtext + &quot;\&quot;);&quot;
-		));
+	static getHandleOfWindowText(windowname) {
+		// console.log(Robot.getHandleOfWindowName(&quot;&#x7121;&#x984C; - &#x30E1;&#x30E2;&#x5E33;&quot;);
+		return Robot.getHandle({windowtext : windowname});
 	}
 
 	/**

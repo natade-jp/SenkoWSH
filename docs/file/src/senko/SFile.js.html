@@ -45,6 +45,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RobotGetHandleData">RobotGetHandleData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCode">VirtualKeyCode</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
@@ -207,7 +208,7 @@ export default class SFile {
 		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return false;
 		}
-		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
 		const name = new SFile(file_obj);
 		// &#x4F8B;&#x3048;&#x3070;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5927;&#x6587;&#x5B57;&#x304B;&#x3089;&#x5C0F;&#x6587;&#x5B57;&#x306B;&#x5909;&#x63DB;&#x3068;&#x3044;&#x3063;&#x305F;&#x5834;&#x5408;&#x3001;
 		// Scripting.FileSystemObject &#x306E;&#x4ED5;&#x69D8;&#x306B;&#x3088;&#x308A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;
@@ -330,7 +331,7 @@ export default class SFile {
 			return false;
 		}
 		const ATTRIBUTES_READONLY = 1;
-		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
 		return (file.Attributes &amp; ATTRIBUTES_READONLY) !== 0;
 	}
 	
@@ -349,7 +350,7 @@ export default class SFile {
 		}
 		try {
 			const ATTRIBUTES_READONLY = 1;
-			const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+			const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
 			if(is_readonly) {
 				file.Attributes = file.Attributes | ATTRIBUTES_READONLY;
 			}
@@ -388,7 +389,7 @@ export default class SFile {
 			return false;
 		}
 		const ATTRIBUTES_HIDDEN = 2;
-		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
 		return (file.Attributes &amp; ATTRIBUTES_HIDDEN) !== 0;
 	}
 	
@@ -407,7 +408,7 @@ export default class SFile {
 		}
 		try {
 			const ATTRIBUTES_HIDDEN = 2;
-			const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+			const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
 			if(is_hidden) {
 				file.Attributes = file.Attributes | ATTRIBUTES_HIDDEN;
 			}
@@ -445,8 +446,9 @@ export default class SFile {
 		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return null;
 		}
-		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
-		return file.DateLastModified;
+		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
+		// DateLastModified &#x306F; VT_DATE &#x5024;&#x306A;&#x306E;&#x3067;&#x5909;&#x63DB;&#x3059;&#x308B;
+		return new Date(file.DateLastModified);
 	}
 
 	/**
@@ -486,7 +488,7 @@ export default class SFile {
 		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return -1;
 		}
-		const file = this.isFile() ? this.fso.getFile(this.pathname) : this.fso.getFolder(this.pathname);
+		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
 		return file.Size;
 	}
 
@@ -502,7 +504,7 @@ export default class SFile {
 			return null;
 		}
 		const out = [];
-		const list = new Enumerator(this.fso.getFolder(this.pathname).Files);
+		const list = new Enumerator(this.fso.GetFolder(this.pathname).Files);
 		for(let i = 0; !list.atEnd(); list.moveNext()) {
 			out[i++] = list.item().Name;
 		}
@@ -521,7 +523,7 @@ export default class SFile {
 			return null;
 		}
 		const out = [];
-		const list = new Enumerator(this.fso.getFolder(this.pathname).SubFolders);
+		const list = new Enumerator(this.fso.GetFolder(this.pathname).SubFolders);
 		for(let i = 0; !list.atEnd(); list.moveNext()) {
 			out[i++] = list.item().Name;
 		}
@@ -1058,7 +1060,7 @@ export default class SFile {
 		const file = new SFile(file_obj);
 		const shell = WScript.CreateObject (&quot;WScript.Shell&quot;);
 		const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
-		shell.CurrentDirectory = fso.getFolder(file.getAbsolutePath()).Name;
+		shell.CurrentDirectory = fso.GetFolder(file.getAbsolutePath()).Name;
 	}
 
 	/**
@@ -1082,8 +1084,8 @@ export default class SFile {
 		path[pointer] = this.getNormalizedPathName();
 
 		// 1&#x968E;&#x5C64;&#x76EE;&#x3092;&#x51E6;&#x7406;&#x3059;&#x308B;
-		targetfolder = this.fso.getFolder(path[pointer]);
-		list = new Enumerator(this.fso.getFolder(targetfolder).Files);
+		targetfolder = this.fso.GetFolder(path[pointer]);
+		list = new Enumerator(this.fso.GetFolder(targetfolder).Files);
 		for(; !list.atEnd(); list.moveNext()) {
 			file = new SFile(path[pointer] + list.item().Name);
 			if(!func.call(func, file)) {
@@ -1104,7 +1106,7 @@ export default class SFile {
 				return false;
 			}
 			path[pointer] += &quot;\\&quot;;
-			targetfolder = this.fso.getFolder(path[pointer]);
+			targetfolder = this.fso.GetFolder(path[pointer]);
 			list = new Enumerator(targetfolder.Files);
 			for(; !list.atEnd(); list.moveNext()) {
 				file = new SFile(path[pointer] + list.item().Name);

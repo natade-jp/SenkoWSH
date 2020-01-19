@@ -1092,6 +1092,17 @@ declare type KeyEventOption = {
 };
 
 /**
+ * ハンドルを取得する際に必要なデータ
+ * @typedef {Object} RobotGetHandleData
+ * @property {string|number} [classname=0] クラス名
+ * @property {string|number} [windowtext=0] ウィンドウ名
+ */
+declare type RobotGetHandleData = {
+    classname?: string | number;
+    windowtext?: string | number;
+};
+
+/**
  * ウィンドウやマウスなどを自動操作するためのクラス
  */
 declare class Robot {
@@ -1117,6 +1128,12 @@ declare class Robot {
      */
     static setCursorPosition(position: WSHRobotPosition): void;
     /**
+     * 指定したハンドルを取得する
+     * @param {RobotGetHandleData} get_handle_data
+     * @returns {number}
+     */
+    static getHandle(get_handle_data: RobotGetHandleData): number;
+    /**
      * 指定したクラス名のハンドルを取得する
      * @param {string} classname
      * @returns {number}
@@ -1130,10 +1147,10 @@ declare class Robot {
     static getClassName(handle: number): string;
     /**
      * 指定したウィンドウ名のハンドルを取得する
-     * @param {string} windowtext
+     * @param {string} windowname
      * @returns {number}
      */
-    static getHandleOfWindowText(windowtext: string): number;
+    static getHandleOfWindowText(windowname: string): number;
     /**
      * 指定したハンドルのウィンドウ名を取得する
      * @param {number} handle

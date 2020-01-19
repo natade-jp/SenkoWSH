@@ -912,6 +912,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/robot.js~robot.gethandle",
+    "class/src/senko/Robot.js~Robot.html#static-method-getHandle",
+    "src/senko/Robot.js~Robot.getHandle",
+    "method"
+  ],
+  [
     "src/senko/robot.js~robot.gethandleofclassname",
     "class/src/senko/Robot.js~Robot.html#static-method-getHandleOfClassName",
     "src/senko/Robot.js~Robot.getHandleOfClassName",
@@ -976,6 +982,12 @@ window.esdocSearchIndex = [
     "class/src/senko/Robot.js~Robot.html#static-method-terminateProcess",
     "src/senko/Robot.js~Robot.terminateProcess",
     "method"
+  ],
+  [
+    "src/senko/robot.js~robotgethandledata",
+    "typedef/index.html#static-typedef-RobotGetHandleData",
+    "src/senko/Robot.js~RobotGetHandleData",
+    "typedef"
   ],
   [
     "src/senko/robot.js~virtualkeycode",
