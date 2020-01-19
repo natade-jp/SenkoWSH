@@ -28,6 +28,12 @@ const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
  * @private
  */
 const toString = function(data) {
+	if(data === null) {
+		return "[null]";
+	}
+	else if(data === undefined) {
+		return "[undefined]";
+	}
 	const string_data = data.toString();
 	if(string_data === "[object Error]") {
 		const e = data;
@@ -175,7 +181,7 @@ export default class System {
 		const stdin = exec.StdIn;
 		const stdout = exec.StdOut;
 		const stderr = exec.StdErr;
-		while(exec.Status == 0) {
+		while(exec.Status === 0) {
 			WScript.Sleep(10);
 		}
 		const exit_code = exec.ExitCode;

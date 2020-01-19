@@ -618,9 +618,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/dialog.js~dialog.popupopen",
-    "class/src/senko/Dialog.js~Dialog.html#static-method-popupOpen",
-    "src/senko/Dialog.js~Dialog.popupOpen",
+    "src/senko/dialog.js~dialog.popupopendirectory",
+    "class/src/senko/Dialog.js~Dialog.html#static-method-popupOpenDirectory",
+    "src/senko/Dialog.js~Dialog.popupOpenDirectory",
+    "method"
+  ],
+  [
+    "src/senko/dialog.js~dialog.popupopenfile",
+    "class/src/senko/Dialog.js~Dialog.html#static-method-popupOpenFile",
+    "src/senko/Dialog.js~Dialog.popupOpenFile",
     "method"
   ],
   [
@@ -630,9 +636,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/dialog.js~openoption",
-    "typedef/index.html#static-typedef-OpenOption",
-    "src/senko/Dialog.js~OpenOption",
+    "src/senko/dialog.js~opendirectoryoption",
+    "typedef/index.html#static-typedef-OpenDirectoryOption",
+    "src/senko/Dialog.js~OpenDirectoryOption",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~openfileoption",
+    "typedef/index.html#static-typedef-OpenFileOption",
+    "src/senko/Dialog.js~OpenFileOption",
     "typedef"
   ],
   [
@@ -894,6 +906,18 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
+    "src/senko/robot.js~mouseeventfcodes",
+    "typedef/index.html#static-typedef-MouseEventFCodes",
+    "src/senko/Robot.js~MouseEventFCodes",
+    "typedef"
+  ],
+  [
+    "src/senko/robot.js~mouseeventoption",
+    "typedef/index.html#static-typedef-MouseEventOption",
+    "src/senko/Robot.js~MouseEventOption",
+    "typedef"
+  ],
+  [
     "src/senko/robot.js~robot.getactivewindow",
     "class/src/senko/Robot.js~Robot.html#static-method-getActiveWindow",
     "src/senko/Robot.js~Robot.getActiveWindow",
@@ -969,6 +993,12 @@ window.esdocSearchIndex = [
     "src/senko/robot.js~robot.setkeyevent",
     "class/src/senko/Robot.js~Robot.html#static-method-setKeyEvent",
     "src/senko/Robot.js~Robot.setKeyEvent",
+    "method"
+  ],
+  [
+    "src/senko/robot.js~robot.setmouseevent",
+    "class/src/senko/Robot.js~Robot.html#static-method-setMouseEvent",
+    "src/senko/Robot.js~Robot.setMouseEvent",
     "method"
   ],
   [

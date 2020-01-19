@@ -250,15 +250,26 @@ declare type PopupOption = {
 };
 
 /**
- * 「開く」ダイアログ用のオプション
- * @typedef {Object} OpenOption
+ * 「ファイルを開く」ダイアログ用のオプション
+ * @typedef {Object} OpenFileOption
  * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
  * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
  * @property {string} [title] タイトル(「ファイルを選択してください」など)
  */
-declare type OpenOption = {
+declare type OpenFileOption = {
     initial_directory?: string;
     filter?: string;
+    title?: string;
+};
+
+/**
+ * 「フォルダを開く」ダイアログ用のオプション
+ * @typedef {Object} OpenDirectoryOption
+ * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
+ * @property {string} [title] タイトル(「フォルダを選択してください」など)
+ */
+declare type OpenDirectoryOption = {
+    initial_directory?: string;
     title?: string;
 };
 
@@ -291,17 +302,23 @@ declare class Dialog {
      */
     static popupMessage(text: string, option?: PopupOption): number;
     /**
-     * 開くダイアログを表示する
-     * @param {OpenOption} [option]
-     * @returns {string}
+     * ファイルを開くダイアログを表示する
+     * @param {OpenFileOption} [option]
+     * @returns {SFile|null}
      */
-    static popupOpen(option?: OpenOption): string;
+    static popupOpenFile(option?: OpenFileOption): SFile | null;
+    /**
+     * フォルダを開くダイアログを表示する
+     * @param {OpenDirectoryOption} [option]
+     * @returns {SFile|null}
+     */
+    static popupOpenDirectory(option?: OpenDirectoryOption): SFile | null;
     /**
      * 名前を付けて保存ダイアログを表示する
      * @param {SaveAsOption} [option]
-     * @returns {string}
+     * @returns {SFile|null}
      */
-    static popupSaveAs(option?: SaveAsOption): string;
+    static popupSaveAs(option?: SaveAsOption): SFile | null;
     /**
      * 「OK」のボタン配置
      * @type {number}
@@ -1073,22 +1090,74 @@ declare type VirtualKeyCodes = {
 declare const VK_DATA: VirtualKeyCodes;
 
 /**
+ * マウスイベント用コード
+ * @typedef {Object} MouseEventFCodes
+ * @property {number} MOUSEEVENTF_ABSOLUTE
+ * @property {number} MOUSEEVENTF_MOVE
+ * @property {number} MOUSEEVENTF_LEFTDOWN
+ * @property {number} MOUSEEVENTF_LEFTUP
+ * @property {number} MOUSEEVENTF_RIGHTDOWN
+ * @property {number} MOUSEEVENTF_RIGHTUP
+ * @property {number} MOUSEEVENTF_MIDDLEDOWN
+ * @property {number} MOUSEEVENTF_MIDDLEUP
+ * @property {number} MOUSEEVENTF_WHEEL
+ * @property {number} MOUSEEVENTF_XDOWN
+ * @property {number} MOUSEEVENTF_XUP
+ */
+declare type MouseEventFCodes = {
+    MOUSEEVENTF_ABSOLUTE: number;
+    MOUSEEVENTF_MOVE: number;
+    MOUSEEVENTF_LEFTDOWN: number;
+    MOUSEEVENTF_LEFTUP: number;
+    MOUSEEVENTF_RIGHTDOWN: number;
+    MOUSEEVENTF_RIGHTUP: number;
+    MOUSEEVENTF_MIDDLEDOWN: number;
+    MOUSEEVENTF_MIDDLEUP: number;
+    MOUSEEVENTF_WHEEL: number;
+    MOUSEEVENTF_XDOWN: number;
+    MOUSEEVENTF_XUP: number;
+};
+
+/**
+ * マウスイベント用コード一覧
+ * @type {MouseEventFCodes}
+ */
+declare const MOUSEEVENTF_DATA: MouseEventFCodes;
+
+/**
  * キーイベント発生時のオプション
  * @typedef {Object} KeyEventOption
+ * @property {number} [count_max=1] 繰り返す回数
  * @property {boolean} [is_not_pushed=false] 押さない
  * @property {boolean} [is_not_released=false] 離さない
- * @property {number} [time_sec=0] 押下時間
+ * @property {number} [push_time_sec=0] 押下時間
  * @property {boolean} [is_pressed_shift=false]
  * @property {boolean} [is_pressed_alt=false]
  * @property {boolean} [is_pressed_ctrl=false]
  */
 declare type KeyEventOption = {
+    count_max?: number;
     is_not_pushed?: boolean;
     is_not_released?: boolean;
-    time_sec?: number;
+    push_time_sec?: number;
     is_pressed_shift?: boolean;
     is_pressed_alt?: boolean;
     is_pressed_ctrl?: boolean;
+};
+
+/**
+ * マウスイベント発生時のオプション
+ * @typedef {Object} MouseEventOption
+ * @property {number} [count_max=1] 繰り返す回数
+ * @property {boolean} [is_not_pushed=false] 押さない
+ * @property {boolean} [is_not_released=false] 離さない
+ * @property {number} [push_time_sec=0] 押下時間
+ */
+declare type MouseEventOption = {
+    count_max?: number;
+    is_not_pushed?: boolean;
+    is_not_released?: boolean;
+    push_time_sec?: number;
 };
 
 /**
@@ -1108,8 +1177,8 @@ declare type RobotGetHandleData = {
 declare class Robot {
     /**
      * キーを入力する
-     * @param {VirtualKeyCode} vkcode
-     * @param {KeyEventOption} [option]
+     * @param {VirtualKeyCode} vkcode - キーコード（利用可能なコードは、Robot.getVK() で取得可能）
+     * @param {KeyEventOption} [option] - オプション
      */
     static setKeyEvent(vkcode: VirtualKeyCode, option?: KeyEventOption): void;
     /**
@@ -1117,6 +1186,12 @@ declare class Robot {
      * @returns {VirtualKeyCodes}
      */
     static getVK(): VirtualKeyCodes;
+    /**
+     * マウスのクリックを行う
+     * @param {string} type - "LEFT", "RIGHT", "CLICK", "DOUBLE_CLICK"といった文字列
+     * @param {KeyEventOption} [option] - オプション
+     */
+    static setMouseEvent(type: string, option?: KeyEventOption): void;
     /**
      * マウスの座標を調べる
      * @returns {WSHRobotPosition}

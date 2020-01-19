@@ -1,5 +1,14 @@
 # History
 
+## SenkoWSH v3.5.0
+### 更新点
+- 文字列表示用命令に、nullやundefinedを入れてもエラーで落ちないように修正
+- popupOpenを廃止、popupOpenFileとpopupOpenDirectoryを追加
+- Dialog系の戻り値をSFileクラスに変更
+- Robotにウィンドウ名とクラス名を両方してできるメソッドの対応が不十分だったのを修正
+- setKeyEventに何回押すかを追加、また押下時間の変数名を変更
+- setMouseEventを追加
+
 ## SenkoWSH v3.4.1
 ### 更新点
 - Robotにウィンドウ名とクラス名を両方してできるメソッドを追加

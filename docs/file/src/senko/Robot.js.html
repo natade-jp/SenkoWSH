@@ -41,10 +41,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenOption">OpenOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenDirectoryOption">OpenDirectoryOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenFileOption">OpenFileOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventFCodes">MouseEventFCodes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventOption">MouseEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RobotGetHandleData">RobotGetHandleData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCode">VirtualKeyCode</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
@@ -445,14 +448,58 @@ const VK_DATA = {
 };
 
 /**
+ * &#x30DE;&#x30A6;&#x30B9;&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x7528;&#x30B3;&#x30FC;&#x30C9;
+ * @typedef {Object} MouseEventFCodes
+ * @property {number} MOUSEEVENTF_ABSOLUTE
+ * @property {number} MOUSEEVENTF_MOVE
+ * @property {number} MOUSEEVENTF_LEFTDOWN
+ * @property {number} MOUSEEVENTF_LEFTUP
+ * @property {number} MOUSEEVENTF_RIGHTDOWN
+ * @property {number} MOUSEEVENTF_RIGHTUP
+ * @property {number} MOUSEEVENTF_MIDDLEDOWN
+ * @property {number} MOUSEEVENTF_MIDDLEUP
+ * @property {number} MOUSEEVENTF_WHEEL
+ * @property {number} MOUSEEVENTF_XDOWN
+ * @property {number} MOUSEEVENTF_XUP
+ */
+
+/**
+ * &#x30DE;&#x30A6;&#x30B9;&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x7528;&#x30B3;&#x30FC;&#x30C9;&#x4E00;&#x89A7;
+ * @type {MouseEventFCodes}
+ */
+const MOUSEEVENTF_DATA = {
+	MOUSEEVENTF_ABSOLUTE	:0x8000,
+	MOUSEEVENTF_MOVE		:0x0001,
+	MOUSEEVENTF_LEFTDOWN	:0x0002,
+	MOUSEEVENTF_LEFTUP		:0x0004,
+	MOUSEEVENTF_RIGHTDOWN	:0x0008,
+	MOUSEEVENTF_RIGHTUP		:0x0010,
+	MOUSEEVENTF_MIDDLEDOWN	:0x0020,
+	MOUSEEVENTF_MIDDLEUP	:0x0040,
+	MOUSEEVENTF_WHEEL		:0x0800,
+	MOUSEEVENTF_XDOWN		:0x0080,
+	MOUSEEVENTF_XUP			:0x0100
+};
+
+/**
  * &#x30AD;&#x30FC;&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x767A;&#x751F;&#x6642;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
  * @typedef {Object} KeyEventOption
+ * @property {number} [count_max=1] &#x7E70;&#x308A;&#x8FD4;&#x3059;&#x56DE;&#x6570;
  * @property {boolean} [is_not_pushed=false] &#x62BC;&#x3055;&#x306A;&#x3044;
  * @property {boolean} [is_not_released=false] &#x96E2;&#x3055;&#x306A;&#x3044;
- * @property {number} [time_sec=0] &#x62BC;&#x4E0B;&#x6642;&#x9593;
+ * @property {number} [push_time_sec=0] &#x62BC;&#x4E0B;&#x6642;&#x9593;
  * @property {boolean} [is_pressed_shift=false]
  * @property {boolean} [is_pressed_alt=false]
  * @property {boolean} [is_pressed_ctrl=false]
+ */
+
+/**
+ * &#x30DE;&#x30A6;&#x30B9;&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x767A;&#x751F;&#x6642;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+ * @typedef {Object} MouseEventOption
+ * @property {number} [count_max=1] &#x7E70;&#x308A;&#x8FD4;&#x3059;&#x56DE;&#x6570;
+ * @property {boolean} [is_not_pushed=false] &#x62BC;&#x3055;&#x306A;&#x3044;
+ * @property {boolean} [is_not_released=false] &#x96E2;&#x3055;&#x306A;&#x3044;
+ * @property {number} [push_time_sec=0] &#x62BC;&#x4E0B;&#x6642;&#x9593;
  */
 
 /**
@@ -469,13 +516,15 @@ export default class Robot {
 	
 	/**
 	 * &#x30AD;&#x30FC;&#x3092;&#x5165;&#x529B;&#x3059;&#x308B;
-	 * @param {VirtualKeyCode} vkcode
-	 * @param {KeyEventOption} [option]
+	 * @param {VirtualKeyCode} vkcode - &#x30AD;&#x30FC;&#x30B3;&#x30FC;&#x30C9;&#xFF08;&#x5229;&#x7528;&#x53EF;&#x80FD;&#x306A;&#x30B3;&#x30FC;&#x30C9;&#x306F;&#x3001;Robot.getVK() &#x3067;&#x53D6;&#x5F97;&#x53EF;&#x80FD;&#xFF09;
+	 * @param {KeyEventOption} [option] - &#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
 	 */
 	static setKeyEvent(vkcode, option) {
 		const KEYEVENTF_KEYUP = 2;
-		const time_ms = (option &amp;&amp; option.time_sec) ? ((option.time_sec * 1000) | 0 ): 0;
-		let code = &quot;&quot;;
+		const count_max = (option &amp;&amp; option.count_max) ? option.count_max: 1;
+		let time_ms = (option &amp;&amp; option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;
+		time_ms = Math.max(time_ms , 1); // 1&#x4EE5;&#x4E0A;&#x306B;&#x3059;&#x308B;
+		let code = &quot;for ($i=0; $i -lt &quot; + count_max + &quot;; $i++){&quot;;
 		{
 			if(option &amp;&amp; option.is_pressed_shift) {
 				code += &quot;$api::keybd_event(&quot; + VK_DATA.VK_SHIFT.code + &quot;, 0, 0, 0);&quot;;
@@ -490,7 +539,7 @@ export default class Robot {
 				code += &quot;$api::keybd_event(&quot; + vkcode.code + &quot;, 0, 0, 0);&quot;;
 			}
 		}
-		if(time_ms) {
+		if(option &amp;&amp; option.push_time_sec) {
 			code += &quot;Start-Sleep -m &quot; + time_ms + &quot;;&quot;;
 		}
 		{
@@ -507,6 +556,7 @@ export default class Robot {
 				code += &quot;$api::keybd_event(&quot; + VK_DATA.VK_SHIFT.code + &quot;, 0, &quot; + KEYEVENTF_KEYUP + &quot;, 0);&quot;;
 			}
 		}
+		code += &quot;}&quot;;
 		System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)&quot;,
@@ -520,6 +570,56 @@ export default class Robot {
 	 */
 	static getVK() {
 		return VK_DATA;
+	}
+
+	/**
+	 * &#x30DE;&#x30A6;&#x30B9;&#x306E;&#x30AF;&#x30EA;&#x30C3;&#x30AF;&#x3092;&#x884C;&#x3046;
+	 * @param {string} type - &quot;LEFT&quot;, &quot;RIGHT&quot;, &quot;CLICK&quot;, &quot;DOUBLE_CLICK&quot;&#x3068;&#x3044;&#x3063;&#x305F;&#x6587;&#x5B57;&#x5217;
+	 * @param {KeyEventOption} [option] - &#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+	 */
+	static setMouseEvent(type, option) {
+		let count_max = (option &amp;&amp; option.count_max) ? option.count_max: 1;
+		let time_ms = (option &amp;&amp; option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;
+		time_ms = Math.max(time_ms , 1); // 1&#x4EE5;&#x4E0A;&#x306B;&#x3059;&#x308B;
+		let target = type.toUpperCase().trim();
+		if(target === &quot;CLICK&quot;) {
+			count_max = 1;
+			target = &quot;LEFT&quot;;
+		}
+		else if(target === &quot;DOUBLE_CLICK&quot;) {
+			count_max = 2;
+			target = &quot;LEFT&quot;;
+		}
+		let pushed_code;
+		let released_code;
+		if(target === &quot;LEFT&quot;) {
+			pushed_code		= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTDOWN;
+			released_code	= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTUP;
+		}
+		else if((target === &quot;CENTER&quot;) || (target === &quot;MIDDLE&quot;)) {
+			pushed_code		= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEDOWN;
+			released_code	= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEUP;
+		}
+		if(target === &quot;RIGHT&quot;) {
+			pushed_code		= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTDOWN;
+			released_code	= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTUP;
+		}
+		let code = &quot;for ($i=0; $i -lt &quot; + count_max + &quot;; $i++){&quot;;
+		if(!option || !option.is_not_pushed) {
+			code += &quot;$api::mouse_event(&quot; + pushed_code + &quot;, 0, 0, 0, 0);&quot;;
+		}
+		if(option &amp;&amp; option.push_time_sec) {
+			code += &quot;Start-Sleep -m &quot; + time_ms + &quot;;&quot;;
+		}
+		if(!option || !option.is_not_released) {
+			code += &quot;$api::mouse_event(&quot; + released_code + &quot;, 0, 0, 0, 0);&quot;;
+		}
+		code += &quot;}&quot;;
+		System.WindowsAPI(
+			&quot;user32.dll&quot;,
+			&quot;void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)&quot;,
+			code
+		);
 	}
 
 	/**
@@ -562,14 +662,21 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getHandle(get_handle_data) {
+		let function_text;
+		// &#x7701;&#x7565;&#x3059;&#x308B;&#x5834;&#x5408;&#x306F;&#x30CC;&#x30EB;&#x30DD;&#x30A4;&#x30F3;&#x30BF;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;&#x5FC5;&#x8981;&#x304C;&#x3042;&#x308B;&#x305F;&#x3081;&#x3001;&#x5165;&#x529B;&#x5F15;&#x6570;&#x3092;&#x5909;&#x66F4;&#x3059;&#x308B;
+		if(get_handle_data.classname &amp;&amp; get_handle_data.windowtext) {
+			function_text = &quot;IntPtr FindWindow(string lpClassName, string lpWindowName)&quot;;
+		}
+		else if(get_handle_data.classname) {
+			function_text = &quot;IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)&quot;;
+		}
+		else {
+			function_text = &quot;IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)&quot;;
+		}
 		let command = &quot;$api::FindWindow(&quot;;
 		command += (get_handle_data.classname ? &quot;\&quot;&quot; + get_handle_data.classname + &quot;\&quot;&quot; : &quot;0&quot;) + &quot;,&quot;;
 		command += (get_handle_data.windowtext ? &quot;\&quot;&quot; + get_handle_data.windowtext + &quot;\&quot;&quot; : &quot;0&quot;) + &quot;);&quot;;
-		return parseFloat(System.WindowsAPI(
-			&quot;user32.dll&quot;,
-			&quot;IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)&quot;,
-			command
-		));
+		return parseFloat(System.WindowsAPI( &quot;user32.dll&quot;, function_text, command));
 	}
 
 	/**

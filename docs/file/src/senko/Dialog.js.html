@@ -41,10 +41,13 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/System.js~System.html">System</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenOption">OpenOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenDirectoryOption">OpenDirectoryOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenFileOption">OpenFileOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventFCodes">MouseEventFCodes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventOption">MouseEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-RobotGetHandleData">RobotGetHandleData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCode">VirtualKeyCode</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-VirtualKeyCodes">VirtualKeyCodes</a></span></span></li>
@@ -67,6 +70,7 @@
  */
 
 import System from &quot;./System&quot;;
+import SFile from &quot;./SFile&quot;;
 
 
 /**
@@ -78,11 +82,18 @@ import System from &quot;./System&quot;;
  */
 
 /**
- * &#x300C;&#x958B;&#x304F;&#x300D;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x7528;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
- * @typedef {Object} OpenOption
+ * &#x300C;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;&#x300D;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x7528;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+ * @typedef {Object} OpenFileOption
  * @property {string} [initial_directory] &#x521D;&#x671F;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;(&quot;C:\&quot;&#x306A;&#x3069;)
  * @property {string} [filter=&quot;All files(*.*)|*.*&quot;] &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x5F62;&#x5F0F;&#xFF08;&quot;&#x753B;&#x50CF;&#x30D5;&#x30A1;&#x30A4;&#x30EB;(*.png;*.bmp)|*.png;*.bmp&quot;&#x306A;&#x3069;&#xFF09;
  * @property {string} [title] &#x30BF;&#x30A4;&#x30C8;&#x30EB;(&#x300C;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x9078;&#x629E;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x300D;&#x306A;&#x3069;)
+ */
+
+/**
+ * &#x300C;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x958B;&#x304F;&#x300D;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x7528;&#x306E;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+ * @typedef {Object} OpenDirectoryOption
+ * @property {string} [initial_directory] &#x521D;&#x671F;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;(&quot;C:\&quot;&#x306A;&#x3069;)
+ * @property {string} [title] &#x30BF;&#x30A4;&#x30C8;&#x30EB;(&#x300C;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x9078;&#x629E;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x300D;&#x306A;&#x3069;)
  */
 
 /**
@@ -114,11 +125,11 @@ export default class Dialog {
 	}
 
 	/**
-	 * &#x958B;&#x304F;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x3092;&#x8868;&#x793A;&#x3059;&#x308B;
-	 * @param {OpenOption} [option]
-	 * @returns {string}
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x3092;&#x8868;&#x793A;&#x3059;&#x308B;
+	 * @param {OpenFileOption} [option]
+	 * @returns {SFile|null}
 	 */
-	static popupOpen(option) {
+	static popupOpenFile(option) {
 		/*
 		&#x4EE5;&#x4E0B;&#x306E;&#x884C;&#x3092;1&#x884C;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
 		Add-Type -AssemblyName System.Windows.Forms;
@@ -130,16 +141,45 @@ export default class Dialog {
 		*/
 		let command = &quot;Add-Type -AssemblyName System.Windows.Forms;$dialog = New-Object System.Windows.Forms.OpenFileDialog;&quot;;
 		command += &quot;$dialog.Filter = \&quot;&quot; + ((option &amp;&amp; option.filter) ? option.filter.replace(/&quot;/g, &quot;\\\&quot;&quot;) : &quot;All files(*.*)|*.*&quot;) + &quot;\&quot;;&quot;;
-		command += (option &amp;&amp; option.initial_directory) ? (&quot;$dialog.InitialDirectory = \&quot;&quot; + option.initial_directory.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
+		command += (option &amp;&amp; option.initial_directory) ? (&quot;$dialog.InitialDirectory = \&quot;&quot; + option.initial_directory.toString().replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += (option &amp;&amp; option.title) ? (&quot;$dialog.Title = \&quot;&quot; + option.title.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += &quot;if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}&quot;;
-		return System.PowerShell(command);
+		const select_text = System.PowerShell(command).trim();
+		if(select_text !== &quot;&quot;) {
+			return new SFile(select_text);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x958B;&#x304F;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x3092;&#x8868;&#x793A;&#x3059;&#x308B;
+	 * @param {OpenDirectoryOption} [option]
+	 * @returns {SFile|null}
+	 */
+	static popupOpenDirectory(option) {
+		const shell = new ActiveXObject(&quot;Shell.Application&quot;);
+		const caption = option &amp;&amp; option.title ? option.title : &quot;&quot;;
+		let folder;
+		if(option &amp;&amp; option.initial_directory) {
+			folder = shell.BrowseForFolder(0, caption, 0, option.initial_directory);
+		}
+		else {
+			folder = shell.BrowseForFolder(0, caption, 0);
+		}
+		if(folder !== null) {
+			return new SFile(folder.Self.Path);
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
 	 * &#x540D;&#x524D;&#x3092;&#x4ED8;&#x3051;&#x3066;&#x4FDD;&#x5B58;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x3092;&#x8868;&#x793A;&#x3059;&#x308B;
 	 * @param {SaveAsOption} [option]
-	 * @returns {string}
+	 * @returns {SFile|null}
 	 */
 	static popupSaveAs(option) {
 		/*
@@ -155,12 +195,18 @@ export default class Dialog {
 		command += (option &amp;&amp; option.default_ext) ? (&quot;$dialog.DefaultExt = \&quot;&quot; + option.default_ext.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += (option &amp;&amp; option.file_name) ? (&quot;$dialog.FileName = \&quot;&quot; + option.file_name.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += (option &amp;&amp; option.filter) ? (&quot;$dialog.Filter = \&quot;&quot; + option.file_name.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
-		command += (option &amp;&amp; option.initial_directory) ? (&quot;$dialog.InitialDirectory = \&quot;&quot; + option.initial_directory.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
+		command += (option &amp;&amp; option.initial_directory) ? (&quot;$dialog.InitialDirectory = \&quot;&quot; + option.initial_directory.toString().replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += (option &amp;&amp; option.title) ? (&quot;$dialog.Title = \&quot;&quot; + option.title.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += &quot;$dialog.ShowHelp = true;&quot;;
 		command += &quot;$dialog.OverwritePrompt = true;&quot;;
 		command += &quot;if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}&quot;;
-		return System.PowerShell(command);
+		const select_text = System.PowerShell(command).trim();
+		if(select_text !== &quot;&quot;) {
+			return new SFile(select_text);
+		}
+		else {
+			return null;
+		}
 	}
 
 }

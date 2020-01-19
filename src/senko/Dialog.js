@@ -9,6 +9,7 @@
  */
 
 import System from "./System";
+import SFile from "./SFile";
 
 
 /**
@@ -20,11 +21,18 @@ import System from "./System";
  */
 
 /**
- * 「開く」ダイアログ用のオプション
- * @typedef {Object} OpenOption
+ * 「ファイルを開く」ダイアログ用のオプション
+ * @typedef {Object} OpenFileOption
  * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
  * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
  * @property {string} [title] タイトル(「ファイルを選択してください」など)
+ */
+
+/**
+ * 「フォルダを開く」ダイアログ用のオプション
+ * @typedef {Object} OpenDirectoryOption
+ * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
+ * @property {string} [title] タイトル(「フォルダを選択してください」など)
  */
 
 /**
@@ -56,11 +64,11 @@ export default class Dialog {
 	}
 
 	/**
-	 * 開くダイアログを表示する
-	 * @param {OpenOption} [option]
-	 * @returns {string}
+	 * ファイルを開くダイアログを表示する
+	 * @param {OpenFileOption} [option]
+	 * @returns {SFile|null}
 	 */
-	static popupOpen(option) {
+	static popupOpenFile(option) {
 		/*
 		以下の行を1行で実行する
 		Add-Type -AssemblyName System.Windows.Forms;
@@ -72,16 +80,45 @@ export default class Dialog {
 		*/
 		let command = "Add-Type -AssemblyName System.Windows.Forms;$dialog = New-Object System.Windows.Forms.OpenFileDialog;";
 		command += "$dialog.Filter = \"" + ((option && option.filter) ? option.filter.replace(/"/g, "\\\"") : "All files(*.*)|*.*") + "\";";
-		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.toString().replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.title) ? ("$dialog.Title = \"" + option.title.replace(/"/g, "\\\"") + "\";"): "";
 		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
-		return System.PowerShell(command);
+		const select_text = System.PowerShell(command).trim();
+		if(select_text !== "") {
+			return new SFile(select_text);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * フォルダを開くダイアログを表示する
+	 * @param {OpenDirectoryOption} [option]
+	 * @returns {SFile|null}
+	 */
+	static popupOpenDirectory(option) {
+		const shell = new ActiveXObject("Shell.Application");
+		const caption = option && option.title ? option.title : "";
+		let folder;
+		if(option && option.initial_directory) {
+			folder = shell.BrowseForFolder(0, caption, 0, option.initial_directory);
+		}
+		else {
+			folder = shell.BrowseForFolder(0, caption, 0);
+		}
+		if(folder !== null) {
+			return new SFile(folder.Self.Path);
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
 	 * 名前を付けて保存ダイアログを表示する
 	 * @param {SaveAsOption} [option]
-	 * @returns {string}
+	 * @returns {SFile|null}
 	 */
 	static popupSaveAs(option) {
 		/*
@@ -97,12 +134,18 @@ export default class Dialog {
 		command += (option && option.default_ext) ? ("$dialog.DefaultExt = \"" + option.default_ext.replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.file_name) ? ("$dialog.FileName = \"" + option.file_name.replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.filter) ? ("$dialog.Filter = \"" + option.file_name.replace(/"/g, "\\\"") + "\";"): "";
-		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.replace(/"/g, "\\\"") + "\";"): "";
+		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.toString().replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.title) ? ("$dialog.Title = \"" + option.title.replace(/"/g, "\\\"") + "\";"): "";
 		command += "$dialog.ShowHelp = true;";
 		command += "$dialog.OverwritePrompt = true;";
 		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
-		return System.PowerShell(command);
+		const select_text = System.PowerShell(command).trim();
+		if(select_text !== "") {
+			return new SFile(select_text);
+		}
+		else {
+			return null;
+		}
 	}
 
 }

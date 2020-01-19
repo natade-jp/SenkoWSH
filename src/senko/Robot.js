@@ -387,14 +387,58 @@ const VK_DATA = {
 };
 
 /**
+ * マウスイベント用コード
+ * @typedef {Object} MouseEventFCodes
+ * @property {number} MOUSEEVENTF_ABSOLUTE
+ * @property {number} MOUSEEVENTF_MOVE
+ * @property {number} MOUSEEVENTF_LEFTDOWN
+ * @property {number} MOUSEEVENTF_LEFTUP
+ * @property {number} MOUSEEVENTF_RIGHTDOWN
+ * @property {number} MOUSEEVENTF_RIGHTUP
+ * @property {number} MOUSEEVENTF_MIDDLEDOWN
+ * @property {number} MOUSEEVENTF_MIDDLEUP
+ * @property {number} MOUSEEVENTF_WHEEL
+ * @property {number} MOUSEEVENTF_XDOWN
+ * @property {number} MOUSEEVENTF_XUP
+ */
+
+/**
+ * マウスイベント用コード一覧
+ * @type {MouseEventFCodes}
+ */
+const MOUSEEVENTF_DATA = {
+	MOUSEEVENTF_ABSOLUTE	:0x8000,
+	MOUSEEVENTF_MOVE		:0x0001,
+	MOUSEEVENTF_LEFTDOWN	:0x0002,
+	MOUSEEVENTF_LEFTUP		:0x0004,
+	MOUSEEVENTF_RIGHTDOWN	:0x0008,
+	MOUSEEVENTF_RIGHTUP		:0x0010,
+	MOUSEEVENTF_MIDDLEDOWN	:0x0020,
+	MOUSEEVENTF_MIDDLEUP	:0x0040,
+	MOUSEEVENTF_WHEEL		:0x0800,
+	MOUSEEVENTF_XDOWN		:0x0080,
+	MOUSEEVENTF_XUP			:0x0100
+};
+
+/**
  * キーイベント発生時のオプション
  * @typedef {Object} KeyEventOption
+ * @property {number} [count_max=1] 繰り返す回数
  * @property {boolean} [is_not_pushed=false] 押さない
  * @property {boolean} [is_not_released=false] 離さない
- * @property {number} [time_sec=0] 押下時間
+ * @property {number} [push_time_sec=0] 押下時間
  * @property {boolean} [is_pressed_shift=false]
  * @property {boolean} [is_pressed_alt=false]
  * @property {boolean} [is_pressed_ctrl=false]
+ */
+
+/**
+ * マウスイベント発生時のオプション
+ * @typedef {Object} MouseEventOption
+ * @property {number} [count_max=1] 繰り返す回数
+ * @property {boolean} [is_not_pushed=false] 押さない
+ * @property {boolean} [is_not_released=false] 離さない
+ * @property {number} [push_time_sec=0] 押下時間
  */
 
 /**
@@ -411,13 +455,15 @@ export default class Robot {
 	
 	/**
 	 * キーを入力する
-	 * @param {VirtualKeyCode} vkcode
-	 * @param {KeyEventOption} [option]
+	 * @param {VirtualKeyCode} vkcode - キーコード（利用可能なコードは、Robot.getVK() で取得可能）
+	 * @param {KeyEventOption} [option] - オプション
 	 */
 	static setKeyEvent(vkcode, option) {
 		const KEYEVENTF_KEYUP = 2;
-		const time_ms = (option && option.time_sec) ? ((option.time_sec * 1000) | 0 ): 0;
-		let code = "";
+		const count_max = (option && option.count_max) ? option.count_max: 1;
+		let time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;
+		time_ms = Math.max(time_ms , 1); // 1以上にする
+		let code = "for ($i=0; $i -lt " + count_max + "; $i++){";
 		{
 			if(option && option.is_pressed_shift) {
 				code += "$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, 0, 0);";
@@ -432,7 +478,7 @@ export default class Robot {
 				code += "$api::keybd_event(" + vkcode.code + ", 0, 0, 0);";
 			}
 		}
-		if(time_ms) {
+		if(option && option.push_time_sec) {
 			code += "Start-Sleep -m " + time_ms + ";";
 		}
 		{
@@ -449,6 +495,7 @@ export default class Robot {
 				code += "$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
 			}
 		}
+		code += "}";
 		System.WindowsAPI(
 			"user32.dll",
 			"void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)",
@@ -462,6 +509,56 @@ export default class Robot {
 	 */
 	static getVK() {
 		return VK_DATA;
+	}
+
+	/**
+	 * マウスのクリックを行う
+	 * @param {string} type - "LEFT", "RIGHT", "CLICK", "DOUBLE_CLICK"といった文字列
+	 * @param {KeyEventOption} [option] - オプション
+	 */
+	static setMouseEvent(type, option) {
+		let count_max = (option && option.count_max) ? option.count_max: 1;
+		let time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;
+		time_ms = Math.max(time_ms , 1); // 1以上にする
+		let target = type.toUpperCase().trim();
+		if(target === "CLICK") {
+			count_max = 1;
+			target = "LEFT";
+		}
+		else if(target === "DOUBLE_CLICK") {
+			count_max = 2;
+			target = "LEFT";
+		}
+		let pushed_code;
+		let released_code;
+		if(target === "LEFT") {
+			pushed_code		= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTDOWN;
+			released_code	= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTUP;
+		}
+		else if((target === "CENTER") || (target === "MIDDLE")) {
+			pushed_code		= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEDOWN;
+			released_code	= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEUP;
+		}
+		if(target === "RIGHT") {
+			pushed_code		= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTDOWN;
+			released_code	= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTUP;
+		}
+		let code = "for ($i=0; $i -lt " + count_max + "; $i++){";
+		if(!option || !option.is_not_pushed) {
+			code += "$api::mouse_event(" + pushed_code + ", 0, 0, 0, 0);";
+		}
+		if(option && option.push_time_sec) {
+			code += "Start-Sleep -m " + time_ms + ";";
+		}
+		if(!option || !option.is_not_released) {
+			code += "$api::mouse_event(" + released_code + ", 0, 0, 0, 0);";
+		}
+		code += "}";
+		System.WindowsAPI(
+			"user32.dll",
+			"void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)",
+			code
+		);
 	}
 
 	/**
@@ -504,14 +601,21 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getHandle(get_handle_data) {
+		let function_text;
+		// 省略する場合はヌルポインタを設定する必要があるため、入力引数を変更する
+		if(get_handle_data.classname && get_handle_data.windowtext) {
+			function_text = "IntPtr FindWindow(string lpClassName, string lpWindowName)";
+		}
+		else if(get_handle_data.classname) {
+			function_text = "IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)";
+		}
+		else {
+			function_text = "IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)";
+		}
 		let command = "$api::FindWindow(";
 		command += (get_handle_data.classname ? "\"" + get_handle_data.classname + "\"" : "0") + ",";
 		command += (get_handle_data.windowtext ? "\"" + get_handle_data.windowtext + "\"" : "0") + ");";
-		return parseFloat(System.WindowsAPI(
-			"user32.dll",
-			"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)",
-			command
-		));
+		return parseFloat(System.WindowsAPI( "user32.dll", function_text, command));
 	}
 
 	/**
