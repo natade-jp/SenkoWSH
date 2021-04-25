@@ -8,6 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Polyfill from "./senko/polyfill/Polyfill.js";
 import typeCSV from "./senko/CSV.js";
 import typeDialog from "./senko/Dialog.js";
 import typeSFile from "./senko/SFile.js";
@@ -17,6 +18,61 @@ import typeRandom from "./konpeito/Random.js";
 import typeJapanese from "./mojijs/Japanese.js";
 import typeStringComparator from "./mojijs/StringComparator.js";
 import typeSystem from "./senko/System.js";
+
+/**
+ * 上書き防止用
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+SenkoWSH = {
+	
+	/**
+ 	 * @type {typeof typeCSV}
+	 */
+	CSV : typeCSV,
+	
+	/**
+ 	 * @type {typeof typeDialog}
+	 */
+	Dialog : typeDialog,
+
+	/**
+ 	 * @type {typeof typeSFile}
+	 */
+	 SFile : typeSFile,
+
+	/**
+ 	 * @type {typeof typeRobot}
+	 */
+	 Robot : typeRobot,
+
+	/**
+ 	 * @type {typeof typeFormat}
+	 */
+	 Format : typeFormat,
+
+	/**
+ 	 * @type {typeof typeRandom}
+	 */
+	 Random : typeRandom,
+
+	/**
+ 	 * @type {typeof typeJapanese}
+	 */
+	 Japanese : typeJapanese,
+
+	/**
+ 	 * @type {typeof typeStringComparator}
+	 */
+	 StringComparator : typeStringComparator,
+
+	/**
+ 	 * @type {typeof typeSystem}
+	 */
+	 System : typeSystem,
+
+};
 
 /**
  * @type {typeof typeCSV}
@@ -100,58 +156,7 @@ console = {
 	log : function(text) {
 		// @ts-ignore
 		// eslint-disable-next-line no-undef
-		System.println(text);
+		SenkoWSH.System.println(text);
 	}
 };
 
-import typeExtendsArray from "./senko/ExtendsArray.js";
-import typeExtendsObject from "./senko/ExtendsObject.js";
-import typeExtendsString from "./senko/ExtendsString.js";
-
-/**
- * @type {typeof typeExtendsArray}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsArray = typeExtendsArray;
-
-/**
- * @type {typeof typeExtendsObject}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsObject = typeExtendsObject;
-
-/**
- * @type {typeof typeExtendsString}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsString = typeExtendsString;
-
-/**
- * @param {any} original 
- * @param {any} extension
- * @returns {any}
- * @private
- * @ignore
- */
-const extendClass = function(original, extension) {
-	for(const key in extension) {
-		original.prototype[key] = function() {
-			const x = [];
-			x.push(this);
-			for(let i = 0 ; i < arguments.length ; i++) {
-				x.push(arguments[i]);
-			}
-			return extension[key].apply(this, x);
-		};
-	}
-};
-
-extendClass(Array, typeExtendsArray);
-extendClass(Object, typeExtendsObject);
-extendClass(String, typeExtendsString);

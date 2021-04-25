@@ -8,7 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import ExtendsString from "../senko/ExtendsString.js";
+import ExtendsString from "../senko/polyfill/ExtendsString.js";
 
 /**
  * Unicodeを扱うクラス

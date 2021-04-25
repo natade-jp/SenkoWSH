@@ -1,7 +1,7 @@
 {
   "coverage": "100%",
-  "expectCount": 190,
-  "actualCount": 190,
+  "expectCount": 192,
+  "actualCount": 192,
   "files": {
     "src/konpeito/Random.js": {
       "expectCount": 20,
@@ -33,22 +33,27 @@
       "actualCount": 5,
       "undocumentLines": []
     },
-    "src/senko/ExtendsArray.js": {
+    "src/senko/Format.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/senko/polyfill/ExtendsArray.js": {
       "expectCount": 12,
       "actualCount": 12,
       "undocumentLines": []
     },
-    "src/senko/ExtendsObject.js": {
+    "src/senko/polyfill/ExtendsObject.js": {
       "expectCount": 9,
       "actualCount": 9,
       "undocumentLines": []
     },
-    "src/senko/ExtendsString.js": {
+    "src/senko/polyfill/ExtendsString.js": {
       "expectCount": 15,
       "actualCount": 15,
       "undocumentLines": []
     },
-    "src/senko/Format.js": {
+    "src/senko/polyfill/Polyfill.js": {
       "expectCount": 3,
       "actualCount": 3,
       "undocumentLines": []
@@ -66,11 +71,6 @@
     "src/senko/System.js": {
       "expectCount": 26,
       "actualCount": 26,
-      "undocumentLines": []
-    },
-    "src/SenkoWSH.js": {
-      "expectCount": 1,
-      "actualCount": 1,
       "undocumentLines": []
     }
   }

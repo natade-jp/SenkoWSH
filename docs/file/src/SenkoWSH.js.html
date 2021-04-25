@@ -34,9 +34,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Dialog.js~Dialog.html">Dialog</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Format.js~Format.html">Format</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/Robot.js~Robot.html">Robot</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span></span></li>
@@ -54,6 +51,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko-polyfill">senko/polyfill</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 </ul>
 </div>
 </nav>
@@ -69,6 +69,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Polyfill from &quot;./senko/polyfill/Polyfill.js&quot;;
 import typeCSV from &quot;./senko/CSV.js&quot;;
 import typeDialog from &quot;./senko/Dialog.js&quot;;
 import typeSFile from &quot;./senko/SFile.js&quot;;
@@ -78,6 +79,61 @@ import typeRandom from &quot;./konpeito/Random.js&quot;;
 import typeJapanese from &quot;./mojijs/Japanese.js&quot;;
 import typeStringComparator from &quot;./mojijs/StringComparator.js&quot;;
 import typeSystem from &quot;./senko/System.js&quot;;
+
+/**
+ * &#x4E0A;&#x66F8;&#x304D;&#x9632;&#x6B62;&#x7528;
+ * @private
+ */
+// @ts-ignore
+// eslint-disable-next-line no-undef
+SenkoWSH = {
+	
+	/**
+ 	 * @type {typeof typeCSV}
+	 */
+	CSV : typeCSV,
+	
+	/**
+ 	 * @type {typeof typeDialog}
+	 */
+	Dialog : typeDialog,
+
+	/**
+ 	 * @type {typeof typeSFile}
+	 */
+	 SFile : typeSFile,
+
+	/**
+ 	 * @type {typeof typeRobot}
+	 */
+	 Robot : typeRobot,
+
+	/**
+ 	 * @type {typeof typeFormat}
+	 */
+	 Format : typeFormat,
+
+	/**
+ 	 * @type {typeof typeRandom}
+	 */
+	 Random : typeRandom,
+
+	/**
+ 	 * @type {typeof typeJapanese}
+	 */
+	 Japanese : typeJapanese,
+
+	/**
+ 	 * @type {typeof typeStringComparator}
+	 */
+	 StringComparator : typeStringComparator,
+
+	/**
+ 	 * @type {typeof typeSystem}
+	 */
+	 System : typeSystem,
+
+};
 
 /**
  * @type {typeof typeCSV}
@@ -161,61 +217,10 @@ console = {
 	log : function(text) {
 		// @ts-ignore
 		// eslint-disable-next-line no-undef
-		System.println(text);
+		SenkoWSH.System.println(text);
 	}
 };
 
-import typeExtendsArray from &quot;./senko/ExtendsArray.js&quot;;
-import typeExtendsObject from &quot;./senko/ExtendsObject.js&quot;;
-import typeExtendsString from &quot;./senko/ExtendsString.js&quot;;
-
-/**
- * @type {typeof typeExtendsArray}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsArray = typeExtendsArray;
-
-/**
- * @type {typeof typeExtendsObject}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsObject = typeExtendsObject;
-
-/**
- * @type {typeof typeExtendsString}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsString = typeExtendsString;
-
-/**
- * @param {any} original 
- * @param {any} extension
- * @returns {any}
- * @private
- * @ignore
- */
-const extendClass = function(original, extension) {
-	for(const key in extension) {
-		original.prototype[key] = function() {
-			const x = [];
-			x.push(this);
-			for(let i = 0 ; i &lt; arguments.length ; i++) {
-				x.push(arguments[i]);
-			}
-			return extension[key].apply(this, x);
-		};
-	}
-};
-
-extendClass(Array, typeExtendsArray);
-extendClass(Object, typeExtendsObject);
-extendClass(String, typeExtendsString);
 </code></pre>
 
 </div>

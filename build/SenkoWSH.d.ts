@@ -432,6 +432,39 @@ declare class Dialog {
 }
 
 /**
+ * The script is part of SenkoWSH.
+ *
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ *
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 書式に合わせて文字列を組み立てる関数を提供するクラス
+ */
+declare class Format {
+    /**
+     * printf に似た書式に合わせて文字列を組み立てる
+     * - ロケール、日付時刻等はサポートしていません。
+     * - 変換指定子のpとnはサポートしていません。
+     * @param {String} text
+     * @param {...any} parm パラメータは可変引数
+     * @returns {String}
+     */
+    static textf(text: string, ...parm: any[]): string;
+    /**
+     * 時刻用の書式に合わせて文字列を組み立てる
+     * - YYYY-MM-DD hh:mm:ss のように指定できる。
+     * @param {String} text
+     * @param {Date} date 時刻情報
+     * @returns {String}
+     */
+    static datef(text: string, date: Date): string;
+}
+
+/**
  * ES3相当のJScirptのArray拡張用クラス
  * - Array.prototypeに拡張します
  */
@@ -664,39 +697,6 @@ declare class ExtendsString {
      * @returns {boolean}
      */
     static endsWith(text: string, suffix: string): boolean;
-}
-
-/**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-
-/**
- * 書式に合わせて文字列を組み立てる関数を提供するクラス
- */
-declare class Format {
-    /**
-     * printf に似た書式に合わせて文字列を組み立てる
-     * - ロケール、日付時刻等はサポートしていません。
-     * - 変換指定子のpとnはサポートしていません。
-     * @param {String} text
-     * @param {...any} parm パラメータは可変引数
-     * @returns {String}
-     */
-    static textf(text: string, ...parm: any[]): string;
-    /**
-     * 時刻用の書式に合わせて文字列を組み立てる
-     * - YYYY-MM-DD hh:mm:ss のように指定できる。
-     * @param {String} text
-     * @param {Date} date 時刻情報
-     * @returns {String}
-     */
-    static datef(text: string, date: Date): string;
 }
 
 /**

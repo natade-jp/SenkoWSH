@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/konpeito/Random.js | senkowsh</title>
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/senko/polyfill/ExtendsArray.js | senkowsh</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -58,9 +58,9 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/konpeito/Random.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/senko/polyfill/ExtendsArray.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
- * The script is part of konpeito.
+ * The script is part of SenkoWSH.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -70,246 +70,223 @@
  */
 
 /**
- * Multiply two 32-bit integers and output a 32-bit integer.
- * @param {number} x1 
- * @param {number} x2 
- * @returns {number}
- * @private
- * @ignore
+ * ES3&#x76F8;&#x5F53;&#x306E;JScirpt&#x306E;Array&#x62E1;&#x5F35;&#x7528;&#x30AF;&#x30E9;&#x30B9;
+ * - Array.prototype&#x306B;&#x62E1;&#x5F35;&#x3057;&#x307E;&#x3059;
  */
-const multiplication32 = function(x1, x2) {
-	let y = ((x1 &amp; 0xFFFF) * (x2 &amp; 0xFFFF)) &gt;&gt;&gt; 0;
-	let b = (x1 &amp; 0xFFFF) * (x2 &gt;&gt;&gt; 16);
-	y = (y + ((b &amp; 0xFFFF) &lt;&lt; 16)) &gt;&gt;&gt; 0;
-	b = (x1 &gt;&gt;&gt; 16) * (x2 &amp; 0xFFFF);
-	y = (y + ((b &amp; 0xFFFF) &lt;&lt; 16)) &gt;&gt;&gt; 0;
-	return y;
-};
-
-/**
- * &#x4E71;&#x6570;&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
- */
-export default class Random {
-	
-	/**
-	 * &#x521D;&#x671F;&#x5316;
-	 * @param {number} [seed] - Seed number for random number generation. If not specified, create from time.
-	 */
-	constructor(seed) {
-
-		/**
-		 * @type {number}
-		 * @private
-		 * @ignore
-		 */
-		this.x = 123456789;
-		
-		/**
-		 * @type {number}
-		 * @private
-		 * @ignore
-		 */
-		this.y = 362436069;
-		
-		/**
-		 * @type {number}
-		 * @private
-		 * @ignore
-		 */
-		this.z = 521288629;
-		
-		/**
-		 * @type {number}
-		 * @private
-		 * @ignore
-		 */
-		this.w = 88675123;
-
-		if(seed !== undefined) {
-			this.setSeed(seed);
-		}
-		else {
-			// &#x7DDA;&#x5F62;&#x5408;&#x540C;&#x6CD5;&#x3067;&#x9069;&#x5F53;&#x306B;&#x4E71;&#x6570;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;
-			const new_seed = ((new Date()).getTime() + Random.seedUniquifier) &amp; 0xFFFFFFFF;
-			Random.seedUniquifier = (Random.seedUniquifier + 1) &amp; 0xFFFFFFFF;
-			this.setSeed(new_seed);
-		}
-	}
+export default class ExtendsArray {
 
 	/**
-	 * &#x30B7;&#x30FC;&#x30C9;&#x5024;&#x306E;&#x521D;&#x671F;&#x5316;
-	 * @param {number} seed
-	 */
-	setSeed(seed) {
-		// seed&#x3092;&#x4F7F;&#x7528;&#x3057;&#x3066;&#x7DDA;&#x5F62;&#x5408;&#x540C;&#x6CD5;&#x3067;&#x521D;&#x671F;&#x5024;&#x3092;&#x8A2D;&#x5B9A;
-		let random_seed = seed;
-		random_seed = (multiplication32(random_seed, 214013) + 2531011) &gt;&gt;&gt; 0;
-		this.z = random_seed;
-		random_seed = (multiplication32(random_seed, 214013) + 2531011) &gt;&gt;&gt; 0;
-		this.w = random_seed;
-
-		/**
-		 * Is keep random numbers based on Gaussian distribution.
-		 * @private
-		 * @type {boolean}
-		 */
-		this.haveNextNextGaussian = false;
-		
-		/**
-		 * Next random number based on Gaussian distribution.
-		 * @private
-		 * @type {number}
-		 */
-		this.nextNextGaussian = 0;
-	}
-
-	/**
-	 * 32-bit random number.
-	 * @returns {number} - 32&#x30D3;&#x30C3;&#x30C8;&#x306E;&#x4E71;&#x6570;
-	 * @private
-	 */
-	genrand_int32() {
-		const t = this.x ^ (this.x &lt;&lt; 11);
-		this.x = this.y;
-		this.y = this.z;
-		this.z = this.w;
-		this.w = (this.w ^ (this.w &gt;&gt;&gt; 19)) ^ (t ^ (t &gt;&gt;&gt; 8));
-		return this.w;
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x4EE5;&#x4E0B;&#x3067;&#x8868;&#x305B;&#x3089;&#x308C;&#x308B;&#x4E71;&#x6570;&#x751F;&#x6210;
-	 * @param {number} bits - Required number of bits (up to 64 possible).
-	 * @returns {number}
-	 */
-	next(bits) {
-		if(bits === 0) {
-			return 0;
-		}
-		else if(bits === 32) {
-			return this.genrand_int32();
-		}
-		else if(bits &lt; 32) {
-			// &#x7DDA;&#x5F62;&#x5408;&#x540C;&#x6CD5;&#x3067;&#x306F;&#x306A;&#x3044;&#x305F;&#x3081;
-			// &#x4E0A;&#x4F4D;&#x306E;&#x30D3;&#x30C3;&#x30C8;&#x3092;&#x4F7F;&#x7528;&#x3057;&#x306A;&#x304F;&#x3066;&#x3082;&#x3044;&#x3044;&#x304C;Java&#x3063;&#x307D;&#x304F;&#x3002;
-			return this.genrand_int32() &gt;&gt;&gt; (32 - bits);
-		}
-		// double&#x578B;&#x306E;&#x305F;&#x3081;&#x3001;52&#x30D3;&#x30C3;&#x30C8;&#x307E;&#x3067;&#x306F;&#x3001;&#x6574;&#x6570;&#x3068;&#x3057;&#x3066;&#x51FA;&#x529B;&#x53EF;&#x80FD;
-		else if(bits === 63) {
-			// &#x6B63;&#x306E;&#x5024;&#x3092;&#x51FA;&#x529B;&#x3059;&#x308B;&#x3088;&#x3046;&#x306B;&#x8ABF;&#x7BC0;
-			return this.next(32) * 0x80000000 + this.next(32);
-		}
-		else if(bits === 64) {
-			return this.next(32) * 0x100000000 + this.next(32);
-		}
-		else if(bits &lt; 64) {
-			return this.genrand_int32() * (1 &lt;&lt; (bits - 32)) + (this.genrand_int32()  &gt;&gt;&gt; (64 - bits));
-		}
-	}
-
-	/**
-	 * 8&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;&#x306E;&#x914D;&#x5217;
-	 * @param {number} size - &#x5FC5;&#x8981;&#x306A;&#x9577;&#x3055;
-	 * @returns {Array&lt;number&gt;}
-	 */
-	nextBytes(size) {
-		const y = new Array(size);
-		// &#x914D;&#x5217;y&#x306B;&#x4E71;&#x6570;&#x3092;&#x5165;&#x308C;&#x308B;
-		// 8&#x30D3;&#x30C3;&#x30C8;&#x306E;&#x305F;&#x3081;&#x306B;&#x3001;32&#x30D3;&#x30C3;&#x30C8;&#x4E71;&#x6570;&#x3092;1&#x56DE;&#x56DE;&#x3059;&#x306E;&#x306F;&#x3082;&#x3063;&#x305F;&#x3044;&#x306A;&#x3044;
-		for(let i = 0;i &lt; y.length; i++) {
-			y[i] = this.next(8);
-		}
-		return y;
-	}
-
-	/**
-	 * 16&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;
-	 * @returns {number}
-	 */
-	nextShort() {
-		return this.next(16);
-	}
-
-	/**
-	 * 32&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;
-	 * @param {number} [x] - &#x6307;&#x5B9A;&#x3057;&#x305F;&#x5024;&#x672A;&#x6E80;&#x306E;&#x6570;&#x5024;&#x3092;&#x4F5C;&#x308B;
-	 * @returns {number}
-	 */
-	nextInt(x) {
-		if((x !== undefined) &amp;&amp; (typeof x === &quot;number&quot;)) {
-			let r, y;
-			do {
-				r = this.genrand_int32() &gt;&gt;&gt; 0;
-				y = r % x;
-			} while((r - y + x) &gt; 0x100000000 );
-			return y;
-		}
-		return this.next(32) | 0;
-	}
-
-	/**
-	 * 64&#x30D3;&#x30C3;&#x30C8;&#x9577;&#x6574;&#x6570;&#x306E;&#x4E71;&#x6570;
-	 * @returns {number}
-	 */
-	nextLong() {
-		return this.next(64);
-	}
-
-	/**
-	 * bool&#x5024;&#x306E;&#x4E71;&#x6570;
+	 * @param {any[]} array
+	 * @param {any} object
 	 * @returns {boolean}
 	 */
-	nextBoolean() {
-		// 1&#x30D3;&#x30C3;&#x30C8;&#x306E;&#x305F;&#x3081;&#x306B;&#x3001;32&#x30D3;&#x30C3;&#x30C8;&#x4E71;&#x6570;&#x3092;1&#x56DE;&#x56DE;&#x3059;&#x306E;&#x306F;&#x3082;&#x3063;&#x305F;&#x3044;&#x306A;&#x3044;
-		return (this.next(1) !== 0);
+	static includes(array, object) {
+		return ExtendsArray.indexOf(array, object) !== -1;
 	}
 
 	/**
-	 * float&#x7CBE;&#x5EA6;&#x306E;&#x5B9F;&#x6570;
+	 * @param {any[]} array
+	 * @param {any} object
+	 * @param {number} [fromIndex=0]
 	 * @returns {number}
 	 */
-	nextFloat() {
-		return (this.next(24) / 0x1000000);
-	}
-
-	/**
-	 * double&#x7CBE;&#x5EA6;&#x306E;&#x5B9F;&#x6570;
-	 * @returns {number}
-	 */
-	nextDouble() {
-		const a1 = this.next(26) * 0x8000000 + this.next(27);
-		const a2 = 0x8000000 * 0x4000000;
-		return (a1 / a2);
-	}
-
-	/**
-	 * &#x30AC;&#x30A6;&#x30B7;&#x30A2;&#x30F3;&#x5206;&#x5E03;&#x306B;&#x5F93;&#x3046;&#x4E71;&#x6570;
-	 * @returns {number}
-	 */
-	nextGaussian() {
-		if(this.haveNextNextGaussian) {
-			this.haveNextNextGaussian = false;
-			return this.nextNextGaussian;
+	static indexOf(array, object, fromIndex) {
+		let i = fromIndex !== undefined ? fromIndex : 0;
+		for(; i &lt; array.length; i++) {
+			if(array[i] === object) {
+				return i;
+			}
 		}
-		// Box-Muller&#x6CD5;
-		const a = Math.sqrt( -2 * Math.log( this.nextDouble() ) );
-		const b = 2 * Math.PI * this.nextDouble();
-		const y = a * Math.sin(b);
-		this.nextNextGaussian = a * Math.cos(b);
-		this.haveNextNextGaussian = true;
-		return y;
+		return -1;
+	}
+
+	/**
+	 * @param {any[]} array
+	 * @param {any} object
+	 * @param {number} [fromIndex]
+	 * @returns {number}
+	 */
+	static lastIndexOf(array, object, fromIndex) {
+		let i = fromIndex !== undefined ? fromIndex : array.length - 1;
+		for(; i &gt;= 0; i--) {
+			if(array[i] === object) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * &#x5B89;&#x5B9A;&#x30BD;&#x30FC;&#x30C8;
+	 * @param {any[]} array
+	 * @param {function(any, any): number} [compareFunction]
+	 * @returns {any[]}
+	 */
+	static sort(array, compareFunction) {
+		let compare;
+		if(compareFunction === undefined) {
+			/**
+			 * &#x6607;&#x9806;&#x30BD;&#x30FC;&#x30C8;&#x7528;&#x306E;&#x95A2;&#x6570;
+			 * @param {any} a
+			 * @param {any} b
+			 * @returns {number}
+			 * @private
+			 */
+			compare = function(a, b) {
+				if(a === b) {
+					return 0;
+				}
+				if(typeof a === typeof b) {
+					return (a &lt; b ? -1 : 1);
+				}
+				return ((typeof a &lt; typeof b) ? -1 : 1);
+			};
+		}
+		else {
+			compare = compareFunction;
+		}
+		/**
+		 * @type {any[]}
+		 * @private
+		 */
+		const temp = [];
+		/**
+		 * &#x30BD;&#x30FC;&#x30C8;&#x95A2;&#x6570;&#xFF08;&#x5B89;&#x5B9A;&#x30DE;&#x30FC;&#x30B8;&#x30BD;&#x30FC;&#x30C8;&#xFF09;
+		 * @param {any[]} element 
+		 * @param {number} first 
+		 * @param {number} last 
+		 * @param {function(any, any): number} cmp_function
+		 * @private
+		 */
+		const sort = function(element, first, last, cmp_function) { 
+			if(first &lt; last) {
+				const middle = Math.floor((first + last) / 2);
+				sort(element, first, middle, cmp_function);
+				sort(element, middle + 1, last, cmp_function);
+				let p = 0, i, j, k;
+				for(i = first; i &lt;= middle; i++) {
+					temp[p++] = element[i];
+				}
+				i = middle + 1;
+				j = 0;
+				k = first;
+				while((i &lt;= last) &amp;&amp; (j &lt; p)) {
+					if(cmp_function(element[i], temp[j]) &gt;= 0) {
+						element[k++] = temp[j++];
+					}
+					else {
+						element[k++] = element[i++];
+					}
+				}
+				while(j &lt; p) {
+					element[k++] = temp[j++];
+				}
+			}
+			return true;
+		};
+		sort(array, 0, array.length - 1, compare);
+		return array;
+	}
+
+	/**
+	 * @param {any[]} array
+	 * @returns {string}
+	 */
+	static toString(array) {
+		return array.join(&quot;, &quot;);
+	}
+
+	/**
+	 * &#x30C7;&#x30A3;&#x30FC;&#x30D7;&#x30B3;&#x30D4;&#x30FC;
+	 * @param {any[]} array
+	 * @returns {any[]}
+	 */
+	static clone(array) {
+		const out = new Array(array.length);
+		for(let i = 0; i &lt; array.length; i++) {
+			out[i] = array[i];
+		}
+		return out;
+	}
+	
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x633F;&#x5165;
+	 * @param {any[]} array
+	 * @param {any|number} index_or_object
+	 * @param {any} [object]
+	 */
+	static add(array, index_or_object, object) {
+		if(object === undefined) {
+			array.push(index_or_object);
+		}
+		else {
+			array.splice(index_or_object, 0, object);
+		}
+	}
+	
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x914D;&#x5217;&#x3092;&#x633F;&#x5165;
+	 * @param {any[]} array
+	 * @param {any[]|number} index_or_arraylist
+	 * @param {any[]} [arraylist]
+	 */
+	static addAll(array, index_or_arraylist, arraylist) {
+		if((arraylist === undefined) &amp;&amp; ((typeof index_or_arraylist !== &quot;number&quot;))) {
+			const list = index_or_arraylist;
+			let j = array.length;
+			for(let i = 0; i &lt; list.length; i++) {
+				array[j++] = list[i];
+			}
+		}
+		else if(typeof index_or_arraylist === &quot;number&quot;) {
+			let index = index_or_arraylist;
+			let list = arraylist;
+			if(list === array) {
+				list = array.slice(0);
+			}
+			let size = array.length - index;
+			let target_i = array.length + list.length - 1;
+			let source_i = array.length - 1;
+			for(let i = 0; i &lt; size ; i++ ) {
+				array[target_i--] = array[source_i--];
+			}
+			size = list.length;
+			for(let i = 0; i &lt; size; i++) {
+				array[index++] = list[i];
+			}
+		}
+	}
+	
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x4F4D;&#x7F6E;&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x524A;&#x9664;
+	 * @param {any[]} array
+	 * @param {number} index 
+	 */
+	static remove(array, index) {
+		array.splice(index, 1);
+	}
+	
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x7BC4;&#x56F2;&#x3092;&#x524A;&#x9664;
+	 * @param {any[]} array
+	 * @param {number} fromIndex 
+	 * @param {number} toIndex 
+	 */
+	static removeRange(array, fromIndex, toIndex) {
+		array.splice(fromIndex, toIndex - fromIndex);
+	}
+	
+	/**
+	 * &#x7A7A;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @param {any[]} array
+	 * @returns {boolean}
+	 */
+	static isEmpty(array) {
+		return array.length === 0;
 	}
 
 }
-
-/**
- * &#x4E71;&#x6570;&#x751F;&#x6210;&#x7528;&#x306E;&#x521D;&#x671F;&#x30B7;&#x30FC;&#x30C9;&#x5024;
- * @type {number}
- * @private
- * @ignore
- */
-Random.seedUniquifier = 0x87654321;
-
 </code></pre>
 
 </div>

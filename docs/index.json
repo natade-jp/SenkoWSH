@@ -2192,7 +2192,7 @@
     "__docId__": 105,
     "kind": "file",
     "name": "src/mojijs/Unicode.js",
-    "content": "﻿/**\n * The script is part of MojiJS.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport ExtendsString from \"../senko/ExtendsString.js\";\n\n/**\n * Unicodeを扱うクラス\n * @ignore\n */\nexport default class Unicode {\n\n\t/**\n\t * 文字列をUTF32(コードポイント)の配列に変換\n\t * @param {String} text - 変換したいテキスト\n\t * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列\n\t */\n\tstatic toUTF32Array(text) {\n\t\tconst utf32 = [];\n\t\tfor(let i = 0; i < text.length; i = ExtendsString.offsetByCodePoints(text, i, 1)) {\n\t\t\tutf32.push(ExtendsString.codePointAt(text, i));\n\t\t}\n\t\treturn utf32;\n\t}\n\n\t/**\n\t * UTF32の配列から文字列に変換\n\t * @param {Array<number>} utf32 - 変換したいテキスト\n\t * @returns {String} 変換後のテキスト\n\t */\n\tstatic fromUTF32Array(utf32) {\n\t\treturn ExtendsString.fromCodePoint(utf32);\n\t}\n\n\t/**\n\t * 文字列をUTF16の配列に変換\n\t * @param {String} text - 変換したいテキスト\n\t * @returns {Array<number>} UTF16のデータが入った配列\n\t */\n\tstatic toUTF16Array(text) {\n\t\tconst utf16 = [];\n\t\tfor(let i = 0; i < text.length; i++) {\n\t\t\tutf16[i] = text.charCodeAt(i);\n\t\t}\n\t\treturn utf16;\n\t}\n\n\t/**\n\t * UTF16の配列から文字列に変換\n\t * @param {Array<number>} utf16 - 変換したいテキスト\n\t * @returns {String} 変換後のテキスト\n\t */\n\tstatic fromUTF16Array(utf16) {\n\t\tconst text = [];\n\t\tfor(let i = 0; i < utf16.length; i++) {\n\t\t\ttext[i] = String.fromCharCode(utf16[i]);\n\t\t}\n\t\treturn text.join(\"\");\n\t}\n\n}\n",
+    "content": "﻿/**\n * The script is part of MojiJS.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport ExtendsString from \"../senko/polyfill/ExtendsString.js\";\n\n/**\n * Unicodeを扱うクラス\n * @ignore\n */\nexport default class Unicode {\n\n\t/**\n\t * 文字列をUTF32(コードポイント)の配列に変換\n\t * @param {String} text - 変換したいテキスト\n\t * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列\n\t */\n\tstatic toUTF32Array(text) {\n\t\tconst utf32 = [];\n\t\tfor(let i = 0; i < text.length; i = ExtendsString.offsetByCodePoints(text, i, 1)) {\n\t\t\tutf32.push(ExtendsString.codePointAt(text, i));\n\t\t}\n\t\treturn utf32;\n\t}\n\n\t/**\n\t * UTF32の配列から文字列に変換\n\t * @param {Array<number>} utf32 - 変換したいテキスト\n\t * @returns {String} 変換後のテキスト\n\t */\n\tstatic fromUTF32Array(utf32) {\n\t\treturn ExtendsString.fromCodePoint(utf32);\n\t}\n\n\t/**\n\t * 文字列をUTF16の配列に変換\n\t * @param {String} text - 変換したいテキスト\n\t * @returns {Array<number>} UTF16のデータが入った配列\n\t */\n\tstatic toUTF16Array(text) {\n\t\tconst utf16 = [];\n\t\tfor(let i = 0; i < text.length; i++) {\n\t\t\tutf16[i] = text.charCodeAt(i);\n\t\t}\n\t\treturn utf16;\n\t}\n\n\t/**\n\t * UTF16の配列から文字列に変換\n\t * @param {Array<number>} utf16 - 変換したいテキスト\n\t * @returns {String} 変換後のテキスト\n\t */\n\tstatic fromUTF16Array(utf16) {\n\t\tconst text = [];\n\t\tfor(let i = 0; i < utf16.length; i++) {\n\t\t\ttext[i] = String.fromCharCode(utf16[i]);\n\t\t}\n\t\treturn text.join(\"\");\n\t}\n\n}\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/mojijs/Unicode.js",
     "access": "public",
@@ -3013,10 +3013,10 @@
   {
     "__docId__": 127,
     "kind": "file",
-    "name": "src/senko/ExtendsArray.js",
-    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ES3相当のJScirptのArray拡張用クラス\n * - Array.prototypeに拡張します\n */\nexport default class ExtendsArray {\n\n\t/**\n\t * @param {any[]} array\n\t * @param {any} object\n\t * @returns {boolean}\n\t */\n\tstatic includes(array, object) {\n\t\treturn ExtendsArray.indexOf(array, object) !== -1;\n\t}\n\n\t/**\n\t * @param {any[]} array\n\t * @param {any} object\n\t * @param {number} [fromIndex=0]\n\t * @returns {number}\n\t */\n\tstatic indexOf(array, object, fromIndex) {\n\t\tlet i = fromIndex !== undefined ? fromIndex : 0;\n\t\tfor(; i < array.length; i++) {\n\t\t\tif(array[i] === object) {\n\t\t\t\treturn i;\n\t\t\t}\n\t\t}\n\t\treturn -1;\n\t}\n\n\t/**\n\t * @param {any[]} array\n\t * @param {any} object\n\t * @param {number} [fromIndex]\n\t * @returns {number}\n\t */\n\tstatic lastIndexOf(array, object, fromIndex) {\n\t\tlet i = fromIndex !== undefined ? fromIndex : array.length - 1;\n\t\tfor(; i >= 0; i--) {\n\t\t\tif(array[i] === object) {\n\t\t\t\treturn i;\n\t\t\t}\n\t\t}\n\t\treturn -1;\n\t}\n\n\t/**\n\t * 安定ソート\n\t * @param {any[]} array\n\t * @param {function(any, any): number} [compareFunction]\n\t * @returns {any[]}\n\t */\n\tstatic sort(array, compareFunction) {\n\t\tlet compare;\n\t\tif(compareFunction === undefined) {\n\t\t\t/**\n\t\t\t * 昇順ソート用の関数\n\t\t\t * @param {any} a\n\t\t\t * @param {any} b\n\t\t\t * @returns {number}\n\t\t\t * @private\n\t\t\t */\n\t\t\tcompare = function(a, b) {\n\t\t\t\tif(a === b) {\n\t\t\t\t\treturn 0;\n\t\t\t\t}\n\t\t\t\tif(typeof a === typeof b) {\n\t\t\t\t\treturn (a < b ? -1 : 1);\n\t\t\t\t}\n\t\t\t\treturn ((typeof a < typeof b) ? -1 : 1);\n\t\t\t};\n\t\t}\n\t\telse {\n\t\t\tcompare = compareFunction;\n\t\t}\n\t\t/**\n\t\t * @type {any[]}\n\t\t * @private\n\t\t */\n\t\tconst temp = [];\n\t\t/**\n\t\t * ソート関数（安定マージソート）\n\t\t * @param {any[]} element \n\t\t * @param {number} first \n\t\t * @param {number} last \n\t\t * @param {function(any, any): number} cmp_function\n\t\t * @private\n\t\t */\n\t\tconst sort = function(element, first, last, cmp_function) { \n\t\t\tif(first < last) {\n\t\t\t\tconst middle = Math.floor((first + last) / 2);\n\t\t\t\tsort(element, first, middle, cmp_function);\n\t\t\t\tsort(element, middle + 1, last, cmp_function);\n\t\t\t\tlet p = 0, i, j, k;\n\t\t\t\tfor(i = first; i <= middle; i++) {\n\t\t\t\t\ttemp[p++] = element[i];\n\t\t\t\t}\n\t\t\t\ti = middle + 1;\n\t\t\t\tj = 0;\n\t\t\t\tk = first;\n\t\t\t\twhile((i <= last) && (j < p)) {\n\t\t\t\t\tif(cmp_function(element[i], temp[j]) >= 0) {\n\t\t\t\t\t\telement[k++] = temp[j++];\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\telement[k++] = element[i++];\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\twhile(j < p) {\n\t\t\t\t\telement[k++] = temp[j++];\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn true;\n\t\t};\n\t\tsort(array, 0, array.length - 1, compare);\n\t\treturn array;\n\t}\n\n\t/**\n\t * @param {any[]} array\n\t * @returns {string}\n\t */\n\tstatic toString(array) {\n\t\treturn array.join(\", \");\n\t}\n\n\t/**\n\t * ディープコピー\n\t * @param {any[]} array\n\t * @returns {any[]}\n\t */\n\tstatic clone(array) {\n\t\tconst out = new Array(array.length);\n\t\tfor(let i = 0; i < array.length; i++) {\n\t\t\tout[i] = array[i];\n\t\t}\n\t\treturn out;\n\t}\n\t\n\n\t/**\n\t * 指定したデータを挿入\n\t * @param {any[]} array\n\t * @param {any|number} index_or_object\n\t * @param {any} [object]\n\t */\n\tstatic add(array, index_or_object, object) {\n\t\tif(object === undefined) {\n\t\t\tarray.push(index_or_object);\n\t\t}\n\t\telse {\n\t\t\tarray.splice(index_or_object, 0, object);\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定した配列を挿入\n\t * @param {any[]} array\n\t * @param {any[]|number} index_or_arraylist\n\t * @param {any[]} [arraylist]\n\t */\n\tstatic addAll(array, index_or_arraylist, arraylist) {\n\t\tif((arraylist === undefined) && ((typeof index_or_arraylist !== \"number\"))) {\n\t\t\tconst list = index_or_arraylist;\n\t\t\tlet j = array.length;\n\t\t\tfor(let i = 0; i < list.length; i++) {\n\t\t\t\tarray[j++] = list[i];\n\t\t\t}\n\t\t}\n\t\telse if(typeof index_or_arraylist === \"number\") {\n\t\t\tlet index = index_or_arraylist;\n\t\t\tlet list = arraylist;\n\t\t\tif(list === array) {\n\t\t\t\tlist = array.slice(0);\n\t\t\t}\n\t\t\tlet size = array.length - index;\n\t\t\tlet target_i = array.length + list.length - 1;\n\t\t\tlet source_i = array.length - 1;\n\t\t\tfor(let i = 0; i < size ; i++ ) {\n\t\t\t\tarray[target_i--] = array[source_i--];\n\t\t\t}\n\t\t\tsize = list.length;\n\t\t\tfor(let i = 0; i < size; i++) {\n\t\t\t\tarray[index++] = list[i];\n\t\t\t}\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定した位置のデータを削除\n\t * @param {any[]} array\n\t * @param {number} index \n\t */\n\tstatic remove(array, index) {\n\t\tarray.splice(index, 1);\n\t}\n\t\n\t/**\n\t * 指定した範囲を削除\n\t * @param {any[]} array\n\t * @param {number} fromIndex \n\t * @param {number} toIndex \n\t */\n\tstatic removeRange(array, fromIndex, toIndex) {\n\t\tarray.splice(fromIndex, toIndex - fromIndex);\n\t}\n\t\n\t/**\n\t * 空かどうか\n\t * @param {any[]} array\n\t * @returns {boolean}\n\t */\n\tstatic isEmpty(array) {\n\t\treturn array.length === 0;\n\t}\n\n}\n",
+    "name": "src/senko/Format.js",
+    "content": "import System from \"./System\";\n\n/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * 書式に合わせて文字列を組み立てる関数を提供するクラス\n */\nexport default class Format {\n\n\t/**\n\t * printf に似た書式に合わせて文字列を組み立てる\n\t * - ロケール、日付時刻等はサポートしていません。\n\t * - 変換指定子のpとnはサポートしていません。\n\t * @param {String} text \n\t * @param {...any} parm パラメータは可変引数\n\t * @returns {String}\n\t */\n\tstatic textf() {\n\t\tlet parm_number = 1;\n\t\tconst parm = arguments;\n\t\t/**\n\t\t * @param {number} x\n\t\t * @returns {number}\n\t\t * @private\n\t\t */\n\t\tconst toUnsign  = function(x) {\n\t\t\tif(x >= 0) {\n\t\t\t\treturn x;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tconst ix = -x;\n\t\t\t\t//16ビットごとに分けてビット反転\n\t\t\t\tlet high = ((~ix) >> 16) & 0xFFFF;\n\t\t\t\thigh *= 0x00010000;\n\t\t\t\tconst low  =  (~ix) & 0xFFFF;\n\t\t\t\treturn high + low + 1;\n\t\t\t}\n\t\t};\n\t\t/**\n\t\t * @param {string} istr\n\t\t * @returns {string}\n\t\t * @private\n\t\t */\n\t\tconst func = function(istr) {\n\t\t\t// 1文字目の%を除去\n\t\t\tlet str = istr.substring(1, istr.length);\n\t\t\tlet buff;\n\t\t\t// [6] 変換指定子(最後の1文字を取得)\n\t\t\tbuff = str.match(/.$/);\n\t\t\tconst type = buff[0];\n\t\t\tif(type === \"%\") {\n\t\t\t\treturn(\"%\");\n\t\t\t}\n\t\t\t// ここからパラメータの解析開始\n\t\t\t// [1] 引数順\n\t\t\tbuff = str.match(/^[0-9]+\\$/);\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\t// 数字だけ切り出す\n\t\t\t\tbuff = buff.substring(0, buff.length - 1);\n\t\t\t\t// 整数へ\n\t\t\t\tparm_number = parseInt(buff , 10);\n\t\t\t}\n\t\t\t// 引数を取得\n\t\t\tlet parameter = parm[parm_number];\n\t\t\tif(typeof parameter !== \"string\" && typeof parameter !== \"number\") {\n\t\t\t\tparameter = parameter.toString();\n\t\t\t}\n\t\t\tparm_number = parm_number + 1;\n\t\t\t// [2] フラグ\n\t\t\tbuff = str.match(/^[-+ #0]+/);\n\t\t\tlet isFlagSharp = false;\n\t\t\tlet isFlagTextAlignLeft = false;\n\t\t\tconst isFlagFill = false;\n\t\t\tlet sFillCharacter = \" \";\n\t\t\tlet isFlagFillZero = false;\n\t\t\tlet isFlagDrawSign = false;\n\t\t\tlet sSignCharacter = \"\";\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\tif(buff.indexOf(\"#\") !== -1) {\n\t\t\t\t\tisFlagSharp = true;\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\"-\") !== -1) {\n\t\t\t\t\tisFlagTextAlignLeft = true;\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\" \") !== -1) {\n\t\t\t\t\tisFlagDrawSign = true;\n\t\t\t\t\tsSignCharacter = \" \";\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\"+\") !== -1) {\n\t\t\t\t\tisFlagDrawSign = true;\n\t\t\t\t\tsSignCharacter = \"+\";\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\"0\") !== -1) {\n\t\t\t\t\tisFlagFillZero = true;\n\t\t\t\t\tsFillCharacter = \"0\";\n\t\t\t\t}\n\t\t\t}\n\t\t\t// [3] 最小フィールド幅\n\t\t\tlet width = 0;\n\t\t\tbuff = str.match(/^([0-9]+|\\*)/);\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\tif(buff.indexOf(\"*\") !== -1) { // 引数で最小フィールド幅を指定\n\t\t\t\t\twidth = parameter;\n\t\t\t\t\tparameter = parm[parm_number];\n\t\t\t\t\tparm_number = parm_number + 1;\n\t\t\t\t}\n\t\t\t\telse { // 数字で指定\n\t\t\t\t\twidth = parseInt(buff , 10);\n\t\t\t\t}\n\t\t\t}\n\t\t\t// [4] 精度の指定\n\t\t\tlet isPrecision = false;\n\t\t\tlet precision = 0;\n\t\t\tbuff = str.match(/^(\\.((-?[0-9]+)|\\*)|\\.)/); //.-3, .* , .\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\tisPrecision = true;\n\t\t\t\tif(buff.indexOf(\"*\") !== -1) { // 引数で精度を指定\n\t\t\t\t\tprecision = parameter;\n\t\t\t\t\tparameter = parm[parm_number];\n\t\t\t\t\tparm_number = parm_number + 1;\n\t\t\t\t}\n\t\t\t\telse if(buff.length === 1) { // 小数点だけの指定\n\t\t\t\t\tprecision = 0;\n\t\t\t\t}\n\t\t\t\telse { // 数字で指定\n\t\t\t\t\tbuff = buff.substring(1, buff.length);\n\t\t\t\t\tprecision = parseInt(buff , 10);\n\t\t\t\t}\n\t\t\t}\n\t\t\t// 長さ修飾子(非サポート)\n\t\t\tbuff = str.match(/^hh|h|ll|l|L|z|j|t/);\n\t\t\tif(buff !== null) {\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t}\n\t\t\t// 文字列を作成する\n\t\t\tlet output = \"\";\n\t\t\tlet isInteger = false;\n\t\t\tswitch(type.toLowerCase()) {\n\t\t\t\t// 数字関連\n\t\t\t\tcase \"d\":\n\t\t\t\tcase \"i\":\n\t\t\t\tcase \"u\":\n\t\t\t\tcase \"b\":\n\t\t\t\tcase \"o\":\n\t\t\t\tcase \"x\":\n\t\t\t\t\tisInteger = true;\n\t\t\t\t\t// falls through\n\t\t\t\tcase \"e\":\n\t\t\t\tcase \"f\":\n\t\t\t\tcase \"g\":\n\t\t\t\t{\n\t\t\t\t\tlet sharpdata = \"\";\n\t\t\t\t\tlet textlength = 0; // 現在の文字を構成するために必要な長さ\n\t\t\t\t\tlet spacesize;  // 追加する横幅\n\t\t\t\t\t// 整数\n\t\t\t\t\tif(isInteger) {\n\t\t\t\t\t\t// 数字に変換\n\t\t\t\t\t\tif(isNaN(parameter)) {\n\t\t\t\t\t\t\tparameter = parseInt(parameter, 10);\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// 正負判定\n\t\t\t\t\t\tif((type === \"d\") || (type === \"i\")) {\n\t\t\t\t\t\t\tif(parameter < 0) {\n\t\t\t\t\t\t\t\tsSignCharacter = \"-\";\n\t\t\t\t\t\t\t\tparameter  = -parameter;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tparameter  = Math.floor(parameter);\n\t\t\t\t\t\t}\n\t\t\t\t\t\telse {\n\t\t\t\t\t\t\tif(parameter >= 0) {\n\t\t\t\t\t\t\t\tparameter  = Math.floor(parameter);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\telse {\n\t\t\t\t\t\t\t\tparameter  = Math.ceil(parameter);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 実数\n\t\t\t\t\telse {\n\t\t\t\t\t\t// 数字に変換\n\t\t\t\t\t\tif(isNaN(parameter)) {\n\t\t\t\t\t\t\tparameter = parseFloat(parameter);\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// 正負判定\n\t\t\t\t\t\tif(parameter < 0) {\n\t\t\t\t\t\t\tsSignCharacter = \"-\";\n\t\t\t\t\t\t\tparameter  = -parameter;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif(!isPrecision) {\n\t\t\t\t\t\t\tprecision = 6;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 文字列を作成していく\n\t\t\t\t\tswitch(type.toLowerCase()) {\n\t\t\t\t\t\tcase \"d\":\n\t\t\t\t\t\tcase \"i\":\n\t\t\t\t\t\t\toutput += parameter.toString(10);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"u\":\n\t\t\t\t\t\t\toutput += toUnsign(parameter).toString(10);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"b\":\n\t\t\t\t\t\t\toutput += toUnsign(parameter).toString(2);\n\t\t\t\t\t\t\tif(isFlagSharp) {\n\t\t\t\t\t\t\t\tsharpdata = \"0b\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"o\":\n\t\t\t\t\t\t\toutput  += toUnsign(parameter).toString(8);\n\t\t\t\t\t\t\tif(isFlagSharp) {\n\t\t\t\t\t\t\t\tsharpdata = \"0\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"x\":\n\t\t\t\t\t\tcase \"X\":\n\t\t\t\t\t\t\toutput  += toUnsign(parameter).toString(16);\n\t\t\t\t\t\t\tif(isFlagSharp) {\n\t\t\t\t\t\t\t\tsharpdata = \"0x\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"e\":\n\t\t\t\t\t\t\toutput += parameter.toExponential(precision);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"f\":\n\t\t\t\t\t\t\toutput += parameter.toFixed(precision);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"g\":\n\t\t\t\t\t\t\tif(precision === 0) { // 0は1とする\n\t\t\t\t\t\t\t\tprecision = 1;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\toutput += parameter.toPrecision(precision);\n\t\t\t\t\t\t\t// 小数点以下の語尾の0の削除\n\t\t\t\t\t\t\tif((!isFlagSharp) && (output.indexOf(\".\") !== -1)) {\n\t\t\t\t\t\t\t\toutput = output.replace(/\\.?0+$/, \"\");  // 1.00 , 1.10\n\t\t\t\t\t\t\t\toutput = output.replace(/\\.?0+e/, \"e\"); // 1.0e , 1.10e\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tdefault:\n\t\t\t\t\t\t\t// 上でチェックしているため、ありえない\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t\t// 整数での後処理\n\t\t\t\t\tif(isInteger) {\n\t\t\t\t\t\tif(isPrecision) { // 精度の付け足し\n\t\t\t\t\t\t\tspacesize  = precision - output.length;\n\t\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\t\toutput = \"0\" + output;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 実数での後処理\n\t\t\t\t\telse {\n\t\t\t\t\t\tif(isFlagSharp) { \n\t\t\t\t\t\t\t// sharp指定の時は小数点を必ず残す\n\t\t\t\t\t\t\tif(output.indexOf(\".\") === -1) {\n\t\t\t\t\t\t\t\tif(output.indexOf(\"e\") !== -1) {\n\t\t\t\t\t\t\t\t\toutput = output.replace(\"e\", \".e\");\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\telse {\n\t\t\t\t\t\t\t\t\toutput += \".\";\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 指数表記は、3桁表示(double型のため)\n\t\t\t\t\tif(output.indexOf(\"e\") !== -1) {\n\t\t\t\t\t\t/**\n\t\t\t\t\t\t * @param {string} str\n\t\t\t\t\t\t * @returns {string}\n\t\t\t\t\t\t * @private\n\t\t\t\t\t\t */\n\t\t\t\t\t\tconst buff = function(str) {\n\t\t\t\t\t\t\tconst l   = str.length;\n\t\t\t\t\t\t\tif(str.length === 3) { // e+1 -> e+001\n\t\t\t\t\t\t\t\treturn(str.substring(0, l - 1) + \"00\" + str.substring(l - 1, l));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\telse { // e+10 -> e+010\n\t\t\t\t\t\t\t\treturn(str.substring(0, l - 2) + \"0\" + str.substring(l - 2, l));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\toutput = output.replace(/e[+-][0-9]{1,2}$/, buff);\n\t\t\t\t\t}\n\t\t\t\t\ttextlength = output.length + sharpdata.length + sSignCharacter.length;\n\t\t\t\t\tspacesize  = width - textlength;\n\t\t\t\t\t// 左よせ\n\t\t\t\t\tif(isFlagTextAlignLeft) {\n\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\toutput = output + \" \";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 0を埋める場合\n\t\t\t\t\tif(isFlagFillZero) {\n\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\toutput = \"0\" + output;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// マイナスや、「0x」などを接続\n\t\t\t\t\toutput = sharpdata + output;\n\t\t\t\t\toutput = sSignCharacter + output;\n\t\t\t\t\t// 0 で埋めない場合\n\t\t\t\t\tif((!isFlagFillZero) && (!isFlagTextAlignLeft)) {\n\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\toutput = \" \" + output;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 大文字化\n\t\t\t\t\tif(type.toUpperCase() === type) {\n\t\t\t\t\t\toutput = output.toUpperCase();\n\t\t\t\t\t}\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\t// 文字列の場合\n\t\t\t\tcase \"c\":\n\t\t\t\t\tif(!isNaN(parameter)) {\n\t\t\t\t\t\tparameter = String.fromCharCode(parameter);\n\t\t\t\t\t}\n\t\t\t\t\t// falls through\n\t\t\t\tcase \"s\":\n\t\t\t\t{\n\t\t\t\t\tif(!isNaN(parameter)) {\n\t\t\t\t\t\tparameter = parameter.toString(10);\n\t\t\t\t\t}\n\t\t\t\t\toutput = parameter;\n\t\t\t\t\tif(isPrecision) { // 最大表示文字数\n\t\t\t\t\t\tif(output.length > precision) {\n\t\t\t\t\t\t\toutput = output.substring(0, precision);\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\tconst s_textlength = output.length; // 現在の文字を構成するために必要な長さ\n\t\t\t\t\tconst s_spacesize  = width - s_textlength;  // 追加する横幅\n\t\t\t\t\t// 左よせ / 右よせ\n\t\t\t\t\tif(isFlagTextAlignLeft) {\n\t\t\t\t\t\tfor(let i = 0; i < s_spacesize; i++) {\n\t\t\t\t\t\t\toutput = output + \" \";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\t// 拡張\n\t\t\t\t\t\tconst s = isFlagFillZero ? \"0\" : \" \";\n\t\t\t\t\t\tfor(let i = 0; i < s_spacesize; i++) {\n\t\t\t\t\t\t\toutput = s + output;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\t// パーセント\n\t\t\t\tcase \"%\":\n\t\t\t\t\toutput = \"%\";\n\t\t\t\t\tbreak;\n\t\t\t\t// 未サポート\n\t\t\t\tcase \"p\":\n\t\t\t\tcase \"n\":\n\t\t\t\t\toutput = \"(unsupported)\";\n\t\t\t\t\tbreak;\n\t\t\t\tdefault:\n\t\t\t\t\t// 正規表現でチェックしているため、ありえない\n\t\t\t\t\tbreak;\n\t\t\t}\n\t\t\treturn (output);\t\n\t\t};\n\t\treturn (parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));\n\t}\n\n\t/**\n\t * 時刻用の書式に合わせて文字列を組み立てる\n\t * - YYYY-MM-DD hh:mm:ss のように指定できる。\n\t * @param {String} text \n\t * @param {Date} date 時刻情報\n\t * @returns {String}\n\t */\n\tstatic datef(text, date) {\n\t\tconst Y = date.getFullYear();\n\t\tconst M = date.getMonth() + 1;\n\t\tconst D = date.getDate();\n\t\tconst h = date.getHours();\n\t\tconst m = date.getMinutes();\n\t\tconst s = date.getSeconds();\n\t\tconst ms = date.getMilliseconds();\n\t\tconst day = date.getDay(); // 曜日\n\t\tconst aaa_array = [26085, 26376, 28779, 27700, 26408, 37329, 22303];\n\t\tconst aaaa_str = String.fromCharCode(26332) + String.fromCharCode(26085);\n\t\tconst ddd_array = [\"Sun\", \"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\"];\n\t\tconst dddd_array = [\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"];\n\t\tlet output = text;\n\t\toutput = output.replace(/YYYY/g, Y.toString());\n\t\toutput = output.replace(/YY/g, (Y % 100).toString());\n\t\toutput = output.replace(/MM/g, Format.textf(\"%02d\", M));\n\t\toutput = output.replace(/M/g, M.toString());\n\t\toutput = output.replace(/DD/g, Format.textf(\"%02d\", D));\n\t\toutput = output.replace(/D/g, D.toString());\n\t\toutput = output.replace(/hh/g, Format.textf(\"%02d\", h));\n\t\toutput = output.replace(/h/g, h.toString());\n\t\toutput = output.replace(/mm/g, Format.textf(\"%02d\", m));\n\t\toutput = output.replace(/m/g, m.toString());\n\t\toutput = output.replace(/ss/g, Format.textf(\"%02d\", s));\n\t\toutput = output.replace(/s/g, s.toString());\n\t\toutput = output.replace(/000/g, Format.textf(\"%03d\", ms));\n\t\toutput = output.replace(/aaaa/g, String.fromCharCode(aaa_array[day]) + aaaa_str);\n\t\toutput = output.replace(/aaa/g, String.fromCharCode(aaa_array[day]));\n\t\toutput = output.replace(/dddd/g, dddd_array[day]);\n\t\toutput = output.replace(/ddd/g, ddd_array[day]);\n\t\toutput = output.replace(/day/g, day.toString());\n\t\treturn output;\n\t}\n\n}\n",
     "static": true,
-    "longname": "D:/JavaScript/SenkoWSH/src/senko/ExtendsArray.js",
+    "longname": "D:/JavaScript/SenkoWSH/src/senko/Format.js",
     "access": "public",
     "description": null,
     "lineNumber": 1
@@ -3024,27 +3024,151 @@
   {
     "__docId__": 128,
     "kind": "class",
-    "name": "ExtendsArray",
-    "memberof": "src/senko/ExtendsArray.js",
+    "name": "Format",
+    "memberof": "src/senko/Format.js",
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray",
+    "longname": "src/senko/Format.js~Format",
     "access": "public",
     "export": true,
-    "importPath": "senkowsh/src/senko/ExtendsArray.js",
+    "importPath": "senkowsh/src/senko/Format.js",
+    "importStyle": "Format",
+    "description": "書式に合わせて文字列を組み立てる関数を提供するクラス",
+    "lineNumber": 16,
+    "interface": false
+  },
+  {
+    "__docId__": 129,
+    "kind": "method",
+    "name": "textf",
+    "memberof": "src/senko/Format.js~Format",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/Format.js~Format.textf",
+    "access": "public",
+    "description": "printf に似た書式に合わせて文字列を組み立てる\n- ロケール、日付時刻等はサポートしていません。\n- 変換指定子のpとnはサポートしていません。",
+    "lineNumber": 26,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{String}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "text",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "...any"
+        ],
+        "spread": true,
+        "optional": false,
+        "name": "parm",
+        "description": "パラメータは可変引数"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "String"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 130,
+    "kind": "method",
+    "name": "datef",
+    "memberof": "src/senko/Format.js~Format",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/Format.js~Format.datef",
+    "access": "public",
+    "description": "時刻用の書式に合わせて文字列を組み立てる\n- YYYY-MM-DD hh:mm:ss のように指定できる。",
+    "lineNumber": 391,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{String}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "text",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Date"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "date",
+        "description": "時刻情報"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "String"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 131,
+    "kind": "file",
+    "name": "src/senko/polyfill/ExtendsArray.js",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ES3相当のJScirptのArray拡張用クラス\n * - Array.prototypeに拡張します\n */\nexport default class ExtendsArray {\n\n\t/**\n\t * @param {any[]} array\n\t * @param {any} object\n\t * @returns {boolean}\n\t */\n\tstatic includes(array, object) {\n\t\treturn ExtendsArray.indexOf(array, object) !== -1;\n\t}\n\n\t/**\n\t * @param {any[]} array\n\t * @param {any} object\n\t * @param {number} [fromIndex=0]\n\t * @returns {number}\n\t */\n\tstatic indexOf(array, object, fromIndex) {\n\t\tlet i = fromIndex !== undefined ? fromIndex : 0;\n\t\tfor(; i < array.length; i++) {\n\t\t\tif(array[i] === object) {\n\t\t\t\treturn i;\n\t\t\t}\n\t\t}\n\t\treturn -1;\n\t}\n\n\t/**\n\t * @param {any[]} array\n\t * @param {any} object\n\t * @param {number} [fromIndex]\n\t * @returns {number}\n\t */\n\tstatic lastIndexOf(array, object, fromIndex) {\n\t\tlet i = fromIndex !== undefined ? fromIndex : array.length - 1;\n\t\tfor(; i >= 0; i--) {\n\t\t\tif(array[i] === object) {\n\t\t\t\treturn i;\n\t\t\t}\n\t\t}\n\t\treturn -1;\n\t}\n\n\t/**\n\t * 安定ソート\n\t * @param {any[]} array\n\t * @param {function(any, any): number} [compareFunction]\n\t * @returns {any[]}\n\t */\n\tstatic sort(array, compareFunction) {\n\t\tlet compare;\n\t\tif(compareFunction === undefined) {\n\t\t\t/**\n\t\t\t * 昇順ソート用の関数\n\t\t\t * @param {any} a\n\t\t\t * @param {any} b\n\t\t\t * @returns {number}\n\t\t\t * @private\n\t\t\t */\n\t\t\tcompare = function(a, b) {\n\t\t\t\tif(a === b) {\n\t\t\t\t\treturn 0;\n\t\t\t\t}\n\t\t\t\tif(typeof a === typeof b) {\n\t\t\t\t\treturn (a < b ? -1 : 1);\n\t\t\t\t}\n\t\t\t\treturn ((typeof a < typeof b) ? -1 : 1);\n\t\t\t};\n\t\t}\n\t\telse {\n\t\t\tcompare = compareFunction;\n\t\t}\n\t\t/**\n\t\t * @type {any[]}\n\t\t * @private\n\t\t */\n\t\tconst temp = [];\n\t\t/**\n\t\t * ソート関数（安定マージソート）\n\t\t * @param {any[]} element \n\t\t * @param {number} first \n\t\t * @param {number} last \n\t\t * @param {function(any, any): number} cmp_function\n\t\t * @private\n\t\t */\n\t\tconst sort = function(element, first, last, cmp_function) { \n\t\t\tif(first < last) {\n\t\t\t\tconst middle = Math.floor((first + last) / 2);\n\t\t\t\tsort(element, first, middle, cmp_function);\n\t\t\t\tsort(element, middle + 1, last, cmp_function);\n\t\t\t\tlet p = 0, i, j, k;\n\t\t\t\tfor(i = first; i <= middle; i++) {\n\t\t\t\t\ttemp[p++] = element[i];\n\t\t\t\t}\n\t\t\t\ti = middle + 1;\n\t\t\t\tj = 0;\n\t\t\t\tk = first;\n\t\t\t\twhile((i <= last) && (j < p)) {\n\t\t\t\t\tif(cmp_function(element[i], temp[j]) >= 0) {\n\t\t\t\t\t\telement[k++] = temp[j++];\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\telement[k++] = element[i++];\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\twhile(j < p) {\n\t\t\t\t\telement[k++] = temp[j++];\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn true;\n\t\t};\n\t\tsort(array, 0, array.length - 1, compare);\n\t\treturn array;\n\t}\n\n\t/**\n\t * @param {any[]} array\n\t * @returns {string}\n\t */\n\tstatic toString(array) {\n\t\treturn array.join(\", \");\n\t}\n\n\t/**\n\t * ディープコピー\n\t * @param {any[]} array\n\t * @returns {any[]}\n\t */\n\tstatic clone(array) {\n\t\tconst out = new Array(array.length);\n\t\tfor(let i = 0; i < array.length; i++) {\n\t\t\tout[i] = array[i];\n\t\t}\n\t\treturn out;\n\t}\n\t\n\n\t/**\n\t * 指定したデータを挿入\n\t * @param {any[]} array\n\t * @param {any|number} index_or_object\n\t * @param {any} [object]\n\t */\n\tstatic add(array, index_or_object, object) {\n\t\tif(object === undefined) {\n\t\t\tarray.push(index_or_object);\n\t\t}\n\t\telse {\n\t\t\tarray.splice(index_or_object, 0, object);\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定した配列を挿入\n\t * @param {any[]} array\n\t * @param {any[]|number} index_or_arraylist\n\t * @param {any[]} [arraylist]\n\t */\n\tstatic addAll(array, index_or_arraylist, arraylist) {\n\t\tif((arraylist === undefined) && ((typeof index_or_arraylist !== \"number\"))) {\n\t\t\tconst list = index_or_arraylist;\n\t\t\tlet j = array.length;\n\t\t\tfor(let i = 0; i < list.length; i++) {\n\t\t\t\tarray[j++] = list[i];\n\t\t\t}\n\t\t}\n\t\telse if(typeof index_or_arraylist === \"number\") {\n\t\t\tlet index = index_or_arraylist;\n\t\t\tlet list = arraylist;\n\t\t\tif(list === array) {\n\t\t\t\tlist = array.slice(0);\n\t\t\t}\n\t\t\tlet size = array.length - index;\n\t\t\tlet target_i = array.length + list.length - 1;\n\t\t\tlet source_i = array.length - 1;\n\t\t\tfor(let i = 0; i < size ; i++ ) {\n\t\t\t\tarray[target_i--] = array[source_i--];\n\t\t\t}\n\t\t\tsize = list.length;\n\t\t\tfor(let i = 0; i < size; i++) {\n\t\t\t\tarray[index++] = list[i];\n\t\t\t}\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定した位置のデータを削除\n\t * @param {any[]} array\n\t * @param {number} index \n\t */\n\tstatic remove(array, index) {\n\t\tarray.splice(index, 1);\n\t}\n\t\n\t/**\n\t * 指定した範囲を削除\n\t * @param {any[]} array\n\t * @param {number} fromIndex \n\t * @param {number} toIndex \n\t */\n\tstatic removeRange(array, fromIndex, toIndex) {\n\t\tarray.splice(fromIndex, toIndex - fromIndex);\n\t}\n\t\n\t/**\n\t * 空かどうか\n\t * @param {any[]} array\n\t * @returns {boolean}\n\t */\n\tstatic isEmpty(array) {\n\t\treturn array.length === 0;\n\t}\n\n}\n",
+    "static": true,
+    "longname": "D:/JavaScript/SenkoWSH/src/senko/polyfill/ExtendsArray.js",
+    "access": "public",
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 132,
+    "kind": "class",
+    "name": "ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js",
+    "static": true,
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
+    "access": "public",
+    "export": true,
+    "importPath": "senkowsh/src/senko/polyfill/ExtendsArray.js",
     "importStyle": "ExtendsArray",
     "description": "ES3相当のJScirptのArray拡張用クラス\n- Array.prototypeに拡張します",
     "lineNumber": 15,
     "interface": false
   },
   {
-    "__docId__": 129,
+    "__docId__": 133,
     "kind": "method",
     "name": "includes",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.includes",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.includes",
     "access": "public",
     "description": "",
     "lineNumber": 22,
@@ -3086,14 +3210,14 @@
     }
   },
   {
-    "__docId__": 130,
+    "__docId__": 134,
     "kind": "method",
     "name": "indexOf",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.indexOf",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.indexOf",
     "access": "public",
     "description": "",
     "lineNumber": 32,
@@ -3147,14 +3271,14 @@
     }
   },
   {
-    "__docId__": 131,
+    "__docId__": 135,
     "kind": "method",
     "name": "lastIndexOf",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.lastIndexOf",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.lastIndexOf",
     "access": "public",
     "description": "",
     "lineNumber": 48,
@@ -3206,14 +3330,14 @@
     }
   },
   {
-    "__docId__": 132,
+    "__docId__": 136,
     "kind": "method",
     "name": "sort",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.sort",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.sort",
     "access": "public",
     "description": "安定ソート",
     "lineNumber": 64,
@@ -3255,14 +3379,14 @@
     }
   },
   {
-    "__docId__": 133,
+    "__docId__": 137,
     "kind": "method",
     "name": "toString",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.toString",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.toString",
     "access": "public",
     "description": "",
     "lineNumber": 134,
@@ -3294,14 +3418,14 @@
     }
   },
   {
-    "__docId__": 134,
+    "__docId__": 138,
     "kind": "method",
     "name": "clone",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.clone",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.clone",
     "access": "public",
     "description": "ディープコピー",
     "lineNumber": 143,
@@ -3333,14 +3457,14 @@
     }
   },
   {
-    "__docId__": 135,
+    "__docId__": 139,
     "kind": "method",
     "name": "add",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.add",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.add",
     "access": "public",
     "description": "指定したデータを挿入",
     "lineNumber": 158,
@@ -3380,14 +3504,14 @@
     "return": null
   },
   {
-    "__docId__": 136,
+    "__docId__": 140,
     "kind": "method",
     "name": "addAll",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.addAll",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.addAll",
     "access": "public",
     "description": "指定した配列を挿入",
     "lineNumber": 173,
@@ -3427,14 +3551,14 @@
     "return": null
   },
   {
-    "__docId__": 137,
+    "__docId__": 141,
     "kind": "method",
     "name": "remove",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.remove",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.remove",
     "access": "public",
     "description": "指定した位置のデータを削除",
     "lineNumber": 205,
@@ -3463,14 +3587,14 @@
     "return": null
   },
   {
-    "__docId__": 138,
+    "__docId__": 142,
     "kind": "method",
     "name": "removeRange",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.removeRange",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.removeRange",
     "access": "public",
     "description": "指定した範囲を削除",
     "lineNumber": 215,
@@ -3509,14 +3633,14 @@
     "return": null
   },
   {
-    "__docId__": 139,
+    "__docId__": 143,
     "kind": "method",
     "name": "isEmpty",
-    "memberof": "src/senko/ExtendsArray.js~ExtendsArray",
+    "memberof": "src/senko/polyfill/ExtendsArray.js~ExtendsArray",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsArray.js~ExtendsArray.isEmpty",
+    "longname": "src/senko/polyfill/ExtendsArray.js~ExtendsArray.isEmpty",
     "access": "public",
     "description": "空かどうか",
     "lineNumber": 224,
@@ -3548,40 +3672,40 @@
     }
   },
   {
-    "__docId__": 140,
+    "__docId__": 144,
     "kind": "file",
-    "name": "src/senko/ExtendsObject.js",
+    "name": "src/senko/polyfill/ExtendsObject.js",
     "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ES3相当のJScirptのObject拡張用クラス\n * - Object.prototypeに拡張します\n */\nexport default class ExtendsObject {\n\n\n\t/**\n\t * 指定したキーが含まれるか\n\t * @param {Object} obj\n\t * @param {any} key \n\t * @returns {boolean}\n\t */\n\tstatic containsKey(obj, key) {\n\t\treturn typeof obj[key] !== \"undefined\";\n\t}\n\t\n\t/**\n\t * 指定した値が含まれるか\n\t * @param {Object} obj\n\t * @param {any} value \n\t * @returns {boolean}\n\t */\n\tstatic containsValue(obj, value) {\n\t\tfor(const key in obj) {\n\t\t\tif(obj[key] === value) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\t\treturn false;\n\t}\n\n\t/**\n\t * 名前の配列\n\t * @param {Object} obj\n\t * @returns {string[]}\n\t */\n\tstatic keys(obj) {\n\t\tconst data = [];\n\t\tfor(const key in obj) {\n\t\t\tdata.push(key);\n\t\t}\n\t\treturn data;\n\t}\n\t\n\t/**\n\t * 空かどうか\n\t * @param {Object} obj\n\t * @returns {boolean}\n\t */\n\tstatic isEmpty(obj) {\n\t\treturn ExtendsObject.keys(obj).length === 0;\n\t}\n\t\n\t/**\n\t * 文字列化\n\t * @param {Object} obj\n\t * @returns {string}\n\t */\n\tstatic toString(obj) {\n\t\tconst length = ExtendsObject.keys(obj).length;\n\t\tlet output = \"\";\n\t\tlet i = 0;\n\t\tfor(const key in obj) {\n\t\t\toutput += key + \"=>\" + obj[key];\n\t\t\ti++;\n\t\t\tif(i !== length) {\n\t\t\t\toutput += \"\\n\";\n\t\t\t}\n\t\t}\n\t\treturn output;\n\t}\n\n\t/**\n\t * 指定したキー、その値を登録\n\t * @param {Object} obj\n\t * @param {string} key \n\t * @param {any} value \n\t * @returns {null|any}\n\t */\n\tstatic put(obj, key, value) {\n\t\tif(!ExtendsObject.containsKey(obj, key)) {\n\t\t\tobj[key] = value;\n\t\t\treturn null;\n\t\t}\n\t\telse {\n\t\t\tconst output = obj[key];\n\t\t\tobj[key] = value;\n\t\t\treturn output;\n\t\t}\n\t}\n\n\t/**\n\t * 指定したキー、その値を全て登録\n\t * @param {Object} obj\n\t * @param {Object<string, any>} hashmap \n\t */\n\tstatic putAll(obj, hashmap) {\n\t\tfor(const key in hashmap) {\n\t\t\tif(typeof obj[key] === \"undefined\") {\n\t\t\t\tobj[key] = hashmap[key];\n\t\t\t}\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定したキーの値を削除\n\t * @param {Object} obj\n\t * @param {string} key \n\t * @returns {null|any}\n\t */\n\tstatic remove(obj, key) {\n\t\tif(!ExtendsObject.containsKey(obj, key)) {\n\t\t\treturn null;\n\t\t}\n\t\telse {\n\t\t\tconst output = obj[key];\n\t\t\tdelete obj[key];\n\t\t\treturn output;\n\t\t}\n\t}\n\n}\n",
     "static": true,
-    "longname": "D:/JavaScript/SenkoWSH/src/senko/ExtendsObject.js",
+    "longname": "D:/JavaScript/SenkoWSH/src/senko/polyfill/ExtendsObject.js",
     "access": "public",
     "description": null,
     "lineNumber": 1
   },
   {
-    "__docId__": 141,
+    "__docId__": 145,
     "kind": "class",
     "name": "ExtendsObject",
-    "memberof": "src/senko/ExtendsObject.js",
+    "memberof": "src/senko/polyfill/ExtendsObject.js",
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "access": "public",
     "export": true,
-    "importPath": "senkowsh/src/senko/ExtendsObject.js",
+    "importPath": "senkowsh/src/senko/polyfill/ExtendsObject.js",
     "importStyle": "ExtendsObject",
     "description": "ES3相当のJScirptのObject拡張用クラス\n- Object.prototypeに拡張します",
     "lineNumber": 15,
     "interface": false
   },
   {
-    "__docId__": 142,
+    "__docId__": 146,
     "kind": "method",
     "name": "containsKey",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.containsKey",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.containsKey",
     "access": "public",
     "description": "指定したキーが含まれるか",
     "lineNumber": 24,
@@ -3623,14 +3747,14 @@
     }
   },
   {
-    "__docId__": 143,
+    "__docId__": 147,
     "kind": "method",
     "name": "containsValue",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.containsValue",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.containsValue",
     "access": "public",
     "description": "指定した値が含まれるか",
     "lineNumber": 34,
@@ -3672,14 +3796,14 @@
     }
   },
   {
-    "__docId__": 144,
+    "__docId__": 148,
     "kind": "method",
     "name": "keys",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.keys",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.keys",
     "access": "public",
     "description": "名前の配列",
     "lineNumber": 48,
@@ -3711,14 +3835,14 @@
     }
   },
   {
-    "__docId__": 145,
+    "__docId__": 149,
     "kind": "method",
     "name": "isEmpty",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.isEmpty",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.isEmpty",
     "access": "public",
     "description": "空かどうか",
     "lineNumber": 61,
@@ -3750,14 +3874,14 @@
     }
   },
   {
-    "__docId__": 146,
+    "__docId__": 150,
     "kind": "method",
     "name": "toString",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.toString",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.toString",
     "access": "public",
     "description": "文字列化",
     "lineNumber": 70,
@@ -3789,14 +3913,14 @@
     }
   },
   {
-    "__docId__": 147,
+    "__docId__": 151,
     "kind": "method",
     "name": "put",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.put",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.put",
     "access": "public",
     "description": "指定したキー、その値を登録",
     "lineNumber": 91,
@@ -3849,14 +3973,14 @@
     }
   },
   {
-    "__docId__": 148,
+    "__docId__": 152,
     "kind": "method",
     "name": "putAll",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.putAll",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.putAll",
     "access": "public",
     "description": "指定したキー、その値を全て登録",
     "lineNumber": 108,
@@ -3885,14 +4009,14 @@
     "return": null
   },
   {
-    "__docId__": 149,
+    "__docId__": 153,
     "kind": "method",
     "name": "remove",
-    "memberof": "src/senko/ExtendsObject.js~ExtendsObject",
+    "memberof": "src/senko/polyfill/ExtendsObject.js~ExtendsObject",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsObject.js~ExtendsObject.remove",
+    "longname": "src/senko/polyfill/ExtendsObject.js~ExtendsObject.remove",
     "access": "public",
     "description": "指定したキーの値を削除",
     "lineNumber": 122,
@@ -3935,40 +4059,40 @@
     }
   },
   {
-    "__docId__": 150,
+    "__docId__": 154,
     "kind": "file",
-    "name": "src/senko/ExtendsString.js",
+    "name": "src/senko/polyfill/ExtendsString.js",
     "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ES3相当のJScirptのString拡張用クラス\n * - String.prototypeに拡張します\n */\nexport default class ExtendsString {\n\n\t/**\n\t * @param {string} text\n\t * @param {string} target\n\t * @param {string} replacement\n\t * @returns {string}\n\t */\n\tstatic replaceAll(text, target, replacement) {\n\t\t//正規表現のgを使って全置換する\n\t\t//従って正規表現にならないようにエスケープしておく\n\t\tconst regex = new RegExp(target.replace(/([\\\\/*+.?{}()[\\]^$\\-|])/g, \"\\\\$1\" ), \"g\");\n\t\tconst ireplacement = replacement.replace(/\\$/g, \"$$$$\");\n\t\treturn text.replace(regex, ireplacement);\n\t}\n\n\t/**\n\t * @param {string} text\n\t * @returns {string}\n\t */\n\tstatic trim(text) {\n\t\treturn text.replace(/^\\s+|\\s+$/g, \"\");\n\t}\n\n\t/**\n\t * 指定した関数を全ての文字に一律に処理を行う\n\t * @param {string} text\n\t * @param {function(number, string, number): boolean} func - 文字番号, 文字列, 文字コード。戻り値がfalseで処理を終了。\n\t * @returns {boolean} result\n\t */\n\tstatic each(text, func) {\n\t\tlet out = true;\n\t\tconst len = this.length;\n\t\tfor(let i = 0; i < len; i = ExtendsString.offsetByCodePoints(text, i, 1)) {\n\t\t\tconst codepoint = ExtendsString.codePointAt(text, i);\n\t\t\tconst str = ExtendsString.fromCodePoint(codepoint);\n\t\t\tif(func.call(func, i, str, codepoint) === false) {\n\t\t\t\tout = false;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 上位のサロゲートペアの判定\n\t * @param {String} text - 対象テキスト\n\t * @param {number} index - インデックス\n\t * @returns {Boolean} 確認結果\n\t */\n\tstatic isHighSurrogateAt(text, index) {\n\t\tconst ch = text.charCodeAt(index);\n\t\treturn (0xD800 <= ch) && (ch <= 0xDBFF);\n\t}\n\n\t/**\n\t * 下位のサロゲートペアの判定\n\t * @param {String} text - 対象テキスト\n\t * @param {number} index - インデックス\n\t * @returns {Boolean} 確認結果\n\t */\n\tstatic isLowSurrogateAt(text, index) {\n\t\tconst ch = text.charCodeAt(index);\n\t\treturn (0xDC00 <= ch) && (ch <= 0xDFFF);\n\t}\n\t\n\t/**\n\t * サロゲートペアの判定\n\t * @param {String} text - 対象テキスト\n\t * @param {number} index - インデックス\n\t * @returns {Boolean} 確認結果\n\t */\n\tstatic isSurrogatePairAt(text, index) {\n\t\tconst ch = text.charCodeAt(index);\n\t\treturn (0xD800 <= ch) && (ch <= 0xDFFF);\n\t}\n\t\n\t/**\n\t * サロゲートペア対応のコードポイント取得\n\t * @param {String} text - 対象テキスト\n\t * @param {number} [index = 0] - インデックス\n\t * @returns {number} コードポイント\n\t */\n\tstatic codePointAt(text, index) {\n\t\tconst index_ = (index !== undefined) ? index : 0;\n\t\tif(ExtendsString.isHighSurrogateAt(text, index_)) {\n\t\t\tconst high = text.charCodeAt(index_);\n\t\t\tconst low  = text.charCodeAt(index_ + 1);\n\t\t\treturn (((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000;\n\t\t}\n\t\telse {\n\t\t\treturn text.charCodeAt(index_);\n\t\t}\n\t}\n\n\t/**\n\t * インデックスの前にあるコードポイント\n\t * @param {String} text - 対象テキスト\n\t * @param {number} index - インデックス\n\t * @returns {number} コードポイント\n\t */\n\tstatic codePointBefore(text, index) {\n\t\tif(!ExtendsString.isLowSurrogateAt(text, index - 1)) {\n\t\t\treturn text.charCodeAt(index - 1);\n\t\t}\n\t\telse {\n\t\t\treturn text.codePointAt(index - 2);\n\t\t}\n\t}\n\n\t/**\n\t * コードポイント換算で文字列数をカウント\n\t * @param {string} text - 対象テキスト\n\t * @param {number} [beginIndex=0] - 最初のインデックス（省略可）\n\t * @param {number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）\n\t * @returns {number} 文字数\n\t */\n\tstatic codePointCount(text, beginIndex, endIndex) {\n\t\tlet ibeginIndex = beginIndex !== undefined ? beginIndex : 0;\n\t\tlet iendIndex = endIndex !== undefined ? endIndex : text.length;\n\t\tlet count = 0;\n\t\tfor(;beginIndex < iendIndex;ibeginIndex++) {\n\t\t\tcount++;\n\t\t\tif(ExtendsString.isSurrogatePairAt(text, beginIndex)) {\n\t\t\t\tiendIndex++;\n\t\t\t}\n\t\t}\n\t\treturn count;\n\t}\n\n\t/**\n\t * コードポイント換算で文字列配列の位置を計算\n\t * @param {string} text - 対象テキスト\n\t * @param {number} index - オフセット\n\t * @param {number} codePointOffset - ずらすコードポイント数\n\t * @returns {number} ずらしたインデックス\n\t */\n\tstatic offsetByCodePoints(text, index, codePointOffset) {\n\t\tlet count = 0;\n\t\tlet icodePointOffset = codePointOffset;\n\t\tlet i = index;\n\t\tif(icodePointOffset === 0) {\n\t\t\treturn i;\n\t\t}\n\t\tif(icodePointOffset > 0) {\n\t\t\tfor(;i < text.length;i++) {\n\t\t\t\tcount++;\n\t\t\t\tif(ExtendsString.isHighSurrogateAt(text, i)) {\n\t\t\t\t\ti++;\n\t\t\t\t}\n\t\t\t\tif(count === icodePointOffset) {\n\t\t\t\t\treturn i + 1;\n\t\t\t\t}\n\t\t\t}\n\n\t\t}\n\t\telse {\n\t\t\ticodePointOffset = -icodePointOffset;\n\t\t\tfor(;i >= 0;i--) {\n\t\t\t\tcount++;\n\t\t\t\tif(ExtendsString.isLowSurrogateAt(text, i - 1)) {\n\t\t\t\t\ti--;\n\t\t\t\t}\n\t\t\t\tif(count === icodePointOffset) {\n\t\t\t\t\treturn i - 1;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tthrow \"error offsetByCodePoints\";\n\t}\n\n\t/**\n\t * コードポイントの数値データをUTF16の配列に変換\n\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数\n\t * @returns {Array<number>} 変換後のテキスト\n\t * @private\n\t */\n\tstatic toUTF16ArrayfromCodePoint() {\n\t\t/**\n\t\t * @type {Array<number>}\n\t\t * @private\n\t\t */\n\t\tconst utf16_array = [];\n\t\t/**\n\t\t * @type {Array<number>}\n\t\t * @private\n\t\t */\n\t\tlet codepoint_array = [];\n\t\tif(arguments[0].length) {\n\t\t\tcodepoint_array = arguments[0];\n\t\t}\n\t\telse {\n\t\t\tfor(let i = 0;i < arguments.length;i++) {\n\t\t\t\tcodepoint_array[i] = arguments[i];\n\t\t\t}\n\t\t}\n\t\tfor(let i = 0;i < codepoint_array.length;i++) {\n\t\t\tconst codepoint = codepoint_array[i];\n\t\t\tif(0x10000 <= codepoint) {\n\t\t\t\tconst high = (( codepoint - 0x10000 ) >> 10) + 0xD800;\n\t\t\t\tconst low  = (codepoint & 0x3FF) + 0xDC00;\n\t\t\t\tutf16_array.push(high);\n\t\t\t\tutf16_array.push(low);\n\t\t\t}\n\t\t\telse {\n\t\t\t\tutf16_array.push(codepoint);\n\t\t\t}\n\t\t}\n\t\treturn utf16_array;\n\t}\n\n\t/**\n\t * コードポイントの数値データを文字列に変換\n\t * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数\n\t * @returns {string} 変換後のテキスト\n\t */\n\tstatic fromCodePoint(codepoint) {\n\t\tlet utf16_array = null;\n\t\tif(codepoint instanceof Array) {\n\t\t\tutf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint);\n\t\t}\n\t\telse {\n\t\t\tconst codepoint_array = [];\n\t\t\tfor(let i = 0;i < arguments.length;i++) {\n\t\t\t\tcodepoint_array[i] = arguments[i];\n\t\t\t}\n\t\t\tutf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint_array);\n\t\t}\n\t\tconst text = [];\n\t\tfor(let i = 0;i < utf16_array.length;i++) {\n\t\t\ttext[text.length] = String.fromCharCode(utf16_array[i]);\n\t\t}\n\t\treturn text.join(\"\");\n\t}\n\n\t/**\n\t * @param {string} text\n\t * @param {string} prefix\n\t * @returns {boolean}\n\t */\n\tstatic startsWith(text, prefix) {\n\t\treturn text.indexOf(prefix) === 0;\n\t}\n\n\t/**\n\t * @param {string} text\n\t * @param {string} suffix\n\t * @returns {boolean}\n\t */\n\tstatic endsWith(text, suffix) {\n\t\tif(text.length < suffix.length) {\n\t\t\treturn(false);\n\t\t}\n\t\treturn text.indexOf(suffix) === (text.length - suffix.length);\n\t}\n\n}\n",
     "static": true,
-    "longname": "D:/JavaScript/SenkoWSH/src/senko/ExtendsString.js",
+    "longname": "D:/JavaScript/SenkoWSH/src/senko/polyfill/ExtendsString.js",
     "access": "public",
     "description": null,
     "lineNumber": 1
   },
   {
-    "__docId__": 151,
+    "__docId__": 155,
     "kind": "class",
     "name": "ExtendsString",
-    "memberof": "src/senko/ExtendsString.js",
+    "memberof": "src/senko/polyfill/ExtendsString.js",
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "access": "public",
     "export": true,
-    "importPath": "senkowsh/src/senko/ExtendsString.js",
+    "importPath": "senkowsh/src/senko/polyfill/ExtendsString.js",
     "importStyle": "ExtendsString",
     "description": "ES3相当のJScirptのString拡張用クラス\n- String.prototypeに拡張します",
     "lineNumber": 15,
     "interface": false
   },
   {
-    "__docId__": 152,
+    "__docId__": 156,
     "kind": "method",
     "name": "replaceAll",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.replaceAll",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.replaceAll",
     "access": "public",
     "description": "",
     "lineNumber": 23,
@@ -4020,14 +4144,14 @@
     }
   },
   {
-    "__docId__": 153,
+    "__docId__": 157,
     "kind": "method",
     "name": "trim",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.trim",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.trim",
     "access": "public",
     "description": "",
     "lineNumber": 35,
@@ -4059,14 +4183,14 @@
     }
   },
   {
-    "__docId__": 154,
+    "__docId__": 158,
     "kind": "method",
     "name": "each",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.each",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.each",
     "access": "public",
     "description": "指定した関数を全ての文字に一律に処理を行う",
     "lineNumber": 45,
@@ -4108,14 +4232,14 @@
     }
   },
   {
-    "__docId__": 155,
+    "__docId__": 159,
     "kind": "method",
     "name": "isHighSurrogateAt",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.isHighSurrogateAt",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.isHighSurrogateAt",
     "access": "public",
     "description": "上位のサロゲートペアの判定",
     "lineNumber": 65,
@@ -4157,14 +4281,14 @@
     }
   },
   {
-    "__docId__": 156,
+    "__docId__": 160,
     "kind": "method",
     "name": "isLowSurrogateAt",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.isLowSurrogateAt",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.isLowSurrogateAt",
     "access": "public",
     "description": "下位のサロゲートペアの判定",
     "lineNumber": 76,
@@ -4206,14 +4330,14 @@
     }
   },
   {
-    "__docId__": 157,
+    "__docId__": 161,
     "kind": "method",
     "name": "isSurrogatePairAt",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.isSurrogatePairAt",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.isSurrogatePairAt",
     "access": "public",
     "description": "サロゲートペアの判定",
     "lineNumber": 87,
@@ -4255,14 +4379,14 @@
     }
   },
   {
-    "__docId__": 158,
+    "__docId__": 162,
     "kind": "method",
     "name": "codePointAt",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.codePointAt",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.codePointAt",
     "access": "public",
     "description": "サロゲートペア対応のコードポイント取得",
     "lineNumber": 98,
@@ -4306,14 +4430,14 @@
     }
   },
   {
-    "__docId__": 159,
+    "__docId__": 163,
     "kind": "method",
     "name": "codePointBefore",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.codePointBefore",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.codePointBefore",
     "access": "public",
     "description": "インデックスの前にあるコードポイント",
     "lineNumber": 116,
@@ -4355,14 +4479,14 @@
     }
   },
   {
-    "__docId__": 160,
+    "__docId__": 164,
     "kind": "method",
     "name": "codePointCount",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.codePointCount",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.codePointCount",
     "access": "public",
     "description": "コードポイント換算で文字列数をカウント",
     "lineNumber": 132,
@@ -4416,14 +4540,14 @@
     }
   },
   {
-    "__docId__": 161,
+    "__docId__": 165,
     "kind": "method",
     "name": "offsetByCodePoints",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.offsetByCodePoints",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.offsetByCodePoints",
     "access": "public",
     "description": "コードポイント換算で文字列配列の位置を計算",
     "lineNumber": 152,
@@ -4475,14 +4599,14 @@
     }
   },
   {
-    "__docId__": 162,
+    "__docId__": 166,
     "kind": "method",
     "name": "toUTF16ArrayfromCodePoint",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.toUTF16ArrayfromCodePoint",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.toUTF16ArrayfromCodePoint",
     "access": "private",
     "description": "コードポイントの数値データをUTF16の配列に変換",
     "lineNumber": 192,
@@ -4514,14 +4638,14 @@
     }
   },
   {
-    "__docId__": 163,
+    "__docId__": 167,
     "kind": "method",
     "name": "fromCodePoint",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.fromCodePoint",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.fromCodePoint",
     "access": "public",
     "description": "コードポイントの数値データを文字列に変換",
     "lineNumber": 231,
@@ -4553,14 +4677,14 @@
     }
   },
   {
-    "__docId__": 164,
+    "__docId__": 168,
     "kind": "method",
     "name": "startsWith",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.startsWith",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.startsWith",
     "access": "public",
     "description": "",
     "lineNumber": 255,
@@ -4602,14 +4726,14 @@
     }
   },
   {
-    "__docId__": 165,
+    "__docId__": 169,
     "kind": "method",
     "name": "endsWith",
-    "memberof": "src/senko/ExtendsString.js~ExtendsString",
+    "memberof": "src/senko/polyfill/ExtendsString.js~ExtendsString",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/ExtendsString.js~ExtendsString.endsWith",
+    "longname": "src/senko/polyfill/ExtendsString.js~ExtendsString.endsWith",
     "access": "public",
     "description": "",
     "lineNumber": 264,
@@ -4651,131 +4775,103 @@
     }
   },
   {
-    "__docId__": 166,
+    "__docId__": 170,
     "kind": "file",
-    "name": "src/senko/Format.js",
-    "content": "import System from \"./System\";\n\n/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * 書式に合わせて文字列を組み立てる関数を提供するクラス\n */\nexport default class Format {\n\n\t/**\n\t * printf に似た書式に合わせて文字列を組み立てる\n\t * - ロケール、日付時刻等はサポートしていません。\n\t * - 変換指定子のpとnはサポートしていません。\n\t * @param {String} text \n\t * @param {...any} parm パラメータは可変引数\n\t * @returns {String}\n\t */\n\tstatic textf() {\n\t\tlet parm_number = 1;\n\t\tconst parm = arguments;\n\t\t/**\n\t\t * @param {number} x\n\t\t * @returns {number}\n\t\t * @private\n\t\t */\n\t\tconst toUnsign  = function(x) {\n\t\t\tif(x >= 0) {\n\t\t\t\treturn x;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tconst ix = -x;\n\t\t\t\t//16ビットごとに分けてビット反転\n\t\t\t\tlet high = ((~ix) >> 16) & 0xFFFF;\n\t\t\t\thigh *= 0x00010000;\n\t\t\t\tconst low  =  (~ix) & 0xFFFF;\n\t\t\t\treturn high + low + 1;\n\t\t\t}\n\t\t};\n\t\t/**\n\t\t * @param {string} istr\n\t\t * @returns {string}\n\t\t * @private\n\t\t */\n\t\tconst func = function(istr) {\n\t\t\t// 1文字目の%を除去\n\t\t\tlet str = istr.substring(1, istr.length);\n\t\t\tlet buff;\n\t\t\t// [6] 変換指定子(最後の1文字を取得)\n\t\t\tbuff = str.match(/.$/);\n\t\t\tconst type = buff[0];\n\t\t\tif(type === \"%\") {\n\t\t\t\treturn(\"%\");\n\t\t\t}\n\t\t\t// ここからパラメータの解析開始\n\t\t\t// [1] 引数順\n\t\t\tbuff = str.match(/^[0-9]+\\$/);\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\t// 数字だけ切り出す\n\t\t\t\tbuff = buff.substring(0, buff.length - 1);\n\t\t\t\t// 整数へ\n\t\t\t\tparm_number = parseInt(buff , 10);\n\t\t\t}\n\t\t\t// 引数を取得\n\t\t\tlet parameter = parm[parm_number];\n\t\t\tif(typeof parameter !== \"string\" && typeof parameter !== \"number\") {\n\t\t\t\tparameter = parameter.toString();\n\t\t\t}\n\t\t\tparm_number = parm_number + 1;\n\t\t\t// [2] フラグ\n\t\t\tbuff = str.match(/^[-+ #0]+/);\n\t\t\tlet isFlagSharp = false;\n\t\t\tlet isFlagTextAlignLeft = false;\n\t\t\tconst isFlagFill = false;\n\t\t\tlet sFillCharacter = \" \";\n\t\t\tlet isFlagFillZero = false;\n\t\t\tlet isFlagDrawSign = false;\n\t\t\tlet sSignCharacter = \"\";\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\tif(buff.indexOf(\"#\") !== -1) {\n\t\t\t\t\tisFlagSharp = true;\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\"-\") !== -1) {\n\t\t\t\t\tisFlagTextAlignLeft = true;\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\" \") !== -1) {\n\t\t\t\t\tisFlagDrawSign = true;\n\t\t\t\t\tsSignCharacter = \" \";\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\"+\") !== -1) {\n\t\t\t\t\tisFlagDrawSign = true;\n\t\t\t\t\tsSignCharacter = \"+\";\n\t\t\t\t}\n\t\t\t\tif(buff.indexOf(\"0\") !== -1) {\n\t\t\t\t\tisFlagFillZero = true;\n\t\t\t\t\tsFillCharacter = \"0\";\n\t\t\t\t}\n\t\t\t}\n\t\t\t// [3] 最小フィールド幅\n\t\t\tlet width = 0;\n\t\t\tbuff = str.match(/^([0-9]+|\\*)/);\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\tif(buff.indexOf(\"*\") !== -1) { // 引数で最小フィールド幅を指定\n\t\t\t\t\twidth = parameter;\n\t\t\t\t\tparameter = parm[parm_number];\n\t\t\t\t\tparm_number = parm_number + 1;\n\t\t\t\t}\n\t\t\t\telse { // 数字で指定\n\t\t\t\t\twidth = parseInt(buff , 10);\n\t\t\t\t}\n\t\t\t}\n\t\t\t// [4] 精度の指定\n\t\t\tlet isPrecision = false;\n\t\t\tlet precision = 0;\n\t\t\tbuff = str.match(/^(\\.((-?[0-9]+)|\\*)|\\.)/); //.-3, .* , .\n\t\t\tif(buff !== null) {\n\t\t\t\tbuff = buff[0];\n\t\t\t\t// 残りの文字列を取得\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t\tisPrecision = true;\n\t\t\t\tif(buff.indexOf(\"*\") !== -1) { // 引数で精度を指定\n\t\t\t\t\tprecision = parameter;\n\t\t\t\t\tparameter = parm[parm_number];\n\t\t\t\t\tparm_number = parm_number + 1;\n\t\t\t\t}\n\t\t\t\telse if(buff.length === 1) { // 小数点だけの指定\n\t\t\t\t\tprecision = 0;\n\t\t\t\t}\n\t\t\t\telse { // 数字で指定\n\t\t\t\t\tbuff = buff.substring(1, buff.length);\n\t\t\t\t\tprecision = parseInt(buff , 10);\n\t\t\t\t}\n\t\t\t}\n\t\t\t// 長さ修飾子(非サポート)\n\t\t\tbuff = str.match(/^hh|h|ll|l|L|z|j|t/);\n\t\t\tif(buff !== null) {\n\t\t\t\tstr = str.substring(buff.length, str.length);\n\t\t\t}\n\t\t\t// 文字列を作成する\n\t\t\tlet output = \"\";\n\t\t\tlet isInteger = false;\n\t\t\tswitch(type.toLowerCase()) {\n\t\t\t\t// 数字関連\n\t\t\t\tcase \"d\":\n\t\t\t\tcase \"i\":\n\t\t\t\tcase \"u\":\n\t\t\t\tcase \"b\":\n\t\t\t\tcase \"o\":\n\t\t\t\tcase \"x\":\n\t\t\t\t\tisInteger = true;\n\t\t\t\t\t// falls through\n\t\t\t\tcase \"e\":\n\t\t\t\tcase \"f\":\n\t\t\t\tcase \"g\":\n\t\t\t\t{\n\t\t\t\t\tlet sharpdata = \"\";\n\t\t\t\t\tlet textlength = 0; // 現在の文字を構成するために必要な長さ\n\t\t\t\t\tlet spacesize;  // 追加する横幅\n\t\t\t\t\t// 整数\n\t\t\t\t\tif(isInteger) {\n\t\t\t\t\t\t// 数字に変換\n\t\t\t\t\t\tif(isNaN(parameter)) {\n\t\t\t\t\t\t\tparameter = parseInt(parameter, 10);\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// 正負判定\n\t\t\t\t\t\tif((type === \"d\") || (type === \"i\")) {\n\t\t\t\t\t\t\tif(parameter < 0) {\n\t\t\t\t\t\t\t\tsSignCharacter = \"-\";\n\t\t\t\t\t\t\t\tparameter  = -parameter;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tparameter  = Math.floor(parameter);\n\t\t\t\t\t\t}\n\t\t\t\t\t\telse {\n\t\t\t\t\t\t\tif(parameter >= 0) {\n\t\t\t\t\t\t\t\tparameter  = Math.floor(parameter);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\telse {\n\t\t\t\t\t\t\t\tparameter  = Math.ceil(parameter);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 実数\n\t\t\t\t\telse {\n\t\t\t\t\t\t// 数字に変換\n\t\t\t\t\t\tif(isNaN(parameter)) {\n\t\t\t\t\t\t\tparameter = parseFloat(parameter);\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// 正負判定\n\t\t\t\t\t\tif(parameter < 0) {\n\t\t\t\t\t\t\tsSignCharacter = \"-\";\n\t\t\t\t\t\t\tparameter  = -parameter;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif(!isPrecision) {\n\t\t\t\t\t\t\tprecision = 6;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 文字列を作成していく\n\t\t\t\t\tswitch(type.toLowerCase()) {\n\t\t\t\t\t\tcase \"d\":\n\t\t\t\t\t\tcase \"i\":\n\t\t\t\t\t\t\toutput += parameter.toString(10);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"u\":\n\t\t\t\t\t\t\toutput += toUnsign(parameter).toString(10);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"b\":\n\t\t\t\t\t\t\toutput += toUnsign(parameter).toString(2);\n\t\t\t\t\t\t\tif(isFlagSharp) {\n\t\t\t\t\t\t\t\tsharpdata = \"0b\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"o\":\n\t\t\t\t\t\t\toutput  += toUnsign(parameter).toString(8);\n\t\t\t\t\t\t\tif(isFlagSharp) {\n\t\t\t\t\t\t\t\tsharpdata = \"0\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"x\":\n\t\t\t\t\t\tcase \"X\":\n\t\t\t\t\t\t\toutput  += toUnsign(parameter).toString(16);\n\t\t\t\t\t\t\tif(isFlagSharp) {\n\t\t\t\t\t\t\t\tsharpdata = \"0x\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"e\":\n\t\t\t\t\t\t\toutput += parameter.toExponential(precision);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"f\":\n\t\t\t\t\t\t\toutput += parameter.toFixed(precision);\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tcase \"g\":\n\t\t\t\t\t\t\tif(precision === 0) { // 0は1とする\n\t\t\t\t\t\t\t\tprecision = 1;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\toutput += parameter.toPrecision(precision);\n\t\t\t\t\t\t\t// 小数点以下の語尾の0の削除\n\t\t\t\t\t\t\tif((!isFlagSharp) && (output.indexOf(\".\") !== -1)) {\n\t\t\t\t\t\t\t\toutput = output.replace(/\\.?0+$/, \"\");  // 1.00 , 1.10\n\t\t\t\t\t\t\t\toutput = output.replace(/\\.?0+e/, \"e\"); // 1.0e , 1.10e\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\tdefault:\n\t\t\t\t\t\t\t// 上でチェックしているため、ありえない\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t\t// 整数での後処理\n\t\t\t\t\tif(isInteger) {\n\t\t\t\t\t\tif(isPrecision) { // 精度の付け足し\n\t\t\t\t\t\t\tspacesize  = precision - output.length;\n\t\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\t\toutput = \"0\" + output;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 実数での後処理\n\t\t\t\t\telse {\n\t\t\t\t\t\tif(isFlagSharp) { \n\t\t\t\t\t\t\t// sharp指定の時は小数点を必ず残す\n\t\t\t\t\t\t\tif(output.indexOf(\".\") === -1) {\n\t\t\t\t\t\t\t\tif(output.indexOf(\"e\") !== -1) {\n\t\t\t\t\t\t\t\t\toutput = output.replace(\"e\", \".e\");\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\telse {\n\t\t\t\t\t\t\t\t\toutput += \".\";\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 指数表記は、3桁表示(double型のため)\n\t\t\t\t\tif(output.indexOf(\"e\") !== -1) {\n\t\t\t\t\t\t/**\n\t\t\t\t\t\t * @param {string} str\n\t\t\t\t\t\t * @returns {string}\n\t\t\t\t\t\t * @private\n\t\t\t\t\t\t */\n\t\t\t\t\t\tconst buff = function(str) {\n\t\t\t\t\t\t\tconst l   = str.length;\n\t\t\t\t\t\t\tif(str.length === 3) { // e+1 -> e+001\n\t\t\t\t\t\t\t\treturn(str.substring(0, l - 1) + \"00\" + str.substring(l - 1, l));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\telse { // e+10 -> e+010\n\t\t\t\t\t\t\t\treturn(str.substring(0, l - 2) + \"0\" + str.substring(l - 2, l));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\toutput = output.replace(/e[+-][0-9]{1,2}$/, buff);\n\t\t\t\t\t}\n\t\t\t\t\ttextlength = output.length + sharpdata.length + sSignCharacter.length;\n\t\t\t\t\tspacesize  = width - textlength;\n\t\t\t\t\t// 左よせ\n\t\t\t\t\tif(isFlagTextAlignLeft) {\n\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\toutput = output + \" \";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 0を埋める場合\n\t\t\t\t\tif(isFlagFillZero) {\n\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\toutput = \"0\" + output;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// マイナスや、「0x」などを接続\n\t\t\t\t\toutput = sharpdata + output;\n\t\t\t\t\toutput = sSignCharacter + output;\n\t\t\t\t\t// 0 で埋めない場合\n\t\t\t\t\tif((!isFlagFillZero) && (!isFlagTextAlignLeft)) {\n\t\t\t\t\t\tfor(let i = 0; i < spacesize; i++) {\n\t\t\t\t\t\t\toutput = \" \" + output;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 大文字化\n\t\t\t\t\tif(type.toUpperCase() === type) {\n\t\t\t\t\t\toutput = output.toUpperCase();\n\t\t\t\t\t}\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\t// 文字列の場合\n\t\t\t\tcase \"c\":\n\t\t\t\t\tif(!isNaN(parameter)) {\n\t\t\t\t\t\tparameter = String.fromCharCode(parameter);\n\t\t\t\t\t}\n\t\t\t\t\t// falls through\n\t\t\t\tcase \"s\":\n\t\t\t\t{\n\t\t\t\t\tif(!isNaN(parameter)) {\n\t\t\t\t\t\tparameter = parameter.toString(10);\n\t\t\t\t\t}\n\t\t\t\t\toutput = parameter;\n\t\t\t\t\tif(isPrecision) { // 最大表示文字数\n\t\t\t\t\t\tif(output.length > precision) {\n\t\t\t\t\t\t\toutput = output.substring(0, precision);\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\tconst s_textlength = output.length; // 現在の文字を構成するために必要な長さ\n\t\t\t\t\tconst s_spacesize  = width - s_textlength;  // 追加する横幅\n\t\t\t\t\t// 左よせ / 右よせ\n\t\t\t\t\tif(isFlagTextAlignLeft) {\n\t\t\t\t\t\tfor(let i = 0; i < s_spacesize; i++) {\n\t\t\t\t\t\t\toutput = output + \" \";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\t// 拡張\n\t\t\t\t\t\tconst s = isFlagFillZero ? \"0\" : \" \";\n\t\t\t\t\t\tfor(let i = 0; i < s_spacesize; i++) {\n\t\t\t\t\t\t\toutput = s + output;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\t// パーセント\n\t\t\t\tcase \"%\":\n\t\t\t\t\toutput = \"%\";\n\t\t\t\t\tbreak;\n\t\t\t\t// 未サポート\n\t\t\t\tcase \"p\":\n\t\t\t\tcase \"n\":\n\t\t\t\t\toutput = \"(unsupported)\";\n\t\t\t\t\tbreak;\n\t\t\t\tdefault:\n\t\t\t\t\t// 正規表現でチェックしているため、ありえない\n\t\t\t\t\tbreak;\n\t\t\t}\n\t\t\treturn (output);\t\n\t\t};\n\t\treturn (parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));\n\t}\n\n\t/**\n\t * 時刻用の書式に合わせて文字列を組み立てる\n\t * - YYYY-MM-DD hh:mm:ss のように指定できる。\n\t * @param {String} text \n\t * @param {Date} date 時刻情報\n\t * @returns {String}\n\t */\n\tstatic datef(text, date) {\n\t\tconst Y = date.getFullYear();\n\t\tconst M = date.getMonth() + 1;\n\t\tconst D = date.getDate();\n\t\tconst h = date.getHours();\n\t\tconst m = date.getMinutes();\n\t\tconst s = date.getSeconds();\n\t\tconst ms = date.getMilliseconds();\n\t\tconst day = date.getDay(); // 曜日\n\t\tconst aaa_array = [26085, 26376, 28779, 27700, 26408, 37329, 22303];\n\t\tconst aaaa_str = String.fromCharCode(26332) + String.fromCharCode(26085);\n\t\tconst ddd_array = [\"Sun\", \"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\"];\n\t\tconst dddd_array = [\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"];\n\t\tlet output = text;\n\t\toutput = output.replace(/YYYY/g, Y.toString());\n\t\toutput = output.replace(/YY/g, (Y % 100).toString());\n\t\toutput = output.replace(/MM/g, Format.textf(\"%02d\", M));\n\t\toutput = output.replace(/M/g, M.toString());\n\t\toutput = output.replace(/DD/g, Format.textf(\"%02d\", D));\n\t\toutput = output.replace(/D/g, D.toString());\n\t\toutput = output.replace(/hh/g, Format.textf(\"%02d\", h));\n\t\toutput = output.replace(/h/g, h.toString());\n\t\toutput = output.replace(/mm/g, Format.textf(\"%02d\", m));\n\t\toutput = output.replace(/m/g, m.toString());\n\t\toutput = output.replace(/ss/g, Format.textf(\"%02d\", s));\n\t\toutput = output.replace(/s/g, s.toString());\n\t\toutput = output.replace(/000/g, Format.textf(\"%03d\", ms));\n\t\toutput = output.replace(/aaaa/g, String.fromCharCode(aaa_array[day]) + aaaa_str);\n\t\toutput = output.replace(/aaa/g, String.fromCharCode(aaa_array[day]));\n\t\toutput = output.replace(/dddd/g, dddd_array[day]);\n\t\toutput = output.replace(/ddd/g, ddd_array[day]);\n\t\toutput = output.replace(/day/g, day.toString());\n\t\treturn output;\n\t}\n\n}\n",
+    "name": "src/senko/polyfill/Polyfill.js",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport typeExtendsArray from \"./ExtendsArray.js\";\nimport typeExtendsObject from \"./ExtendsObject.js\";\nimport typeExtendsString from \"./ExtendsString.js\";\n\n/**\n * @type {typeof typeExtendsArray}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsArray = typeExtendsArray;\n\n/**\n * @type {typeof typeExtendsObject}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsObject = typeExtendsObject;\n\n/**\n * @type {typeof typeExtendsString}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsString = typeExtendsString;\n\n/**\n * @param {any} original \n * @param {any} extension\n * @returns {any}\n * @private\n * @ignore\n */\nconst extendClass = function(original, extension) {\n\tfor(const key in extension) {\n\t\t// 未設定なら設定する\n\t\tif(!original.prototype[key]) {\n\t\t\toriginal.prototype[key] = function() {\n\t\t\t\tconst x = [];\n\t\t\t\tx.push(this);\n\t\t\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\t\t\tx.push(arguments[i]);\n\t\t\t\t}\n\t\t\t\treturn extension[key].apply(this, x);\n\t\t\t};\n\t\t}\n\t}\n};\n\nextendClass(Array, typeExtendsArray);\nextendClass(Object, typeExtendsObject);\nextendClass(String, typeExtendsString);\n\n/**\n * Class for improving compatibility.\n * @ignore\n */\nexport default class Polyfill {\n\n\t/**\n\t * Improved compatibility\n\t * @private\n\t * @ignore\n\t */\n\tstatic run() {\n\t\tif(!Math.imul) {\n\t\t\tMath.imul = function(x1, x2) {\n\t\t\t\tlet y = ((x1 & 0xFFFF) * (x2 & 0xFFFF)) >>> 0;\n\t\t\t\tlet b = (x1 & 0xFFFF) * (x2 >>> 16);\n\t\t\t\ty = (y + ((b & 0xFFFF) << 16)) >>> 0;\n\t\t\t\tb = (x1 >>> 16) * (x2 & 0xFFFF);\n\t\t\t\ty = (y + ((b & 0xFFFF) << 16));\n\t\t\t\treturn (y & 0xFFFFFFFF);\n\t\t\t};\n\t\t}\n\t\tif(!Math.trunc) {\n\t\t\tMath.trunc = function(x) {\n\t\t\t\treturn x > 0 ? Math.floor(x) : Math.ceil(x);\n\t\t\t};\n\t\t}\n\t\tif(!Number.isFinite) {\n\t\t\tNumber.isFinite = isFinite;\n\t\t}\n\t\tif(!Number.isInteger) {\n\t\t\tNumber.isInteger = function(x) {\n\t\t\t\t// @ts-ignore\n\t\t\t\treturn isFinite(x) && ((x | 0) === x);\n\t\t\t};\n\t\t}\n\t\tif(!Number.isNaN) {\n\t\t\tNumber.isNaN = isNaN;\n\t\t}\n\t\tif(!Number.NaN) {\n\t\t\t// @ts-ignore\n\t\t\t// eslint-disable-next-line no-global-assign\n\t\t\tNumber.NaN = NaN;\n\t\t}\n\t\tif(!Number.EPSILON) {\n\t\t\t// @ts-ignore\n\t\t\t// eslint-disable-next-line no-global-assign\n\t\t\tNumber.EPSILON = 2.220446049250313e-16;\n\t\t}\n\t\tif(!Number.MIN_SAFE_INTEGER) {\n\t\t\t// @ts-ignore\n\t\t\t// eslint-disable-next-line no-global-assign\n\t\t\tNumber.MIN_SAFE_INTEGER = -9007199254740991;\n\t\t}\n\t\tif(!Number.MAX_SAFE_INTEGER) {\n\t\t\t// @ts-ignore\n\t\t\t// eslint-disable-next-line no-global-assign\n\t\t\tNumber.MAX_SAFE_INTEGER = 9007199254740991;\n\t\t}\n\t\tif(!Number.parseFloat) {\n\t\t\tNumber.parseFloat = parseFloat;\n\t\t}\n\t\tif(!Number.parseInt) {\n\t\t\tNumber.parseInt = parseInt;\n\t\t}\n\t\tif(!Array.isArray) {\n\t\t\t// @ts-ignore\n\t\t\tArray.isArray = function(x) {\n\t\t\t\treturn Object.prototype.toString.call(x) === \"[object Array]\";\n\t\t\t};\n\t\t}\n\t\tif(!Array.of) {\n\t\t\t// @ts-ignore\n\t\t\tArray.of = function() {\n\t\t\t\treturn Array.prototype.slice.call(arguments);\n\t\t\t};\n\t\t}\n\n\t}\n}\n\n// @ts-ignore\nPolyfill.run();\n\n",
     "static": true,
-    "longname": "D:/JavaScript/SenkoWSH/src/senko/Format.js",
+    "longname": "D:/JavaScript/SenkoWSH/src/senko/polyfill/Polyfill.js",
     "access": "public",
     "description": null,
     "lineNumber": 1
   },
   {
-    "__docId__": 167,
-    "kind": "class",
-    "name": "Format",
-    "memberof": "src/senko/Format.js",
+    "__docId__": 171,
+    "kind": "function",
+    "name": "extendClass",
+    "memberof": "src/senko/polyfill/Polyfill.js",
+    "generator": false,
+    "async": false,
     "static": true,
-    "longname": "src/senko/Format.js~Format",
+    "longname": "src/senko/polyfill/Polyfill.js~extendClass",
+    "access": "private",
+    "export": false,
+    "importPath": "senkowsh/src/senko/polyfill/Polyfill.js",
+    "importStyle": null,
+    "description": "",
+    "lineNumber": 46,
+    "ignore": true,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{any}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "any"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "original",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "any"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "extension",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "any"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 172,
+    "kind": "class",
+    "name": "Polyfill",
+    "memberof": "src/senko/polyfill/Polyfill.js",
+    "static": true,
+    "longname": "src/senko/polyfill/Polyfill.js~Polyfill",
     "access": "public",
     "export": true,
-    "importPath": "senkowsh/src/senko/Format.js",
-    "importStyle": "Format",
-    "description": "書式に合わせて文字列を組み立てる関数を提供するクラス",
-    "lineNumber": 16,
+    "importPath": "senkowsh/src/senko/polyfill/Polyfill.js",
+    "importStyle": "Polyfill",
+    "description": "Class for improving compatibility.",
+    "lineNumber": 70,
+    "ignore": true,
     "interface": false
   },
   {
-    "__docId__": 168,
+    "__docId__": 173,
     "kind": "method",
-    "name": "textf",
-    "memberof": "src/senko/Format.js~Format",
+    "name": "run",
+    "memberof": "src/senko/polyfill/Polyfill.js~Polyfill",
     "generator": false,
     "async": false,
     "static": true,
-    "longname": "src/senko/Format.js~Format.textf",
-    "access": "public",
-    "description": "printf に似た書式に合わせて文字列を組み立てる\n- ロケール、日付時刻等はサポートしていません。\n- 変換指定子のpとnはサポートしていません。",
-    "lineNumber": 26,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{String}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "text",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "...any"
-        ],
-        "spread": true,
-        "optional": false,
-        "name": "parm",
-        "description": "パラメータは可変引数"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "String"
-      ],
-      "spread": false,
-      "description": ""
-    }
+    "longname": "src/senko/polyfill/Polyfill.js~Polyfill.run",
+    "access": "private",
+    "description": "Improved compatibility",
+    "lineNumber": 77,
+    "ignore": true,
+    "params": [],
+    "return": null
   },
   {
-    "__docId__": 169,
-    "kind": "method",
-    "name": "datef",
-    "memberof": "src/senko/Format.js~Format",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/Format.js~Format.datef",
-    "access": "public",
-    "description": "時刻用の書式に合わせて文字列を組み立てる\n- YYYY-MM-DD hh:mm:ss のように指定できる。",
-    "lineNumber": 391,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{String}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "String"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "text",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "Date"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "date",
-        "description": "時刻情報"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "String"
-      ],
-      "spread": false,
-      "description": ""
-    }
-  },
-  {
-    "__docId__": 170,
+    "__docId__": 174,
     "kind": "file",
     "name": "src/senko/Robot.js",
     "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport System from \"./System\";\n\n/**\n * 大きさ情報\n * @typedef {Object} WSHRobotRect\n * @property {number} x 座標x\n * @property {number} y 座標y\n * @property {number} width 横幅\n * @property {number} height 縦幅\n */\n\n/**\n * 位置情報\n * @typedef {Object} WSHRobotPosition\n * @property {number} x 座標x\n * @property {number} y 座標y\n */\n\n/**\n * 仮想キーコード\n * @typedef {Object} VirtualKeyCode\n * @property {number} code\n */\n\n/**\n * 仮想キーコード一覧\n * @typedef {Object} VirtualKeyCodes\n * @property {VirtualKeyCode} VK_LBUTTON\n * @property {VirtualKeyCode} VK_RBUTTON\n * @property {VirtualKeyCode} VK_CANCEL\n * @property {VirtualKeyCode} VK_MBUTTON\n * @property {VirtualKeyCode} VK_XBUTTON1\n * @property {VirtualKeyCode} VK_XBUTTON2\n * @property {VirtualKeyCode} VK_BACK\n * @property {VirtualKeyCode} VK_TAB\n * @property {VirtualKeyCode} VK_CLEAR\n * @property {VirtualKeyCode} VK_RETURN\n * @property {VirtualKeyCode} VK_SHIFT\n * @property {VirtualKeyCode} VK_CONTROL\n * @property {VirtualKeyCode} VK_MENU\n * @property {VirtualKeyCode} VK_PAUSE\n * @property {VirtualKeyCode} VK_CAPITAL\n * @property {VirtualKeyCode} VK_KANA\n * @property {VirtualKeyCode} VK_HANGEUL\n * @property {VirtualKeyCode} VK_HANGUL\n * @property {VirtualKeyCode} VK_JUNJA\n * @property {VirtualKeyCode} VK_FINAL\n * @property {VirtualKeyCode} VK_HANJA\n * @property {VirtualKeyCode} VK_KANJI\n * @property {VirtualKeyCode} VK_ESCAPE\n * @property {VirtualKeyCode} VK_CONVERT\n * @property {VirtualKeyCode} VK_NONCONVERT\n * @property {VirtualKeyCode} VK_ACCEPT\n * @property {VirtualKeyCode} VK_MODECHANGE\n * @property {VirtualKeyCode} VK_SPACE\n * @property {VirtualKeyCode} VK_PRIOR\n * @property {VirtualKeyCode} VK_NEXT\n * @property {VirtualKeyCode} VK_END\n * @property {VirtualKeyCode} VK_HOME\n * @property {VirtualKeyCode} VK_LEFT\n * @property {VirtualKeyCode} VK_UP\n * @property {VirtualKeyCode} VK_RIGHT\n * @property {VirtualKeyCode} VK_DOWN\n * @property {VirtualKeyCode} VK_SELECT\n * @property {VirtualKeyCode} VK_PRINT\n * @property {VirtualKeyCode} VK_EXECUTE\n * @property {VirtualKeyCode} VK_SNAPSHOT\n * @property {VirtualKeyCode} VK_INSERT\n * @property {VirtualKeyCode} VK_DELETE\n * @property {VirtualKeyCode} VK_HELP\n * @property {VirtualKeyCode} VK_0\n * @property {VirtualKeyCode} VK_1\n * @property {VirtualKeyCode} VK_2\n * @property {VirtualKeyCode} VK_3\n * @property {VirtualKeyCode} VK_4\n * @property {VirtualKeyCode} VK_5\n * @property {VirtualKeyCode} VK_6\n * @property {VirtualKeyCode} VK_7\n * @property {VirtualKeyCode} VK_8\n * @property {VirtualKeyCode} VK_9\n * @property {VirtualKeyCode} VK_A\n * @property {VirtualKeyCode} VK_B\n * @property {VirtualKeyCode} VK_C\n * @property {VirtualKeyCode} VK_D\n * @property {VirtualKeyCode} VK_E\n * @property {VirtualKeyCode} VK_F\n * @property {VirtualKeyCode} VK_G\n * @property {VirtualKeyCode} VK_H\n * @property {VirtualKeyCode} VK_I\n * @property {VirtualKeyCode} VK_J\n * @property {VirtualKeyCode} VK_K\n * @property {VirtualKeyCode} VK_L\n * @property {VirtualKeyCode} VK_M\n * @property {VirtualKeyCode} VK_N\n * @property {VirtualKeyCode} VK_O\n * @property {VirtualKeyCode} VK_P\n * @property {VirtualKeyCode} VK_Q\n * @property {VirtualKeyCode} VK_R\n * @property {VirtualKeyCode} VK_S\n * @property {VirtualKeyCode} VK_T\n * @property {VirtualKeyCode} VK_U\n * @property {VirtualKeyCode} VK_V\n * @property {VirtualKeyCode} VK_W\n * @property {VirtualKeyCode} VK_X\n * @property {VirtualKeyCode} VK_Y\n * @property {VirtualKeyCode} VK_Z\n * @property {VirtualKeyCode} VK_LWIN\n * @property {VirtualKeyCode} VK_RWIN\n * @property {VirtualKeyCode} VK_APPS\n * @property {VirtualKeyCode} VK_SLEEP\n * @property {VirtualKeyCode} VK_NUMPAD0\n * @property {VirtualKeyCode} VK_NUMPAD1\n * @property {VirtualKeyCode} VK_NUMPAD2\n * @property {VirtualKeyCode} VK_NUMPAD3\n * @property {VirtualKeyCode} VK_NUMPAD4\n * @property {VirtualKeyCode} VK_NUMPAD5\n * @property {VirtualKeyCode} VK_NUMPAD6\n * @property {VirtualKeyCode} VK_NUMPAD7\n * @property {VirtualKeyCode} VK_NUMPAD8\n * @property {VirtualKeyCode} VK_NUMPAD9\n * @property {VirtualKeyCode} VK_MULTIPLY\n * @property {VirtualKeyCode} VK_ADD\n * @property {VirtualKeyCode} VK_SEPARATOR\n * @property {VirtualKeyCode} VK_SUBTRACT\n * @property {VirtualKeyCode} VK_DECIMAL\n * @property {VirtualKeyCode} VK_DIVIDE\n * @property {VirtualKeyCode} VK_F1\n * @property {VirtualKeyCode} VK_F2\n * @property {VirtualKeyCode} VK_F3\n * @property {VirtualKeyCode} VK_F4\n * @property {VirtualKeyCode} VK_F5\n * @property {VirtualKeyCode} VK_F6\n * @property {VirtualKeyCode} VK_F7\n * @property {VirtualKeyCode} VK_F8\n * @property {VirtualKeyCode} VK_F9\n * @property {VirtualKeyCode} VK_F10\n * @property {VirtualKeyCode} VK_F11\n * @property {VirtualKeyCode} VK_F12\n * @property {VirtualKeyCode} VK_F13\n * @property {VirtualKeyCode} VK_F14\n * @property {VirtualKeyCode} VK_F15\n * @property {VirtualKeyCode} VK_F16\n * @property {VirtualKeyCode} VK_F17\n * @property {VirtualKeyCode} VK_F18\n * @property {VirtualKeyCode} VK_F19\n * @property {VirtualKeyCode} VK_F20\n * @property {VirtualKeyCode} VK_F21\n * @property {VirtualKeyCode} VK_F22\n * @property {VirtualKeyCode} VK_F23\n * @property {VirtualKeyCode} VK_F24\n * @property {VirtualKeyCode} VK_NUMLOCK\n * @property {VirtualKeyCode} VK_SCROLL\n * @property {VirtualKeyCode} VK_LSHIFT\n * @property {VirtualKeyCode} VK_RSHIFT\n * @property {VirtualKeyCode} VK_LCONTROL\n * @property {VirtualKeyCode} VK_RCONTROL\n * @property {VirtualKeyCode} VK_LMENU\n * @property {VirtualKeyCode} VK_RMENU\n * @property {VirtualKeyCode} VK_BROWSER_BACK\n * @property {VirtualKeyCode} VK_BROWSER_FORWARD\n * @property {VirtualKeyCode} VK_BROWSER_REFRESH\n * @property {VirtualKeyCode} VK_BROWSER_STOP\n * @property {VirtualKeyCode} VK_BROWSER_SEARCH\n * @property {VirtualKeyCode} VK_BROWSER_FAVORITES\n * @property {VirtualKeyCode} VK_BROWSER_HOME\n * @property {VirtualKeyCode} VK_VOLUME_MUTE\n * @property {VirtualKeyCode} VK_VOLUME_DOWN\n * @property {VirtualKeyCode} VK_VOLUME_UP\n * @property {VirtualKeyCode} VK_MEDIA_NEXT_TRACK\n * @property {VirtualKeyCode} VK_MEDIA_PREV_TRACK\n * @property {VirtualKeyCode} VK_MEDIA_STOP\n * @property {VirtualKeyCode} VK_MEDIA_PLAY_PAUSE\n * @property {VirtualKeyCode} VK_LAUNCH_MAIL\n * @property {VirtualKeyCode} VK_LAUNCH_MEDIA_SELECT\n * @property {VirtualKeyCode} VK_LAUNCH_APP1\n * @property {VirtualKeyCode} VK_LAUNCH_APP2\n * @property {VirtualKeyCode} VK_OEM_1\n * @property {VirtualKeyCode} VK_OEM_PLUS\n * @property {VirtualKeyCode} VK_OEM_COMMA\n * @property {VirtualKeyCode} VK_OEM_MINUS\n * @property {VirtualKeyCode} VK_OEM_PERIOD\n * @property {VirtualKeyCode} VK_OEM_2\n * @property {VirtualKeyCode} VK_OEM_3\n * @property {VirtualKeyCode} VK_OEM_4\n * @property {VirtualKeyCode} VK_OEM_5\n * @property {VirtualKeyCode} VK_OEM_6\n * @property {VirtualKeyCode} VK_OEM_7\n * @property {VirtualKeyCode} VK_OEM_8\n * @property {VirtualKeyCode} VK_PROCESSKEY\n * @property {VirtualKeyCode} VK_ATTN\n * @property {VirtualKeyCode} VK_CRSEL\n * @property {VirtualKeyCode} VK_EXSEL\n * @property {VirtualKeyCode} VK_EREOF\n * @property {VirtualKeyCode} VK_PLAY\n * @property {VirtualKeyCode} VK_ZOOM\n * @property {VirtualKeyCode} VK_NONAME\n * @property {VirtualKeyCode} VK_PA1\n * @property {VirtualKeyCode} VK_OEM_CLEAR\n */\n\n/**\n * 仮想キーコード一覧\n * @type {VirtualKeyCodes}\n */\nconst VK_DATA = {\n\tVK_LBUTTON\t:{code:0x01},\n\tVK_RBUTTON\t:{code:0x02},\n\tVK_CANCEL\t:{code:0x03},\n\tVK_MBUTTON\t:{code:0x04},\n\tVK_XBUTTON1\t:{code:0x05},\n\tVK_XBUTTON2\t:{code:0x06},\n\tVK_BACK\t:{code:0x08},\n\tVK_TAB\t:{code:0x09},\n\tVK_CLEAR\t:{code:0x0C},\n\tVK_RETURN\t:{code:0x0D},\n\tVK_SHIFT\t:{code:0x10},\n\tVK_CONTROL\t:{code:0x11},\n\tVK_MENU\t:{code:0x12},\n\tVK_PAUSE\t:{code:0x13},\n\tVK_CAPITAL\t:{code:0x14},\n\tVK_KANA\t:{code:0x15},\n\tVK_HANGEUL\t:{code:0x15},\n\tVK_HANGUL\t:{code:0x15},\n\tVK_JUNJA\t:{code:0x17},\n\tVK_FINAL\t:{code:0x18},\n\tVK_HANJA\t:{code:0x19},\n\tVK_KANJI\t:{code:0x19},\n\tVK_ESCAPE\t:{code:0x1B},\n\tVK_CONVERT\t:{code:0x1C},\n\tVK_NONCONVERT\t:{code:0x1D},\n\tVK_ACCEPT\t:{code:0x1E},\n\tVK_MODECHANGE\t:{code:0x1F},\n\tVK_SPACE\t:{code:0x20},\n\tVK_PRIOR\t:{code:0x21},\n\tVK_NEXT\t:{code:0x22},\n\tVK_END\t:{code:0x23},\n\tVK_HOME\t:{code:0x24},\n\tVK_LEFT\t:{code:0x25},\n\tVK_UP\t:{code:0x26},\n\tVK_RIGHT\t:{code:0x27},\n\tVK_DOWN\t:{code:0x28},\n\tVK_SELECT\t:{code:0x29},\n\tVK_PRINT\t:{code:0x2A},\n\tVK_EXECUTE\t:{code:0x2B},\n\tVK_SNAPSHOT\t:{code:0x2C},\n\tVK_INSERT\t:{code:0x2D},\n\tVK_DELETE\t:{code:0x2E},\n\tVK_HELP\t:{code:0x2F},\n\tVK_0\t:{code:0x30},\n\tVK_1\t:{code:0x31},\n\tVK_2\t:{code:0x32},\n\tVK_3\t:{code:0x33},\n\tVK_4\t:{code:0x34},\n\tVK_5\t:{code:0x35},\n\tVK_6\t:{code:0x36},\n\tVK_7\t:{code:0x37},\n\tVK_8\t:{code:0x38},\n\tVK_9\t:{code:0x39},\n\tVK_A\t:{code:0x41},\n\tVK_B\t:{code:0x42},\n\tVK_C\t:{code:0x43},\n\tVK_D\t:{code:0x44},\n\tVK_E\t:{code:0x45},\n\tVK_F\t:{code:0x46},\n\tVK_G\t:{code:0x47},\n\tVK_H\t:{code:0x48},\n\tVK_I\t:{code:0x49},\n\tVK_J\t:{code:0x4A},\n\tVK_K\t:{code:0x4B},\n\tVK_L\t:{code:0x4C},\n\tVK_M\t:{code:0x4D},\n\tVK_N\t:{code:0x4E},\n\tVK_O\t:{code:0x4F},\n\tVK_P\t:{code:0x50},\n\tVK_Q\t:{code:0x51},\n\tVK_R\t:{code:0x52},\n\tVK_S\t:{code:0x53},\n\tVK_T\t:{code:0x54},\n\tVK_U\t:{code:0x55},\n\tVK_V\t:{code:0x56},\n\tVK_W\t:{code:0x57},\n\tVK_X\t:{code:0x58},\n\tVK_Y\t:{code:0x59},\n\tVK_Z\t:{code:0x5A},\n\tVK_LWIN\t:{code:0x5B},\n\tVK_RWIN\t:{code:0x5C},\n\tVK_APPS\t:{code:0x5D},\n\tVK_SLEEP\t:{code:0x5F},\n\tVK_NUMPAD0\t:{code:0x60},\n\tVK_NUMPAD1\t:{code:0x61},\n\tVK_NUMPAD2\t:{code:0x62},\n\tVK_NUMPAD3\t:{code:0x63},\n\tVK_NUMPAD4\t:{code:0x64},\n\tVK_NUMPAD5\t:{code:0x65},\n\tVK_NUMPAD6\t:{code:0x66},\n\tVK_NUMPAD7\t:{code:0x67},\n\tVK_NUMPAD8\t:{code:0x68},\n\tVK_NUMPAD9\t:{code:0x69},\n\tVK_MULTIPLY\t:{code:0x6A},\n\tVK_ADD\t:{code:0x6B},\n\tVK_SEPARATOR\t:{code:0x6C},\n\tVK_SUBTRACT\t:{code:0x6D},\n\tVK_DECIMAL\t:{code:0x6E},\n\tVK_DIVIDE\t:{code:0x6F},\n\tVK_F1\t:{code:0x70},\n\tVK_F2\t:{code:0x71},\n\tVK_F3\t:{code:0x72},\n\tVK_F4\t:{code:0x73},\n\tVK_F5\t:{code:0x74},\n\tVK_F6\t:{code:0x75},\n\tVK_F7\t:{code:0x76},\n\tVK_F8\t:{code:0x77},\n\tVK_F9\t:{code:0x78},\n\tVK_F10\t:{code:0x79},\n\tVK_F11\t:{code:0x7A},\n\tVK_F12\t:{code:0x7B},\n\tVK_F13\t:{code:0x7C},\n\tVK_F14\t:{code:0x7D},\n\tVK_F15\t:{code:0x7E},\n\tVK_F16\t:{code:0x7F},\n\tVK_F17\t:{code:0x80},\n\tVK_F18\t:{code:0x81},\n\tVK_F19\t:{code:0x82},\n\tVK_F20\t:{code:0x83},\n\tVK_F21\t:{code:0x84},\n\tVK_F22\t:{code:0x85},\n\tVK_F23\t:{code:0x86},\n\tVK_F24\t:{code:0x87},\n\tVK_NUMLOCK\t:{code:0x90},\n\tVK_SCROLL\t:{code:0x91},\n\tVK_LSHIFT\t:{code:0xA0},\n\tVK_RSHIFT\t:{code:0xA1},\n\tVK_LCONTROL\t:{code:0xA2},\n\tVK_RCONTROL\t:{code:0xA3},\n\tVK_LMENU\t:{code:0xA4},\n\tVK_RMENU\t:{code:0xA5},\n\tVK_BROWSER_BACK\t:{code:0xA6},\n\tVK_BROWSER_FORWARD\t:{code:0xA7},\n\tVK_BROWSER_REFRESH\t:{code:0xA8},\n\tVK_BROWSER_STOP\t:{code:0xA9},\n\tVK_BROWSER_SEARCH\t:{code:0xAA},\n\tVK_BROWSER_FAVORITES\t:{code:0xAB},\n\tVK_BROWSER_HOME\t:{code:0xAC},\n\tVK_VOLUME_MUTE\t:{code:0xAD},\n\tVK_VOLUME_DOWN\t:{code:0xAE},\n\tVK_VOLUME_UP\t:{code:0xAF},\n\tVK_MEDIA_NEXT_TRACK\t:{code:0xB0},\n\tVK_MEDIA_PREV_TRACK\t:{code:0xB1},\n\tVK_MEDIA_STOP\t:{code:0xB2},\n\tVK_MEDIA_PLAY_PAUSE\t:{code:0xB3},\n\tVK_LAUNCH_MAIL\t:{code:0xB4},\n\tVK_LAUNCH_MEDIA_SELECT\t:{code:0xB5},\n\tVK_LAUNCH_APP1\t:{code:0xB6},\n\tVK_LAUNCH_APP2\t:{code:0xB7},\n\tVK_OEM_1\t:{code:0xBA},\n\tVK_OEM_PLUS\t:{code:0xBB},\n\tVK_OEM_COMMA\t:{code:0xBC},\n\tVK_OEM_MINUS\t:{code:0xBD},\n\tVK_OEM_PERIOD\t:{code:0xBE},\n\tVK_OEM_2\t:{code:0xBF},\n\tVK_OEM_3\t:{code:0xC0},\n\tVK_OEM_4\t:{code:0xDB},\n\tVK_OEM_5\t:{code:0xDC},\n\tVK_OEM_6\t:{code:0xDD},\n\tVK_OEM_7\t:{code:0xDE},\n\tVK_OEM_8\t:{code:0xDF},\n\tVK_PROCESSKEY\t:{code:0xE5},\n\tVK_ATTN\t:{code:0xF6},\n\tVK_CRSEL\t:{code:0xF7},\n\tVK_EXSEL\t:{code:0xF8},\n\tVK_EREOF\t:{code:0xF9},\n\tVK_PLAY\t:{code:0xFA},\n\tVK_ZOOM\t:{code:0xFB},\n\tVK_NONAME\t:{code:0xFC},\n\tVK_PA1\t:{code:0xFD},\n\tVK_OEM_CLEAR\t:{code:0xFE}\n};\n\n/**\n * マウスイベント用コード\n * @typedef {Object} MouseEventFCodes\n * @property {number} MOUSEEVENTF_ABSOLUTE\n * @property {number} MOUSEEVENTF_MOVE\n * @property {number} MOUSEEVENTF_LEFTDOWN\n * @property {number} MOUSEEVENTF_LEFTUP\n * @property {number} MOUSEEVENTF_RIGHTDOWN\n * @property {number} MOUSEEVENTF_RIGHTUP\n * @property {number} MOUSEEVENTF_MIDDLEDOWN\n * @property {number} MOUSEEVENTF_MIDDLEUP\n * @property {number} MOUSEEVENTF_WHEEL\n * @property {number} MOUSEEVENTF_XDOWN\n * @property {number} MOUSEEVENTF_XUP\n */\n\n/**\n * マウスイベント用コード一覧\n * @type {MouseEventFCodes}\n */\nconst MOUSEEVENTF_DATA = {\n\tMOUSEEVENTF_ABSOLUTE\t:0x8000,\n\tMOUSEEVENTF_MOVE\t\t:0x0001,\n\tMOUSEEVENTF_LEFTDOWN\t:0x0002,\n\tMOUSEEVENTF_LEFTUP\t\t:0x0004,\n\tMOUSEEVENTF_RIGHTDOWN\t:0x0008,\n\tMOUSEEVENTF_RIGHTUP\t\t:0x0010,\n\tMOUSEEVENTF_MIDDLEDOWN\t:0x0020,\n\tMOUSEEVENTF_MIDDLEUP\t:0x0040,\n\tMOUSEEVENTF_WHEEL\t\t:0x0800,\n\tMOUSEEVENTF_XDOWN\t\t:0x0080,\n\tMOUSEEVENTF_XUP\t\t\t:0x0100\n};\n\n/**\n * キーイベント発生時のオプション\n * @typedef {Object} KeyEventOption\n * @property {number} [count_max=1] 繰り返す回数\n * @property {boolean} [is_not_pushed=false] 押さない\n * @property {boolean} [is_not_released=false] 離さない\n * @property {number} [push_time_sec=0] 押下時間\n * @property {boolean} [is_pressed_shift=false]\n * @property {boolean} [is_pressed_alt=false]\n * @property {boolean} [is_pressed_ctrl=false]\n */\n\n/**\n * マウスイベント発生時のオプション\n * @typedef {Object} MouseEventOption\n * @property {number} [count_max=1] 繰り返す回数\n * @property {boolean} [is_not_pushed=false] 押さない\n * @property {boolean} [is_not_released=false] 離さない\n * @property {number} [push_time_sec=0] 押下時間\n */\n\n/**\n * ハンドルを取得する際に必要なデータ\n * @typedef {Object} RobotGetHandleData\n * @property {string|number} [classname=0] クラス名\n * @property {string|number} [windowtext=0] ウィンドウ名\n */\n\n/**\n * ウィンドウやマウスなどを自動操作するためのクラス\n */\nexport default class Robot {\n\t\n\t/**\n\t * キーを入力する\n\t * @param {VirtualKeyCode} vkcode - キーコード（利用可能なコードは、Robot.getVK() で取得可能）\n\t * @param {KeyEventOption} [option] - オプション\n\t */\n\tstatic setKeyEvent(vkcode, option) {\n\t\tconst KEYEVENTF_KEYUP = 2;\n\t\tconst count_max = (option && option.count_max) ? option.count_max: 1;\n\t\tlet time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;\n\t\ttime_ms = Math.max(time_ms , 1); // 1以上にする\n\t\tlet code = \"for ($i=0; $i -lt \" + count_max + \"; $i++){\";\n\t\t{\n\t\t\tif(option && option.is_pressed_shift) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_SHIFT.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_alt) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_MENU.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_ctrl) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_CONTROL.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(!option || !option.is_not_pushed) {\n\t\t\t\tcode += \"$api::keybd_event(\" + vkcode.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t}\n\t\tif(option && option.push_time_sec) {\n\t\t\tcode += \"Start-Sleep -m \" + time_ms + \";\";\n\t\t}\n\t\t{\n\t\t\tif(!option || !option.is_not_released) {\n\t\t\t\tcode += \"$api::keybd_event(\" + vkcode.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_ctrl) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_CONTROL.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_alt) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_MENU.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_shift) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_SHIFT.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t}\n\t\tcode += \"}\";\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)\",\n\t\t\tcode\n\t\t);\n\t}\n\t\n\t/**\n\t * 仮想キーコードの一覧を取得します\n\t * @returns {VirtualKeyCodes} \n\t */\n\tstatic getVK() {\n\t\treturn VK_DATA;\n\t}\n\n\t/**\n\t * マウスのクリックを行う\n\t * @param {string} type - \"LEFT\", \"RIGHT\", \"CLICK\", \"DOUBLE_CLICK\"といった文字列\n\t * @param {KeyEventOption} [option] - オプション\n\t */\n\tstatic setMouseEvent(type, option) {\n\t\tlet count_max = (option && option.count_max) ? option.count_max: 1;\n\t\tlet time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;\n\t\ttime_ms = Math.max(time_ms , 1); // 1以上にする\n\t\tlet target = type.toUpperCase().trim();\n\t\tif(target === \"CLICK\") {\n\t\t\tcount_max = 1;\n\t\t\ttarget = \"LEFT\";\n\t\t}\n\t\telse if(target === \"DOUBLE_CLICK\") {\n\t\t\tcount_max = 2;\n\t\t\ttarget = \"LEFT\";\n\t\t}\n\t\tlet pushed_code;\n\t\tlet released_code;\n\t\tif(target === \"LEFT\") {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTUP;\n\t\t}\n\t\telse if((target === \"CENTER\") || (target === \"MIDDLE\")) {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEUP;\n\t\t}\n\t\tif(target === \"RIGHT\") {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTUP;\n\t\t}\n\t\tlet code = \"for ($i=0; $i -lt \" + count_max + \"; $i++){\";\n\t\tif(!option || !option.is_not_pushed) {\n\t\t\tcode += \"$api::mouse_event(\" + pushed_code + \", 0, 0, 0, 0);\";\n\t\t}\n\t\tif(option && option.push_time_sec) {\n\t\t\tcode += \"Start-Sleep -m \" + time_ms + \";\";\n\t\t}\n\t\tif(!option || !option.is_not_released) {\n\t\t\tcode += \"$api::mouse_event(\" + released_code + \", 0, 0, 0, 0);\";\n\t\t}\n\t\tcode += \"}\";\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)\",\n\t\t\tcode\n\t\t);\n\t}\n\n\t/**\n\t * マウスの座標を調べる\n\t * @returns {WSHRobotPosition}\n\t */\n\tstatic getCursorPosition() {\n\t\t/*\n\t\t以下の行を1行で実行する\n\t\t[void] [System.Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n\t\t$X = [System.Windows.Forms.Cursor]::Position.X;\n\t\t$Y = [System.Windows.Forms.Cursor]::Position.Y;\n\t\t\"$X,$Y\"\n\t\t*/\n\t\t// eslint-disable-next-line quotes\n\t\tconst text = System.PowerShell('[void] [System.Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;\"$X,$Y\"');\n\t\tconst pos_data = text.split(\",\");\n\t\tconst x = parseFloat(pos_data[0]) | 0;\n\t\tconst y = parseFloat(pos_data[1]) | 0;\n\t\treturn {\n\t\t\tx : x, y : y\n\t\t};\n\t}\n\n\t/**\n\t * マウスの座標を設定する\n\t * @param {WSHRobotPosition} position\n\t */\n\tstatic setCursorPosition(position) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void SetCursorPos(int X, int Y)\",\n\t\t\t\"$api::SetCursorPos(\" + position.x + \", \" + position.y + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルを取得する\n\t * @param {RobotGetHandleData} get_handle_data \n\t * @returns {number}\n\t */\n\tstatic getHandle(get_handle_data) {\n\t\tlet function_text;\n\t\t// 省略する場合はヌルポインタを設定する必要があるため、入力引数を変更する\n\t\tif(get_handle_data.classname && get_handle_data.windowtext) {\n\t\t\tfunction_text = \"IntPtr FindWindow(string lpClassName, string lpWindowName)\";\n\t\t}\n\t\telse if(get_handle_data.classname) {\n\t\t\tfunction_text = \"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)\";\n\t\t}\n\t\telse {\n\t\t\tfunction_text = \"IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)\";\n\t\t}\n\t\tlet command = \"$api::FindWindow(\";\n\t\tcommand += (get_handle_data.classname ? \"\\\"\" + get_handle_data.classname + \"\\\"\" : \"0\") + \",\";\n\t\tcommand += (get_handle_data.windowtext ? \"\\\"\" + get_handle_data.windowtext + \"\\\"\" : \"0\") + \");\";\n\t\treturn parseFloat(System.WindowsAPI( \"user32.dll\", function_text, command));\n\t}\n\n\t/**\n\t * 指定したクラス名のハンドルを取得する\n\t * @param {string} classname \n\t * @returns {number}\n\t */\n\tstatic getHandleOfClassName(classname) {\n\t\t// console.log(Robot.getHandleOfClassName(\"Notepad\"));\n\t\treturn Robot.getHandle({classname : classname});\n\t}\n\n\t/**\n\t * 指定したハンドルのクラス名を取得する\n\t * @param {number} handle \n\t * @returns {string}\n\t */\n\tstatic getClassName(handle) {\n\t\treturn System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)\",\n\t\t\t\"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetClassName(\" + handle + \", $buff, 256);$($buff.ToString());\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したウィンドウ名のハンドルを取得する\n\t * @param {string} windowname \n\t * @returns {number}\n\t */\n\tstatic getHandleOfWindowText(windowname) {\n\t\t// console.log(Robot.getHandleOfWindowName(\"無題 - メモ帳\");\n\t\treturn Robot.getHandle({windowtext : windowname});\n\t}\n\n\t/**\n\t * 指定したハンドルのウィンドウ名を取得する\n\t * @param {number} handle \n\t * @returns {string}\n\t */\n\tstatic getWindowText(handle) {\n\t\treturn System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)\",\n\t\t\t\"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetWindowText(\" + handle + \", $buff, 256);$($buff.ToString());\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルの位置とサイズを取得する\n\t * @param {number} handle \n\t * @returns {WSHRobotRect}\n\t */\n\tstatic getWindowRect(handle) {\n\t\t/*\n\t\t以下の行を1行で実行する\n\t\tAdd-Type -TypeDefinition @\"\n\t\tusing System;\n\t\tusing System.Runtime.InteropServices;\n\t\tpublic struct RECT { public int Left; public int Top; public int Right; public int Bottom; }\n\t\tpublic class API {\n\t\t\t[DllImport(\"user32.dll\")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);\n\t\t\tpublic static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }\n\t\t}\n\t\t\"@\n\t\t$rect = [API]::getrect(x);\n\t\t\"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)\"\n\t\t*/\n\t\t// eslint-disable-next-line quotes\n\t\tconst command = `Add-Type -TypeDefinition \"using System; using System.Runtime.InteropServices; public struct RECT { public int Left; public int Top; public int Right; public int Bottom; } public class API { [DllImport(\"\"user32.dll\"\")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect); public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; } }\";  $rect = [API]::getrect(` + handle + `); \"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)\"`;\n\t\tconst rect = System.PowerShell(command);\n\t\tconst rect_data = rect.split(\",\");\n\t\tif(rect_data.length !== 4) {\n\t\t\treturn null;\n\t\t}\n\t\tconst left   = parseFloat(rect_data[0]) | 0;\n\t\tconst top    = parseFloat(rect_data[1]) | 0;\n\t\tconst right  = parseFloat(rect_data[2]) | 0;\n\t\tconst bottom = parseFloat(rect_data[3]) | 0;\n\t\treturn {\n\t\t\tx\t\t:left,\n\t\t\ty\t\t:top,\n\t\t\twidth\t:right - left,\n\t\t\theight\t:bottom - top\n\t\t};\n\t}\n\n\t/**\n\t * 指定したハンドルの位置とサイズを設定する\n\t * @param {number} handle \n\t * @param {WSHRobotRect} rect \n\t * @returns {void}\n\t */\n\tstatic setWindowRect(handle, rect) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)\",\n\t\t\t\"$api::MoveWindow(\" + handle + \" , \" + (rect.x|0) + \", \" + (rect.y|0) + \", \" + (rect.width|0) + \", \" + (rect.height|0) + \", 1 );\"\n\t\t);\n\t}\n\n\t/**\n\t * アクティブなウィンドウのハンドルを取得する\n\t * @returns {number}\n\t */\n\tstatic getActiveWindow() {\n\t\treturn parseFloat(System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetForegroundWindow()\",\n\t\t\t\"$api::GetForegroundWindow();\"\n\t\t));\n\t}\n\n\t/**\n\t * アクティブなウィンドウを設定する\n\t * @param {number} handle \n\t * @returns {void}\n\t */\n\tstatic setActiveWindow(handle) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"bool SetForegroundWindow(IntPtr hWnd)\",\n\t\t\t\"$api::SetForegroundWindow(\" + handle + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルのプロセスIDを取得する\n\t * @param {number} handle \n\t * @returns {number}\n\t */\n\tstatic getPID(handle) {\n\t\treturn parseFloat(System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)\",\n\t\t\t\"$getpid = 0;$null = $api::GetWindowThreadProcessId(\" + handle + \", [ref] $getpid);$getpid;\"\n\t\t));\n\t}\n\n\t/**\n\t * 指定したプロセスIDを修了させる\n\t * @param {number} pid \n\t */\n\tstatic terminateProcess(pid) {\n\t\treturn System.run(\"taskkill /PID \" + pid, 0, true);\n\t}\n\n\t\n\n\n\t// TODO マウスを移動させたり、キーボードを入力する操作を追加する予定\n\n}\n\n\n",
@@ -4786,7 +4882,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 171,
+    "__docId__": 175,
     "kind": "typedef",
     "name": "WSHRobotRect",
     "memberof": "src/senko/Robot.js",
@@ -4845,7 +4941,7 @@
     }
   },
   {
-    "__docId__": 172,
+    "__docId__": 176,
     "kind": "typedef",
     "name": "WSHRobotPosition",
     "memberof": "src/senko/Robot.js",
@@ -4884,7 +4980,7 @@
     }
   },
   {
-    "__docId__": 173,
+    "__docId__": 177,
     "kind": "typedef",
     "name": "VirtualKeyCode",
     "memberof": "src/senko/Robot.js",
@@ -4913,7 +5009,7 @@
     }
   },
   {
-    "__docId__": 174,
+    "__docId__": 178,
     "kind": "typedef",
     "name": "VirtualKeyCodes",
     "memberof": "src/senko/Robot.js",
@@ -6642,7 +6738,7 @@
     }
   },
   {
-    "__docId__": 175,
+    "__docId__": 179,
     "kind": "variable",
     "name": "VK_DATA",
     "memberof": "src/senko/Robot.js",
@@ -6665,7 +6761,7 @@
     "ignore": true
   },
   {
-    "__docId__": 176,
+    "__docId__": 180,
     "kind": "typedef",
     "name": "MouseEventFCodes",
     "memberof": "src/senko/Robot.js",
@@ -6794,7 +6890,7 @@
     }
   },
   {
-    "__docId__": 177,
+    "__docId__": 181,
     "kind": "variable",
     "name": "MOUSEEVENTF_DATA",
     "memberof": "src/senko/Robot.js",
@@ -6817,7 +6913,7 @@
     "ignore": true
   },
   {
-    "__docId__": 178,
+    "__docId__": 182,
     "kind": "typedef",
     "name": "KeyEventOption",
     "memberof": "src/senko/Robot.js",
@@ -6920,7 +7016,7 @@
     }
   },
   {
-    "__docId__": 179,
+    "__docId__": 183,
     "kind": "typedef",
     "name": "MouseEventOption",
     "memberof": "src/senko/Robot.js",
@@ -6987,7 +7083,7 @@
     }
   },
   {
-    "__docId__": 180,
+    "__docId__": 184,
     "kind": "typedef",
     "name": "RobotGetHandleData",
     "memberof": "src/senko/Robot.js",
@@ -7032,7 +7128,7 @@
     }
   },
   {
-    "__docId__": 181,
+    "__docId__": 185,
     "kind": "class",
     "name": "Robot",
     "memberof": "src/senko/Robot.js",
@@ -7047,7 +7143,7 @@
     "interface": false
   },
   {
-    "__docId__": 182,
+    "__docId__": 186,
     "kind": "method",
     "name": "setKeyEvent",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7083,7 +7179,7 @@
     "return": null
   },
   {
-    "__docId__": 183,
+    "__docId__": 187,
     "kind": "method",
     "name": "getVK",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7111,7 +7207,7 @@
     "params": []
   },
   {
-    "__docId__": 184,
+    "__docId__": 188,
     "kind": "method",
     "name": "setMouseEvent",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7147,7 +7243,7 @@
     "return": null
   },
   {
-    "__docId__": 185,
+    "__docId__": 189,
     "kind": "method",
     "name": "getCursorPosition",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7175,7 +7271,7 @@
     "params": []
   },
   {
-    "__docId__": 186,
+    "__docId__": 190,
     "kind": "method",
     "name": "setCursorPosition",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7201,7 +7297,7 @@
     "return": null
   },
   {
-    "__docId__": 187,
+    "__docId__": 191,
     "kind": "method",
     "name": "getHandle",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7240,7 +7336,7 @@
     }
   },
   {
-    "__docId__": 188,
+    "__docId__": 192,
     "kind": "method",
     "name": "getHandleOfClassName",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7279,7 +7375,7 @@
     }
   },
   {
-    "__docId__": 189,
+    "__docId__": 193,
     "kind": "method",
     "name": "getClassName",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7318,7 +7414,7 @@
     }
   },
   {
-    "__docId__": 190,
+    "__docId__": 194,
     "kind": "method",
     "name": "getHandleOfWindowText",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7357,7 +7453,7 @@
     }
   },
   {
-    "__docId__": 191,
+    "__docId__": 195,
     "kind": "method",
     "name": "getWindowText",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7396,7 +7492,7 @@
     }
   },
   {
-    "__docId__": 192,
+    "__docId__": 196,
     "kind": "method",
     "name": "getWindowRect",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7435,7 +7531,7 @@
     }
   },
   {
-    "__docId__": 193,
+    "__docId__": 197,
     "kind": "method",
     "name": "setWindowRect",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7484,7 +7580,7 @@
     }
   },
   {
-    "__docId__": 194,
+    "__docId__": 198,
     "kind": "method",
     "name": "getActiveWindow",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7512,7 +7608,7 @@
     "params": []
   },
   {
-    "__docId__": 195,
+    "__docId__": 199,
     "kind": "method",
     "name": "setActiveWindow",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7551,7 +7647,7 @@
     }
   },
   {
-    "__docId__": 196,
+    "__docId__": 200,
     "kind": "method",
     "name": "getPID",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7590,7 +7686,7 @@
     }
   },
   {
-    "__docId__": 197,
+    "__docId__": 201,
     "kind": "method",
     "name": "terminateProcess",
     "memberof": "src/senko/Robot.js~Robot",
@@ -7620,7 +7716,7 @@
     }
   },
   {
-    "__docId__": 198,
+    "__docId__": 202,
     "kind": "file",
     "name": "src/senko/SFile.js",
     "content": "import Format from \"./Format.js\";\n\n/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ファイル／フォルダ／URLを扱うクラス\n */\nexport default class SFile {\n\n\t/**\n\t * 初期化\n\t * @param {string|SFile} pathname ファイル名／フォルダ名／URLアドレス\n\t */\n\tconstructor(pathname) {\n\t\tif(arguments.length !== 1) {\n\t\t\tthrow \"IllegalArgumentException\";\n\t\t}\n\n\t\t/**\n\t\t * @type {string}\n\t\t * @private\n\t\t */\n\t\tthis.pathname = \"\";\n\n\t\tif((typeof pathname === \"string\")||(pathname instanceof String)) {\n\t\t\t// \\を/に置き換える\n\t\t\tthis.pathname = pathname.replace(/\\\\/g, \"/\" );\n\t\t}\n\t\telse if(pathname instanceof SFile) {\n\t\t\tthis.pathname = pathname.getAbsolutePath();\n\t\t}\n\t\telse {\n\t\t\tthrow \"IllegalArgumentException\";\n\t\t}\n\t\t\n\t\t/**\n\t\t * @type {boolean}\n\t\t * @private\n\t\t */\n\t\tthis.is_http = /^htt/.test(this.pathname);\n\n\t\t/**\n\t\t * @type {any}\n\t\t * @private\n\t\t */\n\t\tthis.fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t}\n\n\t/**\n\t * ファイルの削除（ゴミ箱には入りません）\n\t * @param {boolean} [is_force=false] - 読み取り専用でも削除する\n\t * @returns {boolean}\n\t */\n\tremove(is_force) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\ttry {\n\t\t\tif(this.isFile()) {\n\t\t\t\treturn this.fso.DeleteFile(this.pathname, is_force ? is_force : false );\n\t\t\t}\n\t\t\telse if(this.isDirectory()) {\n\t\t\t\treturn this.fso.DeleteFolder(this.pathname, is_force ? is_force : false );\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルが存在するか\n\t * @returns {boolean}\n\t */\n\texists() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet out = this.isFile();\n\t\tif(out === false) {\n\t\t\tout = this.isDirectory();\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * ファイルのコピー\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\tcopy(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst file = new SFile(file_obj);\n\t\tif(this.isFile()) {\n\t\t\treturn this.fso.CopyFile(this.pathname, file.getAbsolutePath(), true);\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\treturn this.fso.CopyFolder(this.pathname, file.getAbsolutePath(), true);\n\t\t}\n\t\telse {\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルの移動\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\tmove(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst file = new SFile(file_obj);\n\t\tif(this.isFile()) {\n\t\t\tthis.fso.MoveFile(this.pathname, file.getAbsolutePath());\n\t\t\tthis.pathname = file.getAbsolutePath();\n\t\t\treturn true;\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\tthis.fso.MoveFolder(this.pathname, file.getAbsolutePath());\n\t\t\tthis.pathname = file.getAbsolutePath();\n\t\t\treturn true;\n\t\t}\n\t\telse {\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイル名を変更\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\trenameTo(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\tconst name = new SFile(file_obj);\n\t\t// 例えばファイル名を大文字から小文字に変換といった場合、\n\t\t// Scripting.FileSystemObject の仕様によりエラーが発生するため、\n\t\t// 別のファイル名を経由する\n\t\tconst key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);\n\t\tfile.Name = name.getName() + key;\n\t\tfile.Name = name.getName();\n\t\tthis.pathname = name.getAbsolutePath();\n\t\treturn true;\n\t}\n\n\t/**\n\t * 文字列化\n\t * @returns {string}\n\t */\n\ttoString() {\n\t\treturn this.getAbsolutePath();\n\t}\n\n\t/**\n\t * 名前を取得\n\t * @returns {string}\n\t */\n\tgetName() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えている場合は、ファイル名取得できない\n\t\t\tif(this.isDirectory()) {\n\t\t\t\treturn \"\";\n\t\t\t}\n\t\t\tconst slashsplit = this.pathname.split(\"/\");\n\t\t\treturn slashsplit[slashsplit.length - 1];\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetFileName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 親フォルダの絶対パス\n\t * @returns {string}\n\t */\n\tgetParent() {\n\t\tconst x = this.getAbsolutePath().match(/.*[/\\\\]/)[0];\n\t\treturn x.substring(0 ,x.length - 1);\n\t}\n\n\t/**\n\t * 親フォルダ\n\t * @returns {SFile}\n\t */\n\tgetParentFile() {\n\t\treturn new SFile(this.getParent());\n\t}\n\n\t/**\n\t * 拡張子（ドットを含まない）\n\t * @returns {string}\n\t */\n\tgetExtensionName() {\n\t\tif(this.is_http) {\n\t\t\tconst dotlist = this.getName().split(\".\");\n\t\t\treturn dotlist[dotlist.length - 1];\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetExtensionName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 絶対パスかどうか\n\t * @returns {boolean}\n\t */\n\tisAbsolute() {\n\t\tif(this.is_http) {\n\t\t\treturn this.getAbsolutePath() === this.pathname;\n\t\t}\n\t\telse {\n\t\t\tconst name = this.pathname.replace(\"/\", \"\\\\\");\n\t\t\treturn this.fso.GetAbsolutePathName(this.pathname) === name;\n\t\t}\n\t}\n\n\t/**\n\t * フォルダかどうか\n\t * @returns {boolean}\n\t */\n\tisDirectory() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えている場合はディレクトリ\n\t\t\treturn /\\/$/.test(this.pathname);\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.FolderExists(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * ファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisFile() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えていない場合はファイル\n\t\t\treturn /[^/]$/.test(this.pathname);\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.FileExists(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 読み取り専用ファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisReadOnly() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst ATTRIBUTES_READONLY = 1;\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn (file.Attributes & ATTRIBUTES_READONLY) !== 0;\n\t}\n\t\n\t/**\n\t * 読み取り専用ファイルかどうかを設定する\n\t * @param {boolean} is_readonly\n\t * @param {boolean} [is_allfiles=false]\n\t * @returns {boolean}\n\t */\n\tsetReadOnly(is_readonly, is_allfiles) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst ATTRIBUTES_READONLY = 1;\n\t\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t\tif(is_readonly) {\n\t\t\t\tfile.Attributes = file.Attributes | ATTRIBUTES_READONLY;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tfile.Attributes = file.Attributes & ~ATTRIBUTES_READONLY;\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t\tif(this.isFile() || !is_allfiles) {\n\t\t\treturn true;\n\t\t}\n\t\tlet ret = true;\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tret = ret && file.setReadOnly(is_readonly, false);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn ret;\n\t}\n\n\t/**\n\t * 隠しファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisHidden() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst ATTRIBUTES_HIDDEN = 2;\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn (file.Attributes & ATTRIBUTES_HIDDEN) !== 0;\n\t}\n\t\n\t/**\n\t *隠しファイルかどうかを設定する\n\t * @param {boolean} is_hidden\n\t * @param {boolean} [is_allfiles=false]\n\t * @returns {boolean}\n\t */\n\tsetHidden(is_hidden, is_allfiles) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst ATTRIBUTES_HIDDEN = 2;\n\t\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t\tif(is_hidden) {\n\t\t\t\tfile.Attributes = file.Attributes | ATTRIBUTES_HIDDEN;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tfile.Attributes = file.Attributes & ~ATTRIBUTES_HIDDEN;\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t\tif(this.isFile() || !is_allfiles) {\n\t\t\treturn true;\n\t\t}\n\t\tlet ret = true;\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tret = ret && file.setHidden(is_hidden, false);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn ret;\n\t}\n\n\t/**\n\t * 更新日を取得\n\t * @returns {Date}\n\t */\n\tlastModified() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn null;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t// DateLastModified は VT_DATE 値なので変換する\n\t\treturn new Date(file.DateLastModified);\n\t}\n\n\t/**\n\t * 更新日を設定（ファイルのみ対応）\n\t * @param {Date} date\n\t * @returns {boolean}\n\t */\n\tsetLastModified(date) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst shell = new ActiveXObject(\"Shell.Application\");\n\t\t\tconst folder = shell.NameSpace(this.getParent());\n\t\t\tconst file = folder.ParseName(this.getName());\n\t\t\tconst date_string = Format.datef(\"YYYY/MM/DD hh:mm:ss\", date);\n\t\t\tfile.ModifyDate = date_string;\n\t\t\treturn true;\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルサイズ\n\t * @returns {number}\n\t */\n\tlength() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn -1;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn file.Size;\n\t}\n\n\t/**\n\t * 配下のファイル名の一覧を取得\n\t * @returns {string[]}\n\t */\n\tgetFiles() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst out = [];\n\t\tconst list = new Enumerator(this.fso.GetFolder(this.pathname).Files);\n\t\tfor(let i = 0; !list.atEnd(); list.moveNext()) {\n\t\t\tout[i++] = list.item().Name;\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 配下のサブフォルダ名の一覧を取得\n\t * @returns {string[]}\n\t */\n\tgetSubFolders() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst out = [];\n\t\tconst list = new Enumerator(this.fso.GetFolder(this.pathname).SubFolders);\n\t\tfor(let i = 0; !list.atEnd(); list.moveNext()) {\n\t\t\tout[i++] = list.item().Name;\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 区切り文字と終端を正規化した文字列を取得\n\t * @returns {string}\n\t */\n\tgetNormalizedPathName() {\n\t\tif(this.pathname === \"\") {\n\t\t\treturn \".\\\\\";\n\t\t}\n\t\tlet name = this.pathname.replace(/\\//g, \"\\\\\");\n\t\tif(name.slice(-1) !== \"\\\\\") {\n\t\t\tname += \"\\\\\";\n\t\t}\n\t\treturn name;\n\t}\n\n\t/**\n\t * 配下のファイル名とフォルダ名を取得\n\t * @returns {string[]}\n\t */\n\tlist() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst files = this.getFiles();\n\t\tconst subfolders = this.getSubFolders();\n\t\tconst out = [];\n\t\tfor(let j = 0; j < subfolders.length;) {\n\t\t\tout.push(subfolders[j++]);\n\t\t}\n\t\tfor(let j = 0; j < files.length;) {\n\t\t\tout.push(files[j++]);\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 絶対パスを取得\n\t * @returns {string}\n\t */\n\tgetAbsolutePath() {\n\t\tif(this.is_http) {\n\t\t\t// ホストとファイルに分ける\n\t\t\tconst hosttext = this.pathname.match(/^http[^/]+\\/\\/[^/]+\\//)[0];\n\t\t\tconst filetext = this.pathname.substr(hosttext.length);\n\t\t\t// パスを1つずつ解析しながら辿っていく\n\t\t\tlet name = hosttext;\n\t\t\tconst namelist = filetext.split(\"/\");\n\t\t\tlet i;\n\t\t\tfor(i = 0; i < namelist.length; i++) {\n\t\t\t\tif((namelist[i] === \"\") || (namelist[i] === \".\")) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\tif(namelist[i] === \"..\") {\n\t\t\t\t\tname = name.substring(0 ,name.length - 1).match(/.*\\//)[0];\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\tname += namelist[i];\n\t\t\t\tif(i !== namelist.length - 1) {\n\t\t\t\t\tname += \"/\";\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn name;\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetAbsolutePathName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * フォルダを作成\n\t * - フォルダは1つのみ指定可能\n\t * - すでにフォルダがある場合はエラーを返す。\n\t * @returns {boolean}\n\t */\n\tmkdir() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst filename = this.getAbsolutePath();\n\t\tif(this.fso.FileExists(filename)) {\n\t\t\t// ファイルがあるため、フォルダを作れない\n\t\t\treturn false;\n\t\t}\n\t\telse if(this.fso.FolderExists(filename)) {\n\t\t\t// フォルダが既にあるため、TRUEで返す\n\t\t\treturn true;\n\t\t}\n\t\t// フォルダがないので作成する\n\t\tthis.fso.CreateFolder(filename);\n\t\t// 10秒間作られるまで待つ\n\t\tfor(let i = 0; i < (20 * 10); i++) {\n\t\t\tif(this.fso.FolderExists(filename)) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t\tWScript.Sleep(50); // 50ms\n\t\t}\n\t\t// いつまで待ってもフォルダが作られないので失敗\n\t\treturn false;\n\t}\n\n\t/**\n\t * フォルダを作成\n\t * - 作成したいフォルダを続けて記載が可能\n\t * - フォルダがない場合はフォルダを作成していく\n\t * @returns {boolean}\n\t */\n\tmkdirs() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst name = this.pathname.replace(/\\//g, \"\\\\\").split(\"\\\\\");\n\t\tlet dir  = \"\";\n\t\tfor(let i = 0; i < name.length; i++) {\n\t\t\tdir += name[i];\n\t\t\tif(!(new SFile(dir)).mkdir()) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tdir += \"\\\\\";\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * 実行ファイルを起動する\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t * @returns {void}\n\t */\n\trun(style, is_wait) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst objWShell = new ActiveXObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\tobjWShell.Run(this.getAbsolutePath(), intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 1行書き加える\n\t * @param {string} text\n\t * @returns {boolean}\n\t */\n\twriteLine(text) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet file;\n\t\tif(this.isFile()) {\n\t\t\tconst ForAppending = 8;\n\t\t\tfile = this.fso.OpenTextFile(this.pathname, ForAppending);\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\telse {\n\t\t\tfile = this.fso.CreateTextFile(this.pathname, true);\n\t\t}\n\t\tfile.WriteLine(text);\n\t\tfile.Close();\n\t\treturn true;\n\t}\n\n\t/**\n\t * テキストファイルを開く\n\t * @param {string} [charset=\"_autodetect_all\"] - 文字コード\n\t * @returns {string}\n\t */\n\tgetTextFile(charset) {\n\t\tconst icharset = charset !== undefined ? charset : \"_autodetect_all\";\n\t\tconst inewline = \"\\n\"; //javascript上での改行\n\t\tlet text = null;\n\t\tif(/^htt/.test(this.pathname)) {\n\t\t\tconst http = SFile.createXMLHttpRequest();\n\t\t\tif(http === null) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\thttp.open(\"GET\", this.pathname, false);\n\t\t\ttry {\n\t\t\t\thttp.send(null);\n\t\t\t\ttext = http.responseText;\n\t\t\t}\n\t\t\tcatch (e) {\n\t\t\t\tconsole.log(e);\n\t\t\t\ttext = \"error\";\n\t\t\t}\n\t\t}\n\t\telse {\n\t\t\tif(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {\n\t\t\t\t// Scripting.FileSystemObject で開く\n\t\t\t\tconst forreading = 1;\n\t\t\t\tlet tristate = 0;\n\t\t\t\tif(/ascii/i.test(icharset)) {\n\t\t\t\t\t// ASCII\n\t\t\t\t\ttristate = 0;\n\t\t\t\t}\n\t\t\t\telse if(/shift_jis|sjis/i.test(icharset)) {\n\t\t\t\t\t// システムのデフォルト(日本語のOSだと仮定)\n\t\t\t\t\ttristate = -2;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\t// utf-16le\n\t\t\t\t\ttristate = -1;\n\t\t\t\t}\n\t\t\t\tconst open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );\n\t\t\t\ttext = open_file.ReadAll();\n\t\t\t\topen_file.Close();\n\t\t\t}\n\t\t\telse {\n\t\t\t\t// より自由なコードで開く（速度は遅い）\n\t\t\t\t// 使用可能な charset については下記を参照\n\t\t\t\t// HKEY_CLASSES_ROOT\\MIME\\Database\\Charset\n\t\t\t\tconst adTypeText = 2;\n\t\t\t\tconst adReadAll = -1;\n\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\tstream.type = adTypeText;\n\t\t\t\tstream.charset = icharset;\n\t\t\t\tstream.open();\n\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\tstream.close();\n\t\t\t\t// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する\n\t\t\t\tif((icharset === \"_autodetect_all\")||(icharset === \"_autodetect\")) {\n\t\t\t\t\tlet newcharset = \"\";\n\t\t\t\t\t// 1文字以上のとき\n\t\t\t\t\tif(text.length > 1) {\n\t\t\t\t\t\t// utf-16le\n\t\t\t\t\t\tif(text.charCodeAt(0) === 0xfeff) {\n\t\t\t\t\t\t\t// 通常は、このルートはBOM付きutf-16leのときに通るが、\n\t\t\t\t\t\t\t// BOM付きutf-8でも通る場合がなぜかある。（後述）\n\t\t\t\t\t\t\tnewcharset = \"unicode\";\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// utf-16be\n\t\t\t\t\t\telse if(text.charCodeAt(0) === 0xfffe) {\n\t\t\t\t\t\t\tnewcharset = \"unicodeFFFE\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 2文字以上のとき\n\t\t\t\t\tif(text.length > 2) {\n\t\t\t\t\t\t// BOM付きutf-8でなぜかこの文字がくっつく場合がある。\n\t\t\t\t\t\tif(\t(text.charCodeAt(0) === 0x30fb) &&\n\t\t\t\t\t\t\t(text.charCodeAt(1) === 0xff7f)) {\n\t\t\t\t\t\t\tnewcharset = \"utf-8\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 3文字以上のとき\n\t\t\t\t\tif(text.length > 3) {\n\t\t\t\t\t\t// utf-8\n\t\t\t\t\t\tif(\t(text.charCodeAt(0) === 0xef) &&\n\t\t\t\t\t\t\t(text.charCodeAt(1) === 0xbb) &&\n\t\t\t\t\t\t\t(text.charCodeAt(2) === 0xbf)) {\n\t\t\t\t\t\t\tnewcharset = \"utf-8\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 上判定でBOM付きが分かった場合、正しい文字コードで取得する\n\t\t\t\t\tif(newcharset !== \"\") {\n\t\t\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\t\t\tstream.type = adTypeText;\n\t\t\t\t\t\tstream.charset = newcharset;\n\t\t\t\t\t\tstream.open();\n\t\t\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\t\t\tstream.close();\n\t\t\t\t\t}\n\t\t\t\t\t// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処\n\t\t\t\t\tif((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {\n\t\t\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\t\t\tstream.type = adTypeText;\n\t\t\t\t\t\tstream.charset = \"utf-8\";\n\t\t\t\t\t\tstream.open();\n\t\t\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\t\t\tstream.close();\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tif(text !== null) {\n\t\t\treturn text.replace(/\\r\\n?|\\n/g, inewline); //改行コードを統一\n\t\t}\n\t\telse {\n\t\t\treturn null;\n\t\t}\n\t}\n\n\t/**\n\t * テキストファイルを保存\n\t * @param {string} text\n\t * @param {string} [charset=\"utf-8\"] - 文字コード\n\t * @param {string} [newline=\"\\n\"] - 改行コード\n\t * @param {boolean} [issetBOM=true] - BOMの有無(utf-8のみ有効 )\n\t * @returns {boolean}\n\t */\n\tsetTextFile(text, charset, newline, issetBOM) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst icharset = charset !== undefined ? charset : \"utf-8\";\n\t\tconst inewline = newline !== undefined ? newline : \"\\n\";\n\t\tconst iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし\n\t\tif(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {\n\t\t\t// Scripting.FileSystemObject で書き込む\n\t\t\tconst forwriting = 2;\n\t\t\tlet tristate = 0;\n\t\t\tif(/ascii/i.test(icharset)) {\n\t\t\t\t// ASCII\n\t\t\t\ttristate = 0;\n\t\t\t}\n\t\t\telse if(/shift_jis|sjis/i.test(icharset)) {\n\t\t\t\t// システムのデフォルト(日本語のOSだと仮定)\n\t\t\t\ttristate = -2;\n\t\t\t}\n\t\t\telse {\n\t\t\t\t// utf-16le\n\t\t\t\ttristate = -1;\n\t\t\t}\n\t\t\tconst open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );\n\t\t\topen_file.Write(text.replace(/\\r\\n?|\\n/g, inewline));\n\t\t\topen_file.Close();\n\t\t}\n\t\telse {\n\t\t\t// ADODB.Streamで書き込む\n\t\t\tconst adTypeBinary = 1;\n\t\t\tconst adTypeText = 2;\n\t\t\tconst adSaveCreateOverWrite = 2;\n\t\t\t// 使用可能な charset については下記を参照\n\t\t\t// HKEY_CLASSES_ROOT\\MIME\\Database\\Charset\n\t\t\tlet stream;\n\t\t\tstream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = icharset;\n\t\t\tstream.open();\n\t\t\tstream.writeText(text.replace(/\\r\\n?|\\n/g, inewline)); //改行コードを統一\n\t\t\tif(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {\n\t\t\t\tstream.position = 0;\n\t\t\t\tstream.type = adTypeBinary;\n\t\t\t\tstream.position = 3;\n\t\t\t\tconst binary = stream.read();\n\t\t\t\tstream.close();\n\t\t\t\tstream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\tstream.type = adTypeBinary;\n\t\t\t\tstream.open();\n\t\t\t\tstream.write(binary);\n\t\t\t}\n\t\t\tstream.saveToFile(this.pathname, adSaveCreateOverWrite);\n\t\t\tstream.close();\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * バイナリファイルを開く（激重）\n\t * @returns {number[]}\n\t */\n\tgetBinaryFile() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst adTypeText = 2;\n\t\tconst adReadAll = -1;\n\t\tconst charset = \"iso-8859-1\";\n\t\t\n\t\t/**\n\t\t * @type {Object<number, number>}\n\t\t * @private\n\t\t */\n\t\tconst map = {\n\t\t\t0x20AC\t:\t0x80\t,\t//\t8364\t128\n\t\t\t0x201A\t:\t0x82\t,\t//\t8218\t130\n\t\t\t0x0192\t:\t0x83\t,\t//\t402\t131\n\t\t\t0x201E\t:\t0x84\t,\t//\t8222\t132\n\t\t\t0x2026\t:\t0x85\t,\t//\t8230\t133\n\t\t\t0x2020\t:\t0x86\t,\t//\t8224\t134\n\t\t\t0x2021\t:\t0x87\t,\t//\t8225\t135\n\t\t\t0x02C6\t:\t0x88\t,\t//\t710\t136\n\t\t\t0x2030\t:\t0x89\t,\t//\t8240\t137\n\t\t\t0x0160\t:\t0x8A\t,\t//\t352\t138\n\t\t\t0x2039\t:\t0x8B\t,\t//\t8249\t139\n\t\t\t0x0152\t:\t0x8C\t,\t//\t338\t140\n\t\t\t0x017D\t:\t0x8E\t,\t//\t381\t142\n\t\t\t0x2018\t:\t0x91\t,\t//\t8216\t145\n\t\t\t0x2019\t:\t0x92\t,\t//\t8217\t146\n\t\t\t0x201C\t:\t0x93\t,\t//\t8220\t147\n\t\t\t0x201D\t:\t0x94\t,\t//\t8221\t148\n\t\t\t0x2022\t:\t0x95\t,\t//\t8226\t149\n\t\t\t0x2013\t:\t0x96\t,\t//\t8211\t150\n\t\t\t0x2014\t:\t0x97\t,\t//\t8212\t151\n\t\t\t0x02DC\t:\t0x98\t,\t//\t732\t152\n\t\t\t0x2122\t:\t0x99\t,\t//\t8482\t153\n\t\t\t0x0161\t:\t0x9A\t,\t//\t353\t154\n\t\t\t0x203A\t:\t0x9B\t,\t//\t8250\t155\n\t\t\t0x0153\t:\t0x9C\t,\t//\t339\t156\n\t\t\t0x017E\t:\t0x9E\t,\t//\t382\t158\n\t\t\t0x0178\t:\t0x9F\t\t//\t376\t159\n\t\t};\n\t\ttry {\n\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = charset;\n\t\t\tstream.open();\n\t\t\tstream.loadFromFile(this.pathname);\n\t\t\tconst text = stream.readText(adReadAll);\n\t\t\tstream.close();\n\t\t\tconst out = new Array(text.length);\n\t\t\tfor(let i = 0;i < text.length;i++) {\n\t\t\t\tconst x = text.charCodeAt(i);\n\t\t\t\tif(0xFF < x) {\n\t\t\t\t\tout[i] = map[x];\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tout[i] = x;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn out;\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn [];\n\t\t}\n\t}\n\n\t/**\n\t * バイナリファイルを保存（激重）\n\t * @param {number[]} array_\n\t * @returns {boolean}\n\t */\n\tsetBinaryFile(array_) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet is_write = true;\n\t\tconst adTypeText = 2;\n\t\tconst adSaveCreateOverWrite = 2;\n\t\tconst charset = \"iso-8859-1\";\n\t\tconst buffersize = 512;\n\t\ttry {\n\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = charset;\n\t\t\tstream.open();\n\t\t\tfor(let i = 0;i < array_.length;) {\n\t\t\t\tconst text = [];\n\t\t\t\tfor(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {\n\t\t\t\t\ttext[j] = String.fromCharCode(array_[i]);\n\t\t\t\t}\n\t\t\t\tstream.writeText(text.join(\"\"));\n\t\t\t}\n\t\t\tstream.saveToFile(this.pathname, adSaveCreateOverWrite);\n\t\t\tstream.close();\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\tis_write = false;\n\t\t}\n\t\treturn is_write;\n\t}\n\n\t/**\n\t * XMLHttpRequestを作成\n\t * @returns {XMLHttpRequest}\n\t */\n\tstatic createXMLHttpRequest() {\n\t\ttry {\n\t\t\treturn new XMLHttpRequest();\n\t\t}\n\t\tcatch (e) {\n\t\t\tconst MSXMLHTTP = [\n\t\t\t\t\"WinHttp.WinHttpRequest.5.1\",\n\t\t\t\t\"WinHttp.WinHttpRequest.5\",\n\t\t\t\t\"WinHttp.WinHttpRequest\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.6.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.5.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.4.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.3.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP\",\n\t\t\t\t\"Microsoft.ServerXMLHTTP\",\n\t\t\t\t\"Msxml2.XMLHTTP.6.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.5.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.4.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.3.0\",\n\t\t\t\t\"Msxml2.XMLHTTP\",\n\t\t\t\t\"Microsoft.XMLHTTP\"\n\t\t\t];\n\t\t\t// ※ WinHttp.WinHttpRequest は onreadystatechange の書き換えができない\n\t\t\tlet i;\n\t\t\tfor(i = 0; i < MSXMLHTTP.length; i++) {\n\t\t\t\ttry {\n\t\t\t\t\treturn new ActiveXObject(MSXMLHTTP[i]);\n\t\t\t\t}\n\t\t\t\tcatch (e) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn null;\n\t\t}\n\t}\n\t\n\t/**\n\t * テンポラリフォルダ内の適当なファイル名を取得\n\t * @returns {SFile}\n\t */\n\tstatic createTempFile() {\n\t\tconst TemporaryFolder = 2;\n\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\t// テンポラリフォルダ内の適当なファイル名を取得します\n\t\treturn new SFile(fso.GetSpecialFolder(TemporaryFolder) + \"\\\\\" + fso.GetTempName());\n\t}\n\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {SFile}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn new SFile(shell.CurrentDirectory);\n\t}\n\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string|SFile} file_obj\n\t */\n\tstatic setCurrentDirectory(file_obj) {\n\t\tconst file = new SFile(file_obj);\n\t\tconst shell = WScript.CreateObject (\"WScript.Shell\");\n\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\tshell.CurrentDirectory = fso.GetFolder(file.getAbsolutePath()).Name;\n\t}\n\n\t/**\n\t * フォルダの中のフォルダとファイルに対して指定した関数を実行する\n\t * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。\n\t * @returns {boolean} result\n\t */\n\teach(func) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn func.call(func, this);\n\t\t}\n\t\tconst path = [];\n\t\tconst collection = [];\n\t\tlet file;\n\t\tlet pointer = 0;\n\t\tlet list;\n\t\tlet targetfolder;\n\t\tpath[pointer] = this.getNormalizedPathName();\n\n\t\t// 1階層目を処理する\n\t\ttargetfolder = this.fso.GetFolder(path[pointer]);\n\t\tlist = new Enumerator(this.fso.GetFolder(targetfolder).Files);\n\t\tfor(; !list.atEnd(); list.moveNext()) {\n\t\t\tfile = new SFile(path[pointer] + list.item().Name);\n\t\t\tif(!func.call(func, file)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\n\t\t// 2階層目以降を処理する\n\t\tif(targetfolder.SubFolders.Count === 0) {\n\t\t\treturn false;\n\t\t}\n\t\tcollection[pointer] = new Enumerator(targetfolder.SubFolders);\n\t\tpointer++;\n\t\twhile(true) {\n\t\t\tpath[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;\n\t\t\tfile = new SFile(path[pointer]);\n\t\t\tif(!func.call(func, file)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tpath[pointer] += \"\\\\\";\n\t\t\ttargetfolder = this.fso.GetFolder(path[pointer]);\n\t\t\tlist = new Enumerator(targetfolder.Files);\n\t\t\tfor(; !list.atEnd(); list.moveNext()) {\n\t\t\t\tfile = new SFile(path[pointer] + list.item().Name);\n\t\t\t\tif(!func.call(func, file)) {\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(targetfolder.SubFolders.Count === 0) {\n\t\t\t\twhile(true) {\n\t\t\t\t\tif(pointer === 0) {\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t\tcollection[pointer - 1].moveNext();\n\t\t\t\t\tif(collection[pointer - 1].atEnd()) {\n\t\t\t\t\t\tpointer--;\n\t\t\t\t\t\tcontinue;\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(pointer === 0) {\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t\telse {\n\t\t\t\tcollection[pointer] = new Enumerator(targetfolder.SubFolders);\n\t\t\t\tpointer++;\n\t\t\t}\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * サブフォルダの中まで探索して全てのファイルとフォルダを取得\n\t * @returns {SFile[]}\n\t */\n\tgetAllFiles() {\n\t\t/**\n\t\t * @type {SFile[]}\n\t\t */\n\t\tconst out = [];\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tout.push(file);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn out;\n\t}\n\n\t/**\n\t * 指定した条件にあうファイルを探す\n\t * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます\n\t * @param {string|SFile|function(string, string): boolean} file_obj\n\t * @returns {SFile|null}\n\t */\n\tsearchFile(file_obj) {\n\t\tlet target_file = null;\n\t\t/**\n\t\t * @type {function(string, string): boolean}\n\t\t * @private\n\t\t */\n\t\tlet isTarget;\n\t\tif(typeof file_obj !== \"function\") {\n\t\t\tconst file = new SFile(file_obj);\n\t\t\tconst buffer = file.getName();\n\t\t\tisTarget = function(name, fullpath) {\n\t\t\t\treturn name === buffer;\n\t\t\t};\n\t\t}\n\t\telse {\n\t\t\tisTarget = file_obj;\n\t\t}\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tif(isTarget(file.getName(), file.getAbsolutePath())) {\n\t\t\t\ttarget_file = file;\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn target_file;\n\t}\n\n}\n",
@@ -7631,7 +7727,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 199,
+    "__docId__": 203,
     "kind": "class",
     "name": "SFile",
     "memberof": "src/senko/SFile.js",
@@ -7646,7 +7742,7 @@
     "interface": false
   },
   {
-    "__docId__": 200,
+    "__docId__": 204,
     "kind": "constructor",
     "name": "constructor",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7672,7 +7768,7 @@
     ]
   },
   {
-    "__docId__": 201,
+    "__docId__": 205,
     "kind": "member",
     "name": "pathname",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7691,7 +7787,7 @@
     }
   },
   {
-    "__docId__": 204,
+    "__docId__": 208,
     "kind": "member",
     "name": "is_http",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7710,7 +7806,7 @@
     }
   },
   {
-    "__docId__": 205,
+    "__docId__": 209,
     "kind": "member",
     "name": "fso",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7729,7 +7825,7 @@
     }
   },
   {
-    "__docId__": 206,
+    "__docId__": 210,
     "kind": "method",
     "name": "remove",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7770,7 +7866,7 @@
     }
   },
   {
-    "__docId__": 207,
+    "__docId__": 211,
     "kind": "method",
     "name": "exists",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7798,7 +7894,7 @@
     "params": []
   },
   {
-    "__docId__": 208,
+    "__docId__": 212,
     "kind": "method",
     "name": "copy",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7838,7 +7934,7 @@
     }
   },
   {
-    "__docId__": 209,
+    "__docId__": 213,
     "kind": "method",
     "name": "move",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7878,7 +7974,7 @@
     }
   },
   {
-    "__docId__": 212,
+    "__docId__": 216,
     "kind": "method",
     "name": "renameTo",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7918,7 +8014,7 @@
     }
   },
   {
-    "__docId__": 214,
+    "__docId__": 218,
     "kind": "method",
     "name": "toString",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7946,7 +8042,7 @@
     "params": []
   },
   {
-    "__docId__": 215,
+    "__docId__": 219,
     "kind": "method",
     "name": "getName",
     "memberof": "src/senko/SFile.js~SFile",
@@ -7974,7 +8070,7 @@
     "params": []
   },
   {
-    "__docId__": 216,
+    "__docId__": 220,
     "kind": "method",
     "name": "getParent",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8002,7 +8098,7 @@
     "params": []
   },
   {
-    "__docId__": 217,
+    "__docId__": 221,
     "kind": "method",
     "name": "getParentFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8030,7 +8126,7 @@
     "params": []
   },
   {
-    "__docId__": 218,
+    "__docId__": 222,
     "kind": "method",
     "name": "getExtensionName",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8058,7 +8154,7 @@
     "params": []
   },
   {
-    "__docId__": 219,
+    "__docId__": 223,
     "kind": "method",
     "name": "isAbsolute",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8086,7 +8182,7 @@
     "params": []
   },
   {
-    "__docId__": 220,
+    "__docId__": 224,
     "kind": "method",
     "name": "isDirectory",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8114,7 +8210,7 @@
     "params": []
   },
   {
-    "__docId__": 221,
+    "__docId__": 225,
     "kind": "method",
     "name": "isFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8142,7 +8238,7 @@
     "params": []
   },
   {
-    "__docId__": 222,
+    "__docId__": 226,
     "kind": "method",
     "name": "isReadOnly",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8170,7 +8266,7 @@
     "params": []
   },
   {
-    "__docId__": 223,
+    "__docId__": 227,
     "kind": "method",
     "name": "setReadOnly",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8221,7 +8317,7 @@
     }
   },
   {
-    "__docId__": 224,
+    "__docId__": 228,
     "kind": "method",
     "name": "isHidden",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8249,7 +8345,7 @@
     "params": []
   },
   {
-    "__docId__": 225,
+    "__docId__": 229,
     "kind": "method",
     "name": "setHidden",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8300,7 +8396,7 @@
     }
   },
   {
-    "__docId__": 226,
+    "__docId__": 230,
     "kind": "method",
     "name": "lastModified",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8328,7 +8424,7 @@
     "params": []
   },
   {
-    "__docId__": 227,
+    "__docId__": 231,
     "kind": "method",
     "name": "setLastModified",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8367,7 +8463,7 @@
     }
   },
   {
-    "__docId__": 228,
+    "__docId__": 232,
     "kind": "method",
     "name": "length",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8395,7 +8491,7 @@
     "params": []
   },
   {
-    "__docId__": 229,
+    "__docId__": 233,
     "kind": "method",
     "name": "getFiles",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8423,7 +8519,7 @@
     "params": []
   },
   {
-    "__docId__": 230,
+    "__docId__": 234,
     "kind": "method",
     "name": "getSubFolders",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8451,7 +8547,7 @@
     "params": []
   },
   {
-    "__docId__": 231,
+    "__docId__": 235,
     "kind": "method",
     "name": "getNormalizedPathName",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8479,7 +8575,7 @@
     "params": []
   },
   {
-    "__docId__": 232,
+    "__docId__": 236,
     "kind": "method",
     "name": "list",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8507,7 +8603,7 @@
     "params": []
   },
   {
-    "__docId__": 233,
+    "__docId__": 237,
     "kind": "method",
     "name": "getAbsolutePath",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8535,7 +8631,7 @@
     "params": []
   },
   {
-    "__docId__": 234,
+    "__docId__": 238,
     "kind": "method",
     "name": "mkdir",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8563,7 +8659,7 @@
     "params": []
   },
   {
-    "__docId__": 235,
+    "__docId__": 239,
     "kind": "method",
     "name": "mkdirs",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8591,7 +8687,7 @@
     "params": []
   },
   {
-    "__docId__": 236,
+    "__docId__": 240,
     "kind": "method",
     "name": "run",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8644,7 +8740,7 @@
     }
   },
   {
-    "__docId__": 237,
+    "__docId__": 241,
     "kind": "method",
     "name": "writeLine",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8683,7 +8779,7 @@
     }
   },
   {
-    "__docId__": 238,
+    "__docId__": 242,
     "kind": "method",
     "name": "getTextFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8724,7 +8820,7 @@
     }
   },
   {
-    "__docId__": 239,
+    "__docId__": 243,
     "kind": "method",
     "name": "setTextFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8799,7 +8895,7 @@
     }
   },
   {
-    "__docId__": 240,
+    "__docId__": 244,
     "kind": "method",
     "name": "getBinaryFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8827,7 +8923,7 @@
     "params": []
   },
   {
-    "__docId__": 241,
+    "__docId__": 245,
     "kind": "method",
     "name": "setBinaryFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8866,7 +8962,7 @@
     }
   },
   {
-    "__docId__": 242,
+    "__docId__": 246,
     "kind": "method",
     "name": "createXMLHttpRequest",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8894,7 +8990,7 @@
     "params": []
   },
   {
-    "__docId__": 243,
+    "__docId__": 247,
     "kind": "method",
     "name": "createTempFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8922,7 +9018,7 @@
     "params": []
   },
   {
-    "__docId__": 244,
+    "__docId__": 248,
     "kind": "method",
     "name": "getCurrentDirectory",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8950,7 +9046,7 @@
     "params": []
   },
   {
-    "__docId__": 245,
+    "__docId__": 249,
     "kind": "method",
     "name": "setCurrentDirectory",
     "memberof": "src/senko/SFile.js~SFile",
@@ -8977,7 +9073,7 @@
     "return": null
   },
   {
-    "__docId__": 246,
+    "__docId__": 250,
     "kind": "method",
     "name": "each",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9016,7 +9112,7 @@
     }
   },
   {
-    "__docId__": 247,
+    "__docId__": 251,
     "kind": "method",
     "name": "getAllFiles",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9044,7 +9140,7 @@
     "params": []
   },
   {
-    "__docId__": 248,
+    "__docId__": 252,
     "kind": "method",
     "name": "searchFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9086,7 +9182,7 @@
     }
   },
   {
-    "__docId__": 249,
+    "__docId__": 253,
     "kind": "file",
     "name": "src/senko/System.js",
     "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Format from \"./Format.js\";\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_wscript = /wscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_cscript = /cscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * 文字列へ変換します。\n * @param {any} data \n * @private\n */\nconst toString = function(data) {\n\tif(data === null) {\n\t\treturn \"[null]\";\n\t}\n\telse if(data === undefined) {\n\t\treturn \"[undefined]\";\n\t}\n\tconst string_data = data.toString();\n\tif(string_data === \"[object Error]\") {\n\t\tconst e = data;\n\t\tconst error_name\t= e.name ? e.name : \"Error\";\n\t\tconst error_number\t= e.number ? Format.textf(\"0x%08X\", e.number) : \"0x00000000\";\n\t\tconst error_message\t= e.message ? e.message : \"エラーが発生しました。\";\n\t\treturn Format.textf(\"%s(%s) %s\", error_name, error_number, error_message);\n\t}\n\treturn string_data;\n};\n\n\n/**\n * 実行結果\n * @typedef {Object} SystemExecResult\n * @property {string} out\n * @property {string} error\n * @property {number} exit_code\n */\n\n/**\n * システム用のクラス\n * - 文字列の入出力\n * - スリープ、停止\n * - GUIモード、CUIモードの切り替え\n * - バッチファイルへの引数の情報\n * - カレントディレクトリ情報\n */\nexport default class System {\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行されない）\n\t * @param {any} text\n\t */\n\tstatic print(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tWSH.StdOut.Write(output);\n\t\t}\n\t\telse {\n\t\t\tWScript.Echo(output);\n\t\t}\n\t}\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行される）\n\t * @param {any} text\n\t */\n\tstatic println(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tSystem.print(output + \"\\n\");\n\t\t}\n\t\telse {\n\t\t\tSystem.print(output);\n\t\t}\n\t}\n\n\t/**\n\t * 指定したフォーマットで整形した文字列を表示\n\t * @param {any} text \n\t * @param {...any} parm パラメータは可変引数\n\t */\n\tstatic printf() {\n\t\tconst x = [];\n\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\tx[i] = arguments[i];\n\t\t\tif(i === 0) {\n\t\t\t\tx[i] = toString(x[i]);\n\t\t\t}\n\t\t}\n\t\tSystem.println(Format.textf.apply(this, x));\n\t}\n\n\t/**\n\t * キーボードのテキスト入力を取得\n\t * @returns {string}\n\t */\n\tstatic readLine() {\n\t\treturn WScript.StdIn.ReadLine();\n\t}\n\t\n\t/**\n\t * UNIX時間をミリ秒で取得\n\t * @returns {number}\n\t */\n\tstatic currentTimeMillis() {\n\t\tconst date = new Date();\n\t\treturn date.getTime();\n\t}\n\n\t/**\n\t * 処理を一時停止\n\t * @param {number} time_sec\n\t */\n\tstatic sleep(time_sec) {\n\t\tWScript.Sleep((time_sec * 1000) | 0);\n\t}\n\t\n\t/**\n\t * 処理を停止\n\t */\n\tstatic stop() {\n\t\twhile(true) {\n\t\t\tWScript.Sleep(1000);\n\t\t}\n\t}\n\t\n\t/**\n\t * ビープ音を鳴らす\n\t * @param {number} frequency_hz - 周波数\n\t * @param {number} time_sec - 鳴らす秒数\n\t */\n\tstatic beep(frequency_hz, time_sec) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"kernel32.dll\",\n\t\t\t\"bool Beep(uint dwFreq, uint dwDuration)\",\n\t\t\t\"$api::Beep(\" + (frequency_hz | 0) + \", \" + ((time_sec * 1000) | 0) + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したコマンドを別プロセスとして実行する\n\t * @param {string} command - コマンド\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t */\n\tstatic run(command, style, is_wait) {\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\treturn shell.Run(command, intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 指定したコマンドを子プロセスとして実行する\n\t * @param {string} command \n\t * @returns {SystemExecResult}\n\t */\n\tstatic exec(command) {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tconst exec = shell.Exec(command);\n\t\tconst stdin = exec.StdIn;\n\t\tconst stdout = exec.StdOut;\n\t\tconst stderr = exec.StdErr;\n\t\twhile(exec.Status === 0) {\n\t\t\tWScript.Sleep(10);\n\t\t}\n\t\tconst exit_code = exec.ExitCode;\n\t\tstdin.Close();\n\t\t// @ts-ignore\n\t\tconst out = stdout.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstdout.Close();\n\t\t// @ts-ignore\n\t\tconst error = stderr.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstderr.Close();\n\t\treturn {\n\t\t\texit_code : exit_code,\n\t\t\tout : out,\n\t\t\terror : error\n\t\t};\n\t}\n\n\t/**\n\t * プログラムを終了させます。\n\t * @param {number} [exit_code=0] \n\t */\n\tstatic exit(exit_code) {\n\t\tWScript.Quit(exit_code ? exit_code : 0);\n\t}\n\t\n\t/**\n\t * CUIで起動しなおす\n\t * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）\n\t */\n\tstatic executeOnCScript(is_use_chakra) {\n\t\tconst iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;\n\t\tif(is_wscript) {\n\t\t\t// CScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\cscript.exe\\\"\");\n\t\t\tcode.push(\"//NoLogo\");\n\t\t\tif(iis_use_chakra) {\n\t\t\t\tcode.push(\"//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}\");\n\t\t\t}\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * GUIで起動しなおす\n\t */\n\tstatic executeOnWScript() {\n\t\t// cscriptで起動しているか\n\t\tif(is_cscript) {\n\t\t\t// WScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\wscript.exe\\\"\");\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * スクリプトファイルへの引数を取得\n\t * @returns {string[]}\n\t */\n\tstatic getArguments() {\n\t\tconst args = [];\n\t\tfor(let i = 0; i < WScript.Arguments.length; i++) {\n\t\t\targs[i] = WScript.Arguments(i);\n\t\t}\n\t\treturn args;\n\t}\n\t\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string} filename\n\t */\n\tstatic setCurrentDirectory(filename) {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = filename.toString();\n\t}\n\t\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn shell.CurrentDirectory;\n\t}\n\n\t/**\n\t * 実行中のスクリプトがあるカレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getScriptDirectory() {\n\t\tconst x = WSH.ScriptFullName.match(/.*\\\\/)[0];\n\t\treturn(x.substring(0 ,x.length - 1));\n\t}\n\t\n\t/**\n\t * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定\n\t */\n\tstatic initializeCurrentDirectory() {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = System.getScriptDirectory();\n\t}\n\n\t/**\n\t * PowerShell を実行する\n\t * @param {string} source\n\t * @returns {string}\n\t */\n\tstatic PowerShell(source) {\n\t\tconst powershell_base = \"powershell -sta -Command\";\n\t\tconst command = (powershell_base + \" \" + source).replace(/([\\\\\"])/g, \"\\\\$1\");\n\t\treturn System.exec(command).out.replace(/\\r?\\n$/, \"\");\n\t}\n\n\t/**\n\t * WindowsAPI を実行する\n\t * \n\t * 例\n\t * - dll_name : user32.dll\n\t * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n\t * - exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);\n\t * @param {string} dll_name - 利用するdll\n\t * @param {string} function_text - 関数の定義データ($apiに代入されます。)\n\t * @param {string} exec_text - 実行コマンド\n\t * @returns {string}\n\t */\n\tstatic WindowsAPI(dll_name, function_text, exec_text) {\n\t\t// 利用例\n\t\t// System.WindowsAPI(\n\t\t// \t\"user32.dll\",\n\t\t// \t\"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\",\n\t\t// \t\"$api::MessageBox(0, \\\"テキスト\\\", \\\"キャプション\\\", 0);\"\n\t\t// );\n\t\t// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する\n\t\t// eslint-disable-next-line quotes\n\t\tconst api_base = `$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"` + dll_name + `\"\")] public extern static ` + function_text + `;\" -PassThru;`;\n\t\tconst command = api_base + \" \" + exec_text;\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードからテキストを取得する\n\t * @returns {string}\n\t */\n\tstatic getClipBoardText() {\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();\";\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードへテキストを設定する\n\t * @param {string} text\n\t */\n\tstatic setClipBoardText(text) {\n\t\t// PowerShell 5.0以降\n\t\t// command = \"Set-Clipboard \\\"これでもコピー可能\\\"\";\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\\\"\" + text + \"\\\", 1);\";\n\t\tSystem.PowerShell(command);\n\t}\n\n}\n\n\n",
@@ -9097,7 +9193,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 250,
+    "__docId__": 254,
     "kind": "variable",
     "name": "is_wscript",
     "memberof": "src/senko/System.js",
@@ -9120,7 +9216,7 @@
     "ignore": true
   },
   {
-    "__docId__": 251,
+    "__docId__": 255,
     "kind": "variable",
     "name": "is_cscript",
     "memberof": "src/senko/System.js",
@@ -9143,7 +9239,7 @@
     "ignore": true
   },
   {
-    "__docId__": 252,
+    "__docId__": 256,
     "kind": "function",
     "name": "toString",
     "memberof": "src/senko/System.js",
@@ -9177,7 +9273,7 @@
     "ignore": true
   },
   {
-    "__docId__": 253,
+    "__docId__": 257,
     "kind": "typedef",
     "name": "SystemExecResult",
     "memberof": "src/senko/System.js",
@@ -9226,7 +9322,7 @@
     }
   },
   {
-    "__docId__": 254,
+    "__docId__": 258,
     "kind": "class",
     "name": "System",
     "memberof": "src/senko/System.js",
@@ -9241,7 +9337,7 @@
     "interface": false
   },
   {
-    "__docId__": 255,
+    "__docId__": 259,
     "kind": "method",
     "name": "print",
     "memberof": "src/senko/System.js~System",
@@ -9267,7 +9363,7 @@
     "return": null
   },
   {
-    "__docId__": 256,
+    "__docId__": 260,
     "kind": "method",
     "name": "println",
     "memberof": "src/senko/System.js~System",
@@ -9293,7 +9389,7 @@
     "return": null
   },
   {
-    "__docId__": 257,
+    "__docId__": 261,
     "kind": "method",
     "name": "printf",
     "memberof": "src/senko/System.js~System",
@@ -9329,7 +9425,7 @@
     "return": null
   },
   {
-    "__docId__": 258,
+    "__docId__": 262,
     "kind": "method",
     "name": "readLine",
     "memberof": "src/senko/System.js~System",
@@ -9357,7 +9453,7 @@
     "params": []
   },
   {
-    "__docId__": 259,
+    "__docId__": 263,
     "kind": "method",
     "name": "currentTimeMillis",
     "memberof": "src/senko/System.js~System",
@@ -9385,7 +9481,7 @@
     "params": []
   },
   {
-    "__docId__": 260,
+    "__docId__": 264,
     "kind": "method",
     "name": "sleep",
     "memberof": "src/senko/System.js~System",
@@ -9411,7 +9507,7 @@
     "return": null
   },
   {
-    "__docId__": 261,
+    "__docId__": 265,
     "kind": "method",
     "name": "stop",
     "memberof": "src/senko/System.js~System",
@@ -9426,7 +9522,7 @@
     "return": null
   },
   {
-    "__docId__": 262,
+    "__docId__": 266,
     "kind": "method",
     "name": "beep",
     "memberof": "src/senko/System.js~System",
@@ -9462,7 +9558,7 @@
     "return": null
   },
   {
-    "__docId__": 263,
+    "__docId__": 267,
     "kind": "method",
     "name": "run",
     "memberof": "src/senko/System.js~System",
@@ -9516,7 +9612,7 @@
     }
   },
   {
-    "__docId__": 264,
+    "__docId__": 268,
     "kind": "method",
     "name": "exec",
     "memberof": "src/senko/System.js~System",
@@ -9555,7 +9651,7 @@
     }
   },
   {
-    "__docId__": 265,
+    "__docId__": 269,
     "kind": "method",
     "name": "exit",
     "memberof": "src/senko/System.js~System",
@@ -9583,7 +9679,7 @@
     "return": null
   },
   {
-    "__docId__": 266,
+    "__docId__": 270,
     "kind": "method",
     "name": "executeOnCScript",
     "memberof": "src/senko/System.js~System",
@@ -9609,7 +9705,7 @@
     "return": null
   },
   {
-    "__docId__": 267,
+    "__docId__": 271,
     "kind": "method",
     "name": "executeOnWScript",
     "memberof": "src/senko/System.js~System",
@@ -9624,7 +9720,7 @@
     "return": null
   },
   {
-    "__docId__": 268,
+    "__docId__": 272,
     "kind": "method",
     "name": "getArguments",
     "memberof": "src/senko/System.js~System",
@@ -9652,7 +9748,7 @@
     "params": []
   },
   {
-    "__docId__": 269,
+    "__docId__": 273,
     "kind": "method",
     "name": "setCurrentDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9678,7 +9774,7 @@
     "return": null
   },
   {
-    "__docId__": 270,
+    "__docId__": 274,
     "kind": "method",
     "name": "getCurrentDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9706,7 +9802,7 @@
     "params": []
   },
   {
-    "__docId__": 271,
+    "__docId__": 275,
     "kind": "method",
     "name": "getScriptDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9734,7 +9830,7 @@
     "params": []
   },
   {
-    "__docId__": 272,
+    "__docId__": 276,
     "kind": "method",
     "name": "initializeCurrentDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9749,7 +9845,7 @@
     "return": null
   },
   {
-    "__docId__": 273,
+    "__docId__": 277,
     "kind": "method",
     "name": "PowerShell",
     "memberof": "src/senko/System.js~System",
@@ -9788,7 +9884,7 @@
     }
   },
   {
-    "__docId__": 274,
+    "__docId__": 278,
     "kind": "method",
     "name": "WindowsAPI",
     "memberof": "src/senko/System.js~System",
@@ -9847,7 +9943,7 @@
     }
   },
   {
-    "__docId__": 275,
+    "__docId__": 279,
     "kind": "method",
     "name": "getClipBoardText",
     "memberof": "src/senko/System.js~System",
@@ -9875,7 +9971,7 @@
     "params": []
   },
   {
-    "__docId__": 276,
+    "__docId__": 280,
     "kind": "method",
     "name": "setClipBoardText",
     "memberof": "src/senko/System.js~System",
@@ -9901,68 +9997,15 @@
     "return": null
   },
   {
-    "__docId__": 277,
+    "__docId__": 281,
     "kind": "file",
     "name": "src/SenkoWSH.js",
-    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport typeCSV from \"./senko/CSV.js\";\nimport typeDialog from \"./senko/Dialog.js\";\nimport typeSFile from \"./senko/SFile.js\";\nimport typeRobot from \"./senko/Robot.js\";\nimport typeFormat from \"./senko/Format.js\";\nimport typeRandom from \"./konpeito/Random.js\";\nimport typeJapanese from \"./mojijs/Japanese.js\";\nimport typeStringComparator from \"./mojijs/StringComparator.js\";\nimport typeSystem from \"./senko/System.js\";\n\n/**\n * @type {typeof typeCSV}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nCSV = typeCSV;\n\n/**\n * @type {typeof typeDialog}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nDialog = typeDialog;\n\n/**\n * @type {typeof typeSFile}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSFile = typeSFile;\n\n/**\n * @type {typeof typeRobot}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRobot = typeRobot;\n\n/**\n * @type {typeof typeFormat}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nFormat = typeFormat;\n\n/**\n * @type {typeof typeRandom}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRandom = typeRandom;\n\n/**\n * @type {typeof typeJapanese}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nJapanese = typeJapanese;\n\n/**\n * @type {typeof typeStringComparator}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nStringComparator = typeStringComparator;\n\n/**\n * @type {typeof typeSystem}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSystem = typeSystem;\n\n/**\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-global-assign\nconsole = {\n\t// @ts-ignore\n\tlog : function(text) {\n\t\t// @ts-ignore\n\t\t// eslint-disable-next-line no-undef\n\t\tSystem.println(text);\n\t}\n};\n\nimport typeExtendsArray from \"./senko/ExtendsArray.js\";\nimport typeExtendsObject from \"./senko/ExtendsObject.js\";\nimport typeExtendsString from \"./senko/ExtendsString.js\";\n\n/**\n * @type {typeof typeExtendsArray}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsArray = typeExtendsArray;\n\n/**\n * @type {typeof typeExtendsObject}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsObject = typeExtendsObject;\n\n/**\n * @type {typeof typeExtendsString}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nExtendsString = typeExtendsString;\n\n/**\n * @param {any} original \n * @param {any} extension\n * @returns {any}\n * @private\n * @ignore\n */\nconst extendClass = function(original, extension) {\n\tfor(const key in extension) {\n\t\toriginal.prototype[key] = function() {\n\t\t\tconst x = [];\n\t\t\tx.push(this);\n\t\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\t\tx.push(arguments[i]);\n\t\t\t}\n\t\t\treturn extension[key].apply(this, x);\n\t\t};\n\t}\n};\n\nextendClass(Array, typeExtendsArray);\nextendClass(Object, typeExtendsObject);\nextendClass(String, typeExtendsString);\n",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Polyfill from \"./senko/polyfill/Polyfill.js\";\nimport typeCSV from \"./senko/CSV.js\";\nimport typeDialog from \"./senko/Dialog.js\";\nimport typeSFile from \"./senko/SFile.js\";\nimport typeRobot from \"./senko/Robot.js\";\nimport typeFormat from \"./senko/Format.js\";\nimport typeRandom from \"./konpeito/Random.js\";\nimport typeJapanese from \"./mojijs/Japanese.js\";\nimport typeStringComparator from \"./mojijs/StringComparator.js\";\nimport typeSystem from \"./senko/System.js\";\n\n/**\n * 上書き防止用\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSenkoWSH = {\n\t\n\t/**\n \t * @type {typeof typeCSV}\n\t */\n\tCSV : typeCSV,\n\t\n\t/**\n \t * @type {typeof typeDialog}\n\t */\n\tDialog : typeDialog,\n\n\t/**\n \t * @type {typeof typeSFile}\n\t */\n\t SFile : typeSFile,\n\n\t/**\n \t * @type {typeof typeRobot}\n\t */\n\t Robot : typeRobot,\n\n\t/**\n \t * @type {typeof typeFormat}\n\t */\n\t Format : typeFormat,\n\n\t/**\n \t * @type {typeof typeRandom}\n\t */\n\t Random : typeRandom,\n\n\t/**\n \t * @type {typeof typeJapanese}\n\t */\n\t Japanese : typeJapanese,\n\n\t/**\n \t * @type {typeof typeStringComparator}\n\t */\n\t StringComparator : typeStringComparator,\n\n\t/**\n \t * @type {typeof typeSystem}\n\t */\n\t System : typeSystem,\n\n};\n\n/**\n * @type {typeof typeCSV}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nCSV = typeCSV;\n\n/**\n * @type {typeof typeDialog}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nDialog = typeDialog;\n\n/**\n * @type {typeof typeSFile}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSFile = typeSFile;\n\n/**\n * @type {typeof typeRobot}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRobot = typeRobot;\n\n/**\n * @type {typeof typeFormat}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nFormat = typeFormat;\n\n/**\n * @type {typeof typeRandom}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRandom = typeRandom;\n\n/**\n * @type {typeof typeJapanese}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nJapanese = typeJapanese;\n\n/**\n * @type {typeof typeStringComparator}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nStringComparator = typeStringComparator;\n\n/**\n * @type {typeof typeSystem}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSystem = typeSystem;\n\n/**\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-global-assign\nconsole = {\n\t// @ts-ignore\n\tlog : function(text) {\n\t\t// @ts-ignore\n\t\t// eslint-disable-next-line no-undef\n\t\tSenkoWSH.System.println(text);\n\t}\n};\n\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/SenkoWSH.js",
     "access": "public",
     "description": null,
     "lineNumber": 1
-  },
-  {
-    "__docId__": 278,
-    "kind": "function",
-    "name": "extendClass",
-    "memberof": "src/SenkoWSH.js",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/SenkoWSH.js~extendClass",
-    "access": "private",
-    "export": false,
-    "importPath": "senkowsh/src/SenkoWSH.js",
-    "importStyle": null,
-    "description": "",
-    "lineNumber": 142,
-    "ignore": true,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{any}"
-      }
-    ],
-    "params": [
-      {
-        "nullable": null,
-        "types": [
-          "any"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "original",
-        "description": ""
-      },
-      {
-        "nullable": null,
-        "types": [
-          "any"
-        ],
-        "spread": false,
-        "optional": false,
-        "name": "extension",
-        "description": ""
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "any"
-      ],
-      "spread": false,
-      "description": ""
-    }
   },
   {
     "kind": "index",
@@ -9974,7 +10017,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n\t\"name\": \"senkowsh\",\n\t\"version\": \"3.3.0\",\n\t\"description\": \"JScirpt library for WSH that gathers various functions.\",\n\t\"author\": \"natade-jp <natade3@gmail.com> (https://github.com/natade-jp)\",\n\t\"repository\": {\n\t\t\"type\": \"git\",\n\t\t\"url\": \"https://github.com/natade-jp/SenkoWSH\"\n\t},\n\t\"license\": \"MIT\",\n\t\"main\": \"./build/SenkoWSH.js\",\n\t\"keywords\": [\n\t\t\"wsh\"\n\t],\n\t\"directories\": {\n\t\t\"src\": \"src\",\n\t\t\"build\": \"build\",\n\t\t\"example\": \"examples\"\n\t},\n\t\"scripts\": {\n\t\t\"build\": \"node ./scripts/package.build.js\",\n\t\t\"dts\": \"node ./scripts/package.dts.js\",\n\t\t\"doc\": \"node ./scripts/package.doc.js\",\n\t\t\"start\": \"node ./scripts/execExample.js\"\n\t},\n\t\"devDependencies\": {\n\t\t\"@types/windows-script-host\": \"^5.8.3\",\n\t\t\"esdoc\": \"^1.1.0\",\n\t\t\"esdoc-standard-plugin\": \"^1.0.0\",\n\t\t\"eslint\": \"^6.5.1\",\n\t\t\"jsdoc\": \"^3.6.3\",\n\t\t\"jsdoc-export-default-interop\": \"^0.3.1\",\n\t\t\"mojijs\": \"^3.0.3\",\n\t\t\"rollup\": \"^1.23.1\",\n\t\t\"rollup-plugin-buble\": \"^0.19.8\",\n\t\t\"rollup-plugin-uglify\": \"^6.0.3\",\n\t\t\"rollup-plugin-uglify-es\": \"0.0.1\",\n\t\t\"tsd-jsdoc\": \"^2.4.0\"\n\t}\n}\n",
+    "content": "{\n\t\"name\": \"senkowsh\",\n\t\"version\": \"3.6.0\",\n\t\"description\": \"JScirpt library for WSH that gathers various functions.\",\n\t\"author\": \"natade-jp <natade3@gmail.com> (https://github.com/natade-jp)\",\n\t\"repository\": {\n\t\t\"type\": \"git\",\n\t\t\"url\": \"https://github.com/natade-jp/SenkoWSH\"\n\t},\n\t\"license\": \"MIT\",\n\t\"main\": \"./build/SenkoWSH.js\",\n\t\"keywords\": [\n\t\t\"wsh\"\n\t],\n\t\"directories\": {\n\t\t\"src\": \"src\",\n\t\t\"build\": \"build\",\n\t\t\"example\": \"examples\"\n\t},\n\t\"scripts\": {\n\t\t\"build\": \"node ./scripts/package.build.js\",\n\t\t\"dts\": \"node ./scripts/package.dts.js\",\n\t\t\"doc\": \"node ./scripts/package.doc.js\",\n\t\t\"start\": \"node ./scripts/execExample.js\"\n\t},\n\t\"devDependencies\": {\n\t\t\"@types/windows-script-host\": \"^5.8.3\",\n\t\t\"esdoc\": \"^1.1.0\",\n\t\t\"esdoc-standard-plugin\": \"^1.0.0\",\n\t\t\"eslint\": \"^6.5.1\",\n\t\t\"jsdoc\": \"^3.6.3\",\n\t\t\"jsdoc-export-default-interop\": \"^0.3.1\",\n\t\t\"mojijs\": \"^3.0.3\",\n\t\t\"rollup\": \"^1.23.1\",\n\t\t\"rollup-plugin-buble\": \"^0.19.8\",\n\t\t\"rollup-plugin-uglify\": \"^6.0.3\",\n\t\t\"rollup-plugin-uglify-es\": \"0.0.1\",\n\t\t\"tsd-jsdoc\": \"^2.4.0\"\n\t}\n}\n",
     "longname": "D:\\JavaScript\\SenkoWSH\\package.json",
     "name": "package.json",
     "static": true,

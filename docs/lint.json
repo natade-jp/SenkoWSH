@@ -1,43 +1,5 @@
 [
   {
-    "name": "ExtendsString.toUTF16ArrayfromCodePoint",
-    "filePath": "src/senko/ExtendsString.js",
-    "lines": [
-      {
-        "lineNumber": 185,
-        "line": "\t/**"
-      },
-      {
-        "lineNumber": 186,
-        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
-      },
-      {
-        "lineNumber": 187,
-        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
-      },
-      {
-        "lineNumber": 188,
-        "line": "\t * @returns {Array<number>} 変換後のテキスト"
-      },
-      {
-        "lineNumber": 189,
-        "line": "\t * @private"
-      },
-      {
-        "lineNumber": 190,
-        "line": "\t */"
-      },
-      {
-        "lineNumber": 191,
-        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
-      }
-    ],
-    "codeParams": [],
-    "docParams": [
-      "codepoint"
-    ]
-  },
-  {
     "name": "Format.textf",
     "filePath": "src/senko/Format.js",
     "lines": [
@@ -82,6 +44,44 @@
     "docParams": [
       "text",
       "parm"
+    ]
+  },
+  {
+    "name": "ExtendsString.toUTF16ArrayfromCodePoint",
+    "filePath": "src/senko/polyfill/ExtendsString.js",
+    "lines": [
+      {
+        "lineNumber": 185,
+        "line": "\t/**"
+      },
+      {
+        "lineNumber": 186,
+        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
+      },
+      {
+        "lineNumber": 187,
+        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
+      },
+      {
+        "lineNumber": 188,
+        "line": "\t * @returns {Array<number>} 変換後のテキスト"
+      },
+      {
+        "lineNumber": 189,
+        "line": "\t * @private"
+      },
+      {
+        "lineNumber": 190,
+        "line": "\t */"
+      },
+      {
+        "lineNumber": 191,
+        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
+      }
+    ],
+    "codeParams": [],
+    "docParams": [
+      "codepoint"
     ]
   },
   {
