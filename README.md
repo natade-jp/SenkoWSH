@@ -1,4 +1,6 @@
 # SenkoWSH
+[![ESDoc coverage badge](https://natade-jp.github.io/SenkoWSH/badge.svg)](https://natade-jp.github.io/SenkoWSH/)
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
 ## 概要
 - Windows 上で動作する WSH JScript 用汎用ライブラリ
