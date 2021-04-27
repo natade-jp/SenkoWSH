@@ -1,5 +1,9 @@
 # History
 
+## SenkoWSH v3.7.0b
+### 更新点
+- `SFile` にハッシュ値を取得する `getHashCode` を追加
+
 ## SenkoWSH v3.6.0
 ### 更新点
 - `konpeito` で利用していた `polyfill` をベースにいくつか互換性用の機能を追加

@@ -1,5 +1,3 @@
-import Format from "./Format.js";
-
 /**
  * The script is part of SenkoWSH.
  * 
@@ -10,6 +8,9 @@ import Format from "./Format.js";
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Format from "./Format.js";
+import System from "./System.js";
+ 
 /**
  * ファイル／フォルダ／URLを扱うクラス
  */
@@ -932,6 +933,39 @@ export default class SFile {
 			is_write = false;
 		}
 		return is_write;
+	}
+
+	/**
+	 * ファイルのハッシュ値を計算する
+	 * @param {string} [algorithm="MD5"] - アルゴリズム
+	 * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は"0"
+	 */
+	getHashCode(algorithm) {
+		if(this.is_http) {
+			throw "IllegalMethod";
+		}
+		if(!this.isFile()) {
+			return "0";
+		}
+		const algorithm_ = algorithm !== undefined ? algorithm : "MD5";
+		const message = "certutil -hashfile \"" + this.getAbsolutePath() + "\" " + algorithm_.toUpperCase();
+		const output = System.exec(message);
+		if(output.exit_code !== 0) {
+			return "0";
+		}
+		// 2行目を抽出する
+		const hash_lines = output.out.split(/\n/);
+		if(hash_lines.length <= 1) {
+			return "0";
+		}
+		// 2種類のタイプを検知させる
+		// - dcd802e3848075716e92424cfdcb9c0d (Windows 10)
+		// - dc d8 02 e3 84 80 75 71 6e 92 42 4c fd cb 9c 0d (Windows8.1)
+		const hash = hash_lines[1].trim().toLowerCase().match(/^(([0-9a-f]{2}){8,})|((([0-9a-f]{2} ){7,})[0-9a-f]{2})$/);
+		if(hash === null) {
+			return "0";
+		}
+		return hash[0].replace(/ /g, "");
 	}
 
 	/**

@@ -8,7 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import System from "./System";
+import System from "./System.js";
 
 /**
  * 大きさ情報
