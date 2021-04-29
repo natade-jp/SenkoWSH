@@ -3675,7 +3675,7 @@
     "__docId__": 144,
     "kind": "file",
     "name": "src/senko/polyfill/ExtendsObject.js",
-    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ES3相当のJScirptのObject拡張用クラス\n * - Object.prototypeに拡張します\n */\nexport default class ExtendsObject {\n\n\n\t/**\n\t * 指定したキーが含まれるか\n\t * @param {Object} obj\n\t * @param {any} key \n\t * @returns {boolean}\n\t */\n\tstatic containsKey(obj, key) {\n\t\treturn typeof obj[key] !== \"undefined\";\n\t}\n\t\n\t/**\n\t * 指定した値が含まれるか\n\t * @param {Object} obj\n\t * @param {any} value \n\t * @returns {boolean}\n\t */\n\tstatic containsValue(obj, value) {\n\t\tfor(const key in obj) {\n\t\t\tif(obj[key] === value) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\t\treturn false;\n\t}\n\n\t/**\n\t * 名前の配列\n\t * @param {Object} obj\n\t * @returns {string[]}\n\t */\n\tstatic keys(obj) {\n\t\tconst data = [];\n\t\tfor(const key in obj) {\n\t\t\tdata.push(key);\n\t\t}\n\t\treturn data;\n\t}\n\t\n\t/**\n\t * 空かどうか\n\t * @param {Object} obj\n\t * @returns {boolean}\n\t */\n\tstatic isEmpty(obj) {\n\t\treturn ExtendsObject.keys(obj).length === 0;\n\t}\n\t\n\t/**\n\t * 文字列化\n\t * @param {Object} obj\n\t * @returns {string}\n\t */\n\tstatic toString(obj) {\n\t\tconst length = ExtendsObject.keys(obj).length;\n\t\tlet output = \"\";\n\t\tlet i = 0;\n\t\tfor(const key in obj) {\n\t\t\toutput += key + \"=>\" + obj[key];\n\t\t\ti++;\n\t\t\tif(i !== length) {\n\t\t\t\toutput += \"\\n\";\n\t\t\t}\n\t\t}\n\t\treturn output;\n\t}\n\n\t/**\n\t * 指定したキー、その値を登録\n\t * @param {Object} obj\n\t * @param {string} key \n\t * @param {any} value \n\t * @returns {null|any}\n\t */\n\tstatic put(obj, key, value) {\n\t\tif(!ExtendsObject.containsKey(obj, key)) {\n\t\t\tobj[key] = value;\n\t\t\treturn null;\n\t\t}\n\t\telse {\n\t\t\tconst output = obj[key];\n\t\t\tobj[key] = value;\n\t\t\treturn output;\n\t\t}\n\t}\n\n\t/**\n\t * 指定したキー、その値を全て登録\n\t * @param {Object} obj\n\t * @param {Object<string, any>} hashmap \n\t */\n\tstatic putAll(obj, hashmap) {\n\t\tfor(const key in hashmap) {\n\t\t\tif(typeof obj[key] === \"undefined\") {\n\t\t\t\tobj[key] = hashmap[key];\n\t\t\t}\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定したキーの値を削除\n\t * @param {Object} obj\n\t * @param {string} key \n\t * @returns {null|any}\n\t */\n\tstatic remove(obj, key) {\n\t\tif(!ExtendsObject.containsKey(obj, key)) {\n\t\t\treturn null;\n\t\t}\n\t\telse {\n\t\t\tconst output = obj[key];\n\t\t\tdelete obj[key];\n\t\t\treturn output;\n\t\t}\n\t}\n\n}\n",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ES3相当のJScirptのObject拡張用クラス\n * - Object.prototypeに拡張します\n */\nexport default class ExtendsObject {\n\n\n\t/**\n\t * 指定したキーが含まれるか\n\t * @param {any} obj\n\t * @param {any} key \n\t * @returns {boolean}\n\t */\n\tstatic containsKey(obj, key) {\n\t\treturn typeof obj[key] !== \"undefined\";\n\t}\n\t\n\t/**\n\t * 指定した値が含まれるか\n\t * @param {any} obj\n\t * @param {any} value \n\t * @returns {boolean}\n\t */\n\tstatic containsValue(obj, value) {\n\t\tfor(const key in obj) {\n\t\t\tif(obj[key] === value) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\t\treturn false;\n\t}\n\n\t/**\n\t * 名前の配列\n\t * @param {Object} obj\n\t * @returns {string[]}\n\t */\n\tstatic keys(obj) {\n\t\tconst data = [];\n\t\tfor(const key in obj) {\n\t\t\tdata.push(key);\n\t\t}\n\t\treturn data;\n\t}\n\t\n\t/**\n\t * 空かどうか\n\t * @param {Object} obj\n\t * @returns {boolean}\n\t */\n\tstatic isEmpty(obj) {\n\t\treturn ExtendsObject.keys(obj).length === 0;\n\t}\n\t\n\t/**\n\t * 文字列化\n\t * @param {any} obj\n\t * @returns {string}\n\t */\n\tstatic toString(obj) {\n\t\tconst length = ExtendsObject.keys(obj).length;\n\t\tlet output = \"\";\n\t\tlet i = 0;\n\t\tfor(const key in obj) {\n\t\t\toutput += key + \"=>\" + obj[key];\n\t\t\ti++;\n\t\t\tif(i !== length) {\n\t\t\t\toutput += \"\\n\";\n\t\t\t}\n\t\t}\n\t\treturn output;\n\t}\n\n\t/**\n\t * 指定したキー、その値を登録\n\t * @param {any} obj\n\t * @param {string} key \n\t * @param {any} value \n\t * @returns {null|any}\n\t */\n\tstatic put(obj, key, value) {\n\t\tif(!ExtendsObject.containsKey(obj, key)) {\n\t\t\tobj[key] = value;\n\t\t\treturn null;\n\t\t}\n\t\telse {\n\t\t\tconst output = obj[key];\n\t\t\tobj[key] = value;\n\t\t\treturn output;\n\t\t}\n\t}\n\n\t/**\n\t * 指定したキー、その値を全て登録\n\t * @param {any} obj\n\t * @param {Object<string, any>} hashmap \n\t */\n\tstatic putAll(obj, hashmap) {\n\t\tfor(const key in hashmap) {\n\t\t\tif(typeof obj[key] === \"undefined\") {\n\t\t\t\tobj[key] = hashmap[key];\n\t\t\t}\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定したキーの値を削除\n\t * @param {any} obj\n\t * @param {string} key \n\t * @returns {null|any}\n\t */\n\tstatic remove(obj, key) {\n\t\tif(!ExtendsObject.containsKey(obj, key)) {\n\t\t\treturn null;\n\t\t}\n\t\telse {\n\t\t\tconst output = obj[key];\n\t\t\tdelete obj[key];\n\t\t\treturn output;\n\t\t}\n\t}\n\n}\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/senko/polyfill/ExtendsObject.js",
     "access": "public",
@@ -3719,7 +3719,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "any"
         ],
         "spread": false,
         "optional": false,
@@ -3768,7 +3768,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "any"
         ],
         "spread": false,
         "optional": false,
@@ -3895,7 +3895,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "any"
         ],
         "spread": false,
         "optional": false,
@@ -3934,7 +3934,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "any"
         ],
         "spread": false,
         "optional": false,
@@ -3988,7 +3988,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "any"
         ],
         "spread": false,
         "optional": false,
@@ -4030,7 +4030,7 @@
       {
         "nullable": null,
         "types": [
-          "Object"
+          "any"
         ],
         "spread": false,
         "optional": false,
@@ -4874,7 +4874,7 @@
     "__docId__": 174,
     "kind": "file",
     "name": "src/senko/Robot.js",
-    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport System from \"./System\";\n\n/**\n * 大きさ情報\n * @typedef {Object} WSHRobotRect\n * @property {number} x 座標x\n * @property {number} y 座標y\n * @property {number} width 横幅\n * @property {number} height 縦幅\n */\n\n/**\n * 位置情報\n * @typedef {Object} WSHRobotPosition\n * @property {number} x 座標x\n * @property {number} y 座標y\n */\n\n/**\n * 仮想キーコード\n * @typedef {Object} VirtualKeyCode\n * @property {number} code\n */\n\n/**\n * 仮想キーコード一覧\n * @typedef {Object} VirtualKeyCodes\n * @property {VirtualKeyCode} VK_LBUTTON\n * @property {VirtualKeyCode} VK_RBUTTON\n * @property {VirtualKeyCode} VK_CANCEL\n * @property {VirtualKeyCode} VK_MBUTTON\n * @property {VirtualKeyCode} VK_XBUTTON1\n * @property {VirtualKeyCode} VK_XBUTTON2\n * @property {VirtualKeyCode} VK_BACK\n * @property {VirtualKeyCode} VK_TAB\n * @property {VirtualKeyCode} VK_CLEAR\n * @property {VirtualKeyCode} VK_RETURN\n * @property {VirtualKeyCode} VK_SHIFT\n * @property {VirtualKeyCode} VK_CONTROL\n * @property {VirtualKeyCode} VK_MENU\n * @property {VirtualKeyCode} VK_PAUSE\n * @property {VirtualKeyCode} VK_CAPITAL\n * @property {VirtualKeyCode} VK_KANA\n * @property {VirtualKeyCode} VK_HANGEUL\n * @property {VirtualKeyCode} VK_HANGUL\n * @property {VirtualKeyCode} VK_JUNJA\n * @property {VirtualKeyCode} VK_FINAL\n * @property {VirtualKeyCode} VK_HANJA\n * @property {VirtualKeyCode} VK_KANJI\n * @property {VirtualKeyCode} VK_ESCAPE\n * @property {VirtualKeyCode} VK_CONVERT\n * @property {VirtualKeyCode} VK_NONCONVERT\n * @property {VirtualKeyCode} VK_ACCEPT\n * @property {VirtualKeyCode} VK_MODECHANGE\n * @property {VirtualKeyCode} VK_SPACE\n * @property {VirtualKeyCode} VK_PRIOR\n * @property {VirtualKeyCode} VK_NEXT\n * @property {VirtualKeyCode} VK_END\n * @property {VirtualKeyCode} VK_HOME\n * @property {VirtualKeyCode} VK_LEFT\n * @property {VirtualKeyCode} VK_UP\n * @property {VirtualKeyCode} VK_RIGHT\n * @property {VirtualKeyCode} VK_DOWN\n * @property {VirtualKeyCode} VK_SELECT\n * @property {VirtualKeyCode} VK_PRINT\n * @property {VirtualKeyCode} VK_EXECUTE\n * @property {VirtualKeyCode} VK_SNAPSHOT\n * @property {VirtualKeyCode} VK_INSERT\n * @property {VirtualKeyCode} VK_DELETE\n * @property {VirtualKeyCode} VK_HELP\n * @property {VirtualKeyCode} VK_0\n * @property {VirtualKeyCode} VK_1\n * @property {VirtualKeyCode} VK_2\n * @property {VirtualKeyCode} VK_3\n * @property {VirtualKeyCode} VK_4\n * @property {VirtualKeyCode} VK_5\n * @property {VirtualKeyCode} VK_6\n * @property {VirtualKeyCode} VK_7\n * @property {VirtualKeyCode} VK_8\n * @property {VirtualKeyCode} VK_9\n * @property {VirtualKeyCode} VK_A\n * @property {VirtualKeyCode} VK_B\n * @property {VirtualKeyCode} VK_C\n * @property {VirtualKeyCode} VK_D\n * @property {VirtualKeyCode} VK_E\n * @property {VirtualKeyCode} VK_F\n * @property {VirtualKeyCode} VK_G\n * @property {VirtualKeyCode} VK_H\n * @property {VirtualKeyCode} VK_I\n * @property {VirtualKeyCode} VK_J\n * @property {VirtualKeyCode} VK_K\n * @property {VirtualKeyCode} VK_L\n * @property {VirtualKeyCode} VK_M\n * @property {VirtualKeyCode} VK_N\n * @property {VirtualKeyCode} VK_O\n * @property {VirtualKeyCode} VK_P\n * @property {VirtualKeyCode} VK_Q\n * @property {VirtualKeyCode} VK_R\n * @property {VirtualKeyCode} VK_S\n * @property {VirtualKeyCode} VK_T\n * @property {VirtualKeyCode} VK_U\n * @property {VirtualKeyCode} VK_V\n * @property {VirtualKeyCode} VK_W\n * @property {VirtualKeyCode} VK_X\n * @property {VirtualKeyCode} VK_Y\n * @property {VirtualKeyCode} VK_Z\n * @property {VirtualKeyCode} VK_LWIN\n * @property {VirtualKeyCode} VK_RWIN\n * @property {VirtualKeyCode} VK_APPS\n * @property {VirtualKeyCode} VK_SLEEP\n * @property {VirtualKeyCode} VK_NUMPAD0\n * @property {VirtualKeyCode} VK_NUMPAD1\n * @property {VirtualKeyCode} VK_NUMPAD2\n * @property {VirtualKeyCode} VK_NUMPAD3\n * @property {VirtualKeyCode} VK_NUMPAD4\n * @property {VirtualKeyCode} VK_NUMPAD5\n * @property {VirtualKeyCode} VK_NUMPAD6\n * @property {VirtualKeyCode} VK_NUMPAD7\n * @property {VirtualKeyCode} VK_NUMPAD8\n * @property {VirtualKeyCode} VK_NUMPAD9\n * @property {VirtualKeyCode} VK_MULTIPLY\n * @property {VirtualKeyCode} VK_ADD\n * @property {VirtualKeyCode} VK_SEPARATOR\n * @property {VirtualKeyCode} VK_SUBTRACT\n * @property {VirtualKeyCode} VK_DECIMAL\n * @property {VirtualKeyCode} VK_DIVIDE\n * @property {VirtualKeyCode} VK_F1\n * @property {VirtualKeyCode} VK_F2\n * @property {VirtualKeyCode} VK_F3\n * @property {VirtualKeyCode} VK_F4\n * @property {VirtualKeyCode} VK_F5\n * @property {VirtualKeyCode} VK_F6\n * @property {VirtualKeyCode} VK_F7\n * @property {VirtualKeyCode} VK_F8\n * @property {VirtualKeyCode} VK_F9\n * @property {VirtualKeyCode} VK_F10\n * @property {VirtualKeyCode} VK_F11\n * @property {VirtualKeyCode} VK_F12\n * @property {VirtualKeyCode} VK_F13\n * @property {VirtualKeyCode} VK_F14\n * @property {VirtualKeyCode} VK_F15\n * @property {VirtualKeyCode} VK_F16\n * @property {VirtualKeyCode} VK_F17\n * @property {VirtualKeyCode} VK_F18\n * @property {VirtualKeyCode} VK_F19\n * @property {VirtualKeyCode} VK_F20\n * @property {VirtualKeyCode} VK_F21\n * @property {VirtualKeyCode} VK_F22\n * @property {VirtualKeyCode} VK_F23\n * @property {VirtualKeyCode} VK_F24\n * @property {VirtualKeyCode} VK_NUMLOCK\n * @property {VirtualKeyCode} VK_SCROLL\n * @property {VirtualKeyCode} VK_LSHIFT\n * @property {VirtualKeyCode} VK_RSHIFT\n * @property {VirtualKeyCode} VK_LCONTROL\n * @property {VirtualKeyCode} VK_RCONTROL\n * @property {VirtualKeyCode} VK_LMENU\n * @property {VirtualKeyCode} VK_RMENU\n * @property {VirtualKeyCode} VK_BROWSER_BACK\n * @property {VirtualKeyCode} VK_BROWSER_FORWARD\n * @property {VirtualKeyCode} VK_BROWSER_REFRESH\n * @property {VirtualKeyCode} VK_BROWSER_STOP\n * @property {VirtualKeyCode} VK_BROWSER_SEARCH\n * @property {VirtualKeyCode} VK_BROWSER_FAVORITES\n * @property {VirtualKeyCode} VK_BROWSER_HOME\n * @property {VirtualKeyCode} VK_VOLUME_MUTE\n * @property {VirtualKeyCode} VK_VOLUME_DOWN\n * @property {VirtualKeyCode} VK_VOLUME_UP\n * @property {VirtualKeyCode} VK_MEDIA_NEXT_TRACK\n * @property {VirtualKeyCode} VK_MEDIA_PREV_TRACK\n * @property {VirtualKeyCode} VK_MEDIA_STOP\n * @property {VirtualKeyCode} VK_MEDIA_PLAY_PAUSE\n * @property {VirtualKeyCode} VK_LAUNCH_MAIL\n * @property {VirtualKeyCode} VK_LAUNCH_MEDIA_SELECT\n * @property {VirtualKeyCode} VK_LAUNCH_APP1\n * @property {VirtualKeyCode} VK_LAUNCH_APP2\n * @property {VirtualKeyCode} VK_OEM_1\n * @property {VirtualKeyCode} VK_OEM_PLUS\n * @property {VirtualKeyCode} VK_OEM_COMMA\n * @property {VirtualKeyCode} VK_OEM_MINUS\n * @property {VirtualKeyCode} VK_OEM_PERIOD\n * @property {VirtualKeyCode} VK_OEM_2\n * @property {VirtualKeyCode} VK_OEM_3\n * @property {VirtualKeyCode} VK_OEM_4\n * @property {VirtualKeyCode} VK_OEM_5\n * @property {VirtualKeyCode} VK_OEM_6\n * @property {VirtualKeyCode} VK_OEM_7\n * @property {VirtualKeyCode} VK_OEM_8\n * @property {VirtualKeyCode} VK_PROCESSKEY\n * @property {VirtualKeyCode} VK_ATTN\n * @property {VirtualKeyCode} VK_CRSEL\n * @property {VirtualKeyCode} VK_EXSEL\n * @property {VirtualKeyCode} VK_EREOF\n * @property {VirtualKeyCode} VK_PLAY\n * @property {VirtualKeyCode} VK_ZOOM\n * @property {VirtualKeyCode} VK_NONAME\n * @property {VirtualKeyCode} VK_PA1\n * @property {VirtualKeyCode} VK_OEM_CLEAR\n */\n\n/**\n * 仮想キーコード一覧\n * @type {VirtualKeyCodes}\n */\nconst VK_DATA = {\n\tVK_LBUTTON\t:{code:0x01},\n\tVK_RBUTTON\t:{code:0x02},\n\tVK_CANCEL\t:{code:0x03},\n\tVK_MBUTTON\t:{code:0x04},\n\tVK_XBUTTON1\t:{code:0x05},\n\tVK_XBUTTON2\t:{code:0x06},\n\tVK_BACK\t:{code:0x08},\n\tVK_TAB\t:{code:0x09},\n\tVK_CLEAR\t:{code:0x0C},\n\tVK_RETURN\t:{code:0x0D},\n\tVK_SHIFT\t:{code:0x10},\n\tVK_CONTROL\t:{code:0x11},\n\tVK_MENU\t:{code:0x12},\n\tVK_PAUSE\t:{code:0x13},\n\tVK_CAPITAL\t:{code:0x14},\n\tVK_KANA\t:{code:0x15},\n\tVK_HANGEUL\t:{code:0x15},\n\tVK_HANGUL\t:{code:0x15},\n\tVK_JUNJA\t:{code:0x17},\n\tVK_FINAL\t:{code:0x18},\n\tVK_HANJA\t:{code:0x19},\n\tVK_KANJI\t:{code:0x19},\n\tVK_ESCAPE\t:{code:0x1B},\n\tVK_CONVERT\t:{code:0x1C},\n\tVK_NONCONVERT\t:{code:0x1D},\n\tVK_ACCEPT\t:{code:0x1E},\n\tVK_MODECHANGE\t:{code:0x1F},\n\tVK_SPACE\t:{code:0x20},\n\tVK_PRIOR\t:{code:0x21},\n\tVK_NEXT\t:{code:0x22},\n\tVK_END\t:{code:0x23},\n\tVK_HOME\t:{code:0x24},\n\tVK_LEFT\t:{code:0x25},\n\tVK_UP\t:{code:0x26},\n\tVK_RIGHT\t:{code:0x27},\n\tVK_DOWN\t:{code:0x28},\n\tVK_SELECT\t:{code:0x29},\n\tVK_PRINT\t:{code:0x2A},\n\tVK_EXECUTE\t:{code:0x2B},\n\tVK_SNAPSHOT\t:{code:0x2C},\n\tVK_INSERT\t:{code:0x2D},\n\tVK_DELETE\t:{code:0x2E},\n\tVK_HELP\t:{code:0x2F},\n\tVK_0\t:{code:0x30},\n\tVK_1\t:{code:0x31},\n\tVK_2\t:{code:0x32},\n\tVK_3\t:{code:0x33},\n\tVK_4\t:{code:0x34},\n\tVK_5\t:{code:0x35},\n\tVK_6\t:{code:0x36},\n\tVK_7\t:{code:0x37},\n\tVK_8\t:{code:0x38},\n\tVK_9\t:{code:0x39},\n\tVK_A\t:{code:0x41},\n\tVK_B\t:{code:0x42},\n\tVK_C\t:{code:0x43},\n\tVK_D\t:{code:0x44},\n\tVK_E\t:{code:0x45},\n\tVK_F\t:{code:0x46},\n\tVK_G\t:{code:0x47},\n\tVK_H\t:{code:0x48},\n\tVK_I\t:{code:0x49},\n\tVK_J\t:{code:0x4A},\n\tVK_K\t:{code:0x4B},\n\tVK_L\t:{code:0x4C},\n\tVK_M\t:{code:0x4D},\n\tVK_N\t:{code:0x4E},\n\tVK_O\t:{code:0x4F},\n\tVK_P\t:{code:0x50},\n\tVK_Q\t:{code:0x51},\n\tVK_R\t:{code:0x52},\n\tVK_S\t:{code:0x53},\n\tVK_T\t:{code:0x54},\n\tVK_U\t:{code:0x55},\n\tVK_V\t:{code:0x56},\n\tVK_W\t:{code:0x57},\n\tVK_X\t:{code:0x58},\n\tVK_Y\t:{code:0x59},\n\tVK_Z\t:{code:0x5A},\n\tVK_LWIN\t:{code:0x5B},\n\tVK_RWIN\t:{code:0x5C},\n\tVK_APPS\t:{code:0x5D},\n\tVK_SLEEP\t:{code:0x5F},\n\tVK_NUMPAD0\t:{code:0x60},\n\tVK_NUMPAD1\t:{code:0x61},\n\tVK_NUMPAD2\t:{code:0x62},\n\tVK_NUMPAD3\t:{code:0x63},\n\tVK_NUMPAD4\t:{code:0x64},\n\tVK_NUMPAD5\t:{code:0x65},\n\tVK_NUMPAD6\t:{code:0x66},\n\tVK_NUMPAD7\t:{code:0x67},\n\tVK_NUMPAD8\t:{code:0x68},\n\tVK_NUMPAD9\t:{code:0x69},\n\tVK_MULTIPLY\t:{code:0x6A},\n\tVK_ADD\t:{code:0x6B},\n\tVK_SEPARATOR\t:{code:0x6C},\n\tVK_SUBTRACT\t:{code:0x6D},\n\tVK_DECIMAL\t:{code:0x6E},\n\tVK_DIVIDE\t:{code:0x6F},\n\tVK_F1\t:{code:0x70},\n\tVK_F2\t:{code:0x71},\n\tVK_F3\t:{code:0x72},\n\tVK_F4\t:{code:0x73},\n\tVK_F5\t:{code:0x74},\n\tVK_F6\t:{code:0x75},\n\tVK_F7\t:{code:0x76},\n\tVK_F8\t:{code:0x77},\n\tVK_F9\t:{code:0x78},\n\tVK_F10\t:{code:0x79},\n\tVK_F11\t:{code:0x7A},\n\tVK_F12\t:{code:0x7B},\n\tVK_F13\t:{code:0x7C},\n\tVK_F14\t:{code:0x7D},\n\tVK_F15\t:{code:0x7E},\n\tVK_F16\t:{code:0x7F},\n\tVK_F17\t:{code:0x80},\n\tVK_F18\t:{code:0x81},\n\tVK_F19\t:{code:0x82},\n\tVK_F20\t:{code:0x83},\n\tVK_F21\t:{code:0x84},\n\tVK_F22\t:{code:0x85},\n\tVK_F23\t:{code:0x86},\n\tVK_F24\t:{code:0x87},\n\tVK_NUMLOCK\t:{code:0x90},\n\tVK_SCROLL\t:{code:0x91},\n\tVK_LSHIFT\t:{code:0xA0},\n\tVK_RSHIFT\t:{code:0xA1},\n\tVK_LCONTROL\t:{code:0xA2},\n\tVK_RCONTROL\t:{code:0xA3},\n\tVK_LMENU\t:{code:0xA4},\n\tVK_RMENU\t:{code:0xA5},\n\tVK_BROWSER_BACK\t:{code:0xA6},\n\tVK_BROWSER_FORWARD\t:{code:0xA7},\n\tVK_BROWSER_REFRESH\t:{code:0xA8},\n\tVK_BROWSER_STOP\t:{code:0xA9},\n\tVK_BROWSER_SEARCH\t:{code:0xAA},\n\tVK_BROWSER_FAVORITES\t:{code:0xAB},\n\tVK_BROWSER_HOME\t:{code:0xAC},\n\tVK_VOLUME_MUTE\t:{code:0xAD},\n\tVK_VOLUME_DOWN\t:{code:0xAE},\n\tVK_VOLUME_UP\t:{code:0xAF},\n\tVK_MEDIA_NEXT_TRACK\t:{code:0xB0},\n\tVK_MEDIA_PREV_TRACK\t:{code:0xB1},\n\tVK_MEDIA_STOP\t:{code:0xB2},\n\tVK_MEDIA_PLAY_PAUSE\t:{code:0xB3},\n\tVK_LAUNCH_MAIL\t:{code:0xB4},\n\tVK_LAUNCH_MEDIA_SELECT\t:{code:0xB5},\n\tVK_LAUNCH_APP1\t:{code:0xB6},\n\tVK_LAUNCH_APP2\t:{code:0xB7},\n\tVK_OEM_1\t:{code:0xBA},\n\tVK_OEM_PLUS\t:{code:0xBB},\n\tVK_OEM_COMMA\t:{code:0xBC},\n\tVK_OEM_MINUS\t:{code:0xBD},\n\tVK_OEM_PERIOD\t:{code:0xBE},\n\tVK_OEM_2\t:{code:0xBF},\n\tVK_OEM_3\t:{code:0xC0},\n\tVK_OEM_4\t:{code:0xDB},\n\tVK_OEM_5\t:{code:0xDC},\n\tVK_OEM_6\t:{code:0xDD},\n\tVK_OEM_7\t:{code:0xDE},\n\tVK_OEM_8\t:{code:0xDF},\n\tVK_PROCESSKEY\t:{code:0xE5},\n\tVK_ATTN\t:{code:0xF6},\n\tVK_CRSEL\t:{code:0xF7},\n\tVK_EXSEL\t:{code:0xF8},\n\tVK_EREOF\t:{code:0xF9},\n\tVK_PLAY\t:{code:0xFA},\n\tVK_ZOOM\t:{code:0xFB},\n\tVK_NONAME\t:{code:0xFC},\n\tVK_PA1\t:{code:0xFD},\n\tVK_OEM_CLEAR\t:{code:0xFE}\n};\n\n/**\n * マウスイベント用コード\n * @typedef {Object} MouseEventFCodes\n * @property {number} MOUSEEVENTF_ABSOLUTE\n * @property {number} MOUSEEVENTF_MOVE\n * @property {number} MOUSEEVENTF_LEFTDOWN\n * @property {number} MOUSEEVENTF_LEFTUP\n * @property {number} MOUSEEVENTF_RIGHTDOWN\n * @property {number} MOUSEEVENTF_RIGHTUP\n * @property {number} MOUSEEVENTF_MIDDLEDOWN\n * @property {number} MOUSEEVENTF_MIDDLEUP\n * @property {number} MOUSEEVENTF_WHEEL\n * @property {number} MOUSEEVENTF_XDOWN\n * @property {number} MOUSEEVENTF_XUP\n */\n\n/**\n * マウスイベント用コード一覧\n * @type {MouseEventFCodes}\n */\nconst MOUSEEVENTF_DATA = {\n\tMOUSEEVENTF_ABSOLUTE\t:0x8000,\n\tMOUSEEVENTF_MOVE\t\t:0x0001,\n\tMOUSEEVENTF_LEFTDOWN\t:0x0002,\n\tMOUSEEVENTF_LEFTUP\t\t:0x0004,\n\tMOUSEEVENTF_RIGHTDOWN\t:0x0008,\n\tMOUSEEVENTF_RIGHTUP\t\t:0x0010,\n\tMOUSEEVENTF_MIDDLEDOWN\t:0x0020,\n\tMOUSEEVENTF_MIDDLEUP\t:0x0040,\n\tMOUSEEVENTF_WHEEL\t\t:0x0800,\n\tMOUSEEVENTF_XDOWN\t\t:0x0080,\n\tMOUSEEVENTF_XUP\t\t\t:0x0100\n};\n\n/**\n * キーイベント発生時のオプション\n * @typedef {Object} KeyEventOption\n * @property {number} [count_max=1] 繰り返す回数\n * @property {boolean} [is_not_pushed=false] 押さない\n * @property {boolean} [is_not_released=false] 離さない\n * @property {number} [push_time_sec=0] 押下時間\n * @property {boolean} [is_pressed_shift=false]\n * @property {boolean} [is_pressed_alt=false]\n * @property {boolean} [is_pressed_ctrl=false]\n */\n\n/**\n * マウスイベント発生時のオプション\n * @typedef {Object} MouseEventOption\n * @property {number} [count_max=1] 繰り返す回数\n * @property {boolean} [is_not_pushed=false] 押さない\n * @property {boolean} [is_not_released=false] 離さない\n * @property {number} [push_time_sec=0] 押下時間\n */\n\n/**\n * ハンドルを取得する際に必要なデータ\n * @typedef {Object} RobotGetHandleData\n * @property {string|number} [classname=0] クラス名\n * @property {string|number} [windowtext=0] ウィンドウ名\n */\n\n/**\n * ウィンドウやマウスなどを自動操作するためのクラス\n */\nexport default class Robot {\n\t\n\t/**\n\t * キーを入力する\n\t * @param {VirtualKeyCode} vkcode - キーコード（利用可能なコードは、Robot.getVK() で取得可能）\n\t * @param {KeyEventOption} [option] - オプション\n\t */\n\tstatic setKeyEvent(vkcode, option) {\n\t\tconst KEYEVENTF_KEYUP = 2;\n\t\tconst count_max = (option && option.count_max) ? option.count_max: 1;\n\t\tlet time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;\n\t\ttime_ms = Math.max(time_ms , 1); // 1以上にする\n\t\tlet code = \"for ($i=0; $i -lt \" + count_max + \"; $i++){\";\n\t\t{\n\t\t\tif(option && option.is_pressed_shift) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_SHIFT.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_alt) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_MENU.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_ctrl) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_CONTROL.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(!option || !option.is_not_pushed) {\n\t\t\t\tcode += \"$api::keybd_event(\" + vkcode.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t}\n\t\tif(option && option.push_time_sec) {\n\t\t\tcode += \"Start-Sleep -m \" + time_ms + \";\";\n\t\t}\n\t\t{\n\t\t\tif(!option || !option.is_not_released) {\n\t\t\t\tcode += \"$api::keybd_event(\" + vkcode.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_ctrl) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_CONTROL.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_alt) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_MENU.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_shift) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_SHIFT.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t}\n\t\tcode += \"}\";\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)\",\n\t\t\tcode\n\t\t);\n\t}\n\t\n\t/**\n\t * 仮想キーコードの一覧を取得します\n\t * @returns {VirtualKeyCodes} \n\t */\n\tstatic getVK() {\n\t\treturn VK_DATA;\n\t}\n\n\t/**\n\t * マウスのクリックを行う\n\t * @param {string} type - \"LEFT\", \"RIGHT\", \"CLICK\", \"DOUBLE_CLICK\"といった文字列\n\t * @param {KeyEventOption} [option] - オプション\n\t */\n\tstatic setMouseEvent(type, option) {\n\t\tlet count_max = (option && option.count_max) ? option.count_max: 1;\n\t\tlet time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;\n\t\ttime_ms = Math.max(time_ms , 1); // 1以上にする\n\t\tlet target = type.toUpperCase().trim();\n\t\tif(target === \"CLICK\") {\n\t\t\tcount_max = 1;\n\t\t\ttarget = \"LEFT\";\n\t\t}\n\t\telse if(target === \"DOUBLE_CLICK\") {\n\t\t\tcount_max = 2;\n\t\t\ttarget = \"LEFT\";\n\t\t}\n\t\tlet pushed_code;\n\t\tlet released_code;\n\t\tif(target === \"LEFT\") {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTUP;\n\t\t}\n\t\telse if((target === \"CENTER\") || (target === \"MIDDLE\")) {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEUP;\n\t\t}\n\t\tif(target === \"RIGHT\") {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTUP;\n\t\t}\n\t\tlet code = \"for ($i=0; $i -lt \" + count_max + \"; $i++){\";\n\t\tif(!option || !option.is_not_pushed) {\n\t\t\tcode += \"$api::mouse_event(\" + pushed_code + \", 0, 0, 0, 0);\";\n\t\t}\n\t\tif(option && option.push_time_sec) {\n\t\t\tcode += \"Start-Sleep -m \" + time_ms + \";\";\n\t\t}\n\t\tif(!option || !option.is_not_released) {\n\t\t\tcode += \"$api::mouse_event(\" + released_code + \", 0, 0, 0, 0);\";\n\t\t}\n\t\tcode += \"}\";\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)\",\n\t\t\tcode\n\t\t);\n\t}\n\n\t/**\n\t * マウスの座標を調べる\n\t * @returns {WSHRobotPosition}\n\t */\n\tstatic getCursorPosition() {\n\t\t/*\n\t\t以下の行を1行で実行する\n\t\t[void] [System.Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n\t\t$X = [System.Windows.Forms.Cursor]::Position.X;\n\t\t$Y = [System.Windows.Forms.Cursor]::Position.Y;\n\t\t\"$X,$Y\"\n\t\t*/\n\t\t// eslint-disable-next-line quotes\n\t\tconst text = System.PowerShell('[void] [System.Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;\"$X,$Y\"');\n\t\tconst pos_data = text.split(\",\");\n\t\tconst x = parseFloat(pos_data[0]) | 0;\n\t\tconst y = parseFloat(pos_data[1]) | 0;\n\t\treturn {\n\t\t\tx : x, y : y\n\t\t};\n\t}\n\n\t/**\n\t * マウスの座標を設定する\n\t * @param {WSHRobotPosition} position\n\t */\n\tstatic setCursorPosition(position) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void SetCursorPos(int X, int Y)\",\n\t\t\t\"$api::SetCursorPos(\" + position.x + \", \" + position.y + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルを取得する\n\t * @param {RobotGetHandleData} get_handle_data \n\t * @returns {number}\n\t */\n\tstatic getHandle(get_handle_data) {\n\t\tlet function_text;\n\t\t// 省略する場合はヌルポインタを設定する必要があるため、入力引数を変更する\n\t\tif(get_handle_data.classname && get_handle_data.windowtext) {\n\t\t\tfunction_text = \"IntPtr FindWindow(string lpClassName, string lpWindowName)\";\n\t\t}\n\t\telse if(get_handle_data.classname) {\n\t\t\tfunction_text = \"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)\";\n\t\t}\n\t\telse {\n\t\t\tfunction_text = \"IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)\";\n\t\t}\n\t\tlet command = \"$api::FindWindow(\";\n\t\tcommand += (get_handle_data.classname ? \"\\\"\" + get_handle_data.classname + \"\\\"\" : \"0\") + \",\";\n\t\tcommand += (get_handle_data.windowtext ? \"\\\"\" + get_handle_data.windowtext + \"\\\"\" : \"0\") + \");\";\n\t\treturn parseFloat(System.WindowsAPI( \"user32.dll\", function_text, command));\n\t}\n\n\t/**\n\t * 指定したクラス名のハンドルを取得する\n\t * @param {string} classname \n\t * @returns {number}\n\t */\n\tstatic getHandleOfClassName(classname) {\n\t\t// console.log(Robot.getHandleOfClassName(\"Notepad\"));\n\t\treturn Robot.getHandle({classname : classname});\n\t}\n\n\t/**\n\t * 指定したハンドルのクラス名を取得する\n\t * @param {number} handle \n\t * @returns {string}\n\t */\n\tstatic getClassName(handle) {\n\t\treturn System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)\",\n\t\t\t\"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetClassName(\" + handle + \", $buff, 256);$($buff.ToString());\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したウィンドウ名のハンドルを取得する\n\t * @param {string} windowname \n\t * @returns {number}\n\t */\n\tstatic getHandleOfWindowText(windowname) {\n\t\t// console.log(Robot.getHandleOfWindowName(\"無題 - メモ帳\");\n\t\treturn Robot.getHandle({windowtext : windowname});\n\t}\n\n\t/**\n\t * 指定したハンドルのウィンドウ名を取得する\n\t * @param {number} handle \n\t * @returns {string}\n\t */\n\tstatic getWindowText(handle) {\n\t\treturn System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)\",\n\t\t\t\"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetWindowText(\" + handle + \", $buff, 256);$($buff.ToString());\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルの位置とサイズを取得する\n\t * @param {number} handle \n\t * @returns {WSHRobotRect}\n\t */\n\tstatic getWindowRect(handle) {\n\t\t/*\n\t\t以下の行を1行で実行する\n\t\tAdd-Type -TypeDefinition @\"\n\t\tusing System;\n\t\tusing System.Runtime.InteropServices;\n\t\tpublic struct RECT { public int Left; public int Top; public int Right; public int Bottom; }\n\t\tpublic class API {\n\t\t\t[DllImport(\"user32.dll\")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);\n\t\t\tpublic static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }\n\t\t}\n\t\t\"@\n\t\t$rect = [API]::getrect(x);\n\t\t\"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)\"\n\t\t*/\n\t\t// eslint-disable-next-line quotes\n\t\tconst command = `Add-Type -TypeDefinition \"using System; using System.Runtime.InteropServices; public struct RECT { public int Left; public int Top; public int Right; public int Bottom; } public class API { [DllImport(\"\"user32.dll\"\")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect); public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; } }\";  $rect = [API]::getrect(` + handle + `); \"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)\"`;\n\t\tconst rect = System.PowerShell(command);\n\t\tconst rect_data = rect.split(\",\");\n\t\tif(rect_data.length !== 4) {\n\t\t\treturn null;\n\t\t}\n\t\tconst left   = parseFloat(rect_data[0]) | 0;\n\t\tconst top    = parseFloat(rect_data[1]) | 0;\n\t\tconst right  = parseFloat(rect_data[2]) | 0;\n\t\tconst bottom = parseFloat(rect_data[3]) | 0;\n\t\treturn {\n\t\t\tx\t\t:left,\n\t\t\ty\t\t:top,\n\t\t\twidth\t:right - left,\n\t\t\theight\t:bottom - top\n\t\t};\n\t}\n\n\t/**\n\t * 指定したハンドルの位置とサイズを設定する\n\t * @param {number} handle \n\t * @param {WSHRobotRect} rect \n\t * @returns {void}\n\t */\n\tstatic setWindowRect(handle, rect) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)\",\n\t\t\t\"$api::MoveWindow(\" + handle + \" , \" + (rect.x|0) + \", \" + (rect.y|0) + \", \" + (rect.width|0) + \", \" + (rect.height|0) + \", 1 );\"\n\t\t);\n\t}\n\n\t/**\n\t * アクティブなウィンドウのハンドルを取得する\n\t * @returns {number}\n\t */\n\tstatic getActiveWindow() {\n\t\treturn parseFloat(System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetForegroundWindow()\",\n\t\t\t\"$api::GetForegroundWindow();\"\n\t\t));\n\t}\n\n\t/**\n\t * アクティブなウィンドウを設定する\n\t * @param {number} handle \n\t * @returns {void}\n\t */\n\tstatic setActiveWindow(handle) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"bool SetForegroundWindow(IntPtr hWnd)\",\n\t\t\t\"$api::SetForegroundWindow(\" + handle + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルのプロセスIDを取得する\n\t * @param {number} handle \n\t * @returns {number}\n\t */\n\tstatic getPID(handle) {\n\t\treturn parseFloat(System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)\",\n\t\t\t\"$getpid = 0;$null = $api::GetWindowThreadProcessId(\" + handle + \", [ref] $getpid);$getpid;\"\n\t\t));\n\t}\n\n\t/**\n\t * 指定したプロセスIDを修了させる\n\t * @param {number} pid \n\t */\n\tstatic terminateProcess(pid) {\n\t\treturn System.run(\"taskkill /PID \" + pid, 0, true);\n\t}\n\n\t\n\n\n\t// TODO マウスを移動させたり、キーボードを入力する操作を追加する予定\n\n}\n\n\n",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport System from \"./System.js\";\n\n/**\n * 大きさ情報\n * @typedef {Object} WSHRobotRect\n * @property {number} x 座標x\n * @property {number} y 座標y\n * @property {number} width 横幅\n * @property {number} height 縦幅\n */\n\n/**\n * 位置情報\n * @typedef {Object} WSHRobotPosition\n * @property {number} x 座標x\n * @property {number} y 座標y\n */\n\n/**\n * 仮想キーコード\n * @typedef {Object} VirtualKeyCode\n * @property {number} code\n */\n\n/**\n * 仮想キーコード一覧\n * @typedef {Object} VirtualKeyCodes\n * @property {VirtualKeyCode} VK_LBUTTON\n * @property {VirtualKeyCode} VK_RBUTTON\n * @property {VirtualKeyCode} VK_CANCEL\n * @property {VirtualKeyCode} VK_MBUTTON\n * @property {VirtualKeyCode} VK_XBUTTON1\n * @property {VirtualKeyCode} VK_XBUTTON2\n * @property {VirtualKeyCode} VK_BACK\n * @property {VirtualKeyCode} VK_TAB\n * @property {VirtualKeyCode} VK_CLEAR\n * @property {VirtualKeyCode} VK_RETURN\n * @property {VirtualKeyCode} VK_SHIFT\n * @property {VirtualKeyCode} VK_CONTROL\n * @property {VirtualKeyCode} VK_MENU\n * @property {VirtualKeyCode} VK_PAUSE\n * @property {VirtualKeyCode} VK_CAPITAL\n * @property {VirtualKeyCode} VK_KANA\n * @property {VirtualKeyCode} VK_HANGEUL\n * @property {VirtualKeyCode} VK_HANGUL\n * @property {VirtualKeyCode} VK_JUNJA\n * @property {VirtualKeyCode} VK_FINAL\n * @property {VirtualKeyCode} VK_HANJA\n * @property {VirtualKeyCode} VK_KANJI\n * @property {VirtualKeyCode} VK_ESCAPE\n * @property {VirtualKeyCode} VK_CONVERT\n * @property {VirtualKeyCode} VK_NONCONVERT\n * @property {VirtualKeyCode} VK_ACCEPT\n * @property {VirtualKeyCode} VK_MODECHANGE\n * @property {VirtualKeyCode} VK_SPACE\n * @property {VirtualKeyCode} VK_PRIOR\n * @property {VirtualKeyCode} VK_NEXT\n * @property {VirtualKeyCode} VK_END\n * @property {VirtualKeyCode} VK_HOME\n * @property {VirtualKeyCode} VK_LEFT\n * @property {VirtualKeyCode} VK_UP\n * @property {VirtualKeyCode} VK_RIGHT\n * @property {VirtualKeyCode} VK_DOWN\n * @property {VirtualKeyCode} VK_SELECT\n * @property {VirtualKeyCode} VK_PRINT\n * @property {VirtualKeyCode} VK_EXECUTE\n * @property {VirtualKeyCode} VK_SNAPSHOT\n * @property {VirtualKeyCode} VK_INSERT\n * @property {VirtualKeyCode} VK_DELETE\n * @property {VirtualKeyCode} VK_HELP\n * @property {VirtualKeyCode} VK_0\n * @property {VirtualKeyCode} VK_1\n * @property {VirtualKeyCode} VK_2\n * @property {VirtualKeyCode} VK_3\n * @property {VirtualKeyCode} VK_4\n * @property {VirtualKeyCode} VK_5\n * @property {VirtualKeyCode} VK_6\n * @property {VirtualKeyCode} VK_7\n * @property {VirtualKeyCode} VK_8\n * @property {VirtualKeyCode} VK_9\n * @property {VirtualKeyCode} VK_A\n * @property {VirtualKeyCode} VK_B\n * @property {VirtualKeyCode} VK_C\n * @property {VirtualKeyCode} VK_D\n * @property {VirtualKeyCode} VK_E\n * @property {VirtualKeyCode} VK_F\n * @property {VirtualKeyCode} VK_G\n * @property {VirtualKeyCode} VK_H\n * @property {VirtualKeyCode} VK_I\n * @property {VirtualKeyCode} VK_J\n * @property {VirtualKeyCode} VK_K\n * @property {VirtualKeyCode} VK_L\n * @property {VirtualKeyCode} VK_M\n * @property {VirtualKeyCode} VK_N\n * @property {VirtualKeyCode} VK_O\n * @property {VirtualKeyCode} VK_P\n * @property {VirtualKeyCode} VK_Q\n * @property {VirtualKeyCode} VK_R\n * @property {VirtualKeyCode} VK_S\n * @property {VirtualKeyCode} VK_T\n * @property {VirtualKeyCode} VK_U\n * @property {VirtualKeyCode} VK_V\n * @property {VirtualKeyCode} VK_W\n * @property {VirtualKeyCode} VK_X\n * @property {VirtualKeyCode} VK_Y\n * @property {VirtualKeyCode} VK_Z\n * @property {VirtualKeyCode} VK_LWIN\n * @property {VirtualKeyCode} VK_RWIN\n * @property {VirtualKeyCode} VK_APPS\n * @property {VirtualKeyCode} VK_SLEEP\n * @property {VirtualKeyCode} VK_NUMPAD0\n * @property {VirtualKeyCode} VK_NUMPAD1\n * @property {VirtualKeyCode} VK_NUMPAD2\n * @property {VirtualKeyCode} VK_NUMPAD3\n * @property {VirtualKeyCode} VK_NUMPAD4\n * @property {VirtualKeyCode} VK_NUMPAD5\n * @property {VirtualKeyCode} VK_NUMPAD6\n * @property {VirtualKeyCode} VK_NUMPAD7\n * @property {VirtualKeyCode} VK_NUMPAD8\n * @property {VirtualKeyCode} VK_NUMPAD9\n * @property {VirtualKeyCode} VK_MULTIPLY\n * @property {VirtualKeyCode} VK_ADD\n * @property {VirtualKeyCode} VK_SEPARATOR\n * @property {VirtualKeyCode} VK_SUBTRACT\n * @property {VirtualKeyCode} VK_DECIMAL\n * @property {VirtualKeyCode} VK_DIVIDE\n * @property {VirtualKeyCode} VK_F1\n * @property {VirtualKeyCode} VK_F2\n * @property {VirtualKeyCode} VK_F3\n * @property {VirtualKeyCode} VK_F4\n * @property {VirtualKeyCode} VK_F5\n * @property {VirtualKeyCode} VK_F6\n * @property {VirtualKeyCode} VK_F7\n * @property {VirtualKeyCode} VK_F8\n * @property {VirtualKeyCode} VK_F9\n * @property {VirtualKeyCode} VK_F10\n * @property {VirtualKeyCode} VK_F11\n * @property {VirtualKeyCode} VK_F12\n * @property {VirtualKeyCode} VK_F13\n * @property {VirtualKeyCode} VK_F14\n * @property {VirtualKeyCode} VK_F15\n * @property {VirtualKeyCode} VK_F16\n * @property {VirtualKeyCode} VK_F17\n * @property {VirtualKeyCode} VK_F18\n * @property {VirtualKeyCode} VK_F19\n * @property {VirtualKeyCode} VK_F20\n * @property {VirtualKeyCode} VK_F21\n * @property {VirtualKeyCode} VK_F22\n * @property {VirtualKeyCode} VK_F23\n * @property {VirtualKeyCode} VK_F24\n * @property {VirtualKeyCode} VK_NUMLOCK\n * @property {VirtualKeyCode} VK_SCROLL\n * @property {VirtualKeyCode} VK_LSHIFT\n * @property {VirtualKeyCode} VK_RSHIFT\n * @property {VirtualKeyCode} VK_LCONTROL\n * @property {VirtualKeyCode} VK_RCONTROL\n * @property {VirtualKeyCode} VK_LMENU\n * @property {VirtualKeyCode} VK_RMENU\n * @property {VirtualKeyCode} VK_BROWSER_BACK\n * @property {VirtualKeyCode} VK_BROWSER_FORWARD\n * @property {VirtualKeyCode} VK_BROWSER_REFRESH\n * @property {VirtualKeyCode} VK_BROWSER_STOP\n * @property {VirtualKeyCode} VK_BROWSER_SEARCH\n * @property {VirtualKeyCode} VK_BROWSER_FAVORITES\n * @property {VirtualKeyCode} VK_BROWSER_HOME\n * @property {VirtualKeyCode} VK_VOLUME_MUTE\n * @property {VirtualKeyCode} VK_VOLUME_DOWN\n * @property {VirtualKeyCode} VK_VOLUME_UP\n * @property {VirtualKeyCode} VK_MEDIA_NEXT_TRACK\n * @property {VirtualKeyCode} VK_MEDIA_PREV_TRACK\n * @property {VirtualKeyCode} VK_MEDIA_STOP\n * @property {VirtualKeyCode} VK_MEDIA_PLAY_PAUSE\n * @property {VirtualKeyCode} VK_LAUNCH_MAIL\n * @property {VirtualKeyCode} VK_LAUNCH_MEDIA_SELECT\n * @property {VirtualKeyCode} VK_LAUNCH_APP1\n * @property {VirtualKeyCode} VK_LAUNCH_APP2\n * @property {VirtualKeyCode} VK_OEM_1\n * @property {VirtualKeyCode} VK_OEM_PLUS\n * @property {VirtualKeyCode} VK_OEM_COMMA\n * @property {VirtualKeyCode} VK_OEM_MINUS\n * @property {VirtualKeyCode} VK_OEM_PERIOD\n * @property {VirtualKeyCode} VK_OEM_2\n * @property {VirtualKeyCode} VK_OEM_3\n * @property {VirtualKeyCode} VK_OEM_4\n * @property {VirtualKeyCode} VK_OEM_5\n * @property {VirtualKeyCode} VK_OEM_6\n * @property {VirtualKeyCode} VK_OEM_7\n * @property {VirtualKeyCode} VK_OEM_8\n * @property {VirtualKeyCode} VK_PROCESSKEY\n * @property {VirtualKeyCode} VK_ATTN\n * @property {VirtualKeyCode} VK_CRSEL\n * @property {VirtualKeyCode} VK_EXSEL\n * @property {VirtualKeyCode} VK_EREOF\n * @property {VirtualKeyCode} VK_PLAY\n * @property {VirtualKeyCode} VK_ZOOM\n * @property {VirtualKeyCode} VK_NONAME\n * @property {VirtualKeyCode} VK_PA1\n * @property {VirtualKeyCode} VK_OEM_CLEAR\n */\n\n/**\n * 仮想キーコード一覧\n * @type {VirtualKeyCodes}\n */\nconst VK_DATA = {\n\tVK_LBUTTON\t:{code:0x01},\n\tVK_RBUTTON\t:{code:0x02},\n\tVK_CANCEL\t:{code:0x03},\n\tVK_MBUTTON\t:{code:0x04},\n\tVK_XBUTTON1\t:{code:0x05},\n\tVK_XBUTTON2\t:{code:0x06},\n\tVK_BACK\t:{code:0x08},\n\tVK_TAB\t:{code:0x09},\n\tVK_CLEAR\t:{code:0x0C},\n\tVK_RETURN\t:{code:0x0D},\n\tVK_SHIFT\t:{code:0x10},\n\tVK_CONTROL\t:{code:0x11},\n\tVK_MENU\t:{code:0x12},\n\tVK_PAUSE\t:{code:0x13},\n\tVK_CAPITAL\t:{code:0x14},\n\tVK_KANA\t:{code:0x15},\n\tVK_HANGEUL\t:{code:0x15},\n\tVK_HANGUL\t:{code:0x15},\n\tVK_JUNJA\t:{code:0x17},\n\tVK_FINAL\t:{code:0x18},\n\tVK_HANJA\t:{code:0x19},\n\tVK_KANJI\t:{code:0x19},\n\tVK_ESCAPE\t:{code:0x1B},\n\tVK_CONVERT\t:{code:0x1C},\n\tVK_NONCONVERT\t:{code:0x1D},\n\tVK_ACCEPT\t:{code:0x1E},\n\tVK_MODECHANGE\t:{code:0x1F},\n\tVK_SPACE\t:{code:0x20},\n\tVK_PRIOR\t:{code:0x21},\n\tVK_NEXT\t:{code:0x22},\n\tVK_END\t:{code:0x23},\n\tVK_HOME\t:{code:0x24},\n\tVK_LEFT\t:{code:0x25},\n\tVK_UP\t:{code:0x26},\n\tVK_RIGHT\t:{code:0x27},\n\tVK_DOWN\t:{code:0x28},\n\tVK_SELECT\t:{code:0x29},\n\tVK_PRINT\t:{code:0x2A},\n\tVK_EXECUTE\t:{code:0x2B},\n\tVK_SNAPSHOT\t:{code:0x2C},\n\tVK_INSERT\t:{code:0x2D},\n\tVK_DELETE\t:{code:0x2E},\n\tVK_HELP\t:{code:0x2F},\n\tVK_0\t:{code:0x30},\n\tVK_1\t:{code:0x31},\n\tVK_2\t:{code:0x32},\n\tVK_3\t:{code:0x33},\n\tVK_4\t:{code:0x34},\n\tVK_5\t:{code:0x35},\n\tVK_6\t:{code:0x36},\n\tVK_7\t:{code:0x37},\n\tVK_8\t:{code:0x38},\n\tVK_9\t:{code:0x39},\n\tVK_A\t:{code:0x41},\n\tVK_B\t:{code:0x42},\n\tVK_C\t:{code:0x43},\n\tVK_D\t:{code:0x44},\n\tVK_E\t:{code:0x45},\n\tVK_F\t:{code:0x46},\n\tVK_G\t:{code:0x47},\n\tVK_H\t:{code:0x48},\n\tVK_I\t:{code:0x49},\n\tVK_J\t:{code:0x4A},\n\tVK_K\t:{code:0x4B},\n\tVK_L\t:{code:0x4C},\n\tVK_M\t:{code:0x4D},\n\tVK_N\t:{code:0x4E},\n\tVK_O\t:{code:0x4F},\n\tVK_P\t:{code:0x50},\n\tVK_Q\t:{code:0x51},\n\tVK_R\t:{code:0x52},\n\tVK_S\t:{code:0x53},\n\tVK_T\t:{code:0x54},\n\tVK_U\t:{code:0x55},\n\tVK_V\t:{code:0x56},\n\tVK_W\t:{code:0x57},\n\tVK_X\t:{code:0x58},\n\tVK_Y\t:{code:0x59},\n\tVK_Z\t:{code:0x5A},\n\tVK_LWIN\t:{code:0x5B},\n\tVK_RWIN\t:{code:0x5C},\n\tVK_APPS\t:{code:0x5D},\n\tVK_SLEEP\t:{code:0x5F},\n\tVK_NUMPAD0\t:{code:0x60},\n\tVK_NUMPAD1\t:{code:0x61},\n\tVK_NUMPAD2\t:{code:0x62},\n\tVK_NUMPAD3\t:{code:0x63},\n\tVK_NUMPAD4\t:{code:0x64},\n\tVK_NUMPAD5\t:{code:0x65},\n\tVK_NUMPAD6\t:{code:0x66},\n\tVK_NUMPAD7\t:{code:0x67},\n\tVK_NUMPAD8\t:{code:0x68},\n\tVK_NUMPAD9\t:{code:0x69},\n\tVK_MULTIPLY\t:{code:0x6A},\n\tVK_ADD\t:{code:0x6B},\n\tVK_SEPARATOR\t:{code:0x6C},\n\tVK_SUBTRACT\t:{code:0x6D},\n\tVK_DECIMAL\t:{code:0x6E},\n\tVK_DIVIDE\t:{code:0x6F},\n\tVK_F1\t:{code:0x70},\n\tVK_F2\t:{code:0x71},\n\tVK_F3\t:{code:0x72},\n\tVK_F4\t:{code:0x73},\n\tVK_F5\t:{code:0x74},\n\tVK_F6\t:{code:0x75},\n\tVK_F7\t:{code:0x76},\n\tVK_F8\t:{code:0x77},\n\tVK_F9\t:{code:0x78},\n\tVK_F10\t:{code:0x79},\n\tVK_F11\t:{code:0x7A},\n\tVK_F12\t:{code:0x7B},\n\tVK_F13\t:{code:0x7C},\n\tVK_F14\t:{code:0x7D},\n\tVK_F15\t:{code:0x7E},\n\tVK_F16\t:{code:0x7F},\n\tVK_F17\t:{code:0x80},\n\tVK_F18\t:{code:0x81},\n\tVK_F19\t:{code:0x82},\n\tVK_F20\t:{code:0x83},\n\tVK_F21\t:{code:0x84},\n\tVK_F22\t:{code:0x85},\n\tVK_F23\t:{code:0x86},\n\tVK_F24\t:{code:0x87},\n\tVK_NUMLOCK\t:{code:0x90},\n\tVK_SCROLL\t:{code:0x91},\n\tVK_LSHIFT\t:{code:0xA0},\n\tVK_RSHIFT\t:{code:0xA1},\n\tVK_LCONTROL\t:{code:0xA2},\n\tVK_RCONTROL\t:{code:0xA3},\n\tVK_LMENU\t:{code:0xA4},\n\tVK_RMENU\t:{code:0xA5},\n\tVK_BROWSER_BACK\t:{code:0xA6},\n\tVK_BROWSER_FORWARD\t:{code:0xA7},\n\tVK_BROWSER_REFRESH\t:{code:0xA8},\n\tVK_BROWSER_STOP\t:{code:0xA9},\n\tVK_BROWSER_SEARCH\t:{code:0xAA},\n\tVK_BROWSER_FAVORITES\t:{code:0xAB},\n\tVK_BROWSER_HOME\t:{code:0xAC},\n\tVK_VOLUME_MUTE\t:{code:0xAD},\n\tVK_VOLUME_DOWN\t:{code:0xAE},\n\tVK_VOLUME_UP\t:{code:0xAF},\n\tVK_MEDIA_NEXT_TRACK\t:{code:0xB0},\n\tVK_MEDIA_PREV_TRACK\t:{code:0xB1},\n\tVK_MEDIA_STOP\t:{code:0xB2},\n\tVK_MEDIA_PLAY_PAUSE\t:{code:0xB3},\n\tVK_LAUNCH_MAIL\t:{code:0xB4},\n\tVK_LAUNCH_MEDIA_SELECT\t:{code:0xB5},\n\tVK_LAUNCH_APP1\t:{code:0xB6},\n\tVK_LAUNCH_APP2\t:{code:0xB7},\n\tVK_OEM_1\t:{code:0xBA},\n\tVK_OEM_PLUS\t:{code:0xBB},\n\tVK_OEM_COMMA\t:{code:0xBC},\n\tVK_OEM_MINUS\t:{code:0xBD},\n\tVK_OEM_PERIOD\t:{code:0xBE},\n\tVK_OEM_2\t:{code:0xBF},\n\tVK_OEM_3\t:{code:0xC0},\n\tVK_OEM_4\t:{code:0xDB},\n\tVK_OEM_5\t:{code:0xDC},\n\tVK_OEM_6\t:{code:0xDD},\n\tVK_OEM_7\t:{code:0xDE},\n\tVK_OEM_8\t:{code:0xDF},\n\tVK_PROCESSKEY\t:{code:0xE5},\n\tVK_ATTN\t:{code:0xF6},\n\tVK_CRSEL\t:{code:0xF7},\n\tVK_EXSEL\t:{code:0xF8},\n\tVK_EREOF\t:{code:0xF9},\n\tVK_PLAY\t:{code:0xFA},\n\tVK_ZOOM\t:{code:0xFB},\n\tVK_NONAME\t:{code:0xFC},\n\tVK_PA1\t:{code:0xFD},\n\tVK_OEM_CLEAR\t:{code:0xFE}\n};\n\n/**\n * マウスイベント用コード\n * @typedef {Object} MouseEventFCodes\n * @property {number} MOUSEEVENTF_ABSOLUTE\n * @property {number} MOUSEEVENTF_MOVE\n * @property {number} MOUSEEVENTF_LEFTDOWN\n * @property {number} MOUSEEVENTF_LEFTUP\n * @property {number} MOUSEEVENTF_RIGHTDOWN\n * @property {number} MOUSEEVENTF_RIGHTUP\n * @property {number} MOUSEEVENTF_MIDDLEDOWN\n * @property {number} MOUSEEVENTF_MIDDLEUP\n * @property {number} MOUSEEVENTF_WHEEL\n * @property {number} MOUSEEVENTF_XDOWN\n * @property {number} MOUSEEVENTF_XUP\n */\n\n/**\n * マウスイベント用コード一覧\n * @type {MouseEventFCodes}\n */\nconst MOUSEEVENTF_DATA = {\n\tMOUSEEVENTF_ABSOLUTE\t:0x8000,\n\tMOUSEEVENTF_MOVE\t\t:0x0001,\n\tMOUSEEVENTF_LEFTDOWN\t:0x0002,\n\tMOUSEEVENTF_LEFTUP\t\t:0x0004,\n\tMOUSEEVENTF_RIGHTDOWN\t:0x0008,\n\tMOUSEEVENTF_RIGHTUP\t\t:0x0010,\n\tMOUSEEVENTF_MIDDLEDOWN\t:0x0020,\n\tMOUSEEVENTF_MIDDLEUP\t:0x0040,\n\tMOUSEEVENTF_WHEEL\t\t:0x0800,\n\tMOUSEEVENTF_XDOWN\t\t:0x0080,\n\tMOUSEEVENTF_XUP\t\t\t:0x0100\n};\n\n/**\n * キーイベント発生時のオプション\n * @typedef {Object} KeyEventOption\n * @property {number} [count_max=1] 繰り返す回数\n * @property {boolean} [is_not_pushed=false] 押さない\n * @property {boolean} [is_not_released=false] 離さない\n * @property {number} [push_time_sec=0] 押下時間\n * @property {boolean} [is_pressed_shift=false]\n * @property {boolean} [is_pressed_alt=false]\n * @property {boolean} [is_pressed_ctrl=false]\n */\n\n/**\n * マウスイベント発生時のオプション\n * @typedef {Object} MouseEventOption\n * @property {number} [count_max=1] 繰り返す回数\n * @property {boolean} [is_not_pushed=false] 押さない\n * @property {boolean} [is_not_released=false] 離さない\n * @property {number} [push_time_sec=0] 押下時間\n */\n\n/**\n * ハンドルを取得する際に必要なデータ\n * @typedef {Object} RobotGetHandleData\n * @property {string|number} [classname=0] クラス名\n * @property {string|number} [windowtext=0] ウィンドウ名\n */\n\n/**\n * ウィンドウやマウスなどを自動操作するためのクラス\n */\nexport default class Robot {\n\t\n\t/**\n\t * キーを入力する\n\t * @param {VirtualKeyCode} vkcode - キーコード（利用可能なコードは、Robot.getVK() で取得可能）\n\t * @param {KeyEventOption} [option] - オプション\n\t */\n\tstatic setKeyEvent(vkcode, option) {\n\t\tconst KEYEVENTF_KEYUP = 2;\n\t\tconst count_max = (option && option.count_max) ? option.count_max: 1;\n\t\tlet time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;\n\t\ttime_ms = Math.max(time_ms , 1); // 1以上にする\n\t\tlet code = \"for ($i=0; $i -lt \" + count_max + \"; $i++){\";\n\t\t{\n\t\t\tif(option && option.is_pressed_shift) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_SHIFT.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_alt) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_MENU.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_ctrl) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_CONTROL.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t\tif(!option || !option.is_not_pushed) {\n\t\t\t\tcode += \"$api::keybd_event(\" + vkcode.code + \", 0, 0, 0);\";\n\t\t\t}\n\t\t}\n\t\tif(option && option.push_time_sec) {\n\t\t\tcode += \"Start-Sleep -m \" + time_ms + \";\";\n\t\t}\n\t\t{\n\t\t\tif(!option || !option.is_not_released) {\n\t\t\t\tcode += \"$api::keybd_event(\" + vkcode.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_ctrl) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_CONTROL.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_alt) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_MENU.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t\tif(option && option.is_pressed_shift) {\n\t\t\t\tcode += \"$api::keybd_event(\" + VK_DATA.VK_SHIFT.code + \", 0, \" + KEYEVENTF_KEYUP + \", 0);\";\n\t\t\t}\n\t\t}\n\t\tcode += \"}\";\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)\",\n\t\t\tcode\n\t\t);\n\t}\n\t\n\t/**\n\t * 仮想キーコードの一覧を取得します\n\t * @returns {VirtualKeyCodes} \n\t */\n\tstatic getVK() {\n\t\treturn VK_DATA;\n\t}\n\n\t/**\n\t * マウスのクリックを行う\n\t * @param {string} type - \"LEFT\", \"RIGHT\", \"CLICK\", \"DOUBLE_CLICK\"といった文字列\n\t * @param {KeyEventOption} [option] - オプション\n\t */\n\tstatic setMouseEvent(type, option) {\n\t\tlet count_max = (option && option.count_max) ? option.count_max: 1;\n\t\tlet time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;\n\t\ttime_ms = Math.max(time_ms , 1); // 1以上にする\n\t\tlet target = type.toUpperCase().trim();\n\t\tif(target === \"CLICK\") {\n\t\t\tcount_max = 1;\n\t\t\ttarget = \"LEFT\";\n\t\t}\n\t\telse if(target === \"DOUBLE_CLICK\") {\n\t\t\tcount_max = 2;\n\t\t\ttarget = \"LEFT\";\n\t\t}\n\t\tlet pushed_code;\n\t\tlet released_code;\n\t\tif(target === \"LEFT\") {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_LEFTUP;\n\t\t}\n\t\telse if((target === \"CENTER\") || (target === \"MIDDLE\")) {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_MIDDLEUP;\n\t\t}\n\t\tif(target === \"RIGHT\") {\n\t\t\tpushed_code\t\t= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTDOWN;\n\t\t\treleased_code\t= MOUSEEVENTF_DATA.MOUSEEVENTF_RIGHTUP;\n\t\t}\n\t\tlet code = \"for ($i=0; $i -lt \" + count_max + \"; $i++){\";\n\t\tif(!option || !option.is_not_pushed) {\n\t\t\tcode += \"$api::mouse_event(\" + pushed_code + \", 0, 0, 0, 0);\";\n\t\t}\n\t\tif(option && option.push_time_sec) {\n\t\t\tcode += \"Start-Sleep -m \" + time_ms + \";\";\n\t\t}\n\t\tif(!option || !option.is_not_released) {\n\t\t\tcode += \"$api::mouse_event(\" + released_code + \", 0, 0, 0, 0);\";\n\t\t}\n\t\tcode += \"}\";\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)\",\n\t\t\tcode\n\t\t);\n\t}\n\n\t/**\n\t * マウスの座標を調べる\n\t * @returns {WSHRobotPosition}\n\t */\n\tstatic getCursorPosition() {\n\t\t/*\n\t\t以下の行を1行で実行する\n\t\t[void] [System.Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");\n\t\t$X = [System.Windows.Forms.Cursor]::Position.X;\n\t\t$Y = [System.Windows.Forms.Cursor]::Position.Y;\n\t\t\"$X,$Y\"\n\t\t*/\n\t\t// eslint-disable-next-line quotes\n\t\tconst text = System.PowerShell('[void] [System.Reflection.Assembly]::LoadWithPartialName(\"System.Windows.Forms\");$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;\"$X,$Y\"');\n\t\tconst pos_data = text.split(\",\");\n\t\tconst x = parseFloat(pos_data[0]) | 0;\n\t\tconst y = parseFloat(pos_data[1]) | 0;\n\t\treturn {\n\t\t\tx : x, y : y\n\t\t};\n\t}\n\n\t/**\n\t * マウスの座標を設定する\n\t * @param {WSHRobotPosition} position\n\t */\n\tstatic setCursorPosition(position) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"void SetCursorPos(int X, int Y)\",\n\t\t\t\"$api::SetCursorPos(\" + position.x + \", \" + position.y + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルを取得する\n\t * @param {RobotGetHandleData} get_handle_data \n\t * @returns {number}\n\t */\n\tstatic getHandle(get_handle_data) {\n\t\tlet function_text;\n\t\t// 省略する場合はヌルポインタを設定する必要があるため、入力引数を変更する\n\t\tif(get_handle_data.classname && get_handle_data.windowtext) {\n\t\t\tfunction_text = \"IntPtr FindWindow(string lpClassName, string lpWindowName)\";\n\t\t}\n\t\telse if(get_handle_data.classname) {\n\t\t\tfunction_text = \"IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)\";\n\t\t}\n\t\telse {\n\t\t\tfunction_text = \"IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)\";\n\t\t}\n\t\tlet command = \"$api::FindWindow(\";\n\t\tcommand += (get_handle_data.classname ? \"\\\"\" + get_handle_data.classname + \"\\\"\" : \"0\") + \",\";\n\t\tcommand += (get_handle_data.windowtext ? \"\\\"\" + get_handle_data.windowtext + \"\\\"\" : \"0\") + \");\";\n\t\treturn parseFloat(System.WindowsAPI( \"user32.dll\", function_text, command));\n\t}\n\n\t/**\n\t * 指定したクラス名のハンドルを取得する\n\t * @param {string} classname \n\t * @returns {number}\n\t */\n\tstatic getHandleOfClassName(classname) {\n\t\t// console.log(Robot.getHandleOfClassName(\"Notepad\"));\n\t\treturn Robot.getHandle({classname : classname});\n\t}\n\n\t/**\n\t * 指定したハンドルのクラス名を取得する\n\t * @param {number} handle \n\t * @returns {string}\n\t */\n\tstatic getClassName(handle) {\n\t\treturn System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)\",\n\t\t\t\"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetClassName(\" + handle + \", $buff, 256);$($buff.ToString());\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したウィンドウ名のハンドルを取得する\n\t * @param {string} windowname \n\t * @returns {number}\n\t */\n\tstatic getHandleOfWindowText(windowname) {\n\t\t// console.log(Robot.getHandleOfWindowName(\"無題 - メモ帳\");\n\t\treturn Robot.getHandle({windowtext : windowname});\n\t}\n\n\t/**\n\t * 指定したハンドルのウィンドウ名を取得する\n\t * @param {number} handle \n\t * @returns {string}\n\t */\n\tstatic getWindowText(handle) {\n\t\treturn System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)\",\n\t\t\t\"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetWindowText(\" + handle + \", $buff, 256);$($buff.ToString());\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルの位置とサイズを取得する\n\t * @param {number} handle \n\t * @returns {WSHRobotRect}\n\t */\n\tstatic getWindowRect(handle) {\n\t\t/*\n\t\t以下の行を1行で実行する\n\t\tAdd-Type -TypeDefinition @\"\n\t\tusing System;\n\t\tusing System.Runtime.InteropServices;\n\t\tpublic struct RECT { public int Left; public int Top; public int Right; public int Bottom; }\n\t\tpublic class API {\n\t\t\t[DllImport(\"user32.dll\")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);\n\t\t\tpublic static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }\n\t\t}\n\t\t\"@\n\t\t$rect = [API]::getrect(x);\n\t\t\"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)\"\n\t\t*/\n\t\t// eslint-disable-next-line quotes\n\t\tconst command = `Add-Type -TypeDefinition \"using System; using System.Runtime.InteropServices; public struct RECT { public int Left; public int Top; public int Right; public int Bottom; } public class API { [DllImport(\"\"user32.dll\"\")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect); public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; } }\";  $rect = [API]::getrect(` + handle + `); \"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)\"`;\n\t\tconst rect = System.PowerShell(command);\n\t\tconst rect_data = rect.split(\",\");\n\t\tif(rect_data.length !== 4) {\n\t\t\treturn null;\n\t\t}\n\t\tconst left   = parseFloat(rect_data[0]) | 0;\n\t\tconst top    = parseFloat(rect_data[1]) | 0;\n\t\tconst right  = parseFloat(rect_data[2]) | 0;\n\t\tconst bottom = parseFloat(rect_data[3]) | 0;\n\t\treturn {\n\t\t\tx\t\t:left,\n\t\t\ty\t\t:top,\n\t\t\twidth\t:right - left,\n\t\t\theight\t:bottom - top\n\t\t};\n\t}\n\n\t/**\n\t * 指定したハンドルの位置とサイズを設定する\n\t * @param {number} handle \n\t * @param {WSHRobotRect} rect \n\t * @returns {void}\n\t */\n\tstatic setWindowRect(handle, rect) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)\",\n\t\t\t\"$api::MoveWindow(\" + handle + \" , \" + (rect.x|0) + \", \" + (rect.y|0) + \", \" + (rect.width|0) + \", \" + (rect.height|0) + \", 1 );\"\n\t\t);\n\t}\n\n\t/**\n\t * アクティブなウィンドウのハンドルを取得する\n\t * @returns {number}\n\t */\n\tstatic getActiveWindow() {\n\t\treturn parseFloat(System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetForegroundWindow()\",\n\t\t\t\"$api::GetForegroundWindow();\"\n\t\t));\n\t}\n\n\t/**\n\t * アクティブなウィンドウを設定する\n\t * @param {number} handle \n\t * @returns {void}\n\t */\n\tstatic setActiveWindow(handle) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"bool SetForegroundWindow(IntPtr hWnd)\",\n\t\t\t\"$api::SetForegroundWindow(\" + handle + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したハンドルのプロセスIDを取得する\n\t * @param {number} handle \n\t * @returns {number}\n\t */\n\tstatic getPID(handle) {\n\t\treturn parseFloat(System.WindowsAPI(\n\t\t\t\"user32.dll\",\n\t\t\t\"IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)\",\n\t\t\t\"$getpid = 0;$null = $api::GetWindowThreadProcessId(\" + handle + \", [ref] $getpid);$getpid;\"\n\t\t));\n\t}\n\n\t/**\n\t * 指定したプロセスIDを修了させる\n\t * @param {number} pid \n\t */\n\tstatic terminateProcess(pid) {\n\t\treturn System.run(\"taskkill /PID \" + pid, 0, true);\n\t}\n\n\t\n\n\n\t// TODO マウスを移動させたり、キーボードを入力する操作を追加する予定\n\n}\n\n\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/senko/Robot.js",
     "access": "public",
@@ -7719,7 +7719,7 @@
     "__docId__": 202,
     "kind": "file",
     "name": "src/senko/SFile.js",
-    "content": "import Format from \"./Format.js\";\n\n/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\n/**\n * ファイル／フォルダ／URLを扱うクラス\n */\nexport default class SFile {\n\n\t/**\n\t * 初期化\n\t * @param {string|SFile} pathname ファイル名／フォルダ名／URLアドレス\n\t */\n\tconstructor(pathname) {\n\t\tif(arguments.length !== 1) {\n\t\t\tthrow \"IllegalArgumentException\";\n\t\t}\n\n\t\t/**\n\t\t * @type {string}\n\t\t * @private\n\t\t */\n\t\tthis.pathname = \"\";\n\n\t\tif((typeof pathname === \"string\")||(pathname instanceof String)) {\n\t\t\t// \\を/に置き換える\n\t\t\tthis.pathname = pathname.replace(/\\\\/g, \"/\" );\n\t\t}\n\t\telse if(pathname instanceof SFile) {\n\t\t\tthis.pathname = pathname.getAbsolutePath();\n\t\t}\n\t\telse {\n\t\t\tthrow \"IllegalArgumentException\";\n\t\t}\n\t\t\n\t\t/**\n\t\t * @type {boolean}\n\t\t * @private\n\t\t */\n\t\tthis.is_http = /^htt/.test(this.pathname);\n\n\t\t/**\n\t\t * @type {any}\n\t\t * @private\n\t\t */\n\t\tthis.fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t}\n\n\t/**\n\t * ファイルの削除（ゴミ箱には入りません）\n\t * @param {boolean} [is_force=false] - 読み取り専用でも削除する\n\t * @returns {boolean}\n\t */\n\tremove(is_force) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\ttry {\n\t\t\tif(this.isFile()) {\n\t\t\t\treturn this.fso.DeleteFile(this.pathname, is_force ? is_force : false );\n\t\t\t}\n\t\t\telse if(this.isDirectory()) {\n\t\t\t\treturn this.fso.DeleteFolder(this.pathname, is_force ? is_force : false );\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルが存在するか\n\t * @returns {boolean}\n\t */\n\texists() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet out = this.isFile();\n\t\tif(out === false) {\n\t\t\tout = this.isDirectory();\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * ファイルのコピー\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\tcopy(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst file = new SFile(file_obj);\n\t\tif(this.isFile()) {\n\t\t\treturn this.fso.CopyFile(this.pathname, file.getAbsolutePath(), true);\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\treturn this.fso.CopyFolder(this.pathname, file.getAbsolutePath(), true);\n\t\t}\n\t\telse {\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルの移動\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\tmove(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst file = new SFile(file_obj);\n\t\tif(this.isFile()) {\n\t\t\tthis.fso.MoveFile(this.pathname, file.getAbsolutePath());\n\t\t\tthis.pathname = file.getAbsolutePath();\n\t\t\treturn true;\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\tthis.fso.MoveFolder(this.pathname, file.getAbsolutePath());\n\t\t\tthis.pathname = file.getAbsolutePath();\n\t\t\treturn true;\n\t\t}\n\t\telse {\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイル名を変更\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\trenameTo(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\tconst name = new SFile(file_obj);\n\t\t// 例えばファイル名を大文字から小文字に変換といった場合、\n\t\t// Scripting.FileSystemObject の仕様によりエラーが発生するため、\n\t\t// 別のファイル名を経由する\n\t\tconst key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);\n\t\tfile.Name = name.getName() + key;\n\t\tfile.Name = name.getName();\n\t\tthis.pathname = name.getAbsolutePath();\n\t\treturn true;\n\t}\n\n\t/**\n\t * 文字列化\n\t * @returns {string}\n\t */\n\ttoString() {\n\t\treturn this.getAbsolutePath();\n\t}\n\n\t/**\n\t * 名前を取得\n\t * @returns {string}\n\t */\n\tgetName() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えている場合は、ファイル名取得できない\n\t\t\tif(this.isDirectory()) {\n\t\t\t\treturn \"\";\n\t\t\t}\n\t\t\tconst slashsplit = this.pathname.split(\"/\");\n\t\t\treturn slashsplit[slashsplit.length - 1];\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetFileName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 親フォルダの絶対パス\n\t * @returns {string}\n\t */\n\tgetParent() {\n\t\tconst x = this.getAbsolutePath().match(/.*[/\\\\]/)[0];\n\t\treturn x.substring(0 ,x.length - 1);\n\t}\n\n\t/**\n\t * 親フォルダ\n\t * @returns {SFile}\n\t */\n\tgetParentFile() {\n\t\treturn new SFile(this.getParent());\n\t}\n\n\t/**\n\t * 拡張子（ドットを含まない）\n\t * @returns {string}\n\t */\n\tgetExtensionName() {\n\t\tif(this.is_http) {\n\t\t\tconst dotlist = this.getName().split(\".\");\n\t\t\treturn dotlist[dotlist.length - 1];\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetExtensionName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 絶対パスかどうか\n\t * @returns {boolean}\n\t */\n\tisAbsolute() {\n\t\tif(this.is_http) {\n\t\t\treturn this.getAbsolutePath() === this.pathname;\n\t\t}\n\t\telse {\n\t\t\tconst name = this.pathname.replace(\"/\", \"\\\\\");\n\t\t\treturn this.fso.GetAbsolutePathName(this.pathname) === name;\n\t\t}\n\t}\n\n\t/**\n\t * フォルダかどうか\n\t * @returns {boolean}\n\t */\n\tisDirectory() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えている場合はディレクトリ\n\t\t\treturn /\\/$/.test(this.pathname);\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.FolderExists(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * ファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisFile() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えていない場合はファイル\n\t\t\treturn /[^/]$/.test(this.pathname);\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.FileExists(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 読み取り専用ファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisReadOnly() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst ATTRIBUTES_READONLY = 1;\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn (file.Attributes & ATTRIBUTES_READONLY) !== 0;\n\t}\n\t\n\t/**\n\t * 読み取り専用ファイルかどうかを設定する\n\t * @param {boolean} is_readonly\n\t * @param {boolean} [is_allfiles=false]\n\t * @returns {boolean}\n\t */\n\tsetReadOnly(is_readonly, is_allfiles) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst ATTRIBUTES_READONLY = 1;\n\t\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t\tif(is_readonly) {\n\t\t\t\tfile.Attributes = file.Attributes | ATTRIBUTES_READONLY;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tfile.Attributes = file.Attributes & ~ATTRIBUTES_READONLY;\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t\tif(this.isFile() || !is_allfiles) {\n\t\t\treturn true;\n\t\t}\n\t\tlet ret = true;\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tret = ret && file.setReadOnly(is_readonly, false);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn ret;\n\t}\n\n\t/**\n\t * 隠しファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisHidden() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst ATTRIBUTES_HIDDEN = 2;\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn (file.Attributes & ATTRIBUTES_HIDDEN) !== 0;\n\t}\n\t\n\t/**\n\t *隠しファイルかどうかを設定する\n\t * @param {boolean} is_hidden\n\t * @param {boolean} [is_allfiles=false]\n\t * @returns {boolean}\n\t */\n\tsetHidden(is_hidden, is_allfiles) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst ATTRIBUTES_HIDDEN = 2;\n\t\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t\tif(is_hidden) {\n\t\t\t\tfile.Attributes = file.Attributes | ATTRIBUTES_HIDDEN;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tfile.Attributes = file.Attributes & ~ATTRIBUTES_HIDDEN;\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t\tif(this.isFile() || !is_allfiles) {\n\t\t\treturn true;\n\t\t}\n\t\tlet ret = true;\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tret = ret && file.setHidden(is_hidden, false);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn ret;\n\t}\n\n\t/**\n\t * 更新日を取得\n\t * @returns {Date}\n\t */\n\tlastModified() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn null;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t// DateLastModified は VT_DATE 値なので変換する\n\t\treturn new Date(file.DateLastModified);\n\t}\n\n\t/**\n\t * 更新日を設定（ファイルのみ対応）\n\t * @param {Date} date\n\t * @returns {boolean}\n\t */\n\tsetLastModified(date) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst shell = new ActiveXObject(\"Shell.Application\");\n\t\t\tconst folder = shell.NameSpace(this.getParent());\n\t\t\tconst file = folder.ParseName(this.getName());\n\t\t\tconst date_string = Format.datef(\"YYYY/MM/DD hh:mm:ss\", date);\n\t\t\tfile.ModifyDate = date_string;\n\t\t\treturn true;\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルサイズ\n\t * @returns {number}\n\t */\n\tlength() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn -1;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn file.Size;\n\t}\n\n\t/**\n\t * 配下のファイル名の一覧を取得\n\t * @returns {string[]}\n\t */\n\tgetFiles() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst out = [];\n\t\tconst list = new Enumerator(this.fso.GetFolder(this.pathname).Files);\n\t\tfor(let i = 0; !list.atEnd(); list.moveNext()) {\n\t\t\tout[i++] = list.item().Name;\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 配下のサブフォルダ名の一覧を取得\n\t * @returns {string[]}\n\t */\n\tgetSubFolders() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst out = [];\n\t\tconst list = new Enumerator(this.fso.GetFolder(this.pathname).SubFolders);\n\t\tfor(let i = 0; !list.atEnd(); list.moveNext()) {\n\t\t\tout[i++] = list.item().Name;\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 区切り文字と終端を正規化した文字列を取得\n\t * @returns {string}\n\t */\n\tgetNormalizedPathName() {\n\t\tif(this.pathname === \"\") {\n\t\t\treturn \".\\\\\";\n\t\t}\n\t\tlet name = this.pathname.replace(/\\//g, \"\\\\\");\n\t\tif(name.slice(-1) !== \"\\\\\") {\n\t\t\tname += \"\\\\\";\n\t\t}\n\t\treturn name;\n\t}\n\n\t/**\n\t * 配下のファイル名とフォルダ名を取得\n\t * @returns {string[]}\n\t */\n\tlist() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst files = this.getFiles();\n\t\tconst subfolders = this.getSubFolders();\n\t\tconst out = [];\n\t\tfor(let j = 0; j < subfolders.length;) {\n\t\t\tout.push(subfolders[j++]);\n\t\t}\n\t\tfor(let j = 0; j < files.length;) {\n\t\t\tout.push(files[j++]);\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 絶対パスを取得\n\t * @returns {string}\n\t */\n\tgetAbsolutePath() {\n\t\tif(this.is_http) {\n\t\t\t// ホストとファイルに分ける\n\t\t\tconst hosttext = this.pathname.match(/^http[^/]+\\/\\/[^/]+\\//)[0];\n\t\t\tconst filetext = this.pathname.substr(hosttext.length);\n\t\t\t// パスを1つずつ解析しながら辿っていく\n\t\t\tlet name = hosttext;\n\t\t\tconst namelist = filetext.split(\"/\");\n\t\t\tlet i;\n\t\t\tfor(i = 0; i < namelist.length; i++) {\n\t\t\t\tif((namelist[i] === \"\") || (namelist[i] === \".\")) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\tif(namelist[i] === \"..\") {\n\t\t\t\t\tname = name.substring(0 ,name.length - 1).match(/.*\\//)[0];\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\tname += namelist[i];\n\t\t\t\tif(i !== namelist.length - 1) {\n\t\t\t\t\tname += \"/\";\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn name;\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetAbsolutePathName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * フォルダを作成\n\t * - フォルダは1つのみ指定可能\n\t * - すでにフォルダがある場合はエラーを返す。\n\t * @returns {boolean}\n\t */\n\tmkdir() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst filename = this.getAbsolutePath();\n\t\tif(this.fso.FileExists(filename)) {\n\t\t\t// ファイルがあるため、フォルダを作れない\n\t\t\treturn false;\n\t\t}\n\t\telse if(this.fso.FolderExists(filename)) {\n\t\t\t// フォルダが既にあるため、TRUEで返す\n\t\t\treturn true;\n\t\t}\n\t\t// フォルダがないので作成する\n\t\tthis.fso.CreateFolder(filename);\n\t\t// 10秒間作られるまで待つ\n\t\tfor(let i = 0; i < (20 * 10); i++) {\n\t\t\tif(this.fso.FolderExists(filename)) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t\tWScript.Sleep(50); // 50ms\n\t\t}\n\t\t// いつまで待ってもフォルダが作られないので失敗\n\t\treturn false;\n\t}\n\n\t/**\n\t * フォルダを作成\n\t * - 作成したいフォルダを続けて記載が可能\n\t * - フォルダがない場合はフォルダを作成していく\n\t * @returns {boolean}\n\t */\n\tmkdirs() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst name = this.pathname.replace(/\\//g, \"\\\\\").split(\"\\\\\");\n\t\tlet dir  = \"\";\n\t\tfor(let i = 0; i < name.length; i++) {\n\t\t\tdir += name[i];\n\t\t\tif(!(new SFile(dir)).mkdir()) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tdir += \"\\\\\";\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * 実行ファイルを起動する\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t * @returns {void}\n\t */\n\trun(style, is_wait) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst objWShell = new ActiveXObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\tobjWShell.Run(this.getAbsolutePath(), intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 1行書き加える\n\t * @param {string} text\n\t * @returns {boolean}\n\t */\n\twriteLine(text) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet file;\n\t\tif(this.isFile()) {\n\t\t\tconst ForAppending = 8;\n\t\t\tfile = this.fso.OpenTextFile(this.pathname, ForAppending);\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\telse {\n\t\t\tfile = this.fso.CreateTextFile(this.pathname, true);\n\t\t}\n\t\tfile.WriteLine(text);\n\t\tfile.Close();\n\t\treturn true;\n\t}\n\n\t/**\n\t * テキストファイルを開く\n\t * @param {string} [charset=\"_autodetect_all\"] - 文字コード\n\t * @returns {string}\n\t */\n\tgetTextFile(charset) {\n\t\tconst icharset = charset !== undefined ? charset : \"_autodetect_all\";\n\t\tconst inewline = \"\\n\"; //javascript上での改行\n\t\tlet text = null;\n\t\tif(/^htt/.test(this.pathname)) {\n\t\t\tconst http = SFile.createXMLHttpRequest();\n\t\t\tif(http === null) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\thttp.open(\"GET\", this.pathname, false);\n\t\t\ttry {\n\t\t\t\thttp.send(null);\n\t\t\t\ttext = http.responseText;\n\t\t\t}\n\t\t\tcatch (e) {\n\t\t\t\tconsole.log(e);\n\t\t\t\ttext = \"error\";\n\t\t\t}\n\t\t}\n\t\telse {\n\t\t\tif(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {\n\t\t\t\t// Scripting.FileSystemObject で開く\n\t\t\t\tconst forreading = 1;\n\t\t\t\tlet tristate = 0;\n\t\t\t\tif(/ascii/i.test(icharset)) {\n\t\t\t\t\t// ASCII\n\t\t\t\t\ttristate = 0;\n\t\t\t\t}\n\t\t\t\telse if(/shift_jis|sjis/i.test(icharset)) {\n\t\t\t\t\t// システムのデフォルト(日本語のOSだと仮定)\n\t\t\t\t\ttristate = -2;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\t// utf-16le\n\t\t\t\t\ttristate = -1;\n\t\t\t\t}\n\t\t\t\tconst open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );\n\t\t\t\ttext = open_file.ReadAll();\n\t\t\t\topen_file.Close();\n\t\t\t}\n\t\t\telse {\n\t\t\t\t// より自由なコードで開く（速度は遅い）\n\t\t\t\t// 使用可能な charset については下記を参照\n\t\t\t\t// HKEY_CLASSES_ROOT\\MIME\\Database\\Charset\n\t\t\t\tconst adTypeText = 2;\n\t\t\t\tconst adReadAll = -1;\n\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\tstream.type = adTypeText;\n\t\t\t\tstream.charset = icharset;\n\t\t\t\tstream.open();\n\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\tstream.close();\n\t\t\t\t// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する\n\t\t\t\tif((icharset === \"_autodetect_all\")||(icharset === \"_autodetect\")) {\n\t\t\t\t\tlet newcharset = \"\";\n\t\t\t\t\t// 1文字以上のとき\n\t\t\t\t\tif(text.length > 1) {\n\t\t\t\t\t\t// utf-16le\n\t\t\t\t\t\tif(text.charCodeAt(0) === 0xfeff) {\n\t\t\t\t\t\t\t// 通常は、このルートはBOM付きutf-16leのときに通るが、\n\t\t\t\t\t\t\t// BOM付きutf-8でも通る場合がなぜかある。（後述）\n\t\t\t\t\t\t\tnewcharset = \"unicode\";\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// utf-16be\n\t\t\t\t\t\telse if(text.charCodeAt(0) === 0xfffe) {\n\t\t\t\t\t\t\tnewcharset = \"unicodeFFFE\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 2文字以上のとき\n\t\t\t\t\tif(text.length > 2) {\n\t\t\t\t\t\t// BOM付きutf-8でなぜかこの文字がくっつく場合がある。\n\t\t\t\t\t\tif(\t(text.charCodeAt(0) === 0x30fb) &&\n\t\t\t\t\t\t\t(text.charCodeAt(1) === 0xff7f)) {\n\t\t\t\t\t\t\tnewcharset = \"utf-8\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 3文字以上のとき\n\t\t\t\t\tif(text.length > 3) {\n\t\t\t\t\t\t// utf-8\n\t\t\t\t\t\tif(\t(text.charCodeAt(0) === 0xef) &&\n\t\t\t\t\t\t\t(text.charCodeAt(1) === 0xbb) &&\n\t\t\t\t\t\t\t(text.charCodeAt(2) === 0xbf)) {\n\t\t\t\t\t\t\tnewcharset = \"utf-8\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 上判定でBOM付きが分かった場合、正しい文字コードで取得する\n\t\t\t\t\tif(newcharset !== \"\") {\n\t\t\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\t\t\tstream.type = adTypeText;\n\t\t\t\t\t\tstream.charset = newcharset;\n\t\t\t\t\t\tstream.open();\n\t\t\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\t\t\tstream.close();\n\t\t\t\t\t}\n\t\t\t\t\t// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処\n\t\t\t\t\tif((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {\n\t\t\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\t\t\tstream.type = adTypeText;\n\t\t\t\t\t\tstream.charset = \"utf-8\";\n\t\t\t\t\t\tstream.open();\n\t\t\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\t\t\tstream.close();\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tif(text !== null) {\n\t\t\treturn text.replace(/\\r\\n?|\\n/g, inewline); //改行コードを統一\n\t\t}\n\t\telse {\n\t\t\treturn null;\n\t\t}\n\t}\n\n\t/**\n\t * テキストファイルを保存\n\t * @param {string} text\n\t * @param {string} [charset=\"utf-8\"] - 文字コード\n\t * @param {string} [newline=\"\\n\"] - 改行コード\n\t * @param {boolean} [issetBOM=true] - BOMの有無(utf-8のみ有効 )\n\t * @returns {boolean}\n\t */\n\tsetTextFile(text, charset, newline, issetBOM) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst icharset = charset !== undefined ? charset : \"utf-8\";\n\t\tconst inewline = newline !== undefined ? newline : \"\\n\";\n\t\tconst iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし\n\t\tif(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {\n\t\t\t// Scripting.FileSystemObject で書き込む\n\t\t\tconst forwriting = 2;\n\t\t\tlet tristate = 0;\n\t\t\tif(/ascii/i.test(icharset)) {\n\t\t\t\t// ASCII\n\t\t\t\ttristate = 0;\n\t\t\t}\n\t\t\telse if(/shift_jis|sjis/i.test(icharset)) {\n\t\t\t\t// システムのデフォルト(日本語のOSだと仮定)\n\t\t\t\ttristate = -2;\n\t\t\t}\n\t\t\telse {\n\t\t\t\t// utf-16le\n\t\t\t\ttristate = -1;\n\t\t\t}\n\t\t\tconst open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );\n\t\t\topen_file.Write(text.replace(/\\r\\n?|\\n/g, inewline));\n\t\t\topen_file.Close();\n\t\t}\n\t\telse {\n\t\t\t// ADODB.Streamで書き込む\n\t\t\tconst adTypeBinary = 1;\n\t\t\tconst adTypeText = 2;\n\t\t\tconst adSaveCreateOverWrite = 2;\n\t\t\t// 使用可能な charset については下記を参照\n\t\t\t// HKEY_CLASSES_ROOT\\MIME\\Database\\Charset\n\t\t\tlet stream;\n\t\t\tstream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = icharset;\n\t\t\tstream.open();\n\t\t\tstream.writeText(text.replace(/\\r\\n?|\\n/g, inewline)); //改行コードを統一\n\t\t\tif(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {\n\t\t\t\tstream.position = 0;\n\t\t\t\tstream.type = adTypeBinary;\n\t\t\t\tstream.position = 3;\n\t\t\t\tconst binary = stream.read();\n\t\t\t\tstream.close();\n\t\t\t\tstream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\tstream.type = adTypeBinary;\n\t\t\t\tstream.open();\n\t\t\t\tstream.write(binary);\n\t\t\t}\n\t\t\tstream.saveToFile(this.pathname, adSaveCreateOverWrite);\n\t\t\tstream.close();\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * バイナリファイルを開く（激重）\n\t * @returns {number[]}\n\t */\n\tgetBinaryFile() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst adTypeText = 2;\n\t\tconst adReadAll = -1;\n\t\tconst charset = \"iso-8859-1\";\n\t\t\n\t\t/**\n\t\t * @type {Object<number, number>}\n\t\t * @private\n\t\t */\n\t\tconst map = {\n\t\t\t0x20AC\t:\t0x80\t,\t//\t8364\t128\n\t\t\t0x201A\t:\t0x82\t,\t//\t8218\t130\n\t\t\t0x0192\t:\t0x83\t,\t//\t402\t131\n\t\t\t0x201E\t:\t0x84\t,\t//\t8222\t132\n\t\t\t0x2026\t:\t0x85\t,\t//\t8230\t133\n\t\t\t0x2020\t:\t0x86\t,\t//\t8224\t134\n\t\t\t0x2021\t:\t0x87\t,\t//\t8225\t135\n\t\t\t0x02C6\t:\t0x88\t,\t//\t710\t136\n\t\t\t0x2030\t:\t0x89\t,\t//\t8240\t137\n\t\t\t0x0160\t:\t0x8A\t,\t//\t352\t138\n\t\t\t0x2039\t:\t0x8B\t,\t//\t8249\t139\n\t\t\t0x0152\t:\t0x8C\t,\t//\t338\t140\n\t\t\t0x017D\t:\t0x8E\t,\t//\t381\t142\n\t\t\t0x2018\t:\t0x91\t,\t//\t8216\t145\n\t\t\t0x2019\t:\t0x92\t,\t//\t8217\t146\n\t\t\t0x201C\t:\t0x93\t,\t//\t8220\t147\n\t\t\t0x201D\t:\t0x94\t,\t//\t8221\t148\n\t\t\t0x2022\t:\t0x95\t,\t//\t8226\t149\n\t\t\t0x2013\t:\t0x96\t,\t//\t8211\t150\n\t\t\t0x2014\t:\t0x97\t,\t//\t8212\t151\n\t\t\t0x02DC\t:\t0x98\t,\t//\t732\t152\n\t\t\t0x2122\t:\t0x99\t,\t//\t8482\t153\n\t\t\t0x0161\t:\t0x9A\t,\t//\t353\t154\n\t\t\t0x203A\t:\t0x9B\t,\t//\t8250\t155\n\t\t\t0x0153\t:\t0x9C\t,\t//\t339\t156\n\t\t\t0x017E\t:\t0x9E\t,\t//\t382\t158\n\t\t\t0x0178\t:\t0x9F\t\t//\t376\t159\n\t\t};\n\t\ttry {\n\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = charset;\n\t\t\tstream.open();\n\t\t\tstream.loadFromFile(this.pathname);\n\t\t\tconst text = stream.readText(adReadAll);\n\t\t\tstream.close();\n\t\t\tconst out = new Array(text.length);\n\t\t\tfor(let i = 0;i < text.length;i++) {\n\t\t\t\tconst x = text.charCodeAt(i);\n\t\t\t\tif(0xFF < x) {\n\t\t\t\t\tout[i] = map[x];\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tout[i] = x;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn out;\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn [];\n\t\t}\n\t}\n\n\t/**\n\t * バイナリファイルを保存（激重）\n\t * @param {number[]} array_\n\t * @returns {boolean}\n\t */\n\tsetBinaryFile(array_) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet is_write = true;\n\t\tconst adTypeText = 2;\n\t\tconst adSaveCreateOverWrite = 2;\n\t\tconst charset = \"iso-8859-1\";\n\t\tconst buffersize = 512;\n\t\ttry {\n\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = charset;\n\t\t\tstream.open();\n\t\t\tfor(let i = 0;i < array_.length;) {\n\t\t\t\tconst text = [];\n\t\t\t\tfor(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {\n\t\t\t\t\ttext[j] = String.fromCharCode(array_[i]);\n\t\t\t\t}\n\t\t\t\tstream.writeText(text.join(\"\"));\n\t\t\t}\n\t\t\tstream.saveToFile(this.pathname, adSaveCreateOverWrite);\n\t\t\tstream.close();\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\tis_write = false;\n\t\t}\n\t\treturn is_write;\n\t}\n\n\t/**\n\t * XMLHttpRequestを作成\n\t * @returns {XMLHttpRequest}\n\t */\n\tstatic createXMLHttpRequest() {\n\t\ttry {\n\t\t\treturn new XMLHttpRequest();\n\t\t}\n\t\tcatch (e) {\n\t\t\tconst MSXMLHTTP = [\n\t\t\t\t\"WinHttp.WinHttpRequest.5.1\",\n\t\t\t\t\"WinHttp.WinHttpRequest.5\",\n\t\t\t\t\"WinHttp.WinHttpRequest\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.6.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.5.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.4.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.3.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP\",\n\t\t\t\t\"Microsoft.ServerXMLHTTP\",\n\t\t\t\t\"Msxml2.XMLHTTP.6.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.5.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.4.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.3.0\",\n\t\t\t\t\"Msxml2.XMLHTTP\",\n\t\t\t\t\"Microsoft.XMLHTTP\"\n\t\t\t];\n\t\t\t// ※ WinHttp.WinHttpRequest は onreadystatechange の書き換えができない\n\t\t\tlet i;\n\t\t\tfor(i = 0; i < MSXMLHTTP.length; i++) {\n\t\t\t\ttry {\n\t\t\t\t\treturn new ActiveXObject(MSXMLHTTP[i]);\n\t\t\t\t}\n\t\t\t\tcatch (e) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn null;\n\t\t}\n\t}\n\t\n\t/**\n\t * テンポラリフォルダ内の適当なファイル名を取得\n\t * @returns {SFile}\n\t */\n\tstatic createTempFile() {\n\t\tconst TemporaryFolder = 2;\n\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\t// テンポラリフォルダ内の適当なファイル名を取得します\n\t\treturn new SFile(fso.GetSpecialFolder(TemporaryFolder) + \"\\\\\" + fso.GetTempName());\n\t}\n\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {SFile}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn new SFile(shell.CurrentDirectory);\n\t}\n\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string|SFile} file_obj\n\t */\n\tstatic setCurrentDirectory(file_obj) {\n\t\tconst file = new SFile(file_obj);\n\t\tconst shell = WScript.CreateObject (\"WScript.Shell\");\n\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\tshell.CurrentDirectory = fso.GetFolder(file.getAbsolutePath()).Name;\n\t}\n\n\t/**\n\t * フォルダの中のフォルダとファイルに対して指定した関数を実行する\n\t * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。\n\t * @returns {boolean} result\n\t */\n\teach(func) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn func.call(func, this);\n\t\t}\n\t\tconst path = [];\n\t\tconst collection = [];\n\t\tlet file;\n\t\tlet pointer = 0;\n\t\tlet list;\n\t\tlet targetfolder;\n\t\tpath[pointer] = this.getNormalizedPathName();\n\n\t\t// 1階層目を処理する\n\t\ttargetfolder = this.fso.GetFolder(path[pointer]);\n\t\tlist = new Enumerator(this.fso.GetFolder(targetfolder).Files);\n\t\tfor(; !list.atEnd(); list.moveNext()) {\n\t\t\tfile = new SFile(path[pointer] + list.item().Name);\n\t\t\tif(!func.call(func, file)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\n\t\t// 2階層目以降を処理する\n\t\tif(targetfolder.SubFolders.Count === 0) {\n\t\t\treturn false;\n\t\t}\n\t\tcollection[pointer] = new Enumerator(targetfolder.SubFolders);\n\t\tpointer++;\n\t\twhile(true) {\n\t\t\tpath[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;\n\t\t\tfile = new SFile(path[pointer]);\n\t\t\tif(!func.call(func, file)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tpath[pointer] += \"\\\\\";\n\t\t\ttargetfolder = this.fso.GetFolder(path[pointer]);\n\t\t\tlist = new Enumerator(targetfolder.Files);\n\t\t\tfor(; !list.atEnd(); list.moveNext()) {\n\t\t\t\tfile = new SFile(path[pointer] + list.item().Name);\n\t\t\t\tif(!func.call(func, file)) {\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(targetfolder.SubFolders.Count === 0) {\n\t\t\t\twhile(true) {\n\t\t\t\t\tif(pointer === 0) {\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t\tcollection[pointer - 1].moveNext();\n\t\t\t\t\tif(collection[pointer - 1].atEnd()) {\n\t\t\t\t\t\tpointer--;\n\t\t\t\t\t\tcontinue;\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(pointer === 0) {\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t\telse {\n\t\t\t\tcollection[pointer] = new Enumerator(targetfolder.SubFolders);\n\t\t\t\tpointer++;\n\t\t\t}\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * サブフォルダの中まで探索して全てのファイルとフォルダを取得\n\t * @returns {SFile[]}\n\t */\n\tgetAllFiles() {\n\t\t/**\n\t\t * @type {SFile[]}\n\t\t */\n\t\tconst out = [];\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tout.push(file);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn out;\n\t}\n\n\t/**\n\t * 指定した条件にあうファイルを探す\n\t * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます\n\t * @param {string|SFile|function(string, string): boolean} file_obj\n\t * @returns {SFile|null}\n\t */\n\tsearchFile(file_obj) {\n\t\tlet target_file = null;\n\t\t/**\n\t\t * @type {function(string, string): boolean}\n\t\t * @private\n\t\t */\n\t\tlet isTarget;\n\t\tif(typeof file_obj !== \"function\") {\n\t\t\tconst file = new SFile(file_obj);\n\t\t\tconst buffer = file.getName();\n\t\t\tisTarget = function(name, fullpath) {\n\t\t\t\treturn name === buffer;\n\t\t\t};\n\t\t}\n\t\telse {\n\t\t\tisTarget = file_obj;\n\t\t}\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tif(isTarget(file.getName(), file.getAbsolutePath())) {\n\t\t\t\ttarget_file = file;\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn target_file;\n\t}\n\n}\n",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Format from \"./Format.js\";\nimport System from \"./System.js\";\n \n/**\n * ファイル／フォルダ／URLを扱うクラス\n */\nexport default class SFile {\n\n\t/**\n\t * 初期化\n\t * @param {string|SFile} pathname ファイル名／フォルダ名／URLアドレス\n\t */\n\tconstructor(pathname) {\n\t\tif(arguments.length !== 1) {\n\t\t\tthrow \"IllegalArgumentException\";\n\t\t}\n\n\t\t/**\n\t\t * @type {string}\n\t\t * @private\n\t\t */\n\t\tthis.pathname = \"\";\n\n\t\tif((typeof pathname === \"string\")||(pathname instanceof String)) {\n\t\t\t// \\を/に置き換える\n\t\t\tthis.pathname = pathname.replace(/\\\\/g, \"/\" );\n\t\t}\n\t\telse if(pathname instanceof SFile) {\n\t\t\tthis.pathname = pathname.getAbsolutePath();\n\t\t}\n\t\telse {\n\t\t\tthrow \"IllegalArgumentException\";\n\t\t}\n\t\t\n\t\t/**\n\t\t * @type {boolean}\n\t\t * @private\n\t\t */\n\t\tthis.is_http = /^htt/.test(this.pathname);\n\n\t\t/**\n\t\t * @type {any}\n\t\t * @private\n\t\t */\n\t\tthis.fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t}\n\n\t/**\n\t * ファイルの削除（ゴミ箱には入りません）\n\t * @param {boolean} [is_force=false] - 読み取り専用でも削除する\n\t * @returns {boolean}\n\t */\n\tremove(is_force) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\ttry {\n\t\t\tif(this.isFile()) {\n\t\t\t\treturn this.fso.DeleteFile(this.pathname, is_force ? is_force : false );\n\t\t\t}\n\t\t\telse if(this.isDirectory()) {\n\t\t\t\treturn this.fso.DeleteFolder(this.pathname, is_force ? is_force : false );\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルが存在するか\n\t * @returns {boolean}\n\t */\n\texists() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet out = this.isFile();\n\t\tif(out === false) {\n\t\t\tout = this.isDirectory();\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * ファイルのコピー\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\tcopy(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst file = new SFile(file_obj);\n\t\tif(this.isFile()) {\n\t\t\treturn this.fso.CopyFile(this.pathname, file.getAbsolutePath(), true);\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\treturn this.fso.CopyFolder(this.pathname, file.getAbsolutePath(), true);\n\t\t}\n\t\telse {\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルの移動\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\tmove(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst file = new SFile(file_obj);\n\t\tif(this.isFile()) {\n\t\t\tthis.fso.MoveFile(this.pathname, file.getAbsolutePath());\n\t\t\tthis.pathname = file.getAbsolutePath();\n\t\t\treturn true;\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\tthis.fso.MoveFolder(this.pathname, file.getAbsolutePath());\n\t\t\tthis.pathname = file.getAbsolutePath();\n\t\t\treturn true;\n\t\t}\n\t\telse {\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイル名を変更\n\t * @param {string|SFile} file_obj\n\t * @returns {boolean}\n\t */\n\trenameTo(file_obj) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\tconst name = new SFile(file_obj);\n\t\t// 例えばファイル名を大文字から小文字に変換といった場合、\n\t\t// Scripting.FileSystemObject の仕様によりエラーが発生するため、\n\t\t// 別のファイル名を経由する\n\t\tconst key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);\n\t\tfile.Name = name.getName() + key;\n\t\tfile.Name = name.getName();\n\t\tthis.pathname = name.getAbsolutePath();\n\t\treturn true;\n\t}\n\n\t/**\n\t * 文字列化\n\t * @returns {string}\n\t */\n\ttoString() {\n\t\treturn this.getAbsolutePath();\n\t}\n\n\t/**\n\t * 名前を取得\n\t * @returns {string}\n\t */\n\tgetName() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えている場合は、ファイル名取得できない\n\t\t\tif(this.isDirectory()) {\n\t\t\t\treturn \"\";\n\t\t\t}\n\t\t\tconst slashsplit = this.pathname.split(\"/\");\n\t\t\treturn slashsplit[slashsplit.length - 1];\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetFileName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 親フォルダの絶対パス\n\t * URLなら最後にスラッシュをつけて返す\n\t * @returns {string} \n\t */\n\tgetParent() {\n\t\tif(this.is_http) {\n\t\t\tlet path = this.getAbsolutePath();\n\t\t\t// 最後がスラッシュの場合でホスト名のみの場合は、これ以上辿れない。\n\t\t\tif(/^http[^/]+\\/\\/[^/]+\\/$/.test(path)) {\n\t\t\t\treturn path\n\t\t\t}\n\t\t\t// 最後がスラッシュの場合はスラッシュを除去\n\t\t\tif(/\\/$/.test(path)) {\n\t\t\t\tpath = path.substring(0 ,path.length - 1);\n\t\t\t}\n\t\t\t// フォルダ名までを削る\n\t\t\treturn path.match(/^.*\\//)[0];\n\t\t}\n\t\telse {\n\t\t\t// フォルダ名までのパスを取得する\n\t\t\tlet path = this.getAbsolutePath().match(/.*[/\\\\]/)[0];\n\t\t\t// フォルダを削る\n\t\t\tpath = path.substring(0 ,path.length - 1);\n\t\t\treturn path;\n\t\t}\n\t}\n\n\t/**\n\t * 親フォルダ\n\t * @returns {SFile}\n\t */\n\tgetParentFile() {\n\t\treturn new SFile(this.getParent());\n\t}\n\n\t/**\n\t * 拡張子（ドットを含まない）\n\t * @returns {string}\n\t */\n\tgetExtensionName() {\n\t\tif(this.is_http) {\n\t\t\tconst dotlist = this.getName().split(\".\");\n\t\t\treturn dotlist[dotlist.length - 1];\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.GetExtensionName(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 絶対パスかどうか\n\t * @returns {boolean}\n\t */\n\tisAbsolute() {\n\t\tif(this.is_http) {\n\t\t\treturn this.getAbsolutePath() === this.pathname;\n\t\t}\n\t\telse {\n\t\t\tconst name = this.pathname.replace(\"/\", \"\\\\\");\n\t\t\treturn this.fso.GetAbsolutePathName(this.pathname) === name;\n\t\t}\n\t}\n\n\t/**\n\t * フォルダかどうか\n\t * @returns {boolean}\n\t */\n\tisDirectory() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えている場合はディレクトリ\n\t\t\treturn /\\/$/.test(this.pathname);\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.FolderExists(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * ファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisFile() {\n\t\tif(this.is_http) {\n\t\t\t// 最後がスラッシュで終えていない場合はファイル\n\t\t\treturn /[^/]$/.test(this.pathname);\n\t\t}\n\t\telse {\n\t\t\treturn this.fso.FileExists(this.pathname);\n\t\t}\n\t}\n\n\t/**\n\t * 読み取り専用ファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisReadOnly() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst ATTRIBUTES_READONLY = 1;\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn (file.Attributes & ATTRIBUTES_READONLY) !== 0;\n\t}\n\t\n\t/**\n\t * 読み取り専用ファイルかどうかを設定する\n\t * @param {boolean} is_readonly\n\t * @param {boolean} [is_allfiles=false]\n\t * @returns {boolean}\n\t */\n\tsetReadOnly(is_readonly, is_allfiles) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst ATTRIBUTES_READONLY = 1;\n\t\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t\tif(is_readonly) {\n\t\t\t\tfile.Attributes = file.Attributes | ATTRIBUTES_READONLY;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tfile.Attributes = file.Attributes & ~ATTRIBUTES_READONLY;\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t\tif(this.isFile() || !is_allfiles) {\n\t\t\treturn true;\n\t\t}\n\t\tlet ret = true;\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tret = ret && file.setReadOnly(is_readonly, false);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn ret;\n\t}\n\n\t/**\n\t * 隠しファイルかどうか\n\t * @returns {boolean}\n\t */\n\tisHidden() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\tconst ATTRIBUTES_HIDDEN = 2;\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn (file.Attributes & ATTRIBUTES_HIDDEN) !== 0;\n\t}\n\t\n\t/**\n\t *隠しファイルかどうかを設定する\n\t * @param {boolean} is_hidden\n\t * @param {boolean} [is_allfiles=false]\n\t * @returns {boolean}\n\t */\n\tsetHidden(is_hidden, is_allfiles) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst ATTRIBUTES_HIDDEN = 2;\n\t\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t\tif(is_hidden) {\n\t\t\t\tfile.Attributes = file.Attributes | ATTRIBUTES_HIDDEN;\n\t\t\t}\n\t\t\telse {\n\t\t\t\tfile.Attributes = file.Attributes & ~ATTRIBUTES_HIDDEN;\n\t\t\t}\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t\tif(this.isFile() || !is_allfiles) {\n\t\t\treturn true;\n\t\t}\n\t\tlet ret = true;\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tret = ret && file.setHidden(is_hidden, false);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn ret;\n\t}\n\n\t/**\n\t * 更新日を取得\n\t * @returns {Date}\n\t */\n\tlastModified() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn null;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\t// DateLastModified は VT_DATE 値なので変換する\n\t\treturn new Date(file.DateLastModified);\n\t}\n\n\t/**\n\t * 更新日を設定（ファイルのみ対応）\n\t * @param {Date} date\n\t * @returns {boolean}\n\t */\n\tsetLastModified(date) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile()) {\n\t\t\treturn false;\n\t\t}\n\t\ttry {\n\t\t\tconst shell = new ActiveXObject(\"Shell.Application\");\n\t\t\tconst folder = shell.NameSpace(this.getParent());\n\t\t\tconst file = folder.ParseName(this.getName());\n\t\t\tconst date_string = Format.datef(\"YYYY/MM/DD hh:mm:ss\", date);\n\t\t\tfile.ModifyDate = date_string;\n\t\t\treturn true;\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn false;\n\t\t}\n\t}\n\n\t/**\n\t * ファイルサイズ\n\t * @returns {number}\n\t */\n\tlength() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile() && !this.isDirectory()) {\n\t\t\treturn -1;\n\t\t}\n\t\tconst file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);\n\t\treturn file.Size;\n\t}\n\n\t/**\n\t * 配下のファイル名の一覧を取得\n\t * @returns {string[]}\n\t */\n\tgetFiles() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst out = [];\n\t\tconst list = new Enumerator(this.fso.GetFolder(this.pathname).Files);\n\t\tfor(let i = 0; !list.atEnd(); list.moveNext()) {\n\t\t\tout[i++] = list.item().Name;\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 配下のサブフォルダ名の一覧を取得\n\t * @returns {string[]}\n\t */\n\tgetSubFolders() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst out = [];\n\t\tconst list = new Enumerator(this.fso.GetFolder(this.pathname).SubFolders);\n\t\tfor(let i = 0; !list.atEnd(); list.moveNext()) {\n\t\t\tout[i++] = list.item().Name;\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 区切り文字と終端を正規化した文字列を取得\n\t * @returns {string}\n\t */\n\tgetNormalizedPathName() {\n\t\tif(this.pathname === \"\") {\n\t\t\treturn \".\\\\\";\n\t\t}\n\t\tlet name = this.pathname.replace(/\\//g, \"\\\\\");\n\t\tif(name.slice(-1) !== \"\\\\\") {\n\t\t\tname += \"\\\\\";\n\t\t}\n\t\treturn name;\n\t}\n\n\t/**\n\t * 配下のファイル名とフォルダ名を取得\n\t * @returns {string[]}\n\t */\n\tlist() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn null;\n\t\t}\n\t\tconst files = this.getFiles();\n\t\tconst subfolders = this.getSubFolders();\n\t\tconst out = [];\n\t\tfor(let j = 0; j < subfolders.length;) {\n\t\t\tout.push(subfolders[j++]);\n\t\t}\n\t\tfor(let j = 0; j < files.length;) {\n\t\t\tout.push(files[j++]);\n\t\t}\n\t\treturn out;\n\t}\n\n\t/**\n\t * 絶対パスを取得\n\t * @returns {string}\n\t */\n\tgetAbsolutePath() {\n\t\tif(this.is_http) {\n\t\t\t// ホストとファイルに分ける\n\t\t\tconst hosttext = this.pathname.match(/^http[^/]+\\/\\/[^/]+\\//)[0];\n\t\t\tconst filetext = this.pathname.substr(hosttext.length);\n\t\t\t// パスを1つずつ解析しながら辿っていく\n\t\t\tlet name = hosttext;\n\t\t\tconst namelist = filetext.split(\"/\");\n\t\t\tlet i;\n\t\t\tfor(i = 0; i < namelist.length; i++) {\n\t\t\t\tif((namelist[i] === \"\") || (namelist[i] === \".\")) {\n\t\t\t\t\t// 階層は移動しない\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\tif(namelist[i] === \"..\") {\n\t\t\t\t\t// 上の階層へ移動する\n\t\t\t\t\tname = name.substring(0 ,name.length - 1).match(/.*\\//)[0];\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t\t// フォルダ名 + \"/\"\n\t\t\t\tname += namelist[i];\n\t\t\t\tif(i !== namelist.length - 1) {\n\t\t\t\t\tname += \"/\";\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn name;\n\t\t}\n\t\telse {\n\t\t\t// `*:` という2文字のパスで `C` 以外を設定した場合に正しいパスを設定できない不具合がある\n\t\t\t// 従って、防止用に、最後にコロンが付いている場合は\"C:\"とかなので\"C:/\"としてからパスを変換する\n\t\t\tif(/:$/.test(this.pathname)) {\n\t\t\t\treturn this.fso.GetAbsolutePathName(this.pathname + \"\\\\\");\n\t\t\t}\n\t\t\telse {\n\t\t\t\treturn this.fso.GetAbsolutePathName(this.pathname);\n\t\t\t}\n\t\t}\n\t}\n\n\t/**\n\t * フォルダを作成\n\t * - フォルダは1つのみ指定可能\n\t * - すでにフォルダがある場合はエラーを返す。\n\t * @returns {boolean}\n\t */\n\tmkdir() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst filename = this.getAbsolutePath();\n\t\tif(this.fso.FileExists(filename)) {\n\t\t\t// ファイルがあるため、フォルダを作れない\n\t\t\treturn false;\n\t\t}\n\t\telse if(this.fso.FolderExists(filename)) {\n\t\t\t// フォルダが既にあるため、TRUEで返す\n\t\t\treturn true;\n\t\t}\n\t\t// フォルダがないので作成する\n\t\tthis.fso.CreateFolder(filename);\n\t\t// 10秒間作られるまで待つ\n\t\tfor(let i = 0; i < (20 * 10); i++) {\n\t\t\tif(this.fso.FolderExists(filename)) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t\tWScript.Sleep(50); // 50ms\n\t\t}\n\t\t// いつまで待ってもフォルダが作られないので失敗\n\t\treturn false;\n\t}\n\n\t/**\n\t * フォルダを作成\n\t * - 作成したいフォルダを続けて記載が可能\n\t * - フォルダがない場合はフォルダを作成していく\n\t * @returns {boolean}\n\t */\n\tmkdirs() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst name = this.pathname.replace(/\\//g, \"\\\\\").split(\"\\\\\");\n\t\tlet dir  = \"\";\n\t\tfor(let i = 0; i < name.length; i++) {\n\t\t\tdir += name[i];\n\t\t\tif(!(new SFile(dir)).mkdir()) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tdir += \"\\\\\";\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * 実行ファイルを起動する\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t * @returns {void}\n\t */\n\trun(style, is_wait) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst objWShell = new ActiveXObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\tobjWShell.Run(this.getAbsolutePath(), intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 1行書き加える\n\t * @param {string} text\n\t * @returns {boolean}\n\t */\n\twriteLine(text) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet file;\n\t\tif(this.isFile()) {\n\t\t\tconst ForAppending = 8;\n\t\t\tfile = this.fso.OpenTextFile(this.pathname, ForAppending);\n\t\t}\n\t\telse if(this.isDirectory()) {\n\t\t\treturn false;\n\t\t}\n\t\telse {\n\t\t\tfile = this.fso.CreateTextFile(this.pathname, true);\n\t\t}\n\t\tfile.WriteLine(text);\n\t\tfile.Close();\n\t\treturn true;\n\t}\n\n\t/**\n\t * テキストファイルを開く\n\t * @param {string} [charset=\"_autodetect_all\"] - 文字コード\n\t * @returns {string}\n\t */\n\tgetTextFile(charset) {\n\t\tconst icharset = charset !== undefined ? charset : \"_autodetect_all\";\n\t\tconst inewline = \"\\n\"; //javascript上での改行\n\t\tlet text = null;\n\t\tif(/^htt/.test(this.pathname)) {\n\t\t\tconst http = SFile.createXMLHttpRequest();\n\t\t\tif(http === null) {\n\t\t\t\treturn null;\n\t\t\t}\n\t\t\thttp.open(\"GET\", this.pathname, false);\n\t\t\ttry {\n\t\t\t\thttp.send(null);\n\t\t\t\ttext = http.responseText;\n\t\t\t}\n\t\t\tcatch (e) {\n\t\t\t\tconsole.log(e);\n\t\t\t\ttext = \"error\";\n\t\t\t}\n\t\t}\n\t\telse {\n\t\t\tif(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {\n\t\t\t\t// Scripting.FileSystemObject で開く\n\t\t\t\tconst forreading = 1;\n\t\t\t\tlet tristate = 0;\n\t\t\t\tif(/ascii/i.test(icharset)) {\n\t\t\t\t\t// ASCII\n\t\t\t\t\ttristate = 0;\n\t\t\t\t}\n\t\t\t\telse if(/shift_jis|sjis/i.test(icharset)) {\n\t\t\t\t\t// システムのデフォルト(日本語のOSだと仮定)\n\t\t\t\t\ttristate = -2;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\t// utf-16le\n\t\t\t\t\ttristate = -1;\n\t\t\t\t}\n\t\t\t\tconst open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );\n\t\t\t\ttext = open_file.ReadAll();\n\t\t\t\topen_file.Close();\n\t\t\t}\n\t\t\telse {\n\t\t\t\t// より自由なコードで開く（速度は遅い）\n\t\t\t\t// 使用可能な charset については下記を参照\n\t\t\t\t// HKEY_CLASSES_ROOT\\MIME\\Database\\Charset\n\t\t\t\tconst adTypeText = 2;\n\t\t\t\tconst adReadAll = -1;\n\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\tstream.type = adTypeText;\n\t\t\t\tstream.charset = icharset;\n\t\t\t\tstream.open();\n\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\tstream.close();\n\t\t\t\t// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する\n\t\t\t\tif((icharset === \"_autodetect_all\")||(icharset === \"_autodetect\")) {\n\t\t\t\t\tlet newcharset = \"\";\n\t\t\t\t\t// 1文字以上のとき\n\t\t\t\t\tif(text.length > 1) {\n\t\t\t\t\t\t// utf-16le\n\t\t\t\t\t\tif(text.charCodeAt(0) === 0xfeff) {\n\t\t\t\t\t\t\t// 通常は、このルートはBOM付きutf-16leのときに通るが、\n\t\t\t\t\t\t\t// BOM付きutf-8でも通る場合がなぜかある。（後述）\n\t\t\t\t\t\t\tnewcharset = \"unicode\";\n\t\t\t\t\t\t}\n\t\t\t\t\t\t// utf-16be\n\t\t\t\t\t\telse if(text.charCodeAt(0) === 0xfffe) {\n\t\t\t\t\t\t\tnewcharset = \"unicodeFFFE\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 2文字以上のとき\n\t\t\t\t\tif(text.length > 2) {\n\t\t\t\t\t\t// BOM付きutf-8でなぜかこの文字がくっつく場合がある。\n\t\t\t\t\t\tif(\t(text.charCodeAt(0) === 0x30fb) &&\n\t\t\t\t\t\t\t(text.charCodeAt(1) === 0xff7f)) {\n\t\t\t\t\t\t\tnewcharset = \"utf-8\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 3文字以上のとき\n\t\t\t\t\tif(text.length > 3) {\n\t\t\t\t\t\t// utf-8\n\t\t\t\t\t\tif(\t(text.charCodeAt(0) === 0xef) &&\n\t\t\t\t\t\t\t(text.charCodeAt(1) === 0xbb) &&\n\t\t\t\t\t\t\t(text.charCodeAt(2) === 0xbf)) {\n\t\t\t\t\t\t\tnewcharset = \"utf-8\";\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t\t// 上判定でBOM付きが分かった場合、正しい文字コードで取得する\n\t\t\t\t\tif(newcharset !== \"\") {\n\t\t\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\t\t\tstream.type = adTypeText;\n\t\t\t\t\t\tstream.charset = newcharset;\n\t\t\t\t\t\tstream.open();\n\t\t\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\t\t\tstream.close();\n\t\t\t\t\t}\n\t\t\t\t\t// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処\n\t\t\t\t\tif((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {\n\t\t\t\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\t\t\tstream.type = adTypeText;\n\t\t\t\t\t\tstream.charset = \"utf-8\";\n\t\t\t\t\t\tstream.open();\n\t\t\t\t\t\tstream.loadFromFile(this.pathname);\n\t\t\t\t\t\ttext = stream.readText(adReadAll);\n\t\t\t\t\t\tstream.close();\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tif(text !== null) {\n\t\t\treturn text.replace(/\\r\\n?|\\n/g, inewline); //改行コードを統一\n\t\t}\n\t\telse {\n\t\t\treturn null;\n\t\t}\n\t}\n\n\t/**\n\t * テキストファイルを保存\n\t * @param {string} text\n\t * @param {string} [charset=\"utf-8\"] - 文字コード\n\t * @param {string} [newline=\"\\n\"] - 改行コード\n\t * @param {boolean} [issetBOM=true] - BOMの有無(utf-8のみ有効 )\n\t * @returns {boolean}\n\t */\n\tsetTextFile(text, charset, newline, issetBOM) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst icharset = charset !== undefined ? charset : \"utf-8\";\n\t\tconst inewline = newline !== undefined ? newline : \"\\n\";\n\t\tconst iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし\n\t\tif(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {\n\t\t\t// Scripting.FileSystemObject で書き込む\n\t\t\tconst forwriting = 2;\n\t\t\tlet tristate = 0;\n\t\t\tif(/ascii/i.test(icharset)) {\n\t\t\t\t// ASCII\n\t\t\t\ttristate = 0;\n\t\t\t}\n\t\t\telse if(/shift_jis|sjis/i.test(icharset)) {\n\t\t\t\t// システムのデフォルト(日本語のOSだと仮定)\n\t\t\t\ttristate = -2;\n\t\t\t}\n\t\t\telse {\n\t\t\t\t// utf-16le\n\t\t\t\ttristate = -1;\n\t\t\t}\n\t\t\tconst open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );\n\t\t\topen_file.Write(text.replace(/\\r\\n?|\\n/g, inewline));\n\t\t\topen_file.Close();\n\t\t}\n\t\telse {\n\t\t\t// ADODB.Streamで書き込む\n\t\t\tconst adTypeBinary = 1;\n\t\t\tconst adTypeText = 2;\n\t\t\tconst adSaveCreateOverWrite = 2;\n\t\t\t// 使用可能な charset については下記を参照\n\t\t\t// HKEY_CLASSES_ROOT\\MIME\\Database\\Charset\n\t\t\tlet stream;\n\t\t\tstream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = icharset;\n\t\t\tstream.open();\n\t\t\tstream.writeText(text.replace(/\\r\\n?|\\n/g, inewline)); //改行コードを統一\n\t\t\tif(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {\n\t\t\t\tstream.position = 0;\n\t\t\t\tstream.type = adTypeBinary;\n\t\t\t\tstream.position = 3;\n\t\t\t\tconst binary = stream.read();\n\t\t\t\tstream.close();\n\t\t\t\tstream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\t\tstream.type = adTypeBinary;\n\t\t\t\tstream.open();\n\t\t\t\tstream.write(binary);\n\t\t\t}\n\t\t\tstream.saveToFile(this.pathname, adSaveCreateOverWrite);\n\t\t\tstream.close();\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * バイナリファイルを開く（激重）\n\t * @returns {number[]}\n\t */\n\tgetBinaryFile() {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tconst adTypeText = 2;\n\t\tconst adReadAll = -1;\n\t\tconst charset = \"iso-8859-1\";\n\t\t\n\t\t/**\n\t\t * @type {Object<number, number>}\n\t\t * @private\n\t\t */\n\t\tconst map = {\n\t\t\t0x20AC\t:\t0x80\t,\t//\t8364\t128\n\t\t\t0x201A\t:\t0x82\t,\t//\t8218\t130\n\t\t\t0x0192\t:\t0x83\t,\t//\t402\t131\n\t\t\t0x201E\t:\t0x84\t,\t//\t8222\t132\n\t\t\t0x2026\t:\t0x85\t,\t//\t8230\t133\n\t\t\t0x2020\t:\t0x86\t,\t//\t8224\t134\n\t\t\t0x2021\t:\t0x87\t,\t//\t8225\t135\n\t\t\t0x02C6\t:\t0x88\t,\t//\t710\t136\n\t\t\t0x2030\t:\t0x89\t,\t//\t8240\t137\n\t\t\t0x0160\t:\t0x8A\t,\t//\t352\t138\n\t\t\t0x2039\t:\t0x8B\t,\t//\t8249\t139\n\t\t\t0x0152\t:\t0x8C\t,\t//\t338\t140\n\t\t\t0x017D\t:\t0x8E\t,\t//\t381\t142\n\t\t\t0x2018\t:\t0x91\t,\t//\t8216\t145\n\t\t\t0x2019\t:\t0x92\t,\t//\t8217\t146\n\t\t\t0x201C\t:\t0x93\t,\t//\t8220\t147\n\t\t\t0x201D\t:\t0x94\t,\t//\t8221\t148\n\t\t\t0x2022\t:\t0x95\t,\t//\t8226\t149\n\t\t\t0x2013\t:\t0x96\t,\t//\t8211\t150\n\t\t\t0x2014\t:\t0x97\t,\t//\t8212\t151\n\t\t\t0x02DC\t:\t0x98\t,\t//\t732\t152\n\t\t\t0x2122\t:\t0x99\t,\t//\t8482\t153\n\t\t\t0x0161\t:\t0x9A\t,\t//\t353\t154\n\t\t\t0x203A\t:\t0x9B\t,\t//\t8250\t155\n\t\t\t0x0153\t:\t0x9C\t,\t//\t339\t156\n\t\t\t0x017E\t:\t0x9E\t,\t//\t382\t158\n\t\t\t0x0178\t:\t0x9F\t\t//\t376\t159\n\t\t};\n\t\ttry {\n\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = charset;\n\t\t\tstream.open();\n\t\t\tstream.loadFromFile(this.pathname);\n\t\t\tconst text = stream.readText(adReadAll);\n\t\t\tstream.close();\n\t\t\tconst out = new Array(text.length);\n\t\t\tfor(let i = 0;i < text.length;i++) {\n\t\t\t\tconst x = text.charCodeAt(i);\n\t\t\t\tif(0xFF < x) {\n\t\t\t\t\tout[i] = map[x];\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tout[i] = x;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn out;\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\treturn [];\n\t\t}\n\t}\n\n\t/**\n\t * バイナリファイルを保存（激重）\n\t * @param {number[]} array_\n\t * @returns {boolean}\n\t */\n\tsetBinaryFile(array_) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tlet is_write = true;\n\t\tconst adTypeText = 2;\n\t\tconst adSaveCreateOverWrite = 2;\n\t\tconst charset = \"iso-8859-1\";\n\t\tconst buffersize = 512;\n\t\ttry {\n\t\t\tconst stream = new ActiveXObject(\"ADODB.Stream\");\n\t\t\tstream.type = adTypeText;\n\t\t\tstream.charset = charset;\n\t\t\tstream.open();\n\t\t\tfor(let i = 0;i < array_.length;) {\n\t\t\t\tconst text = [];\n\t\t\t\tfor(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {\n\t\t\t\t\ttext[j] = String.fromCharCode(array_[i]);\n\t\t\t\t}\n\t\t\t\tstream.writeText(text.join(\"\"));\n\t\t\t}\n\t\t\tstream.saveToFile(this.pathname, adSaveCreateOverWrite);\n\t\t\tstream.close();\n\t\t}\n\t\tcatch (e) {\n\t\t\tconsole.log(e);\n\t\t\tis_write = false;\n\t\t}\n\t\treturn is_write;\n\t}\n\n\t/**\n\t * ファイルのハッシュ値を計算する\n\t * @param {string} [algorithm=\"MD5\"] - アルゴリズム\n\t * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は\"0\"\n\t */\n\tgetHashCode(algorithm) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isFile()) {\n\t\t\treturn \"0\";\n\t\t}\n\t\tconst algorithm_ = algorithm !== undefined ? algorithm : \"MD5\";\n\t\tconst message = \"certutil -hashfile \\\"\" + this.getAbsolutePath() + \"\\\" \" + algorithm_.toUpperCase();\n\t\tconst output = System.exec(message);\n\t\tif(output.exit_code !== 0) {\n\t\t\treturn \"0\";\n\t\t}\n\t\t// 2行目を抽出する\n\t\tconst hash_lines = output.out.split(/\\n/);\n\t\tif(hash_lines.length <= 1) {\n\t\t\treturn \"0\";\n\t\t}\n\t\t// 2種類のタイプを検知させる\n\t\t// - dcd802e3848075716e92424cfdcb9c0d (Windows 10)\n\t\t// - dc d8 02 e3 84 80 75 71 6e 92 42 4c fd cb 9c 0d (Windows8.1)\n\t\tconst hash = hash_lines[1].trim().toLowerCase().match(/^(([0-9a-f]{2}){8,})|((([0-9a-f]{2} ){7,})[0-9a-f]{2})$/);\n\t\tif(hash === null) {\n\t\t\treturn \"0\";\n\t\t}\n\t\treturn hash[0].replace(/ /g, \"\");\n\t}\n\n\t/**\n\t * XMLHttpRequestを作成\n\t * @returns {XMLHttpRequest}\n\t */\n\tstatic createXMLHttpRequest() {\n\t\ttry {\n\t\t\treturn new XMLHttpRequest();\n\t\t}\n\t\tcatch (e) {\n\t\t\tconst MSXMLHTTP = [\n\t\t\t\t\"WinHttp.WinHttpRequest.5.1\",\n\t\t\t\t\"WinHttp.WinHttpRequest.5\",\n\t\t\t\t\"WinHttp.WinHttpRequest\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.6.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.5.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.4.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP.3.0\",\n\t\t\t\t\"Msxml2.ServerXMLHTTP\",\n\t\t\t\t\"Microsoft.ServerXMLHTTP\",\n\t\t\t\t\"Msxml2.XMLHTTP.6.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.5.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.4.0\",\n\t\t\t\t\"Msxml2.XMLHTTP.3.0\",\n\t\t\t\t\"Msxml2.XMLHTTP\",\n\t\t\t\t\"Microsoft.XMLHTTP\"\n\t\t\t];\n\t\t\t// ※ WinHttp.WinHttpRequest は onreadystatechange の書き換えができない\n\t\t\tlet i;\n\t\t\tfor(i = 0; i < MSXMLHTTP.length; i++) {\n\t\t\t\ttry {\n\t\t\t\t\treturn new ActiveXObject(MSXMLHTTP[i]);\n\t\t\t\t}\n\t\t\t\tcatch (e) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn null;\n\t\t}\n\t}\n\t\n\t/**\n\t * テンポラリフォルダ内の適当なファイル名を取得\n\t * @returns {SFile}\n\t */\n\tstatic createTempFile() {\n\t\tconst TemporaryFolder = 2;\n\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\t// テンポラリフォルダ内の適当なファイル名を取得します\n\t\treturn new SFile(fso.GetSpecialFolder(TemporaryFolder) + \"\\\\\" + fso.GetTempName());\n\t}\n\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {SFile}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn new SFile(shell.CurrentDirectory);\n\t}\n\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string|SFile} file_obj\n\t */\n\tstatic setCurrentDirectory(file_obj) {\n\t\tconst file = new SFile(file_obj);\n\t\tconst shell = WScript.CreateObject (\"WScript.Shell\");\n\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\tshell.CurrentDirectory = fso.GetFolder(file.getAbsolutePath()).Name;\n\t}\n\n\t/**\n\t * フォルダの中のフォルダとファイルに対して指定した関数を実行する\n\t * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。\n\t * @returns {boolean} result\n\t */\n\teach(func) {\n\t\tif(this.is_http) {\n\t\t\tthrow \"IllegalMethod\";\n\t\t}\n\t\tif(!this.isDirectory) {\n\t\t\treturn func.call(func, this);\n\t\t}\n\t\tconst path = [];\n\t\tconst collection = [];\n\t\tlet file;\n\t\tlet pointer = 0;\n\t\tlet list;\n\t\tlet targetfolder;\n\t\tpath[pointer] = this.getNormalizedPathName();\n\n\t\t// 1階層目を処理する\n\t\ttargetfolder = this.fso.GetFolder(path[pointer]);\n\t\tlist = new Enumerator(this.fso.GetFolder(targetfolder).Files);\n\t\tfor(; !list.atEnd(); list.moveNext()) {\n\t\t\tfile = new SFile(path[pointer] + list.item().Name);\n\t\t\tif(!func.call(func, file)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\n\t\t// 2階層目以降を処理する\n\t\tif(targetfolder.SubFolders.Count === 0) {\n\t\t\treturn false;\n\t\t}\n\t\tcollection[pointer] = new Enumerator(targetfolder.SubFolders);\n\t\tpointer++;\n\t\twhile(true) {\n\t\t\tpath[pointer] = path[pointer - 1] + collection[pointer - 1].item().Name;\n\t\t\tfile = new SFile(path[pointer]);\n\t\t\tif(!func.call(func, file)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tpath[pointer] += \"\\\\\";\n\t\t\ttargetfolder = this.fso.GetFolder(path[pointer]);\n\t\t\tlist = new Enumerator(targetfolder.Files);\n\t\t\tfor(; !list.atEnd(); list.moveNext()) {\n\t\t\t\tfile = new SFile(path[pointer] + list.item().Name);\n\t\t\t\tif(!func.call(func, file)) {\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif(targetfolder.SubFolders.Count === 0) {\n\t\t\t\twhile(true) {\n\t\t\t\t\tif(pointer === 0) {\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t\tcollection[pointer - 1].moveNext();\n\t\t\t\t\tif(collection[pointer - 1].atEnd()) {\n\t\t\t\t\t\tpointer--;\n\t\t\t\t\t\tcontinue;\n\t\t\t\t\t}\n\t\t\t\t\telse {\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(pointer === 0) {\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t\telse {\n\t\t\t\tcollection[pointer] = new Enumerator(targetfolder.SubFolders);\n\t\t\t\tpointer++;\n\t\t\t}\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * サブフォルダの中まで探索して全てのファイルとフォルダを取得\n\t * @returns {SFile[]}\n\t */\n\tgetAllFiles() {\n\t\t/**\n\t\t * @type {SFile[]}\n\t\t */\n\t\tconst out = [];\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tout.push(file);\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn out;\n\t}\n\n\t/**\n\t * 指定した条件にあうファイルを探す\n\t * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます\n\t * @param {string|SFile|function(string, string): boolean} file_obj\n\t * @returns {SFile|null}\n\t */\n\tsearchFile(file_obj) {\n\t\tlet target_file = null;\n\t\t/**\n\t\t * @type {function(string, string): boolean}\n\t\t * @private\n\t\t */\n\t\tlet isTarget;\n\t\tif(typeof file_obj !== \"function\") {\n\t\t\tconst file = new SFile(file_obj);\n\t\t\tconst buffer = file.getName();\n\t\t\tisTarget = function(name, fullpath) {\n\t\t\t\treturn name === buffer;\n\t\t\t};\n\t\t}\n\t\telse {\n\t\t\tisTarget = file_obj;\n\t\t}\n\t\t/**\n\t\t * @type {function(SFile): boolean}\n\t\t */\n\t\tconst func = function(file) {\n\t\t\tif(isTarget(file.getName(), file.getAbsolutePath())) {\n\t\t\t\ttarget_file = file;\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\treturn true;\n\t\t};\n\t\tthis.each(func);\n\t\treturn target_file;\n\t}\n\n\t/**\n\t * 圧縮する\n\t * - 圧縮後のファイル名の拡張子で圧縮したい形式を指定する\n\t * - Windows標準の機能を使用して圧縮する( `zip` のみ対応)\n\t * - 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して圧縮する\n\t * \n\t * @param {SFile|string|SFile[]|string[]} input_file 圧縮したいファイル\n\t * @param {SFile|string} output_file 圧縮後のファイル名\n\t * @returns {boolean} result\n\t */\n\tstatic compress(input_file, output_file) {\n\t\tconst compress_file = new SFile(output_file);\n\t\t// ファイルの拡張子を調べる\n\t\tlet comp_type = null;\n\t\tif(compress_file.getName().toLowerCase().endsWith(\".tar.gz\")) {\n\t\t\tcomp_type = \"targz\"\n\t\t}\n\t\telse {\n\t\t\tcomp_type = compress_file.getExtensionName().toLowerCase();\n\t\t}\n\t\t// 利用するツールを選択する\n\t\tconst tool_path = SFile.getCompressTool();\n\t\t// 圧縮したい対象のファイル一覧を作成\n\t\tconst file_list_buf = Array.isArray(input_file) ? input_file : [input_file];\n\t\t/**\n\t\t * @type {SFile[]}\n\t\t */\n\t\tlet file_list = [];\n\t\t// ファイルチェック\n\t\tfor(let i = 0;i < file_list_buf.length; i++) {\n\t\t\tfile_list[i] = new SFile(file_list_buf[i]);\n\t\t\tif(!(file_list[i].exists())) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\t\t// 入力ファイル数が1つで拡張子がtarの場合\n\t\tif(file_list.length === 1 && file_list[0].getExtensionName().toLowerCase() === \"tar\") {\n\t\t\tcomp_type = compress_file.getExtensionName().toLowerCase();\n\t\t}\n\t\tif(tool_path === null) {\n\t\t\tif(comp_type === \"zip\") {\n\t\t\t\tconst shell = new ActiveXObject(\"Shell.Application\");\n\t\t\t\tconst fso = new ActiveXObject(\"Scripting.FileSystemObject\");\n\t\t\t\t// ZIPファイルを作成\n\t\t\t\tcompress_file.setBinaryFile([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);\n\t\t\t\tconst zip = shell.NameSpace(compress_file.getAbsolutePath());\n\t\t\t\t// 1つずつデータを入れていく\n\t\t\t\tfor(let i = 0; i < file_list.length; i++) {\n\t\t\t\t\tconst name = file_list[i].getAbsolutePath();\n\t\t\t\t\tzip.CopyHere(name, 4);\n\t\t\t\t\t// コピーが終わるまで wait\n\t\t\t\t\twhile (true) {\n\t\t\t\t\t\tSystem.sleep(0.1);\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tconst ForAppending = 8;\n\t\t\t\t\t\t\tfso.OpenTextFile(compress_file.getAbsolutePath(), ForAppending).Close();\n\t\t\t\t\t\t\tbreak;\n\t\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t\telse {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\t\telse {\n\t\t\tlet temp_folder = null;\n\t\t\t// targzの場合はtarだけ作成する\n\t\t\tif(comp_type === \"targz\") {\n\t\t\t\ttemp_folder = SFile.createTempFile();\n\t\t\t\ttemp_folder.mkdirs();\n\t\t\t\tconst name = compress_file.getName();\n\t\t\t\tconst tar_file = temp_folder + \"\\\\\" + name.substr(0, name.length - \".tar.gz\".length ) + \".tar\";\n\t\t\t\tfor(let i = 0; i < file_list.length; i++) {\n\t\t\t\t\tconst result = System.exec(\"\\\"\" + tool_path + \"\\\" a \\\"\" + tar_file + \"\\\" \\\"\" + file_list[i] + \"\\\"\");\n\t\t\t\t\tif(result.exit_code !== 0) {\n\t\t\t\t\t\ttemp_folder.remove();\n\t\t\t\t\t\treturn false;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tfile_list =  [ new SFile(tar_file) ];\n\t\t\t}\n\t\t\t// 上書き保存\n\t\t\tcompress_file.remove(true);\n\t\t\tfor(let i = 0; i < file_list.length; i++) {\n\t\t\t\tconst result = System.exec(\"\\\"\" + tool_path + \"\\\" a \\\"\" + compress_file + \"\\\" \\\"\" + file_list[i] + \"\\\"\");\n\t\t\t\tif(result.exit_code !== 0) {\n\t\t\t\t\tif(temp_folder) {\n\t\t\t\t\t\ttemp_folder.remove();\n\t\t\t\t\t}\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\t\t\t}\n\t\t\t// targz の場合は、一時フォルダを削除\n\t\t\tif(temp_folder) {\n\t\t\t\ttemp_folder.remove();\n\t\t\t}\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * 展開する\n\t * - Windows標準の機能を使用して展開する( `zip` のみ対応)\n\t * - 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して展開する\n\t * \n\t * @param {SFile|string} input_file 展開したいファイル\n\t * @param {SFile|string} output_file 展開先のフォルダ\n\t * @returns {boolean} result\n\t */\n\tstatic extract(input_file, output_file) {\n\t\tlet extract_file = new SFile(input_file);\n\t\tconst extract_dir = new SFile(output_file);\n\t\tif(!extract_file.isFile() || !extract_dir.mkdirs()) {\n\t\t\treturn false;\n\t\t}\n\t\t// ファイルの拡張子を調べる\n\t\tlet comp_type;\n\t\tif(extract_file.getName().toLowerCase().endsWith(\".tar.gz\")) {\n\t\t\tcomp_type = \"targz\"\n\t\t}\n\t\telse {\n\t\t\tcomp_type = extract_file.getExtensionName().toLowerCase();\n\t\t}\n\t\t// 利用するツールを選択する\n\t\tconst tool_path = SFile.getCompressTool();\n\t\tif(tool_path === null) {\n\t\t\tif(comp_type === \"zip\") {\n\t\t\t\tconst shell = new ActiveXObject(\"Shell.Application\");\n\t\t\t\tconst FOF_SILENT = 0x4;\n\t\t\t\tconst FOF_NOCONFIRMATION = 0x10;\n\t\t\t\tshell.NameSpace(extract_dir.getAbsolutePath()).CopyHere(\n\t\t\t\t\tshell.NameSpace(extract_file.getAbsolutePath()).Items(),\n\t\t\t\t\tFOF_SILENT | FOF_NOCONFIRMATION\n\t\t\t\t);\n\t\t\t}\n\t\t\telse {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\t\telse {\n\t\t\tlet temp_folder = null;\n\t\t\t// targzの場合はgzの部分を先に回答する\n\t\t\tif(comp_type === \"targz\") {\n\t\t\t\ttemp_folder = SFile.createTempFile();\n\t\t\t\ttemp_folder.mkdirs();\n\t\t\t\tconst result = System.exec(\"\\\"\" + tool_path + \"\\\" x -y -o\\\"\" + temp_folder + \"\\\\\\\" \\\"\" + extract_file + \"\\\"\");\n\t\t\t\tif(result.exit_code !== 0) {\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\t\t\t\t// 中身は1つのtarファイルのみしか想定していない\n\t\t\t\tlet allfile = temp_folder.getAllFiles();\n\t\t\t\tif(allfile.length !== 1) {\n\t\t\t\t\ttemp_folder.remove();\n\t\t\t\t\treturn false;\n\t\t\t\t}\n\t\t\t\textract_file = allfile[0];\n\t\t\t}\n\t\t\tconst result = System.exec(\"\\\"\" + tool_path + \"\\\" x -y -o\\\"\" + extract_dir + \"\\\\\\\" \\\"\" + extract_file + \"\\\"\");\n\t\t\tif(result.exit_code !== 0) {\n\t\t\t\tif(temp_folder) {\n\t\t\t\t\ttemp_folder.remove();\n\t\t\t\t}\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tif(temp_folder) {\n\t\t\t\ttemp_folder.remove();\n\t\t\t}\n\t\t}\n\t\treturn true;\n\t}\n\n\t/**\n\t * 圧縮／展開用のツールを設定する\n\t * - このツールを利用して `compress`, `extract` が実行されます\n\t * - 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します\n\t * - `7-zip` のコマンドライン版 (`7za.exe`)のみ対応\n\t * @param {SFile|string} tool_path ツールのファイルパス\n\t * @returns {boolean} result\n\t */\n\t static setCompressTool(tool_path) {\n\t\tconst file = new SFile(tool_path);\n\t\tif(file.isFile() && /7za\\.exe/i.test(file.getName())) {\n\t\t\tSFile.COMPRESS_TOOL = file;\n\t\t\treturn true;\n\t\t}\n\t\treturn false;\n\t }\n\n\t/**\n\t * 圧縮／展開用のツールを取得する\n\t * - このツールを利用して `compress`, `extract` が実行されます\n\t * - 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します\n\t * - 取得できない場合は `null` を返します\n\t * @returns {SFile|null} result\n\t */\n\t static getCompressTool() {\n\t\tif(SFile.COMPRESS_TOOL !== null) {\n\t\t\treturn SFile.COMPRESS_TOOL;\n\t\t}\n\t\tconst pgfile1 = new SFile(System.getEnvironmentString(\"ProgramFiles\") + \"\\\\7-Zip\\\\7z.exe\");\n\t\tif(pgfile1.isFile()) {\n\t\t\treturn pgfile1;\n\t\t}\n\t\tconst pgfile2 = new SFile(System.getEnvironmentString(\"ProgramFiles(x86)\") + \"\\\\7-Zip\\\\7z.exe\");\n\t\tif(pgfile2.isFile()) {\n\t\t\treturn pgfile2;\n\t\t}\n\t\treturn null;\n\t }\n\n}\n\n/**\n * 圧縮に使用するツール\n * @type {SFile}\n * @private\n */\n// @ts-ignore\nSFile.COMPRESS_TOOL = null;\n\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/senko/SFile.js",
     "access": "public",
@@ -7738,7 +7738,7 @@
     "importPath": "senkowsh/src/senko/SFile.js",
     "importStyle": "SFile",
     "description": "ファイル／フォルダ／URLを扱うクラス",
-    "lineNumber": 16,
+    "lineNumber": 17,
     "interface": false
   },
   {
@@ -7752,7 +7752,7 @@
     "longname": "src/senko/SFile.js~SFile#constructor",
     "access": "public",
     "description": "初期化",
-    "lineNumber": 22,
+    "lineNumber": 23,
     "params": [
       {
         "nullable": null,
@@ -7776,7 +7776,7 @@
     "longname": "src/senko/SFile.js~SFile#pathname",
     "access": "private",
     "description": "",
-    "lineNumber": 31,
+    "lineNumber": 32,
     "type": {
       "nullable": null,
       "types": [
@@ -7795,7 +7795,7 @@
     "longname": "src/senko/SFile.js~SFile#is_http",
     "access": "private",
     "description": "",
-    "lineNumber": 48,
+    "lineNumber": 49,
     "type": {
       "nullable": null,
       "types": [
@@ -7814,7 +7814,7 @@
     "longname": "src/senko/SFile.js~SFile#fso",
     "access": "private",
     "description": "",
-    "lineNumber": 54,
+    "lineNumber": 55,
     "type": {
       "nullable": null,
       "types": [
@@ -7835,7 +7835,7 @@
     "longname": "src/senko/SFile.js~SFile#remove",
     "access": "public",
     "description": "ファイルの削除（ゴミ箱には入りません）",
-    "lineNumber": 62,
+    "lineNumber": 63,
     "unknown": [
       {
         "tagName": "@returns",
@@ -7876,7 +7876,7 @@
     "longname": "src/senko/SFile.js~SFile#exists",
     "access": "public",
     "description": "ファイルが存在するか",
-    "lineNumber": 84,
+    "lineNumber": 85,
     "unknown": [
       {
         "tagName": "@returns",
@@ -7904,7 +7904,7 @@
     "longname": "src/senko/SFile.js~SFile#copy",
     "access": "public",
     "description": "ファイルのコピー",
-    "lineNumber": 100,
+    "lineNumber": 101,
     "unknown": [
       {
         "tagName": "@returns",
@@ -7944,7 +7944,7 @@
     "longname": "src/senko/SFile.js~SFile#move",
     "access": "public",
     "description": "ファイルの移動",
-    "lineNumber": 121,
+    "lineNumber": 122,
     "unknown": [
       {
         "tagName": "@returns",
@@ -7984,7 +7984,7 @@
     "longname": "src/senko/SFile.js~SFile#renameTo",
     "access": "public",
     "description": "ファイル名を変更",
-    "lineNumber": 146,
+    "lineNumber": 147,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8024,7 +8024,7 @@
     "longname": "src/senko/SFile.js~SFile#toString",
     "access": "public",
     "description": "文字列化",
-    "lineNumber": 169,
+    "lineNumber": 170,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8052,7 +8052,7 @@
     "longname": "src/senko/SFile.js~SFile#getName",
     "access": "public",
     "description": "名前を取得",
-    "lineNumber": 177,
+    "lineNumber": 178,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8079,12 +8079,12 @@
     "static": false,
     "longname": "src/senko/SFile.js~SFile#getParent",
     "access": "public",
-    "description": "親フォルダの絶対パス",
-    "lineNumber": 195,
+    "description": "親フォルダの絶対パス\nURLなら最後にスラッシュをつけて返す",
+    "lineNumber": 197,
     "unknown": [
       {
         "tagName": "@returns",
-        "tagValue": "{string}"
+        "tagValue": "{string} "
       }
     ],
     "return": {
@@ -8108,7 +8108,7 @@
     "longname": "src/senko/SFile.js~SFile#getParentFile",
     "access": "public",
     "description": "親フォルダ",
-    "lineNumber": 204,
+    "lineNumber": 224,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8136,7 +8136,7 @@
     "longname": "src/senko/SFile.js~SFile#getExtensionName",
     "access": "public",
     "description": "拡張子（ドットを含まない）",
-    "lineNumber": 212,
+    "lineNumber": 232,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8164,7 +8164,7 @@
     "longname": "src/senko/SFile.js~SFile#isAbsolute",
     "access": "public",
     "description": "絶対パスかどうか",
-    "lineNumber": 226,
+    "lineNumber": 246,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8192,7 +8192,7 @@
     "longname": "src/senko/SFile.js~SFile#isDirectory",
     "access": "public",
     "description": "フォルダかどうか",
-    "lineNumber": 240,
+    "lineNumber": 260,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8220,7 +8220,7 @@
     "longname": "src/senko/SFile.js~SFile#isFile",
     "access": "public",
     "description": "ファイルかどうか",
-    "lineNumber": 254,
+    "lineNumber": 274,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8248,7 +8248,7 @@
     "longname": "src/senko/SFile.js~SFile#isReadOnly",
     "access": "public",
     "description": "読み取り専用ファイルかどうか",
-    "lineNumber": 268,
+    "lineNumber": 288,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8276,7 +8276,7 @@
     "longname": "src/senko/SFile.js~SFile#setReadOnly",
     "access": "public",
     "description": "読み取り専用ファイルかどうかを設定する",
-    "lineNumber": 286,
+    "lineNumber": 306,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8327,7 +8327,7 @@
     "longname": "src/senko/SFile.js~SFile#isHidden",
     "access": "public",
     "description": "隠しファイルかどうか",
-    "lineNumber": 326,
+    "lineNumber": 346,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8355,7 +8355,7 @@
     "longname": "src/senko/SFile.js~SFile#setHidden",
     "access": "public",
     "description": "隠しファイルかどうかを設定する",
-    "lineNumber": 344,
+    "lineNumber": 364,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8406,7 +8406,7 @@
     "longname": "src/senko/SFile.js~SFile#lastModified",
     "access": "public",
     "description": "更新日を取得",
-    "lineNumber": 384,
+    "lineNumber": 404,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8434,7 +8434,7 @@
     "longname": "src/senko/SFile.js~SFile#setLastModified",
     "access": "public",
     "description": "更新日を設定（ファイルのみ対応）",
-    "lineNumber": 401,
+    "lineNumber": 421,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8473,7 +8473,7 @@
     "longname": "src/senko/SFile.js~SFile#length",
     "access": "public",
     "description": "ファイルサイズ",
-    "lineNumber": 426,
+    "lineNumber": 446,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8501,7 +8501,7 @@
     "longname": "src/senko/SFile.js~SFile#getFiles",
     "access": "public",
     "description": "配下のファイル名の一覧を取得",
-    "lineNumber": 441,
+    "lineNumber": 461,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8529,7 +8529,7 @@
     "longname": "src/senko/SFile.js~SFile#getSubFolders",
     "access": "public",
     "description": "配下のサブフォルダ名の一覧を取得",
-    "lineNumber": 460,
+    "lineNumber": 480,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8557,7 +8557,7 @@
     "longname": "src/senko/SFile.js~SFile#getNormalizedPathName",
     "access": "public",
     "description": "区切り文字と終端を正規化した文字列を取得",
-    "lineNumber": 479,
+    "lineNumber": 499,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8585,7 +8585,7 @@
     "longname": "src/senko/SFile.js~SFile#list",
     "access": "public",
     "description": "配下のファイル名とフォルダ名を取得",
-    "lineNumber": 494,
+    "lineNumber": 514,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8613,7 +8613,7 @@
     "longname": "src/senko/SFile.js~SFile#getAbsolutePath",
     "access": "public",
     "description": "絶対パスを取得",
-    "lineNumber": 517,
+    "lineNumber": 537,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8641,7 +8641,7 @@
     "longname": "src/senko/SFile.js~SFile#mkdir",
     "access": "public",
     "description": "フォルダを作成\n- フォルダは1つのみ指定可能\n- すでにフォルダがある場合はエラーを返す。",
-    "lineNumber": 552,
+    "lineNumber": 582,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8669,7 +8669,7 @@
     "longname": "src/senko/SFile.js~SFile#mkdirs",
     "access": "public",
     "description": "フォルダを作成\n- 作成したいフォルダを続けて記載が可能\n- フォルダがない場合はフォルダを作成していく",
-    "lineNumber": 584,
+    "lineNumber": 614,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8697,7 +8697,7 @@
     "longname": "src/senko/SFile.js~SFile#run",
     "access": "public",
     "description": "実行ファイルを起動する",
-    "lineNumber": 606,
+    "lineNumber": 636,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8750,7 +8750,7 @@
     "longname": "src/senko/SFile.js~SFile#writeLine",
     "access": "public",
     "description": "1行書き加える",
-    "lineNumber": 623,
+    "lineNumber": 653,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8789,7 +8789,7 @@
     "longname": "src/senko/SFile.js~SFile#getTextFile",
     "access": "public",
     "description": "テキストファイルを開く",
-    "lineNumber": 648,
+    "lineNumber": 678,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8830,7 +8830,7 @@
     "longname": "src/senko/SFile.js~SFile#setTextFile",
     "access": "public",
     "description": "テキストファイルを保存",
-    "lineNumber": 773,
+    "lineNumber": 803,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8905,7 +8905,7 @@
     "longname": "src/senko/SFile.js~SFile#getBinaryFile",
     "access": "public",
     "description": "バイナリファイルを開く（激重）",
-    "lineNumber": 834,
+    "lineNumber": 864,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8933,7 +8933,7 @@
     "longname": "src/senko/SFile.js~SFile#setBinaryFile",
     "access": "public",
     "description": "バイナリファイルを保存（激重）",
-    "lineNumber": 906,
+    "lineNumber": 936,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8964,6 +8964,47 @@
   {
     "__docId__": 246,
     "kind": "method",
+    "name": "getHashCode",
+    "memberof": "src/senko/SFile.js~SFile",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "src/senko/SFile.js~SFile#getHashCode",
+    "access": "public",
+    "description": "ファイルのハッシュ値を計算する",
+    "lineNumber": 972,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string} 半角英数の16進数で表したハッシュ値、失敗時は\"0\""
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "\"MD5\"",
+        "defaultRaw": "MD5",
+        "name": "algorithm",
+        "description": "アルゴリズム"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": "半角英数の16進数で表したハッシュ値、失敗時は\"0\""
+    }
+  },
+  {
+    "__docId__": 247,
+    "kind": "method",
     "name": "createXMLHttpRequest",
     "memberof": "src/senko/SFile.js~SFile",
     "generator": false,
@@ -8972,7 +9013,7 @@
     "longname": "src/senko/SFile.js~SFile.createXMLHttpRequest",
     "access": "public",
     "description": "XMLHttpRequestを作成",
-    "lineNumber": 941,
+    "lineNumber": 1004,
     "unknown": [
       {
         "tagName": "@returns",
@@ -8990,7 +9031,7 @@
     "params": []
   },
   {
-    "__docId__": 247,
+    "__docId__": 248,
     "kind": "method",
     "name": "createTempFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9000,35 +9041,7 @@
     "longname": "src/senko/SFile.js~SFile.createTempFile",
     "access": "public",
     "description": "テンポラリフォルダ内の適当なファイル名を取得",
-    "lineNumber": 981,
-    "unknown": [
-      {
-        "tagName": "@returns",
-        "tagValue": "{SFile}"
-      }
-    ],
-    "return": {
-      "nullable": null,
-      "types": [
-        "SFile"
-      ],
-      "spread": false,
-      "description": ""
-    },
-    "params": []
-  },
-  {
-    "__docId__": 248,
-    "kind": "method",
-    "name": "getCurrentDirectory",
-    "memberof": "src/senko/SFile.js~SFile",
-    "generator": false,
-    "async": false,
-    "static": true,
-    "longname": "src/senko/SFile.js~SFile.getCurrentDirectory",
-    "access": "public",
-    "description": "カレントディレクトリを取得",
-    "lineNumber": 992,
+    "lineNumber": 1044,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9048,6 +9061,34 @@
   {
     "__docId__": 249,
     "kind": "method",
+    "name": "getCurrentDirectory",
+    "memberof": "src/senko/SFile.js~SFile",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/SFile.js~SFile.getCurrentDirectory",
+    "access": "public",
+    "description": "カレントディレクトリを取得",
+    "lineNumber": 1055,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{SFile}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "SFile"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 250,
+    "kind": "method",
     "name": "setCurrentDirectory",
     "memberof": "src/senko/SFile.js~SFile",
     "generator": false,
@@ -9056,7 +9097,7 @@
     "longname": "src/senko/SFile.js~SFile.setCurrentDirectory",
     "access": "public",
     "description": "カレントディレクトリを設定",
-    "lineNumber": 1001,
+    "lineNumber": 1064,
     "params": [
       {
         "nullable": null,
@@ -9073,7 +9114,7 @@
     "return": null
   },
   {
-    "__docId__": 250,
+    "__docId__": 251,
     "kind": "method",
     "name": "each",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9083,7 +9124,7 @@
     "longname": "src/senko/SFile.js~SFile#each",
     "access": "public",
     "description": "フォルダの中のフォルダとファイルに対して指定した関数を実行する",
-    "lineNumber": 1013,
+    "lineNumber": 1076,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9112,7 +9153,7 @@
     }
   },
   {
-    "__docId__": 251,
+    "__docId__": 252,
     "kind": "method",
     "name": "getAllFiles",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9122,7 +9163,7 @@
     "longname": "src/senko/SFile.js~SFile#getAllFiles",
     "access": "public",
     "description": "サブフォルダの中まで探索して全てのファイルとフォルダを取得",
-    "lineNumber": 1089,
+    "lineNumber": 1152,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9140,7 +9181,7 @@
     "params": []
   },
   {
-    "__docId__": 252,
+    "__docId__": 253,
     "kind": "method",
     "name": "searchFile",
     "memberof": "src/senko/SFile.js~SFile",
@@ -9150,7 +9191,7 @@
     "longname": "src/senko/SFile.js~SFile#searchFile",
     "access": "public",
     "description": "指定した条件にあうファイルを探す\n関数を指定する場合は、ファイル名とフルパスが引数に渡されます",
-    "lineNumber": 1111,
+    "lineNumber": 1174,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9182,10 +9223,183 @@
     }
   },
   {
-    "__docId__": 253,
+    "__docId__": 254,
+    "kind": "method",
+    "name": "compress",
+    "memberof": "src/senko/SFile.js~SFile",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/SFile.js~SFile.compress",
+    "access": "public",
+    "description": "圧縮する\n- 圧縮後のファイル名の拡張子で圧縮したい形式を指定する\n- Windows標準の機能を使用して圧縮する( `zip` のみ対応)\n- 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して圧縮する",
+    "lineNumber": 1215,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{boolean} result"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SFile",
+          "string",
+          "SFile[]",
+          "string[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "input_file",
+        "description": "圧縮したいファイル"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "SFile",
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "output_file",
+        "description": "圧縮後のファイル名"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": "result"
+    }
+  },
+  {
+    "__docId__": 255,
+    "kind": "method",
+    "name": "extract",
+    "memberof": "src/senko/SFile.js~SFile",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/SFile.js~SFile.extract",
+    "access": "public",
+    "description": "展開する\n- Windows標準の機能を使用して展開する( `zip` のみ対応)\n- 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して展開する",
+    "lineNumber": 1316,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{boolean} result"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SFile",
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "input_file",
+        "description": "展開したいファイル"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "SFile",
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "output_file",
+        "description": "展開先のフォルダ"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": "result"
+    }
+  },
+  {
+    "__docId__": 256,
+    "kind": "method",
+    "name": "setCompressTool",
+    "memberof": "src/senko/SFile.js~SFile",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/SFile.js~SFile.setCompressTool",
+    "access": "public",
+    "description": "圧縮／展開用のツールを設定する\n- このツールを利用して `compress`, `extract` が実行されます\n- 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します\n- `7-zip` のコマンドライン版 (`7za.exe`)のみ対応",
+    "lineNumber": 1386,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{boolean} result"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "SFile",
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "tool_path",
+        "description": "ツールのファイルパス"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "boolean"
+      ],
+      "spread": false,
+      "description": "result"
+    }
+  },
+  {
+    "__docId__": 257,
+    "kind": "method",
+    "name": "getCompressTool",
+    "memberof": "src/senko/SFile.js~SFile",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/SFile.js~SFile.getCompressTool",
+    "access": "public",
+    "description": "圧縮／展開用のツールを取得する\n- このツールを利用して `compress`, `extract` が実行されます\n- 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します\n- 取得できない場合は `null` を返します",
+    "lineNumber": 1402,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{SFile|null} result"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "SFile",
+        "null"
+      ],
+      "spread": false,
+      "description": "result"
+    },
+    "params": []
+  },
+  {
+    "__docId__": 258,
     "kind": "file",
     "name": "src/senko/System.js",
-    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Format from \"./Format.js\";\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_wscript = /wscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_cscript = /cscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * 文字列へ変換します。\n * @param {any} data \n * @private\n */\nconst toString = function(data) {\n\tif(data === null) {\n\t\treturn \"[null]\";\n\t}\n\telse if(data === undefined) {\n\t\treturn \"[undefined]\";\n\t}\n\tconst string_data = data.toString();\n\tif(string_data === \"[object Error]\") {\n\t\tconst e = data;\n\t\tconst error_name\t= e.name ? e.name : \"Error\";\n\t\tconst error_number\t= e.number ? Format.textf(\"0x%08X\", e.number) : \"0x00000000\";\n\t\tconst error_message\t= e.message ? e.message : \"エラーが発生しました。\";\n\t\treturn Format.textf(\"%s(%s) %s\", error_name, error_number, error_message);\n\t}\n\treturn string_data;\n};\n\n\n/**\n * 実行結果\n * @typedef {Object} SystemExecResult\n * @property {string} out\n * @property {string} error\n * @property {number} exit_code\n */\n\n/**\n * システム用のクラス\n * - 文字列の入出力\n * - スリープ、停止\n * - GUIモード、CUIモードの切り替え\n * - バッチファイルへの引数の情報\n * - カレントディレクトリ情報\n */\nexport default class System {\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行されない）\n\t * @param {any} text\n\t */\n\tstatic print(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tWSH.StdOut.Write(output);\n\t\t}\n\t\telse {\n\t\t\tWScript.Echo(output);\n\t\t}\n\t}\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行される）\n\t * @param {any} text\n\t */\n\tstatic println(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tSystem.print(output + \"\\n\");\n\t\t}\n\t\telse {\n\t\t\tSystem.print(output);\n\t\t}\n\t}\n\n\t/**\n\t * 指定したフォーマットで整形した文字列を表示\n\t * @param {any} text \n\t * @param {...any} parm パラメータは可変引数\n\t */\n\tstatic printf() {\n\t\tconst x = [];\n\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\tx[i] = arguments[i];\n\t\t\tif(i === 0) {\n\t\t\t\tx[i] = toString(x[i]);\n\t\t\t}\n\t\t}\n\t\tSystem.println(Format.textf.apply(this, x));\n\t}\n\n\t/**\n\t * キーボードのテキスト入力を取得\n\t * @returns {string}\n\t */\n\tstatic readLine() {\n\t\treturn WScript.StdIn.ReadLine();\n\t}\n\t\n\t/**\n\t * UNIX時間をミリ秒で取得\n\t * @returns {number}\n\t */\n\tstatic currentTimeMillis() {\n\t\tconst date = new Date();\n\t\treturn date.getTime();\n\t}\n\n\t/**\n\t * 処理を一時停止\n\t * @param {number} time_sec\n\t */\n\tstatic sleep(time_sec) {\n\t\tWScript.Sleep((time_sec * 1000) | 0);\n\t}\n\t\n\t/**\n\t * 処理を停止\n\t */\n\tstatic stop() {\n\t\twhile(true) {\n\t\t\tWScript.Sleep(1000);\n\t\t}\n\t}\n\t\n\t/**\n\t * ビープ音を鳴らす\n\t * @param {number} frequency_hz - 周波数\n\t * @param {number} time_sec - 鳴らす秒数\n\t */\n\tstatic beep(frequency_hz, time_sec) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"kernel32.dll\",\n\t\t\t\"bool Beep(uint dwFreq, uint dwDuration)\",\n\t\t\t\"$api::Beep(\" + (frequency_hz | 0) + \", \" + ((time_sec * 1000) | 0) + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したコマンドを別プロセスとして実行する\n\t * @param {string} command - コマンド\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t */\n\tstatic run(command, style, is_wait) {\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\treturn shell.Run(command, intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 指定したコマンドを子プロセスとして実行する\n\t * @param {string} command \n\t * @returns {SystemExecResult}\n\t */\n\tstatic exec(command) {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tconst exec = shell.Exec(command);\n\t\tconst stdin = exec.StdIn;\n\t\tconst stdout = exec.StdOut;\n\t\tconst stderr = exec.StdErr;\n\t\twhile(exec.Status === 0) {\n\t\t\tWScript.Sleep(10);\n\t\t}\n\t\tconst exit_code = exec.ExitCode;\n\t\tstdin.Close();\n\t\t// @ts-ignore\n\t\tconst out = stdout.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstdout.Close();\n\t\t// @ts-ignore\n\t\tconst error = stderr.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstderr.Close();\n\t\treturn {\n\t\t\texit_code : exit_code,\n\t\t\tout : out,\n\t\t\terror : error\n\t\t};\n\t}\n\n\t/**\n\t * プログラムを終了させます。\n\t * @param {number} [exit_code=0] \n\t */\n\tstatic exit(exit_code) {\n\t\tWScript.Quit(exit_code ? exit_code : 0);\n\t}\n\t\n\t/**\n\t * CUIで起動しなおす\n\t * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）\n\t */\n\tstatic executeOnCScript(is_use_chakra) {\n\t\tconst iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;\n\t\tif(is_wscript) {\n\t\t\t// CScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\cscript.exe\\\"\");\n\t\t\tcode.push(\"//NoLogo\");\n\t\t\tif(iis_use_chakra) {\n\t\t\t\tcode.push(\"//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}\");\n\t\t\t}\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * GUIで起動しなおす\n\t */\n\tstatic executeOnWScript() {\n\t\t// cscriptで起動しているか\n\t\tif(is_cscript) {\n\t\t\t// WScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\wscript.exe\\\"\");\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * スクリプトファイルへの引数を取得\n\t * @returns {string[]}\n\t */\n\tstatic getArguments() {\n\t\tconst args = [];\n\t\tfor(let i = 0; i < WScript.Arguments.length; i++) {\n\t\t\targs[i] = WScript.Arguments(i);\n\t\t}\n\t\treturn args;\n\t}\n\t\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string} filename\n\t */\n\tstatic setCurrentDirectory(filename) {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = filename.toString();\n\t}\n\t\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn shell.CurrentDirectory;\n\t}\n\n\t/**\n\t * 実行中のスクリプトがあるカレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getScriptDirectory() {\n\t\tconst x = WSH.ScriptFullName.match(/.*\\\\/)[0];\n\t\treturn(x.substring(0 ,x.length - 1));\n\t}\n\t\n\t/**\n\t * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定\n\t */\n\tstatic initializeCurrentDirectory() {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = System.getScriptDirectory();\n\t}\n\n\t/**\n\t * PowerShell を実行する\n\t * @param {string} source\n\t * @returns {string}\n\t */\n\tstatic PowerShell(source) {\n\t\tconst powershell_base = \"powershell -sta -Command\";\n\t\tconst command = (powershell_base + \" \" + source).replace(/([\\\\\"])/g, \"\\\\$1\");\n\t\treturn System.exec(command).out.replace(/\\r?\\n$/, \"\");\n\t}\n\n\t/**\n\t * WindowsAPI を実行する\n\t * \n\t * 例\n\t * - dll_name : user32.dll\n\t * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n\t * - exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);\n\t * @param {string} dll_name - 利用するdll\n\t * @param {string} function_text - 関数の定義データ($apiに代入されます。)\n\t * @param {string} exec_text - 実行コマンド\n\t * @returns {string}\n\t */\n\tstatic WindowsAPI(dll_name, function_text, exec_text) {\n\t\t// 利用例\n\t\t// System.WindowsAPI(\n\t\t// \t\"user32.dll\",\n\t\t// \t\"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\",\n\t\t// \t\"$api::MessageBox(0, \\\"テキスト\\\", \\\"キャプション\\\", 0);\"\n\t\t// );\n\t\t// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する\n\t\t// eslint-disable-next-line quotes\n\t\tconst api_base = `$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"` + dll_name + `\"\")] public extern static ` + function_text + `;\" -PassThru;`;\n\t\tconst command = api_base + \" \" + exec_text;\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードからテキストを取得する\n\t * @returns {string}\n\t */\n\tstatic getClipBoardText() {\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();\";\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードへテキストを設定する\n\t * @param {string} text\n\t */\n\tstatic setClipBoardText(text) {\n\t\t// PowerShell 5.0以降\n\t\t// command = \"Set-Clipboard \\\"これでもコピー可能\\\"\";\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\\\"\" + text + \"\\\", 1);\";\n\t\tSystem.PowerShell(command);\n\t}\n\n}\n\n\n",
+    "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Format from \"./Format.js\";\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_wscript = /wscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * @type {boolean}\n * @private\n */\nconst is_cscript = /cscript\\.exe$/i.test(WSH.FullName);\n\n/**\n * 文字列へ変換します。\n * @param {any} data \n * @private\n */\nconst toString = function(data) {\n\tif(data === null) {\n\t\treturn \"[null]\";\n\t}\n\telse if(data === undefined) {\n\t\treturn \"[undefined]\";\n\t}\n\tconst string_data = data.toString();\n\tif(string_data === \"[object Error]\") {\n\t\tconst e = data;\n\t\tconst error_name\t= e.name ? e.name : \"Error\";\n\t\tconst error_number\t= e.number ? Format.textf(\"0x%08X\", e.number) : \"0x00000000\";\n\t\tconst error_message\t= e.message ? e.message : \"エラーが発生しました。\";\n\t\treturn Format.textf(\"%s(%s) %s\", error_name, error_number, error_message);\n\t}\n\treturn string_data;\n};\n\n\n/**\n * 実行結果\n * @typedef {Object} SystemExecResult\n * @property {string} out\n * @property {string} error\n * @property {number} exit_code\n */\n\n/**\n * システム用のクラス\n * - 文字列の入出力\n * - スリープ、停止\n * - GUIモード、CUIモードの切り替え\n * - バッチファイルへの引数の情報\n * - カレントディレクトリ情報\n */\nexport default class System {\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行されない）\n\t * @param {any} text\n\t */\n\tstatic print(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tWSH.StdOut.Write(output);\n\t\t}\n\t\telse {\n\t\t\tWScript.Echo(output);\n\t\t}\n\t}\n\n\t/**\n\t * 文字列を表示（最終行で自動で改行される）\n\t * @param {any} text\n\t */\n\tstatic println(text) {\n\t\tconst output = toString(text);\n\t\tif(is_cscript) {\n\t\t\tSystem.print(output + \"\\n\");\n\t\t}\n\t\telse {\n\t\t\tSystem.print(output);\n\t\t}\n\t}\n\n\t/**\n\t * 指定したフォーマットで整形した文字列を表示\n\t * @param {any} text \n\t * @param {...any} parm パラメータは可変引数\n\t */\n\tstatic printf() {\n\t\tconst x = [];\n\t\tfor(let i = 0 ; i < arguments.length ; i++) {\n\t\t\tx[i] = arguments[i];\n\t\t\tif(i === 0) {\n\t\t\t\tx[i] = toString(x[i]);\n\t\t\t}\n\t\t}\n\t\tSystem.println(Format.textf.apply(this, x));\n\t}\n\n\t/**\n\t * キーボードのテキスト入力を取得\n\t * @returns {string}\n\t */\n\tstatic readLine() {\n\t\treturn WScript.StdIn.ReadLine();\n\t}\n\t\n\t/**\n\t * UNIX時間をミリ秒で取得\n\t * @returns {number}\n\t */\n\tstatic currentTimeMillis() {\n\t\tconst date = new Date();\n\t\treturn date.getTime();\n\t}\n\n\t/**\n\t * 処理を一時停止\n\t * @param {number} time_sec\n\t */\n\tstatic sleep(time_sec) {\n\t\tWScript.Sleep((time_sec * 1000) | 0);\n\t}\n\t\n\t/**\n\t * 処理を停止\n\t */\n\tstatic stop() {\n\t\twhile(true) {\n\t\t\tWScript.Sleep(1000);\n\t\t}\n\t}\n\t\n\t/**\n\t * ビープ音を鳴らす\n\t * @param {number} frequency_hz - 周波数\n\t * @param {number} time_sec - 鳴らす秒数\n\t */\n\tstatic beep(frequency_hz, time_sec) {\n\t\tSystem.WindowsAPI(\n\t\t\t\"kernel32.dll\",\n\t\t\t\"bool Beep(uint dwFreq, uint dwDuration)\",\n\t\t\t\"$api::Beep(\" + (frequency_hz | 0) + \", \" + ((time_sec * 1000) | 0) + \");\"\n\t\t);\n\t}\n\n\t/**\n\t * 指定したコマンドを別プロセスとして実行する\n\t * @param {string} command - コマンド\n\t * @param {number} [style=1] - 起動オプション\n\t * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ\n\t */\n\tstatic run(command, style, is_wait) {\n\t\tconst NormalFocus = 1;\n\t\tconst intWindowStyle = style !== undefined ? style : NormalFocus;\n\t\tconst bWaitOnReturn = is_wait !== undefined ? is_wait : false;\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\t// @ts-ignore\n\t\treturn shell.Run(command, intWindowStyle, bWaitOnReturn);\n\t}\n\n\t/**\n\t * 指定したコマンドを子プロセスとして実行する\n\t * @param {string} command \n\t * @returns {SystemExecResult}\n\t */\n\tstatic exec(command) {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tconst exec = shell.Exec(command);\n\t\tconst stdin = exec.StdIn;\n\t\tconst stdout = exec.StdOut;\n\t\tconst stderr = exec.StdErr;\n\t\twhile(exec.Status === 0) {\n\t\t\tWScript.Sleep(10);\n\t\t}\n\t\tconst exit_code = exec.ExitCode;\n\t\tstdin.Close();\n\t\t// @ts-ignore\n\t\tconst out = stdout.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstdout.Close();\n\t\t// @ts-ignore\n\t\tconst error = stderr.ReadAll().replace(/\\r?\\n$/, \"\");\n\t\tstderr.Close();\n\t\treturn {\n\t\t\texit_code : exit_code,\n\t\t\tout : out,\n\t\t\terror : error\n\t\t};\n\t}\n\n\t/**\n\t * プログラムを終了させます。\n\t * @param {number} [exit_code=0] \n\t */\n\tstatic exit(exit_code) {\n\t\tWScript.Quit(exit_code ? exit_code : 0);\n\t}\n\t\n\t/**\n\t * CUIで起動しなおす\n\t * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）\n\t */\n\tstatic executeOnCScript(is_use_chakra) {\n\t\tconst iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;\n\t\tif(is_wscript) {\n\t\t\t// CScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\cscript.exe\\\"\");\n\t\t\tcode.push(\"//NoLogo\");\n\t\t\tif(iis_use_chakra) {\n\t\t\t\tcode.push(\"//E:{16d51579-a30b-4c8b-a276-0ff4dc41e755}\");\n\t\t\t}\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * GUIで起動しなおす\n\t */\n\tstatic executeOnWScript() {\n\t\t// cscriptで起動しているか\n\t\tif(is_cscript) {\n\t\t\t// WScript で起動しなおす\n\t\t\tconst code = [];\n\t\t\tconst args = System.getArguments();\n\t\t\tcode.push(\"\\\"C:\\\\Windows\\\\System32\\\\wscript.exe\\\"\");\n\t\t\tcode.push(\"\\\"\" + WScript.ScriptFullName + \"\\\"\");\n\t\t\tfor(let i = 0; i < args.length; i++) {\n\t\t\t\tcode.push(\"\\\"\" + args[i] + \"\\\"\");\n\t\t\t}\n\t\t\tSystem.run(code.join(\" \"));\n\t\t\tSystem.exit();\n\t\t}\n\t}\n\t\n\t/**\n\t * 指定した環境変数の値を取得する\n\t * @param {string} env_name 環境変数（%は省略可能）\n\t * @returns {string}\n\t */\n\t static getEnvironmentString(env_name) {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tconst env_param = \"%\" + env_name.replace(/%/g, \"\") + \"%\";\n\t\tconst env_value = shell.ExpandEnvironmentStrings(env_param);\n\t\treturn env_param === env_value ? \"\" : env_value;\n\t}\n\n\t/**\n\t * スクリプトファイルへの引数を取得\n\t * @returns {string[]}\n\t */\n\tstatic getArguments() {\n\t\tconst args = [];\n\t\tfor(let i = 0; i < WScript.Arguments.length; i++) {\n\t\t\targs[i] = WScript.Arguments(i);\n\t\t}\n\t\treturn args;\n\t}\n\n\t/**\n\t * カレントディレクトリを設定\n\t * @param {string} filename\n\t */\n\tstatic setCurrentDirectory(filename) {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = filename.toString();\n\t}\n\t\n\t/**\n\t * カレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getCurrentDirectory() {\n\t\tconst shell = new ActiveXObject(\"WScript.Shell\");\n\t\treturn shell.CurrentDirectory;\n\t}\n\n\t/**\n\t * 実行中のスクリプトがあるカレントディレクトリを取得\n\t * @returns {string}\n\t */\n\tstatic getScriptDirectory() {\n\t\tconst x = WSH.ScriptFullName.match(/.*\\\\/)[0];\n\t\treturn(x.substring(0 ,x.length - 1));\n\t}\n\t\n\t/**\n\t * 実行中のスクリプトがあるディレクトリをカレントディレクトリに設定\n\t */\n\tstatic initializeCurrentDirectory() {\n\t\tconst shell = WScript.CreateObject(\"WScript.Shell\");\n\t\tshell.CurrentDirectory = System.getScriptDirectory();\n\t}\n\n\t/**\n\t * PowerShell を実行する\n\t * @param {string} source\n\t * @returns {string}\n\t */\n\tstatic PowerShell(source) {\n\t\tconst powershell_base = \"powershell -sta -Command\";\n\t\tconst command = (powershell_base + \" \" + source).replace(/([\\\\\"])/g, \"\\\\$1\");\n\t\treturn System.exec(command).out.replace(/\\r?\\n$/, \"\");\n\t}\n\n\t/**\n\t * WindowsAPI を実行する\n\t * \n\t * 例\n\t * - dll_name : user32.dll\n\t * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n\t * - exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);\n\t * @param {string} dll_name - 利用するdll\n\t * @param {string} function_text - 関数の定義データ($apiに代入されます。)\n\t * @param {string} exec_text - 実行コマンド\n\t * @returns {string}\n\t */\n\tstatic WindowsAPI(dll_name, function_text, exec_text) {\n\t\t// 利用例\n\t\t// System.WindowsAPI(\n\t\t// \t\"user32.dll\",\n\t\t// \t\"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\",\n\t\t// \t\"$api::MessageBox(0, \\\"テキスト\\\", \\\"キャプション\\\", 0);\"\n\t\t// );\n\t\t// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する\n\t\t// eslint-disable-next-line quotes\n\t\tconst api_base = `$api = Add-Type -Name \"api\" -MemberDefinition \"[DllImport(\"\"` + dll_name + `\"\")] public extern static ` + function_text + `;\" -PassThru;`;\n\t\tconst command = api_base + \" \" + exec_text;\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードからテキストを取得する\n\t * @returns {string}\n\t */\n\tstatic getClipBoardText() {\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();\";\n\t\treturn System.PowerShell(command);\n\t}\n\n\t/**\n\t * クリップボードへテキストを設定する\n\t * @param {string} text\n\t */\n\tstatic setClipBoardText(text) {\n\t\t// PowerShell 5.0以降\n\t\t// command = \"Set-Clipboard \\\"これでもコピー可能\\\"\";\n\t\tconst command = \"Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\\\"\" + text + \"\\\", 1);\";\n\t\tSystem.PowerShell(command);\n\t}\n\n}\n\n\n",
     "static": true,
     "longname": "D:/JavaScript/SenkoWSH/src/senko/System.js",
     "access": "public",
@@ -9193,7 +9407,7 @@
     "lineNumber": 1
   },
   {
-    "__docId__": 254,
+    "__docId__": 259,
     "kind": "variable",
     "name": "is_wscript",
     "memberof": "src/senko/System.js",
@@ -9216,7 +9430,7 @@
     "ignore": true
   },
   {
-    "__docId__": 255,
+    "__docId__": 260,
     "kind": "variable",
     "name": "is_cscript",
     "memberof": "src/senko/System.js",
@@ -9239,7 +9453,7 @@
     "ignore": true
   },
   {
-    "__docId__": 256,
+    "__docId__": 261,
     "kind": "function",
     "name": "toString",
     "memberof": "src/senko/System.js",
@@ -9273,7 +9487,7 @@
     "ignore": true
   },
   {
-    "__docId__": 257,
+    "__docId__": 262,
     "kind": "typedef",
     "name": "SystemExecResult",
     "memberof": "src/senko/System.js",
@@ -9322,7 +9536,7 @@
     }
   },
   {
-    "__docId__": 258,
+    "__docId__": 263,
     "kind": "class",
     "name": "System",
     "memberof": "src/senko/System.js",
@@ -9337,7 +9551,7 @@
     "interface": false
   },
   {
-    "__docId__": 259,
+    "__docId__": 264,
     "kind": "method",
     "name": "print",
     "memberof": "src/senko/System.js~System",
@@ -9363,7 +9577,7 @@
     "return": null
   },
   {
-    "__docId__": 260,
+    "__docId__": 265,
     "kind": "method",
     "name": "println",
     "memberof": "src/senko/System.js~System",
@@ -9389,7 +9603,7 @@
     "return": null
   },
   {
-    "__docId__": 261,
+    "__docId__": 266,
     "kind": "method",
     "name": "printf",
     "memberof": "src/senko/System.js~System",
@@ -9425,7 +9639,7 @@
     "return": null
   },
   {
-    "__docId__": 262,
+    "__docId__": 267,
     "kind": "method",
     "name": "readLine",
     "memberof": "src/senko/System.js~System",
@@ -9453,7 +9667,7 @@
     "params": []
   },
   {
-    "__docId__": 263,
+    "__docId__": 268,
     "kind": "method",
     "name": "currentTimeMillis",
     "memberof": "src/senko/System.js~System",
@@ -9481,7 +9695,7 @@
     "params": []
   },
   {
-    "__docId__": 264,
+    "__docId__": 269,
     "kind": "method",
     "name": "sleep",
     "memberof": "src/senko/System.js~System",
@@ -9507,7 +9721,7 @@
     "return": null
   },
   {
-    "__docId__": 265,
+    "__docId__": 270,
     "kind": "method",
     "name": "stop",
     "memberof": "src/senko/System.js~System",
@@ -9522,7 +9736,7 @@
     "return": null
   },
   {
-    "__docId__": 266,
+    "__docId__": 271,
     "kind": "method",
     "name": "beep",
     "memberof": "src/senko/System.js~System",
@@ -9558,7 +9772,7 @@
     "return": null
   },
   {
-    "__docId__": 267,
+    "__docId__": 272,
     "kind": "method",
     "name": "run",
     "memberof": "src/senko/System.js~System",
@@ -9612,7 +9826,7 @@
     }
   },
   {
-    "__docId__": 268,
+    "__docId__": 273,
     "kind": "method",
     "name": "exec",
     "memberof": "src/senko/System.js~System",
@@ -9651,7 +9865,7 @@
     }
   },
   {
-    "__docId__": 269,
+    "__docId__": 274,
     "kind": "method",
     "name": "exit",
     "memberof": "src/senko/System.js~System",
@@ -9679,7 +9893,7 @@
     "return": null
   },
   {
-    "__docId__": 270,
+    "__docId__": 275,
     "kind": "method",
     "name": "executeOnCScript",
     "memberof": "src/senko/System.js~System",
@@ -9705,7 +9919,7 @@
     "return": null
   },
   {
-    "__docId__": 271,
+    "__docId__": 276,
     "kind": "method",
     "name": "executeOnWScript",
     "memberof": "src/senko/System.js~System",
@@ -9720,7 +9934,46 @@
     "return": null
   },
   {
-    "__docId__": 272,
+    "__docId__": 277,
+    "kind": "method",
+    "name": "getEnvironmentString",
+    "memberof": "src/senko/System.js~System",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "src/senko/System.js~System.getEnvironmentString",
+    "access": "public",
+    "description": "指定した環境変数の値を取得する",
+    "lineNumber": 258,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "env_name",
+        "description": "環境変数（%は省略可能）"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 278,
     "kind": "method",
     "name": "getArguments",
     "memberof": "src/senko/System.js~System",
@@ -9730,7 +9983,7 @@
     "longname": "src/senko/System.js~System.getArguments",
     "access": "public",
     "description": "スクリプトファイルへの引数を取得",
-    "lineNumber": 257,
+    "lineNumber": 269,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9748,7 +10001,7 @@
     "params": []
   },
   {
-    "__docId__": 273,
+    "__docId__": 279,
     "kind": "method",
     "name": "setCurrentDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9758,7 +10011,7 @@
     "longname": "src/senko/System.js~System.setCurrentDirectory",
     "access": "public",
     "description": "カレントディレクトリを設定",
-    "lineNumber": 269,
+    "lineNumber": 281,
     "params": [
       {
         "nullable": null,
@@ -9774,7 +10027,7 @@
     "return": null
   },
   {
-    "__docId__": 274,
+    "__docId__": 280,
     "kind": "method",
     "name": "getCurrentDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9784,7 +10037,7 @@
     "longname": "src/senko/System.js~System.getCurrentDirectory",
     "access": "public",
     "description": "カレントディレクトリを取得",
-    "lineNumber": 278,
+    "lineNumber": 290,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9802,7 +10055,7 @@
     "params": []
   },
   {
-    "__docId__": 275,
+    "__docId__": 281,
     "kind": "method",
     "name": "getScriptDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9812,7 +10065,7 @@
     "longname": "src/senko/System.js~System.getScriptDirectory",
     "access": "public",
     "description": "実行中のスクリプトがあるカレントディレクトリを取得",
-    "lineNumber": 287,
+    "lineNumber": 299,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9830,7 +10083,7 @@
     "params": []
   },
   {
-    "__docId__": 276,
+    "__docId__": 282,
     "kind": "method",
     "name": "initializeCurrentDirectory",
     "memberof": "src/senko/System.js~System",
@@ -9840,12 +10093,12 @@
     "longname": "src/senko/System.js~System.initializeCurrentDirectory",
     "access": "public",
     "description": "実行中のスクリプトがあるディレクトリをカレントディレクトリに設定",
-    "lineNumber": 295,
+    "lineNumber": 307,
     "params": [],
     "return": null
   },
   {
-    "__docId__": 277,
+    "__docId__": 283,
     "kind": "method",
     "name": "PowerShell",
     "memberof": "src/senko/System.js~System",
@@ -9855,7 +10108,7 @@
     "longname": "src/senko/System.js~System.PowerShell",
     "access": "public",
     "description": "PowerShell を実行する",
-    "lineNumber": 305,
+    "lineNumber": 317,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9884,7 +10137,7 @@
     }
   },
   {
-    "__docId__": 278,
+    "__docId__": 284,
     "kind": "method",
     "name": "WindowsAPI",
     "memberof": "src/senko/System.js~System",
@@ -9894,7 +10147,7 @@
     "longname": "src/senko/System.js~System.WindowsAPI",
     "access": "public",
     "description": "WindowsAPI を実行する\n\n例\n- dll_name : user32.dll\n- function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)\n- exec_text : $api::MessageBox(0, \"テキスト\", \"キャプション\", 0);",
-    "lineNumber": 323,
+    "lineNumber": 335,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9943,7 +10196,7 @@
     }
   },
   {
-    "__docId__": 279,
+    "__docId__": 285,
     "kind": "method",
     "name": "getClipBoardText",
     "memberof": "src/senko/System.js~System",
@@ -9953,7 +10206,7 @@
     "longname": "src/senko/System.js~System.getClipBoardText",
     "access": "public",
     "description": "クリップボードからテキストを取得する",
-    "lineNumber": 341,
+    "lineNumber": 353,
     "unknown": [
       {
         "tagName": "@returns",
@@ -9971,7 +10224,7 @@
     "params": []
   },
   {
-    "__docId__": 280,
+    "__docId__": 286,
     "kind": "method",
     "name": "setClipBoardText",
     "memberof": "src/senko/System.js~System",
@@ -9981,7 +10234,7 @@
     "longname": "src/senko/System.js~System.setClipBoardText",
     "access": "public",
     "description": "クリップボードへテキストを設定する",
-    "lineNumber": 350,
+    "lineNumber": 362,
     "params": [
       {
         "nullable": null,
@@ -9997,7 +10250,7 @@
     "return": null
   },
   {
-    "__docId__": 281,
+    "__docId__": 287,
     "kind": "file",
     "name": "src/SenkoWSH.js",
     "content": "/**\n * The script is part of SenkoWSH.\n * \n * AUTHOR:\n *  natade (http://twitter.com/natadea)\n * \n * LICENSE:\n *  The MIT license https://opensource.org/licenses/MIT\n */\n\nimport Polyfill from \"./senko/polyfill/Polyfill.js\";\nimport typeCSV from \"./senko/CSV.js\";\nimport typeDialog from \"./senko/Dialog.js\";\nimport typeSFile from \"./senko/SFile.js\";\nimport typeRobot from \"./senko/Robot.js\";\nimport typeFormat from \"./senko/Format.js\";\nimport typeRandom from \"./konpeito/Random.js\";\nimport typeJapanese from \"./mojijs/Japanese.js\";\nimport typeStringComparator from \"./mojijs/StringComparator.js\";\nimport typeSystem from \"./senko/System.js\";\n\n/**\n * 上書き防止用\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSenkoWSH = {\n\t\n\t/**\n \t * @type {typeof typeCSV}\n\t */\n\tCSV : typeCSV,\n\t\n\t/**\n \t * @type {typeof typeDialog}\n\t */\n\tDialog : typeDialog,\n\n\t/**\n \t * @type {typeof typeSFile}\n\t */\n\t SFile : typeSFile,\n\n\t/**\n \t * @type {typeof typeRobot}\n\t */\n\t Robot : typeRobot,\n\n\t/**\n \t * @type {typeof typeFormat}\n\t */\n\t Format : typeFormat,\n\n\t/**\n \t * @type {typeof typeRandom}\n\t */\n\t Random : typeRandom,\n\n\t/**\n \t * @type {typeof typeJapanese}\n\t */\n\t Japanese : typeJapanese,\n\n\t/**\n \t * @type {typeof typeStringComparator}\n\t */\n\t StringComparator : typeStringComparator,\n\n\t/**\n \t * @type {typeof typeSystem}\n\t */\n\t System : typeSystem,\n\n};\n\n/**\n * @type {typeof typeCSV}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nCSV = typeCSV;\n\n/**\n * @type {typeof typeDialog}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nDialog = typeDialog;\n\n/**\n * @type {typeof typeSFile}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSFile = typeSFile;\n\n/**\n * @type {typeof typeRobot}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRobot = typeRobot;\n\n/**\n * @type {typeof typeFormat}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nFormat = typeFormat;\n\n/**\n * @type {typeof typeRandom}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nRandom = typeRandom;\n\n/**\n * @type {typeof typeJapanese}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nJapanese = typeJapanese;\n\n/**\n * @type {typeof typeStringComparator}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nStringComparator = typeStringComparator;\n\n/**\n * @type {typeof typeSystem}\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-undef\nSystem = typeSystem;\n\n/**\n * @private\n */\n// @ts-ignore\n// eslint-disable-next-line no-global-assign\nconsole = {\n\t// @ts-ignore\n\tlog : function(text) {\n\t\t// @ts-ignore\n\t\t// eslint-disable-next-line no-undef\n\t\tSenkoWSH.System.println(text);\n\t}\n};\n\n",
@@ -10009,7 +10262,7 @@
   },
   {
     "kind": "index",
-    "content": "# SenkoWSH\r\n\r\n## 概要\r\n- Windows 上で動作する WSH JScript 用汎用ライブラリ\r\n- Visual Studio Code で JScript での開発を目的とする\r\n- ES3相当の機能しかなかった JScript を強化\r\n\r\n本ライブラリを用いることで、`JScript` によるバッチ処理で以下のような機能が利用できます。\r\n動作環境は、Windows 7以上（一部powershellを利用しているため）とします。\r\n\r\n1. `SFile`クラスを用いてファイルのテキストの読み書きやファイル操作\r\n2. `CSV`クラスを用いてCSV形式を扱う\r\n3. `System.sleep(1)`で1秒停止や、`System.stop()`で処理を停止\r\n4. `Format.textf`で`sprintf` のような文字列のフォーマット変換\r\n5. `StringComparator.DEFAULT` で自然準ソート\r\n6. `String.prototype.trim()` などES3になかった機能の追加\r\n7. `Robot`クラスを用いて外部アプリケーションを操作する\r\n\r\nとりあえず`examples`の`Example.wsf`を実行してみればわかります。\r\n詳しい関数の説明は、[ヘルプファイル](https://natade-jp.github.io/SenkoWSH/)を参照すること\r\n\r\n## フォルダ構成\r\n- build - `JScirpt` で動作するようにコンパイルしたライブラリ及び、Visual Studio Code 用の型定義ファイル\r\n- src - コンパイル前のソースコードフォルダ\r\n- docs - 自動生成したヘルプファイル\r\n- scripts - `Node.js` で実行するスクリプトファイル（`package.json`の`scripts`を参照）\r\n\r\n## 開発環境構築方法\r\n1. プロジェクトフォルダ全体をダウンロードして、`package.json`があるディレクトリをカレントディレクトリとする\r\n2. [Node.js / npm](https://nodejs.org/ja/) をインストールして`npm install`を実行する。\r\n3. [Visual Studio Code](https://code.visualstudio.com/) をインストール\r\n4. VSCode上で、拡張機能の [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) をインストール\r\n5. `examples`の中身をいじって作りたいマクロを作る。\r\n\r\n次のような操作が行えます。\r\n- ビルドは、`npm run build`\r\n- 型定義ファイル(`d.ts`)の作成は、`npm run dts`\r\n- ヘルプファイルの作成は、`npm run doc`\r\n- サンプルファイルの実行は、`npm run start` (`JScript`でサンプルファイルが実行される)\r\n\r\n## Author\r\n- [natade-jp](https://github.com/natade-jp/)\r\n",
+    "content": "# SenkoWSH\r\n[![ESDoc coverage badge](https://natade-jp.github.io/SenkoWSH/badge.svg)](https://natade-jp.github.io/SenkoWSH/)\r\n![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)\r\n\r\n## 概要\r\n- Windows 上で動作する WSH JScript 用汎用ライブラリ\r\n- Visual Studio Code で JScript での開発を目的とする\r\n- ES3相当の機能しかなかった JScript を強化\r\n\r\n本ライブラリを用いることで、`JScript` によるバッチ処理で以下のような機能が利用できます。\r\n動作環境は、Windows 7以上（一部powershellを利用しているため）とします。\r\n\r\n1. `SFile`クラスを用いてファイルのテキストの読み書きやファイル操作\r\n2. `CSV`クラスを用いてCSV形式を扱う\r\n3. `System.sleep(1)`で1秒停止や、`System.stop()`で処理を停止\r\n4. `Format.textf`で`sprintf` のような文字列のフォーマット変換\r\n5. `StringComparator.DEFAULT` で自然準ソート\r\n6. `String.prototype.trim()` などES3になかった機能の追加\r\n7. `Robot`クラスを用いて外部アプリケーションを操作する\r\n\r\nとりあえず`examples`の`Example.wsf`を実行してみればわかります。\r\n詳しい関数の説明は、[ヘルプファイル](https://natade-jp.github.io/SenkoWSH/)を参照すること\r\n\r\n## フォルダ構成\r\n- build - `JScirpt` で動作するようにコンパイルしたライブラリ及び、Visual Studio Code 用の型定義ファイル\r\n- src - コンパイル前のソースコードフォルダ\r\n- docs - 自動生成したヘルプファイル\r\n- scripts - `Node.js` で実行するスクリプトファイル（`package.json`の`scripts`を参照）\r\n\r\n## 開発環境構築方法\r\n1. プロジェクトフォルダ全体をダウンロードして、`package.json`があるディレクトリをカレントディレクトリとする\r\n2. [Node.js / npm](https://nodejs.org/ja/) をインストールして`npm install`を実行する。\r\n3. [Visual Studio Code](https://code.visualstudio.com/) をインストール\r\n4. VSCode上で、拡張機能の [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) をインストール\r\n5. `examples`の中身をいじって作りたいマクロを作る。\r\n\r\n次のような操作が行えます。\r\n- ビルドは、`npm run build`\r\n- 型定義ファイル(`d.ts`)の作成は、`npm run dts`\r\n- ヘルプファイルの作成は、`npm run doc`\r\n- サンプルファイルの実行は、`npm run start` (`JScript`でサンプルファイルが実行される)\r\n\r\n## Author\r\n- [natade-jp](https://github.com/natade-jp/)\r\n",
     "longname": "D:\\JavaScript\\SenkoWSH\\README.md",
     "name": "./README.md",
     "static": true,
@@ -10017,7 +10270,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n\t\"name\": \"senkowsh\",\n\t\"version\": \"3.6.0\",\n\t\"description\": \"JScirpt library for WSH that gathers various functions.\",\n\t\"author\": \"natade-jp <natade3@gmail.com> (https://github.com/natade-jp)\",\n\t\"repository\": {\n\t\t\"type\": \"git\",\n\t\t\"url\": \"https://github.com/natade-jp/SenkoWSH\"\n\t},\n\t\"license\": \"MIT\",\n\t\"main\": \"./build/SenkoWSH.js\",\n\t\"keywords\": [\n\t\t\"wsh\"\n\t],\n\t\"directories\": {\n\t\t\"src\": \"src\",\n\t\t\"build\": \"build\",\n\t\t\"example\": \"examples\"\n\t},\n\t\"scripts\": {\n\t\t\"build\": \"node ./scripts/package.build.js\",\n\t\t\"dts\": \"node ./scripts/package.dts.js\",\n\t\t\"doc\": \"node ./scripts/package.doc.js\",\n\t\t\"start\": \"node ./scripts/execExample.js\"\n\t},\n\t\"devDependencies\": {\n\t\t\"@types/windows-script-host\": \"^5.8.3\",\n\t\t\"esdoc\": \"^1.1.0\",\n\t\t\"esdoc-standard-plugin\": \"^1.0.0\",\n\t\t\"eslint\": \"^6.5.1\",\n\t\t\"jsdoc\": \"^3.6.3\",\n\t\t\"jsdoc-export-default-interop\": \"^0.3.1\",\n\t\t\"mojijs\": \"^3.0.3\",\n\t\t\"rollup\": \"^1.23.1\",\n\t\t\"rollup-plugin-buble\": \"^0.19.8\",\n\t\t\"rollup-plugin-uglify\": \"^6.0.3\",\n\t\t\"rollup-plugin-uglify-es\": \"0.0.1\",\n\t\t\"tsd-jsdoc\": \"^2.4.0\"\n\t}\n}\n",
+    "content": "{\n\t\"name\": \"senkowsh\",\n\t\"version\": \"3.7.0\",\n\t\"description\": \"JScirpt library for WSH that gathers various functions.\",\n\t\"author\": \"natade-jp <natade3@gmail.com> (https://github.com/natade-jp)\",\n\t\"repository\": {\n\t\t\"type\": \"git\",\n\t\t\"url\": \"https://github.com/natade-jp/SenkoWSH\"\n\t},\n\t\"license\": \"MIT\",\n\t\"main\": \"./build/SenkoWSH.js\",\n\t\"keywords\": [\n\t\t\"wsh\"\n\t],\n\t\"directories\": {\n\t\t\"src\": \"src\",\n\t\t\"build\": \"build\",\n\t\t\"example\": \"examples\"\n\t},\n\t\"scripts\": {\n\t\t\"build\": \"node ./scripts/package.build.js\",\n\t\t\"dts\": \"node ./scripts/package.dts.js\",\n\t\t\"doc\": \"node ./scripts/package.doc.js\",\n\t\t\"start\": \"node ./scripts/execExample.js\"\n\t},\n\t\"devDependencies\": {\n\t\t\"@types/windows-script-host\": \"^5.8.3\",\n\t\t\"esdoc\": \"^1.1.0\",\n\t\t\"esdoc-standard-plugin\": \"^1.0.0\",\n\t\t\"eslint\": \"^6.5.1\",\n\t\t\"jsdoc\": \"^3.6.3\",\n\t\t\"jsdoc-export-default-interop\": \"^0.3.1\",\n\t\t\"mojijs\": \"^3.0.3\",\n\t\t\"rollup\": \"^1.23.1\",\n\t\t\"rollup-plugin-buble\": \"^0.19.8\",\n\t\t\"rollup-plugin-uglify\": \"^6.0.3\",\n\t\t\"rollup-plugin-uglify-es\": \"0.0.1\",\n\t\t\"tsd-jsdoc\": \"^2.4.0\"\n\t}\n}\n",
     "longname": "D:\\JavaScript\\SenkoWSH\\package.json",
     "name": "package.json",
     "static": true,

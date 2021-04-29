@@ -59,9 +59,7 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/senko/SFile.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import Format from &quot;./Format.js&quot;;
-
-/**
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * The script is part of SenkoWSH.
  * 
  * AUTHOR:
@@ -71,6 +69,9 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Format from &quot;./Format.js&quot;;
+import System from &quot;./System.js&quot;;
+ 
 /**
  * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#xFF0F;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#xFF0F;URL&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
  */
@@ -251,11 +252,30 @@ export default class SFile {
 
 	/**
 	 * &#x89AA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x7D76;&#x5BFE;&#x30D1;&#x30B9;
-	 * @returns {string}
+	 * URL&#x306A;&#x3089;&#x6700;&#x5F8C;&#x306B;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3092;&#x3064;&#x3051;&#x3066;&#x8FD4;&#x3059;
+	 * @returns {string} 
 	 */
 	getParent() {
-		const x = this.getAbsolutePath().match(/.*[/\\]/)[0];
-		return x.substring(0 ,x.length - 1);
+		if(this.is_http) {
+			let path = this.getAbsolutePath();
+			// &#x6700;&#x5F8C;&#x304C;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x306E;&#x5834;&#x5408;&#x3067;&#x30DB;&#x30B9;&#x30C8;&#x540D;&#x306E;&#x307F;&#x306E;&#x5834;&#x5408;&#x306F;&#x3001;&#x3053;&#x308C;&#x4EE5;&#x4E0A;&#x8FBF;&#x308C;&#x306A;&#x3044;&#x3002;
+			if(/^http[^/]+\/\/[^/]+\/$/.test(path)) {
+				return path
+			}
+			// &#x6700;&#x5F8C;&#x304C;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x306E;&#x5834;&#x5408;&#x306F;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3092;&#x9664;&#x53BB;
+			if(/\/$/.test(path)) {
+				path = path.substring(0 ,path.length - 1);
+			}
+			// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x540D;&#x307E;&#x3067;&#x3092;&#x524A;&#x308B;
+			return path.match(/^.*\//)[0];
+		}
+		else {
+			// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x540D;&#x307E;&#x3067;&#x306E;&#x30D1;&#x30B9;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+			let path = this.getAbsolutePath().match(/.*[/\\]/)[0];
+			// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x524A;&#x308B;
+			path = path.substring(0 ,path.length - 1);
+			return path;
+		}
 	}
 
 	/**
@@ -586,12 +606,15 @@ export default class SFile {
 			let i;
 			for(i = 0; i &lt; namelist.length; i++) {
 				if((namelist[i] === &quot;&quot;) || (namelist[i] === &quot;.&quot;)) {
+					// &#x968E;&#x5C64;&#x306F;&#x79FB;&#x52D5;&#x3057;&#x306A;&#x3044;
 					continue;
 				}
 				if(namelist[i] === &quot;..&quot;) {
+					// &#x4E0A;&#x306E;&#x968E;&#x5C64;&#x3078;&#x79FB;&#x52D5;&#x3059;&#x308B;
 					name = name.substring(0 ,name.length - 1).match(/.*\//)[0];
 					continue;
 				}
+				// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x540D; + &quot;/&quot;
 				name += namelist[i];
 				if(i !== namelist.length - 1) {
 					name += &quot;/&quot;;
@@ -600,7 +623,14 @@ export default class SFile {
 			return name;
 		}
 		else {
-			return this.fso.GetAbsolutePathName(this.pathname);
+			// `*:` &#x3068;&#x3044;&#x3046;2&#x6587;&#x5B57;&#x306E;&#x30D1;&#x30B9;&#x3067; `C` &#x4EE5;&#x5916;&#x3092;&#x8A2D;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306B;&#x6B63;&#x3057;&#x3044;&#x30D1;&#x30B9;&#x3092;&#x8A2D;&#x5B9A;&#x3067;&#x304D;&#x306A;&#x3044;&#x4E0D;&#x5177;&#x5408;&#x304C;&#x3042;&#x308B;
+			// &#x5F93;&#x3063;&#x3066;&#x3001;&#x9632;&#x6B62;&#x7528;&#x306B;&#x3001;&#x6700;&#x5F8C;&#x306B;&#x30B3;&#x30ED;&#x30F3;&#x304C;&#x4ED8;&#x3044;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&quot;C:&quot;&#x3068;&#x304B;&#x306A;&#x306E;&#x3067;&quot;C:/&quot;&#x3068;&#x3057;&#x3066;&#x304B;&#x3089;&#x30D1;&#x30B9;&#x3092;&#x5909;&#x63DB;&#x3059;&#x308B;
+			if(/:$/.test(this.pathname)) {
+				return this.fso.GetAbsolutePathName(this.pathname + &quot;\\&quot;);
+			}
+			else {
+				return this.fso.GetAbsolutePathName(this.pathname);
+			}
 		}
 	}
 
@@ -996,6 +1026,39 @@ export default class SFile {
 	}
 
 	/**
+	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x30CF;&#x30C3;&#x30B7;&#x30E5;&#x5024;&#x3092;&#x8A08;&#x7B97;&#x3059;&#x308B;
+	 * @param {string} [algorithm=&quot;MD5&quot;] - &#x30A2;&#x30EB;&#x30B4;&#x30EA;&#x30BA;&#x30E0;
+	 * @returns {string} &#x534A;&#x89D2;&#x82F1;&#x6570;&#x306E;16&#x9032;&#x6570;&#x3067;&#x8868;&#x3057;&#x305F;&#x30CF;&#x30C3;&#x30B7;&#x30E5;&#x5024;&#x3001;&#x5931;&#x6557;&#x6642;&#x306F;&quot;0&quot;
+	 */
+	getHashCode(algorithm) {
+		if(this.is_http) {
+			throw &quot;IllegalMethod&quot;;
+		}
+		if(!this.isFile()) {
+			return &quot;0&quot;;
+		}
+		const algorithm_ = algorithm !== undefined ? algorithm : &quot;MD5&quot;;
+		const message = &quot;certutil -hashfile \&quot;&quot; + this.getAbsolutePath() + &quot;\&quot; &quot; + algorithm_.toUpperCase();
+		const output = System.exec(message);
+		if(output.exit_code !== 0) {
+			return &quot;0&quot;;
+		}
+		// 2&#x884C;&#x76EE;&#x3092;&#x62BD;&#x51FA;&#x3059;&#x308B;
+		const hash_lines = output.out.split(/\n/);
+		if(hash_lines.length &lt;= 1) {
+			return &quot;0&quot;;
+		}
+		// 2&#x7A2E;&#x985E;&#x306E;&#x30BF;&#x30A4;&#x30D7;&#x3092;&#x691C;&#x77E5;&#x3055;&#x305B;&#x308B;
+		// - dcd802e3848075716e92424cfdcb9c0d (Windows 10)
+		// - dc d8 02 e3 84 80 75 71 6e 92 42 4c fd cb 9c 0d (Windows8.1)
+		const hash = hash_lines[1].trim().toLowerCase().match(/^(([0-9a-f]{2}){8,})|((([0-9a-f]{2} ){7,})[0-9a-f]{2})$/);
+		if(hash === null) {
+			return &quot;0&quot;;
+		}
+		return hash[0].replace(/ /g, &quot;&quot;);
+	}
+
+	/**
 	 * XMLHttpRequest&#x3092;&#x4F5C;&#x6210;
 	 * @returns {XMLHttpRequest}
 	 */
@@ -1200,7 +1263,228 @@ export default class SFile {
 		return target_file;
 	}
 
+	/**
+	 * &#x5727;&#x7E2E;&#x3059;&#x308B;
+	 * - &#x5727;&#x7E2E;&#x5F8C;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x306E;&#x62E1;&#x5F35;&#x5B50;&#x3067;&#x5727;&#x7E2E;&#x3057;&#x305F;&#x3044;&#x5F62;&#x5F0F;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;
+	 * - Windows&#x6A19;&#x6E96;&#x306E;&#x6A5F;&#x80FD;&#x3092;&#x4F7F;&#x7528;&#x3057;&#x3066;&#x5727;&#x7E2E;&#x3059;&#x308B;( `zip` &#x306E;&#x307F;&#x5BFE;&#x5FDC;)
+	 * - &#x5916;&#x90E8;&#x30C4;&#x30FC;&#x30EB; `7-Zip` &#x304C;&#x30A4;&#x30F3;&#x30B9;&#x30C8;&#x30FC;&#x30EB;&#xFF0F;&#x8A2D;&#x5B9A;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x305D;&#x308C;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x5727;&#x7E2E;&#x3059;&#x308B;
+	 * 
+	 * @param {SFile|string|SFile[]|string[]} input_file &#x5727;&#x7E2E;&#x3057;&#x305F;&#x3044;&#x30D5;&#x30A1;&#x30A4;&#x30EB;
+	 * @param {SFile|string} output_file &#x5727;&#x7E2E;&#x5F8C;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;
+	 * @returns {boolean} result
+	 */
+	static compress(input_file, output_file) {
+		const compress_file = new SFile(output_file);
+		// &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x62E1;&#x5F35;&#x5B50;&#x3092;&#x8ABF;&#x3079;&#x308B;
+		let comp_type = null;
+		if(compress_file.getName().toLowerCase().endsWith(&quot;.tar.gz&quot;)) {
+			comp_type = &quot;targz&quot;
+		}
+		else {
+			comp_type = compress_file.getExtensionName().toLowerCase();
+		}
+		// &#x5229;&#x7528;&#x3059;&#x308B;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x9078;&#x629E;&#x3059;&#x308B;
+		const tool_path = SFile.getCompressTool();
+		// &#x5727;&#x7E2E;&#x3057;&#x305F;&#x3044;&#x5BFE;&#x8C61;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x4E00;&#x89A7;&#x3092;&#x4F5C;&#x6210;
+		const file_list_buf = Array.isArray(input_file) ? input_file : [input_file];
+		/**
+		 * @type {SFile[]}
+		 */
+		let file_list = [];
+		// &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x30C1;&#x30A7;&#x30C3;&#x30AF;
+		for(let i = 0;i &lt; file_list_buf.length; i++) {
+			file_list[i] = new SFile(file_list_buf[i]);
+			if(!(file_list[i].exists())) {
+				return false;
+			}
+		}
+		// &#x5165;&#x529B;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x6570;&#x304C;1&#x3064;&#x3067;&#x62E1;&#x5F35;&#x5B50;&#x304C;tar&#x306E;&#x5834;&#x5408;
+		if(file_list.length === 1 &amp;&amp; file_list[0].getExtensionName().toLowerCase() === &quot;tar&quot;) {
+			comp_type = compress_file.getExtensionName().toLowerCase();
+		}
+		if(tool_path === null) {
+			if(comp_type === &quot;zip&quot;) {
+				const shell = new ActiveXObject(&quot;Shell.Application&quot;);
+				const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
+				// ZIP&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4F5C;&#x6210;
+				compress_file.setBinaryFile([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				const zip = shell.NameSpace(compress_file.getAbsolutePath());
+				// 1&#x3064;&#x305A;&#x3064;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x5165;&#x308C;&#x3066;&#x3044;&#x304F;
+				for(let i = 0; i &lt; file_list.length; i++) {
+					const name = file_list[i].getAbsolutePath();
+					zip.CopyHere(name, 4);
+					// &#x30B3;&#x30D4;&#x30FC;&#x304C;&#x7D42;&#x308F;&#x308B;&#x307E;&#x3067; wait
+					while (true) {
+						System.sleep(0.1);
+						try {
+							const ForAppending = 8;
+							fso.OpenTextFile(compress_file.getAbsolutePath(), ForAppending).Close();
+							break;
+						} catch (e) {
+						}
+					}
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			let temp_folder = null;
+			// targz&#x306E;&#x5834;&#x5408;&#x306F;tar&#x3060;&#x3051;&#x4F5C;&#x6210;&#x3059;&#x308B;
+			if(comp_type === &quot;targz&quot;) {
+				temp_folder = SFile.createTempFile();
+				temp_folder.mkdirs();
+				const name = compress_file.getName();
+				const tar_file = temp_folder + &quot;\\&quot; + name.substr(0, name.length - &quot;.tar.gz&quot;.length ) + &quot;.tar&quot;;
+				for(let i = 0; i &lt; file_list.length; i++) {
+					const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; a \&quot;&quot; + tar_file + &quot;\&quot; \&quot;&quot; + file_list[i] + &quot;\&quot;&quot;);
+					if(result.exit_code !== 0) {
+						temp_folder.remove();
+						return false;
+					}
+				}
+				file_list =  [ new SFile(tar_file) ];
+			}
+			// &#x4E0A;&#x66F8;&#x304D;&#x4FDD;&#x5B58;
+			compress_file.remove(true);
+			for(let i = 0; i &lt; file_list.length; i++) {
+				const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; a \&quot;&quot; + compress_file + &quot;\&quot; \&quot;&quot; + file_list[i] + &quot;\&quot;&quot;);
+				if(result.exit_code !== 0) {
+					if(temp_folder) {
+						temp_folder.remove();
+					}
+					return false;
+				}
+			}
+			// targz &#x306E;&#x5834;&#x5408;&#x306F;&#x3001;&#x4E00;&#x6642;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x524A;&#x9664;
+			if(temp_folder) {
+				temp_folder.remove();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * &#x5C55;&#x958B;&#x3059;&#x308B;
+	 * - Windows&#x6A19;&#x6E96;&#x306E;&#x6A5F;&#x80FD;&#x3092;&#x4F7F;&#x7528;&#x3057;&#x3066;&#x5C55;&#x958B;&#x3059;&#x308B;( `zip` &#x306E;&#x307F;&#x5BFE;&#x5FDC;)
+	 * - &#x5916;&#x90E8;&#x30C4;&#x30FC;&#x30EB; `7-Zip` &#x304C;&#x30A4;&#x30F3;&#x30B9;&#x30C8;&#x30FC;&#x30EB;&#xFF0F;&#x8A2D;&#x5B9A;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x305D;&#x308C;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066;&#x5C55;&#x958B;&#x3059;&#x308B;
+	 * 
+	 * @param {SFile|string} input_file &#x5C55;&#x958B;&#x3057;&#x305F;&#x3044;&#x30D5;&#x30A1;&#x30A4;&#x30EB;
+	 * @param {SFile|string} output_file &#x5C55;&#x958B;&#x5148;&#x306E;&#x30D5;&#x30A9;&#x30EB;&#x30C0;
+	 * @returns {boolean} result
+	 */
+	static extract(input_file, output_file) {
+		let extract_file = new SFile(input_file);
+		const extract_dir = new SFile(output_file);
+		if(!extract_file.isFile() || !extract_dir.mkdirs()) {
+			return false;
+		}
+		// &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x62E1;&#x5F35;&#x5B50;&#x3092;&#x8ABF;&#x3079;&#x308B;
+		let comp_type;
+		if(extract_file.getName().toLowerCase().endsWith(&quot;.tar.gz&quot;)) {
+			comp_type = &quot;targz&quot;
+		}
+		else {
+			comp_type = extract_file.getExtensionName().toLowerCase();
+		}
+		// &#x5229;&#x7528;&#x3059;&#x308B;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x9078;&#x629E;&#x3059;&#x308B;
+		const tool_path = SFile.getCompressTool();
+		if(tool_path === null) {
+			if(comp_type === &quot;zip&quot;) {
+				const shell = new ActiveXObject(&quot;Shell.Application&quot;);
+				const FOF_SILENT = 0x4;
+				const FOF_NOCONFIRMATION = 0x10;
+				shell.NameSpace(extract_dir.getAbsolutePath()).CopyHere(
+					shell.NameSpace(extract_file.getAbsolutePath()).Items(),
+					FOF_SILENT | FOF_NOCONFIRMATION
+				);
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			let temp_folder = null;
+			// targz&#x306E;&#x5834;&#x5408;&#x306F;gz&#x306E;&#x90E8;&#x5206;&#x3092;&#x5148;&#x306B;&#x56DE;&#x7B54;&#x3059;&#x308B;
+			if(comp_type === &quot;targz&quot;) {
+				temp_folder = SFile.createTempFile();
+				temp_folder.mkdirs();
+				const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + temp_folder + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;);
+				if(result.exit_code !== 0) {
+					return false;
+				}
+				// &#x4E2D;&#x8EAB;&#x306F;1&#x3064;&#x306E;tar&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x307F;&#x3057;&#x304B;&#x60F3;&#x5B9A;&#x3057;&#x3066;&#x3044;&#x306A;&#x3044;
+				let allfile = temp_folder.getAllFiles();
+				if(allfile.length !== 1) {
+					temp_folder.remove();
+					return false;
+				}
+				extract_file = allfile[0];
+			}
+			const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;);
+			if(result.exit_code !== 0) {
+				if(temp_folder) {
+					temp_folder.remove();
+				}
+				return false;
+			}
+			if(temp_folder) {
+				temp_folder.remove();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * &#x5727;&#x7E2E;&#xFF0F;&#x5C55;&#x958B;&#x7528;&#x306E;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x8A2D;&#x5B9A;&#x3059;&#x308B;
+	 * - &#x3053;&#x306E;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066; `compress`, `extract` &#x304C;&#x5B9F;&#x884C;&#x3055;&#x308C;&#x307E;&#x3059;
+	 * - &#x672A;&#x8A2D;&#x5B9A;/&#x672A;&#x30A4;&#x30F3;&#x30B9;&#x30C8;&#x30FC;&#x30EB;&#x306E;&#x5834;&#x5408;&#x306F;&#x3001;Windows&#x6A19;&#x6E96;&#x306E;&#x6A5F;&#x80FD;&#x306E;&#x307F;&#x3092;&#x5229;&#x7528;&#x3057;&#x3001;`zip`&#x306E;&#x307F;&#x5BFE;&#x5FDC;&#x3057;&#x307E;&#x3059;
+	 * - `7-zip` &#x306E;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E9;&#x30A4;&#x30F3;&#x7248; (`7za.exe`)&#x306E;&#x307F;&#x5BFE;&#x5FDC;
+	 * @param {SFile|string} tool_path &#x30C4;&#x30FC;&#x30EB;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x30D1;&#x30B9;
+	 * @returns {boolean} result
+	 */
+	 static setCompressTool(tool_path) {
+		const file = new SFile(tool_path);
+		if(file.isFile() &amp;&amp; /7za\.exe/i.test(file.getName())) {
+			SFile.COMPRESS_TOOL = file;
+			return true;
+		}
+		return false;
+	 }
+
+	/**
+	 * &#x5727;&#x7E2E;&#xFF0F;&#x5C55;&#x958B;&#x7528;&#x306E;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * - &#x3053;&#x306E;&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x5229;&#x7528;&#x3057;&#x3066; `compress`, `extract` &#x304C;&#x5B9F;&#x884C;&#x3055;&#x308C;&#x307E;&#x3059;
+	 * - &#x672A;&#x8A2D;&#x5B9A;/&#x672A;&#x30A4;&#x30F3;&#x30B9;&#x30C8;&#x30FC;&#x30EB;&#x306E;&#x5834;&#x5408;&#x306F;&#x3001;Windows&#x6A19;&#x6E96;&#x306E;&#x6A5F;&#x80FD;&#x306E;&#x307F;&#x3092;&#x5229;&#x7528;&#x3057;&#x3001;`zip`&#x306E;&#x307F;&#x5BFE;&#x5FDC;&#x3057;&#x307E;&#x3059;
+	 * - &#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; `null` &#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
+	 * @returns {SFile|null} result
+	 */
+	 static getCompressTool() {
+		if(SFile.COMPRESS_TOOL !== null) {
+			return SFile.COMPRESS_TOOL;
+		}
+		const pgfile1 = new SFile(System.getEnvironmentString(&quot;ProgramFiles&quot;) + &quot;\\7-Zip\\7z.exe&quot;);
+		if(pgfile1.isFile()) {
+			return pgfile1;
+		}
+		const pgfile2 = new SFile(System.getEnvironmentString(&quot;ProgramFiles(x86)&quot;) + &quot;\\7-Zip\\7z.exe&quot;);
+		if(pgfile2.isFile()) {
+			return pgfile2;
+		}
+		return null;
+	 }
+
 }
+
+/**
+ * &#x5727;&#x7E2E;&#x306B;&#x4F7F;&#x7528;&#x3059;&#x308B;&#x30C4;&#x30FC;&#x30EB;
+ * @type {SFile}
+ * @private
+ */
+// @ts-ignore
+SFile.COMPRESS_TOOL = null;
+
 </code></pre>
 
 </div>

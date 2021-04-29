@@ -312,6 +312,18 @@ export default class System {
 	}
 	
 	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x74B0;&#x5883;&#x5909;&#x6570;&#x306E;&#x5024;&#x3092;&#x53D6;&#x5F97;&#x3059;&#x308B;
+	 * @param {string} env_name &#x74B0;&#x5883;&#x5909;&#x6570;&#xFF08;%&#x306F;&#x7701;&#x7565;&#x53EF;&#x80FD;&#xFF09;
+	 * @returns {string}
+	 */
+	 static getEnvironmentString(env_name) {
+		const shell = new ActiveXObject(&quot;WScript.Shell&quot;);
+		const env_param = &quot;%&quot; + env_name.replace(/%/g, &quot;&quot;) + &quot;%&quot;;
+		const env_value = shell.ExpandEnvironmentStrings(env_param);
+		return env_param === env_value ? &quot;&quot; : env_value;
+	}
+
+	/**
 	 * &#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3078;&#x306E;&#x5F15;&#x6570;&#x3092;&#x53D6;&#x5F97;
 	 * @returns {string[]}
 	 */
@@ -322,7 +334,7 @@ export default class System {
 		}
 		return args;
 	}
-	
+
 	/**
 	 * &#x30AB;&#x30EC;&#x30F3;&#x30C8;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x8A2D;&#x5B9A;
 	 * @param {string} filename

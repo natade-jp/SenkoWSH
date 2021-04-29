@@ -549,14 +549,14 @@ declare class ExtendsArray {
 declare class ExtendsObject {
     /**
      * 指定したキーが含まれるか
-     * @param {Object} obj
+     * @param {any} obj
      * @param {any} key
      * @returns {boolean}
      */
     static containsKey(obj: any, key: any): boolean;
     /**
      * 指定した値が含まれるか
-     * @param {Object} obj
+     * @param {any} obj
      * @param {any} value
      * @returns {boolean}
      */
@@ -575,13 +575,13 @@ declare class ExtendsObject {
     static isEmpty(obj: any): boolean;
     /**
      * 文字列化
-     * @param {Object} obj
+     * @param {any} obj
      * @returns {string}
      */
     static toString(obj: any): string;
     /**
      * 指定したキー、その値を登録
-     * @param {Object} obj
+     * @param {any} obj
      * @param {string} key
      * @param {any} value
      * @returns {null|any}
@@ -589,7 +589,7 @@ declare class ExtendsObject {
     static put(obj: any, key: string, value: any): null | any;
     /**
      * 指定したキー、その値を全て登録
-     * @param {Object} obj
+     * @param {any} obj
      * @param {Object<string, any>} hashmap
      */
     static putAll(obj: any, hashmap: {
@@ -597,7 +597,7 @@ declare class ExtendsObject {
     }): void;
     /**
      * 指定したキーの値を削除
-     * @param {Object} obj
+     * @param {any} obj
      * @param {string} key
      * @returns {null|any}
      */
@@ -1270,16 +1270,6 @@ declare class Robot {
 }
 
 /**
- * The script is part of SenkoWSH.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-
-/**
  * 初期化
  * @param {string|SFile} pathname ファイル名／フォルダ名／URLアドレス
  */
@@ -1326,6 +1316,7 @@ declare class SFile {
     getName(): string;
     /**
      * 親フォルダの絶対パス
+     * URLなら最後にスラッシュをつけて返す
      * @returns {string}
      */
     getParent(): string;
@@ -1473,6 +1464,12 @@ declare class SFile {
      */
     setBinaryFile(array_: number[]): boolean;
     /**
+     * ファイルのハッシュ値を計算する
+     * @param {string} [algorithm="MD5"] - アルゴリズム
+     * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は"0"
+     */
+    getHashCode(algorithm?: string): string;
+    /**
      * XMLHttpRequestを作成
      * @returns {XMLHttpRequest}
      */
@@ -1510,6 +1507,44 @@ declare class SFile {
      * @returns {SFile|null}
      */
     searchFile(file_obj: string | SFile | ((...params: any[]) => any)): SFile | null;
+    /**
+     * 圧縮する
+     * - 圧縮後のファイル名の拡張子で圧縮したい形式を指定する
+     * - Windows標準の機能を使用して圧縮する( `zip` のみ対応)
+     * - 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して圧縮する
+     *
+     * @param {SFile|string|SFile[]|string[]} input_file 圧縮したいファイル
+     * @param {SFile|string} output_file 圧縮後のファイル名
+     * @returns {boolean} result
+     */
+    static compress(input_file: SFile | string | SFile[] | string[], output_file: SFile | string): boolean;
+    /**
+     * 展開する
+     * - Windows標準の機能を使用して展開する( `zip` のみ対応)
+     * - 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して展開する
+     *
+     * @param {SFile|string} input_file 展開したいファイル
+     * @param {SFile|string} output_file 展開先のフォルダ
+     * @returns {boolean} result
+     */
+    static extract(input_file: SFile | string, output_file: SFile | string): boolean;
+    /**
+     * 圧縮／展開用のツールを設定する
+     * - このツールを利用して `compress`, `extract` が実行されます
+     * - 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します
+     * - `7-zip` のコマンドライン版 (`7za.exe`)のみ対応
+     * @param {SFile|string} tool_path ツールのファイルパス
+     * @returns {boolean} result
+     */
+    static setCompressTool(tool_path: SFile | string): boolean;
+    /**
+     * 圧縮／展開用のツールを取得する
+     * - このツールを利用して `compress`, `extract` が実行されます
+     * - 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します
+     * - 取得できない場合は `null` を返します
+     * @returns {SFile|null} result
+     */
+    static getCompressTool(): SFile | null;
 }
 
 /**
@@ -1602,6 +1637,12 @@ declare class System {
      * GUIで起動しなおす
      */
     static executeOnWScript(): void;
+    /**
+     * 指定した環境変数の値を取得する
+     * @param {string} env_name 環境変数（%は省略可能）
+     * @returns {string}
+     */
+    static getEnvironmentString(env_name: string): string;
     /**
      * スクリプトファイルへの引数を取得
      * @returns {string[]}

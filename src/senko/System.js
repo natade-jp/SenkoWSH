@@ -251,6 +251,18 @@ export default class System {
 	}
 	
 	/**
+	 * 指定した環境変数の値を取得する
+	 * @param {string} env_name 環境変数（%は省略可能）
+	 * @returns {string}
+	 */
+	 static getEnvironmentString(env_name) {
+		const shell = new ActiveXObject("WScript.Shell");
+		const env_param = "%" + env_name.replace(/%/g, "") + "%";
+		const env_value = shell.ExpandEnvironmentStrings(env_param);
+		return env_param === env_value ? "" : env_value;
+	}
+
+	/**
 	 * スクリプトファイルへの引数を取得
 	 * @returns {string[]}
 	 */
@@ -261,7 +273,7 @@ export default class System {
 		}
 		return args;
 	}
-	
+
 	/**
 	 * カレントディレクトリを設定
 	 * @param {string} filename

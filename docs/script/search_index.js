@@ -894,6 +894,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile#gethashcode",
+    "class/src/senko/SFile.js~SFile.html#instance-method-getHashCode",
+    "src/senko/SFile.js~SFile#getHashCode",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#getname",
     "class/src/senko/SFile.js~SFile.html#instance-method-getName",
     "src/senko/SFile.js~SFile#getName",
@@ -1074,6 +1080,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile.compress",
+    "class/src/senko/SFile.js~SFile.html#static-method-compress",
+    "src/senko/SFile.js~SFile.compress",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile.createtempfile",
     "class/src/senko/SFile.js~SFile.html#static-method-createTempFile",
     "src/senko/SFile.js~SFile.createTempFile",
@@ -1086,9 +1098,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile.extract",
+    "class/src/senko/SFile.js~SFile.html#static-method-extract",
+    "src/senko/SFile.js~SFile.extract",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile.getcompresstool",
+    "class/src/senko/SFile.js~SFile.html#static-method-getCompressTool",
+    "src/senko/SFile.js~SFile.getCompressTool",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile.getcurrentdirectory",
     "class/src/senko/SFile.js~SFile.html#static-method-getCurrentDirectory",
     "src/senko/SFile.js~SFile.getCurrentDirectory",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile.setcompresstool",
+    "class/src/senko/SFile.js~SFile.html#static-method-setCompressTool",
+    "src/senko/SFile.js~SFile.setCompressTool",
     "method"
   ],
   [
@@ -1167,6 +1197,12 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.getcurrentdirectory",
     "class/src/senko/System.js~System.html#static-method-getCurrentDirectory",
     "src/senko/System.js~System.getCurrentDirectory",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.getenvironmentstring",
+    "class/src/senko/System.js~System.html#static-method-getEnvironmentString",
+    "src/senko/System.js~System.getEnvironmentString",
     "method"
   ],
   [

@@ -1202,4 +1202,225 @@ export default class SFile {
 		return target_file;
 	}
 
+	/**
+	 * 圧縮する
+	 * - 圧縮後のファイル名の拡張子で圧縮したい形式を指定する
+	 * - Windows標準の機能を使用して圧縮する( `zip` のみ対応)
+	 * - 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して圧縮する
+	 * 
+	 * @param {SFile|string|SFile[]|string[]} input_file 圧縮したいファイル
+	 * @param {SFile|string} output_file 圧縮後のファイル名
+	 * @returns {boolean} result
+	 */
+	static compress(input_file, output_file) {
+		const compress_file = new SFile(output_file);
+		// ファイルの拡張子を調べる
+		let comp_type = null;
+		if(compress_file.getName().toLowerCase().endsWith(".tar.gz")) {
+			comp_type = "targz"
+		}
+		else {
+			comp_type = compress_file.getExtensionName().toLowerCase();
+		}
+		// 利用するツールを選択する
+		const tool_path = SFile.getCompressTool();
+		// 圧縮したい対象のファイル一覧を作成
+		const file_list_buf = Array.isArray(input_file) ? input_file : [input_file];
+		/**
+		 * @type {SFile[]}
+		 */
+		let file_list = [];
+		// ファイルチェック
+		for(let i = 0;i < file_list_buf.length; i++) {
+			file_list[i] = new SFile(file_list_buf[i]);
+			if(!(file_list[i].exists())) {
+				return false;
+			}
+		}
+		// 入力ファイル数が1つで拡張子がtarの場合
+		if(file_list.length === 1 && file_list[0].getExtensionName().toLowerCase() === "tar") {
+			comp_type = compress_file.getExtensionName().toLowerCase();
+		}
+		if(tool_path === null) {
+			if(comp_type === "zip") {
+				const shell = new ActiveXObject("Shell.Application");
+				const fso = new ActiveXObject("Scripting.FileSystemObject");
+				// ZIPファイルを作成
+				compress_file.setBinaryFile([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				const zip = shell.NameSpace(compress_file.getAbsolutePath());
+				// 1つずつデータを入れていく
+				for(let i = 0; i < file_list.length; i++) {
+					const name = file_list[i].getAbsolutePath();
+					zip.CopyHere(name, 4);
+					// コピーが終わるまで wait
+					while (true) {
+						System.sleep(0.1);
+						try {
+							const ForAppending = 8;
+							fso.OpenTextFile(compress_file.getAbsolutePath(), ForAppending).Close();
+							break;
+						} catch (e) {
+						}
+					}
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			let temp_folder = null;
+			// targzの場合はtarだけ作成する
+			if(comp_type === "targz") {
+				temp_folder = SFile.createTempFile();
+				temp_folder.mkdirs();
+				const name = compress_file.getName();
+				const tar_file = temp_folder + "\\" + name.substr(0, name.length - ".tar.gz".length ) + ".tar";
+				for(let i = 0; i < file_list.length; i++) {
+					const result = System.exec("\"" + tool_path + "\" a \"" + tar_file + "\" \"" + file_list[i] + "\"");
+					if(result.exit_code !== 0) {
+						temp_folder.remove();
+						return false;
+					}
+				}
+				file_list =  [ new SFile(tar_file) ];
+			}
+			// 上書き保存
+			compress_file.remove(true);
+			for(let i = 0; i < file_list.length; i++) {
+				const result = System.exec("\"" + tool_path + "\" a \"" + compress_file + "\" \"" + file_list[i] + "\"");
+				if(result.exit_code !== 0) {
+					if(temp_folder) {
+						temp_folder.remove();
+					}
+					return false;
+				}
+			}
+			// targz の場合は、一時フォルダを削除
+			if(temp_folder) {
+				temp_folder.remove();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 展開する
+	 * - Windows標準の機能を使用して展開する( `zip` のみ対応)
+	 * - 外部ツール `7-Zip` がインストール／設定されている場合は、それを利用して展開する
+	 * 
+	 * @param {SFile|string} input_file 展開したいファイル
+	 * @param {SFile|string} output_file 展開先のフォルダ
+	 * @returns {boolean} result
+	 */
+	static extract(input_file, output_file) {
+		let extract_file = new SFile(input_file);
+		const extract_dir = new SFile(output_file);
+		if(!extract_file.isFile() || !extract_dir.mkdirs()) {
+			return false;
+		}
+		// ファイルの拡張子を調べる
+		let comp_type;
+		if(extract_file.getName().toLowerCase().endsWith(".tar.gz")) {
+			comp_type = "targz"
+		}
+		else {
+			comp_type = extract_file.getExtensionName().toLowerCase();
+		}
+		// 利用するツールを選択する
+		const tool_path = SFile.getCompressTool();
+		if(tool_path === null) {
+			if(comp_type === "zip") {
+				const shell = new ActiveXObject("Shell.Application");
+				const FOF_SILENT = 0x4;
+				const FOF_NOCONFIRMATION = 0x10;
+				shell.NameSpace(extract_dir.getAbsolutePath()).CopyHere(
+					shell.NameSpace(extract_file.getAbsolutePath()).Items(),
+					FOF_SILENT | FOF_NOCONFIRMATION
+				);
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			let temp_folder = null;
+			// targzの場合はgzの部分を先に回答する
+			if(comp_type === "targz") {
+				temp_folder = SFile.createTempFile();
+				temp_folder.mkdirs();
+				const result = System.exec("\"" + tool_path + "\" x -y -o\"" + temp_folder + "\\\" \"" + extract_file + "\"");
+				if(result.exit_code !== 0) {
+					return false;
+				}
+				// 中身は1つのtarファイルのみしか想定していない
+				let allfile = temp_folder.getAllFiles();
+				if(allfile.length !== 1) {
+					temp_folder.remove();
+					return false;
+				}
+				extract_file = allfile[0];
+			}
+			const result = System.exec("\"" + tool_path + "\" x -y -o\"" + extract_dir + "\\\" \"" + extract_file + "\"");
+			if(result.exit_code !== 0) {
+				if(temp_folder) {
+					temp_folder.remove();
+				}
+				return false;
+			}
+			if(temp_folder) {
+				temp_folder.remove();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 圧縮／展開用のツールを設定する
+	 * - このツールを利用して `compress`, `extract` が実行されます
+	 * - 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します
+	 * - `7-zip` のコマンドライン版 (`7za.exe`)のみ対応
+	 * @param {SFile|string} tool_path ツールのファイルパス
+	 * @returns {boolean} result
+	 */
+	 static setCompressTool(tool_path) {
+		const file = new SFile(tool_path);
+		if(file.isFile() && /7za\.exe/i.test(file.getName())) {
+			SFile.COMPRESS_TOOL = file;
+			return true;
+		}
+		return false;
+	 }
+
+	/**
+	 * 圧縮／展開用のツールを取得する
+	 * - このツールを利用して `compress`, `extract` が実行されます
+	 * - 未設定/未インストールの場合は、Windows標準の機能のみを利用し、`zip`のみ対応します
+	 * - 取得できない場合は `null` を返します
+	 * @returns {SFile|null} result
+	 */
+	 static getCompressTool() {
+		if(SFile.COMPRESS_TOOL !== null) {
+			return SFile.COMPRESS_TOOL;
+		}
+		const pgfile1 = new SFile(System.getEnvironmentString("ProgramFiles") + "\\7-Zip\\7z.exe");
+		if(pgfile1.isFile()) {
+			return pgfile1;
+		}
+		const pgfile2 = new SFile(System.getEnvironmentString("ProgramFiles(x86)") + "\\7-Zip\\7z.exe");
+		if(pgfile2.isFile()) {
+			return pgfile2;
+		}
+		return null;
+	 }
+
 }
+
+/**
+ * 圧縮に使用するツール
+ * @type {SFile}
+ * @private
+ */
+// @ts-ignore
+SFile.COMPRESS_TOOL = null;
+

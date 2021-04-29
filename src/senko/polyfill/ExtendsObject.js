@@ -17,7 +17,7 @@ export default class ExtendsObject {
 
 	/**
 	 * 指定したキーが含まれるか
-	 * @param {Object} obj
+	 * @param {any} obj
 	 * @param {any} key 
 	 * @returns {boolean}
 	 */
@@ -27,7 +27,7 @@ export default class ExtendsObject {
 	
 	/**
 	 * 指定した値が含まれるか
-	 * @param {Object} obj
+	 * @param {any} obj
 	 * @param {any} value 
 	 * @returns {boolean}
 	 */
@@ -64,7 +64,7 @@ export default class ExtendsObject {
 	
 	/**
 	 * 文字列化
-	 * @param {Object} obj
+	 * @param {any} obj
 	 * @returns {string}
 	 */
 	static toString(obj) {
@@ -83,7 +83,7 @@ export default class ExtendsObject {
 
 	/**
 	 * 指定したキー、その値を登録
-	 * @param {Object} obj
+	 * @param {any} obj
 	 * @param {string} key 
 	 * @param {any} value 
 	 * @returns {null|any}
@@ -102,7 +102,7 @@ export default class ExtendsObject {
 
 	/**
 	 * 指定したキー、その値を全て登録
-	 * @param {Object} obj
+	 * @param {any} obj
 	 * @param {Object<string, any>} hashmap 
 	 */
 	static putAll(obj, hashmap) {
@@ -115,7 +115,7 @@ export default class ExtendsObject {
 	
 	/**
 	 * 指定したキーの値を削除
-	 * @param {Object} obj
+	 * @param {any} obj
 	 * @param {string} key 
 	 * @returns {null|any}
 	 */
