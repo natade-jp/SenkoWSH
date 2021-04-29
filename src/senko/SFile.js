@@ -191,11 +191,30 @@ export default class SFile {
 
 	/**
 	 * 親フォルダの絶対パス
-	 * @returns {string}
+	 * URLなら最後にスラッシュをつけて返す
+	 * @returns {string} 
 	 */
 	getParent() {
-		const x = this.getAbsolutePath().match(/.*[/\\]/)[0];
-		return x.substring(0 ,x.length - 1);
+		if(this.is_http) {
+			let path = this.getAbsolutePath();
+			// 最後がスラッシュの場合でホスト名のみの場合は、これ以上辿れない。
+			if(/^http[^/]+\/\/[^/]+\/$/.test(path)) {
+				return path
+			}
+			// 最後がスラッシュの場合はスラッシュを除去
+			if(/\/$/.test(path)) {
+				path = path.substring(0 ,path.length - 1);
+			}
+			// フォルダ名までを削る
+			return path.match(/^.*\//)[0];
+		}
+		else {
+			// フォルダ名までのパスを取得する
+			let path = this.getAbsolutePath().match(/.*[/\\]/)[0];
+			// フォルダを削る
+			path = path.substring(0 ,path.length - 1);
+			return path;
+		}
 	}
 
 	/**
@@ -526,12 +545,15 @@ export default class SFile {
 			let i;
 			for(i = 0; i < namelist.length; i++) {
 				if((namelist[i] === "") || (namelist[i] === ".")) {
+					// 階層は移動しない
 					continue;
 				}
 				if(namelist[i] === "..") {
+					// 上の階層へ移動する
 					name = name.substring(0 ,name.length - 1).match(/.*\//)[0];
 					continue;
 				}
+				// フォルダ名 + "/"
 				name += namelist[i];
 				if(i !== namelist.length - 1) {
 					name += "/";
@@ -540,7 +562,14 @@ export default class SFile {
 			return name;
 		}
 		else {
-			return this.fso.GetAbsolutePathName(this.pathname);
+			// `*:` という2文字のパスで `C` 以外を設定した場合に正しいパスを設定できない不具合がある
+			// 従って、防止用に、最後にコロンが付いている場合は"C:"とかなので"C:/"としてからパスを変換する
+			if(/:$/.test(this.pathname)) {
+				return this.fso.GetAbsolutePathName(this.pathname + "\\");
+			}
+			else {
+				return this.fso.GetAbsolutePathName(this.pathname);
+			}
 		}
 	}
 

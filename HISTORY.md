@@ -3,6 +3,8 @@
 ## SenkoWSH v3.7.0b
 ### 更新点
 - `SFile` にハッシュ値を取得する `getHashCode` を追加
+- `SFile` に `*:` という2文字のパスで `C` 以外を設定した場合に正しいパスを設定できない不具合を修正
+- `SFile` の `getParent`, `getParentFile` でURLを指定した場合に、最後に必ず`\`を付けて返すように動作変更
 
 ## SenkoWSH v3.6.0
 ### 更新点
