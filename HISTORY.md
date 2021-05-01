@@ -7,6 +7,7 @@
 - `System.getEnvironmentString()` の第一引数が任意の設定になっていなかったのを修正
 - `console.log` は、`cscript` でのみ動作するように変更
 - `WindowsAPI` を使用している個所にコメントを追加
+- `String.fromCodePoint()` が正しく動作していなかった問題を修正
 
 ## SenkoWSH v3.7.0
 ### 更新点

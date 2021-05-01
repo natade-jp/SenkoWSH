@@ -46,8 +46,9 @@ export default class ExtendsString {
 		let out = true;
 		const len = this.length;
 		for(let i = 0; i < len; i = ExtendsString.offsetByCodePoints(text, i, 1)) {
-			const codepoint = ExtendsString.codePointAt(text, i);
-			const str = ExtendsString.fromCodePoint(codepoint);
+			// 要 Polyfill.js
+			const codepoint = text.codePointAt(i);
+			const str = String.fromCodePoint(codepoint);
 			if(func.call(func, i, str, codepoint) === false) {
 				out = false;
 				break;
@@ -181,70 +182,6 @@ export default class ExtendsString {
 			}
 		}
 		throw "error offsetByCodePoints";
-	}
-
-	/**
-	 * コードポイントの数値データをUTF16の配列に変換
-	 * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
-	 * @returns {Array<number>} 変換後のテキスト
-	 * @private
-	 */
-	static toUTF16ArrayfromCodePoint() {
-		/**
-		 * @type {Array<number>}
-		 * @private
-		 */
-		const utf16_array = [];
-		/**
-		 * @type {Array<number>}
-		 * @private
-		 */
-		let codepoint_array = [];
-		if(arguments[0].length) {
-			codepoint_array = arguments[0];
-		}
-		else {
-			for(let i = 0;i < arguments.length;i++) {
-				codepoint_array[i] = arguments[i];
-			}
-		}
-		for(let i = 0;i < codepoint_array.length;i++) {
-			const codepoint = codepoint_array[i];
-			if(0x10000 <= codepoint) {
-				const high = (( codepoint - 0x10000 ) >> 10) + 0xD800;
-				const low  = (codepoint & 0x3FF) + 0xDC00;
-				utf16_array.push(high);
-				utf16_array.push(low);
-			}
-			else {
-				utf16_array.push(codepoint);
-			}
-		}
-		return utf16_array;
-	}
-
-	/**
-	 * コードポイントの数値データを文字列に変換
-	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-	 * @returns {string} 変換後のテキスト
-	 */
-	static fromCodePoint(codepoint) {
-		let utf16_array = null;
-		if(codepoint instanceof Array) {
-			utf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint);
-		}
-		else {
-			const codepoint_array = [];
-			for(let i = 0;i < arguments.length;i++) {
-				codepoint_array[i] = arguments[i];
-			}
-			utf16_array = ExtendsString.toUTF16ArrayfromCodePoint(codepoint_array);
-		}
-		const text = [];
-		for(let i = 0;i < utf16_array.length;i++) {
-			text[text.length] = String.fromCharCode(utf16_array[i]);
-		}
-		return text.join("");
 	}
 
 	/**
