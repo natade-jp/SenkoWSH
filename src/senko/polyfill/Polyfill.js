@@ -13,6 +13,28 @@ import typeExtendsObject from "./ExtendsObject.js";
 import typeExtendsString from "./ExtendsString.js";
 
 /**
+ * グローバル空間
+ * 参考
+ *  JavaScript大域変数の存在確認
+ *  https://m-hiyama.hatenablog.com/entry/20071126/1196037633
+ * @private
+ */
+var global_var = ( function() { return this; } ).apply( null, [] );
+
+if(!("globalThis" in global_var)) {
+	// @ts-ignore
+	globalThis = global_var;
+}
+if(!("global" in globalThis)) {
+	// @ts-ignore
+	global = globalThis;
+}
+if(!("window" in globalThis)) {
+	// @ts-ignore
+	window = globalThis;
+}
+
+/**
  * @type {typeof typeExtendsArray}
  * @private
  */

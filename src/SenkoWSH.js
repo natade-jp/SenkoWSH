@@ -20,12 +20,11 @@ import typeStringComparator from "./mojijs/StringComparator.js";
 import typeSystem from "./senko/System.js";
 
 /**
- * 上書き防止用
- * @private
+ * SenkoWSH
  */
 // @ts-ignore
 // eslint-disable-next-line no-undef
-SenkoWSH = {
+const SenkoWSH = {
 	
 	/**
  	 * @type {typeof typeCSV}
@@ -74,89 +73,74 @@ SenkoWSH = {
 
 };
 
-/**
- * @type {typeof typeCSV}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-CSV = typeCSV;
+export default SenkoWSH;
 
-/**
- * @type {typeof typeDialog}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Dialog = typeDialog;
-
-/**
- * @type {typeof typeSFile}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-SFile = typeSFile;
-
-/**
- * @type {typeof typeRobot}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Robot = typeRobot;
-
-/**
- * @type {typeof typeFormat}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Format = typeFormat;
-
-/**
- * @type {typeof typeRandom}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Random = typeRandom;
-
-/**
- * @type {typeof typeJapanese}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Japanese = typeJapanese;
-
-/**
- * @type {typeof typeStringComparator}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-StringComparator = typeStringComparator;
-
-/**
- * @type {typeof typeSystem}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-System = typeSystem;
-
-/**
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-global-assign
-console = {
+if(!(typeSystem.isDefined("CSV"))) {
 	// @ts-ignore
-	log : function(text) {
-		// @ts-ignore
-		// eslint-disable-next-line no-undef
-		SenkoWSH.System.println(text);
+	// eslint-disable-next-line no-undef
+	CSV = typeCSV;
+}
+
+if(!(typeSystem.isDefined("Dialog"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Dialog = typeDialog;
+}
+
+if(!(typeSystem.isDefined("SFile"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	SFile = typeSFile;
+}
+
+if(!(typeSystem.isDefined("Robot"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Robot = typeRobot;
+}
+
+if(!(typeSystem.isDefined("Format"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Format = typeFormat;
+}
+
+if(!(typeSystem.isDefined("Random"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Random = typeRandom;
+}
+
+if(!(typeSystem.isDefined("Japanese"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Japanese = typeJapanese;
+}
+
+if(!(typeSystem.isDefined("StringComparator"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	StringComparator = typeStringComparator;
+}
+
+if(!(typeSystem.isDefined("System"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	System = typeSystem;
+}
+
+if(!(typeSystem.isDefined("console"))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-global-assign
+	global.console = {}
+}
+
+if(console.log === undefined) {
+	// @ts-ignore
+	console.log = function(text) {
+		if((/cscript\.exe$/i.test(WSH.FullName))) {
+			typeSystem.println(text);
+		}
 	}
-};
+}
 

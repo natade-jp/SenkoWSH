@@ -1263,7 +1263,7 @@ declare class Robot {
      */
     static getPID(handle: number): number;
     /**
-     * 指定したプロセスIDを修了させる
+     * 指定したプロセスIDを終了させる
      * @param {number} pid
      */
     static terminateProcess(pid: number): void;
@@ -1624,15 +1624,21 @@ declare class System {
      */
     static exec(command: string): SystemExecResult;
     /**
+     * 指定した変数が定義されているか調べる
+     * @param {string} variable_name
+     * @returns {boolean}
+     */
+    static isDefined(variable_name: string): boolean;
+    /**
      * プログラムを終了させます。
      * @param {number} [exit_code=0]
      */
     static exit(exit_code?: number): void;
     /**
      * CUIで起動しなおす
-     * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
+     * @param {boolean} [is_use_chakra] - 高速なChakraエンジンを利用する（wsfが開けなくなる）
      */
-    static executeOnCScript(is_use_chakra: boolean): void;
+    static executeOnCScript(is_use_chakra?: boolean): void;
     /**
      * GUIで起動しなおす
      */
@@ -1669,6 +1675,8 @@ declare class System {
     static initializeCurrentDirectory(): void;
     /**
      * PowerShell を実行する
+     * - スレッドセーフモード、コマンドモードで実行します
+     *
      * @param {string} source
      * @returns {string}
      */
@@ -1677,11 +1685,11 @@ declare class System {
      * WindowsAPI を実行する
      *
      * 例
-     * - dll_name : user32.dll
-     * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
-     * - exec_text : $api::MessageBox(0, "テキスト", "キャプション", 0);
+     * - `dll_name` : `"user32.dll"`
+     * - `function_text` : `"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)""`
+     * - `exec_text` : `"$api::MessageBox(0, \"テキスト\", \"キャプション\", 0);"`
      * @param {string} dll_name - 利用するdll
-     * @param {string} function_text - 関数の定義データ($apiに代入されます。)
+     * @param {string} function_text - 関数の定義データ(`$api`に代入されます。)
      * @param {string} exec_text - 実行コマンド
      * @returns {string}
      */
@@ -1697,5 +1705,10 @@ declare class System {
      */
     static setClipBoardText(text: string): void;
 }
+
+/**
+ * SenkoWSH
+ */
+declare const SenkoWSH: any;
 
 

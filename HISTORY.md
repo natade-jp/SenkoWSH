@@ -1,8 +1,16 @@
 # History
 
+## SenkoWSH v3.8.0b
+### 更新点
+- グローバル空間を示す `globalThis`, `global`, `window` を追加
+- 指定した変数が定義されているかを調べる `System.isDefined()` を追加
+- `System.getEnvironmentString()` の第一引数が任意の設定になっていなかったのを修正
+- `console.log` は、`cscript` でのみ動作するように変更
+- `WindowsAPI` を使用している個所にコメントを追加
+
 ## SenkoWSH v3.7.0
 ### 更新点
-- `SFile` に圧縮と展開を行う `compress`, `extract` を追加
+- 圧縮と展開を行う `SFile.compress()`, `SFile.extract()` を追加
 - `SFile` にハッシュ値を取得する `getHashCode` を追加
 - `SFile` に `*:` という2文字のパスで `C` 以外を設定した場合に正しいパスを設定できない不具合を修正
 - `SFile` の `getParent`, `getParentFile` でURLを指定した場合に、最後に必ず`\`を付けて返すように動作変更

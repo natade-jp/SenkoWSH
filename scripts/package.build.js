@@ -5,10 +5,9 @@ const MojiJS = require("MojiJS");
 const package_info = JSON.parse(File.loadTextFile("./package.json"));
 
 /**
- * 
- * @param {string} filename 
+ * @returns {string} 
  */
-const addHeader = function() {
+const getHeader = function() {
 	const build_date = new Date();
 	const header = [];
 	header.push("/*!");
@@ -23,6 +22,13 @@ const addHeader = function() {
 	const header_string = header.join("\n");
 	return header_string;
 };
+
+/**
+ * @returns {string} 
+ */
+ const getFooter = function() {
+	return "";
+ };
 
 // tmpフォルダを削除
 if(File.isDirectory("./tmp")) {
@@ -48,7 +54,7 @@ for(let i = 0; i < list.length; i++) {
 //text_array.push("System.initializeCurrentDirectory();");
 
 // 結合したデータ
-const output = addHeader() + text_array.join("");
+const output = getHeader() + text_array.join("") + getFooter();
 
 // ファイルを作成する
 const output_data = MojiJS.encode(output.replace(/\n/g, "\r\n"), "UTF16-LE");

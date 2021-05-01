@@ -8,6 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Polyfill from "./polyfill/Polyfill.js";
 import Format from "./Format.js";
 
 /**
@@ -198,7 +199,16 @@ export default class System {
 			error : error
 		};
 	}
-
+	
+	/**
+	 * 指定した変数が定義されているか調べる
+	 * @param {string} variable_name
+	 * @returns {boolean}
+	 */
+	 static isDefined(variable_name) {
+		return variable_name in globalThis;
+	}
+	
 	/**
 	 * プログラムを終了させます。
 	 * @param {number} [exit_code=0] 
@@ -209,7 +219,7 @@ export default class System {
 	
 	/**
 	 * CUIで起動しなおす
-	 * @param {boolean} is_use_chakra - 高速なChakraエンジンを利用する（wsfが開けなくなる）
+	 * @param {boolean} [is_use_chakra] - 高速なChakraエンジンを利用する（wsfが開けなくなる）
 	 */
 	static executeOnCScript(is_use_chakra) {
 		const iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;
@@ -311,10 +321,13 @@ export default class System {
 
 	/**
 	 * PowerShell を実行する
+	 * - スレッドセーフモード、コマンドモードで実行します
+	 * 
 	 * @param {string} source
 	 * @returns {string}
 	 */
 	static PowerShell(source) {
+		// スレッドセーフモードでコマンドモードで実行する
 		const powershell_base = "powershell -sta -Command";
 		const command = (powershell_base + " " + source).replace(/([\\"])/g, "\\$1");
 		return System.exec(command).out.replace(/\r?\n$/, "");
@@ -324,11 +337,11 @@ export default class System {
 	 * WindowsAPI を実行する
 	 * 
 	 * 例
-	 * - dll_name : user32.dll
-	 * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
-	 * - exec_text : $api::MessageBox(0, "テキスト", "キャプション", 0);
+	 * - `dll_name` : `"user32.dll"`
+	 * - `function_text` : `"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)""`
+	 * - `exec_text` : `"$api::MessageBox(0, \"テキスト\", \"キャプション\", 0);"`
 	 * @param {string} dll_name - 利用するdll
-	 * @param {string} function_text - 関数の定義データ($apiに代入されます。)
+	 * @param {string} function_text - 関数の定義データ(`$api`に代入されます。)
 	 * @param {string} exec_text - 実行コマンド
 	 * @returns {string}
 	 */
@@ -339,6 +352,16 @@ export default class System {
 		// 	"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)",
 		// 	"$api::MessageBox(0, \"テキスト\", \"キャプション\", 0);"
 		// );
+		//
+
+		/*
+			PowerShell 2.0 の Add-Type を使用している
+			$api = Add-Type -Name "api" -MemberDefinition '
+				[DllImport("user32.dll")] public extern static int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType);
+			' -PassThru;
+			$api::MessageBox(0, \"テキスト\", \"キャプション\", 0);
+		*/
+
 		// ダブルクォーテーションだとエスケープが面倒なので、ここはシングルクォーテーションを使用する
 		// eslint-disable-next-line quotes
 		const api_base = `$api = Add-Type -Name "api" -MemberDefinition "[DllImport(""` + dll_name + `"")] public extern static ` + function_text + `;" -PassThru;`;
@@ -351,6 +374,10 @@ export default class System {
 	 * @returns {string}
 	 */
 	static getClipBoardText() {
+		/*
+			Add-Type -Assembly System.Windows.Forms;
+			[System.Windows.Forms.Clipboard]::GetText();
+		*/
 		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();";
 		return System.PowerShell(command);
 	}
@@ -360,9 +387,13 @@ export default class System {
 	 * @param {string} text
 	 */
 	static setClipBoardText(text) {
+		/*
+			Add-Type -Assembly System.Windows.Forms;
+			[System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);
+		*/
+		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);";
 		// PowerShell 5.0以降
 		// command = "Set-Clipboard \"これでもコピー可能\"";
-		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);";
 		System.PowerShell(command);
 	}
 
