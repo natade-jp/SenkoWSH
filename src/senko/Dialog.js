@@ -15,34 +15,34 @@ import SFile from "./SFile";
 /**
  * ポップアップ用のオプション
  * @typedef {Object} PopupOption
- * @property {number} [secondstowait=0] タイムアウト時間(0で無効)
+ * @property {number} [secondstowait=0] タイムアウト時間(`0`で無効)
  * @property {string} [caption=""] タイトルバー
- * @property {number} [type=0] Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3 など
+ * @property {number} [type=0] `Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3` など
  */
 
 /**
  * 「ファイルを開く」ダイアログ用のオプション
  * @typedef {Object} OpenFileOption
- * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
- * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
- * @property {string} [title] タイトル(「ファイルを選択してください」など)
+ * @property {string} [initial_directory] 初期ディレクトリ(`"C:\"`など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（`"画像ファイル(*.png;*.bmp)|*.png;*.bmp"`など）
+ * @property {string} [title] タイトル(「`ファイルを選択してください`」など)
  */
 
 /**
  * 「フォルダを開く」ダイアログ用のオプション
  * @typedef {Object} OpenDirectoryOption
- * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
- * @property {string} [title] タイトル(「フォルダを選択してください」など)
+ * @property {string} [initial_directory] 初期ディレクトリ(`"C:\"`など)
+ * @property {string} [title] タイトル(「`フォルダを選択してください`」など)
  */
 
 /**
  * 「名前を付けて保存する」ダイアログ用のオプション
  * @typedef {Object} SaveAsOption
- * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
- * @property {string} [default_ext] 拡張子を省略した場合の値(".txt"など)
- * @property {string} [file_name] ファイル名の初期値("新しいファイル.txt"など)
- * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
- * @property {string} [title] タイトル(「保存するファイル名を設定してください」など)
+ * @property {string} [initial_directory] 初期ディレクトリ(`"C:\"`など)
+ * @property {string} [default_ext] 拡張子を省略した場合の値(`".txt"`など)
+ * @property {string} [file_name] ファイル名の初期値(`"新しいファイル.txt"`など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（`"画像ファイル(*.png;*.bmp)|*.png;*.bmp"`など）
+ * @property {string} [title] タイトル(「`保存するファイル名を設定してください`」など)
  */
 
 /**
@@ -69,20 +69,19 @@ export default class Dialog {
 	 * @returns {SFile|null}
 	 */
 	static popupOpenFile(option) {
-		/*
-		以下の行を1行で実行する
-		Add-Type -AssemblyName System.Windows.Forms;
-		$dialog = New-Object System.Windows.Forms.OpenFileDialog;
-		...
-		if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
-			$dialog.FileName;
-		}
-		*/
 		let command = "Add-Type -AssemblyName System.Windows.Forms;$dialog = New-Object System.Windows.Forms.OpenFileDialog;";
 		command += "$dialog.Filter = \"" + ((option && option.filter) ? option.filter.replace(/"/g, "\\\"") : "All files(*.*)|*.*") + "\";";
 		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.toString().replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.title) ? ("$dialog.Title = \"" + option.title.replace(/"/g, "\\\"") + "\";"): "";
 		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
+		/*
+			Add-Type -AssemblyName System.Windows.Forms;
+			$dialog = New-Object System.Windows.Forms.OpenFileDialog;
+			...
+			if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+				$dialog.FileName;
+			}
+		*/
 		const select_text = System.PowerShell(command).trim();
 		if(select_text !== "") {
 			return new SFile(select_text);
@@ -121,15 +120,6 @@ export default class Dialog {
 	 * @returns {SFile|null}
 	 */
 	static popupSaveAs(option) {
-		/*
-		以下の行を1行で実行する
-		Add-Type -AssemblyName System.Windows.Forms;
-		$dialog = New-Object System.Windows.Forms.SaveFileDialog;
-		...
-		if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
-			$dialog.FileName;
-		}
-		*/
 		let command = "Add-Type -AssemblyName System.Windows.Forms;$dialog = New-Object System.Windows.Forms.SaveFileDialog;";
 		command += (option && option.default_ext) ? ("$dialog.DefaultExt = \"" + option.default_ext.replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.file_name) ? ("$dialog.FileName = \"" + option.file_name.replace(/"/g, "\\\"") + "\";"): "";
@@ -139,6 +129,14 @@ export default class Dialog {
 		command += "$dialog.ShowHelp = true;";
 		command += "$dialog.OverwritePrompt = true;";
 		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
+		/*
+			Add-Type -AssemblyName System.Windows.Forms;
+			$dialog = New-Object System.Windows.Forms.SaveFileDialog;
+			...
+			if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
+				$dialog.FileName;
+			}
+		*/
 		const select_text = System.PowerShell(command).trim();
 		if(select_text !== "") {
 			return new SFile(select_text);

@@ -797,7 +797,7 @@ export default class SFile {
 	 * @param {string} text
 	 * @param {string} [charset="utf-8"] - 文字コード
 	 * @param {string} [newline="\n"] - 改行コード
-	 * @param {boolean} [issetBOM=true] - BOMの有無(utf-8のみ有効 )
+	 * @param {boolean} [issetBOM=true] - BOMの有無(`utf-8`のみ有効 )
 	 * @returns {boolean}
 	 */
 	setTextFile(text, charset, newline, issetBOM) {
@@ -967,7 +967,7 @@ export default class SFile {
 	/**
 	 * ファイルのハッシュ値を計算する
 	 * @param {string} [algorithm="MD5"] - アルゴリズム
-	 * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は"0"
+	 * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は`"0"`
 	 */
 	getHashCode(algorithm) {
 		if(this.is_http) {
@@ -1070,7 +1070,7 @@ export default class SFile {
 
 	/**
 	 * フォルダの中のフォルダとファイルに対して指定した関数を実行する
-	 * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。
+	 * @param {function(SFile): boolean} func 戻り値が`false`で処理を終了。
 	 * @returns {boolean} result
 	 */
 	each(func) {

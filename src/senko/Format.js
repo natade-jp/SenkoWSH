@@ -16,9 +16,9 @@ import System from "./System";
 export default class Format {
 
 	/**
-	 * printf に似た書式に合わせて文字列を組み立てる
+	 * `printf` に似た書式に合わせて文字列を組み立てる
 	 * - ロケール、日付時刻等はサポートしていません。
-	 * - 変換指定子のpとnはサポートしていません。
+	 * - 変換指定子の`p`と`n`はサポートしていません。
 	 * @param {String} text 
 	 * @param {...any} parm パラメータは可変引数
 	 * @returns {String}
@@ -383,7 +383,7 @@ export default class Format {
 
 	/**
 	 * 時刻用の書式に合わせて文字列を組み立てる
-	 * - YYYY-MM-DD hh:mm:ss のように指定できる。
+	 * - `YYYY-MM-DD hh:mm:ss` のように指定できる。
 	 * @param {String} text 
 	 * @param {Date} date 時刻情報
 	 * @returns {String}
