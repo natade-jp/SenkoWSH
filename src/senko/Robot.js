@@ -496,6 +496,21 @@ export default class Robot {
 			}
 		}
 		code += "}";
+		/*
+			user32.dll
+			void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)
+			for ($i=0; $i -lt " + count_max + "; $i++){
+				$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, 0, 0);
+				$api::keybd_event(" + VK_DATA.VK_MENU.code + ", 0, 0, 0);
+				$api::keybd_event(" + VK_DATA.VK_CONTROL.code + ", 0, 0, 0);
+				$api::keybd_event(" + vkcode.code + ", 0, 0, 0);
+				Start-Sleep -m " + time_ms + ";
+				$api::keybd_event(" + vkcode.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);
+				$api::keybd_event(" + VK_DATA.VK_CONTROL.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);
+				$api::keybd_event(" + VK_DATA.VK_MENU.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);
+				$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);
+			}
+		*/
 		System.WindowsAPI(
 			"user32.dll",
 			"void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)",
@@ -554,6 +569,15 @@ export default class Robot {
 			code += "$api::mouse_event(" + released_code + ", 0, 0, 0, 0);";
 		}
 		code += "}";
+		/*
+			user32.dll
+			void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)
+			for ($i=0; $i -lt " + count_max + "; $i++){
+				$api::mouse_event(" + pushed_code + ", 0, 0, 0, 0);
+				Start-Sleep -m " + time_ms + ";
+				$api::mouse_event(" + released_code + ", 0, 0, 0, 0);
+			}
+		*/
 		System.WindowsAPI(
 			"user32.dll",
 			"void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)",
@@ -567,11 +591,10 @@ export default class Robot {
 	 */
 	static getCursorPosition() {
 		/*
-		以下の行を1行で実行する
-		[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms");
-		$X = [System.Windows.Forms.Cursor]::Position.X;
-		$Y = [System.Windows.Forms.Cursor]::Position.Y;
-		"$X,$Y"
+			[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms");
+			$X = [System.Windows.Forms.Cursor]::Position.X;
+			$Y = [System.Windows.Forms.Cursor]::Position.Y;
+			"$X,$Y"
 		*/
 		// eslint-disable-next-line quotes
 		const text = System.PowerShell('[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms");$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;"$X,$Y"');
@@ -588,6 +611,11 @@ export default class Robot {
 	 * @param {WSHRobotPosition} position
 	 */
 	static setCursorPosition(position) {
+		/*
+			user32.dll
+			void SetCursorPos(int X, int Y)
+			$api::SetCursorPos(" + position.x + ", " + position.y + ");
+		*/
 		System.WindowsAPI(
 			"user32.dll",
 			"void SetCursorPos(int X, int Y)",
@@ -615,6 +643,13 @@ export default class Robot {
 		let command = "$api::FindWindow(";
 		command += (get_handle_data.classname ? "\"" + get_handle_data.classname + "\"" : "0") + ",";
 		command += (get_handle_data.windowtext ? "\"" + get_handle_data.windowtext + "\"" : "0") + ");";
+		/*
+			user32.dll
+			IntPtr FindWindow(string lpClassName, string lpWindowName)
+			IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)
+			IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)
+			$api::FindWindow(*,*);
+		*/
 		return parseFloat(System.WindowsAPI( "user32.dll", function_text, command));
 	}
 
@@ -634,6 +669,13 @@ export default class Robot {
 	 * @returns {string}
 	 */
 	static getClassName(handle) {
+		/*
+			user32.dll
+			IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)
+			$buff = New-Object System.Text.StringBuilder 256;
+			$null = $api::GetClassName(" + handle + ", $buff, 256);
+			$($buff.ToString());
+		 */
 		return System.WindowsAPI(
 			"user32.dll",
 			"IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)",
@@ -657,6 +699,13 @@ export default class Robot {
 	 * @returns {string}
 	 */
 	static getWindowText(handle) {
+		/*
+			user32.dll
+			IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)
+			$buff = New-Object System.Text.StringBuilder 256;
+			$null = $api::GetWindowText(" + handle + ", $buff, 256);
+			$($buff.ToString());
+		 */
 		return System.WindowsAPI(
 			"user32.dll",
 			"IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)",
@@ -671,18 +720,17 @@ export default class Robot {
 	 */
 	static getWindowRect(handle) {
 		/*
-		以下の行を1行で実行する
-		Add-Type -TypeDefinition @"
-		using System;
-		using System.Runtime.InteropServices;
-		public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
-		public class API {
-			[DllImport("user32.dll")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-			public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }
-		}
-		"@
-		$rect = [API]::getrect(x);
-		"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)"
+			Add-Type -TypeDefinition @"
+			using System;
+			using System.Runtime.InteropServices;
+			public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+			public class API {
+				[DllImport("user32.dll")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+				public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }
+			}
+			"@
+			$rect = [API]::getrect(x);
+			"$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)"
 		*/
 		// eslint-disable-next-line quotes
 		const command = `Add-Type -TypeDefinition "using System; using System.Runtime.InteropServices; public struct RECT { public int Left; public int Top; public int Right; public int Bottom; } public class API { [DllImport(""user32.dll"")] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect); public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; } }";  $rect = [API]::getrect(` + handle + `); "$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)"`;
@@ -710,6 +758,11 @@ export default class Robot {
 	 * @returns {void}
 	 */
 	static setWindowRect(handle, rect) {
+		/*
+			user32.dll
+			bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)
+			$api::MoveWindow(" + handle + " , " + (rect.x|0) + ", " + (rect.y|0) + ", " + (rect.width|0) + ", " + (rect.height|0) + ", 1 );
+		 */
 		System.WindowsAPI(
 			"user32.dll",
 			"bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)",
@@ -722,6 +775,11 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getActiveWindow() {
+		/*
+			user32.dll
+			IntPtr GetForegroundWindow()
+			$api::GetForegroundWindow();
+		*/
 		return parseFloat(System.WindowsAPI(
 			"user32.dll",
 			"IntPtr GetForegroundWindow()",
@@ -735,6 +793,11 @@ export default class Robot {
 	 * @returns {void}
 	 */
 	static setActiveWindow(handle) {
+		/*
+			user32.dll
+			bool SetForegroundWindow(IntPtr hWnd)
+			$api::SetForegroundWindow(" + handle + ");
+		*/
 		System.WindowsAPI(
 			"user32.dll",
 			"bool SetForegroundWindow(IntPtr hWnd)",
@@ -748,6 +811,13 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getPID(handle) {
+		/*
+			user32.dll
+			IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)
+			$getpid = 0;
+			$null = $api::GetWindowThreadProcessId(" + handle + ", [ref] $getpid);
+			$getpid;
+		 */
 		return parseFloat(System.WindowsAPI(
 			"user32.dll",
 			"IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)",
@@ -756,17 +826,12 @@ export default class Robot {
 	}
 
 	/**
-	 * 指定したプロセスIDを修了させる
+	 * 指定したプロセスIDを終了させる
 	 * @param {number} pid 
 	 */
 	static terminateProcess(pid) {
 		return System.run("taskkill /PID " + pid, 0, true);
 	}
-
-	
-
-
-	// TODO マウスを移動させたり、キーボードを入力する操作を追加する予定
 
 }
 
