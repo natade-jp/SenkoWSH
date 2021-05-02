@@ -597,7 +597,8 @@ export default class Robot {
 			"$X,$Y"
 		*/
 		// eslint-disable-next-line quotes
-		const text = System.PowerShell('[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms");$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;"$X,$Y"');
+		const command = '[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms");$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;"$X,$Y"';
+		const text = System.PowerShell(command);
 		const pos_data = text.split(",");
 		const x = parseFloat(pos_data[0]) | 0;
 		const y = parseFloat(pos_data[1]) | 0;

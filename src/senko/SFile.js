@@ -8,6 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Polyfill from "./polyfill/Polyfill.js";
 import Format from "./Format.js";
 import System from "./System.js";
  
@@ -698,26 +699,34 @@ export default class SFile {
 		else {
 			if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
 				// Scripting.FileSystemObject で開く
-				const forreading = 1;
+				// 入出力モード = 読取専用モード
+				const ForReading = 1;
+				const mode = ForReading;
+				// ファイルの新規作成 = 新規作成しない
+				const option = false;
+				// 文字のエンコード
+				const TristateFalse			= 0;	// ASCII(Shift-JIS)
+				const TristateTrue			= -1;	// Unicode(UTF-16)
+				const TristateUseDefault	= -2;	// システムの規定値
 				let tristate = 0;
 				if(/ascii/i.test(icharset)) {
 					// ASCII
-					tristate = 0;
+					tristate = TristateFalse;
 				}
 				else if(/shift_jis|sjis/i.test(icharset)) {
 					// システムのデフォルト(日本語のOSだと仮定)
-					tristate = -2;
+					tristate = TristateUseDefault;
 				}
 				else {
 					// utf-16le
-					tristate = -1;
+					tristate = TristateTrue;
 				}
-				const open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );
+				const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
 				text = open_file.ReadAll();
 				open_file.Close();
 			}
 			else {
-				// より自由なコードで開く（速度は遅い）
+				// 自由な文字エンコードで開く（速度は遅い）
 				// 使用可能な charset については下記を参照
 				// HKEY_CLASSES_ROOT\MIME\Database\Charset
 				const adTypeText = 2;
@@ -810,21 +819,29 @@ export default class SFile {
 		const iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし
 		if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
 			// Scripting.FileSystemObject で書き込む
-			const forwriting = 2;
+			// 入出力モード = 上書きモード
+			const ForWriting = 2;
+			const mode = ForWriting;
+			// ファイルの新規作成 = 作成
+			const option = true;
+			// 文字のエンコード
+			const TristateFalse			= 0;	// ASCII(Shift-JIS)
+			const TristateTrue			= -1;	// Unicode(UTF-16)
+			const TristateUseDefault	= -2;	// システムの規定値
 			let tristate = 0;
 			if(/ascii/i.test(icharset)) {
 				// ASCII
-				tristate = 0;
+				tristate = TristateFalse;
 			}
 			else if(/shift_jis|sjis/i.test(icharset)) {
 				// システムのデフォルト(日本語のOSだと仮定)
-				tristate = -2;
+				tristate = TristateUseDefault;
 			}
 			else {
 				// utf-16le
-				tristate = -1;
+				tristate = TristateTrue;
 			}
-			const open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );
+			const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
 			open_file.Write(text.replace(/\r\n?|\n/g, inewline));
 			open_file.Close();
 		}

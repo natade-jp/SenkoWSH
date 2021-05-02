@@ -9,6 +9,7 @@
  */
 
 import Polyfill from "./polyfill/Polyfill.js";
+import SFile from "./SFile.js";
 import Format from "./Format.js";
 
 /**
@@ -321,16 +322,38 @@ export default class System {
 
 	/**
 	 * PowerShell を実行する
-	 * - スレッドセーフモード、コマンドモードで実行します
 	 * 
 	 * @param {string} source
 	 * @returns {string}
 	 */
 	static PowerShell(source) {
-		// スレッドセーフモードでコマンドモードで実行する
-		const powershell_base = "powershell -sta -Command";
-		const command = (powershell_base + " " + source).replace(/([\\"])/g, "\\$1");
-		return System.exec(command).out.replace(/\r?\n$/, "");
+		// 改行がない場合はコマンドモードで実行する
+		if(!/\n/.test(source)) {
+			// スレッドセーフモードでコマンドモードで実行する
+			const powershell_base = "powershell -sta -Command";
+			// コマンドモードで実行するため、特定の文字をエスケープさせる
+			const command = (powershell_base + " " + source).replace(/([\\"])/g, "\\$1");
+			const exec = System.exec(command);
+			if(exec.exit_code !== 0) {
+				console.log(exec.exit_code);
+			}
+			// 最終行を除去してなるべく1行で返す
+			return exec.out.replace(/\r?\n$/, "");
+		}
+		else {
+			const file = new SFile(SFile.createTempFile().getAbsolutePath() + ".ps1");
+			file.setTextFile(source, "utf-16le", "\r\n");
+			// 本システムでスクリプトの実行が無効になっている可能性があるため一時的に実行ポリシーを変更して実行する
+			// ※変更しないと「ParentContainsErrorRecordException」が発生する場合がある
+			const powershell_base = "powershell -NoProfile -ExecutionPolicy Unrestricted";
+			const command = powershell_base + " \"" + file + "\"";
+			const exec = System.exec(command);
+			file.remove();
+			if(exec.exit_code !== 0) {
+				console.log(exec.exit_code);
+			}
+			return exec.out;
+		}
 	}
 
 	/**

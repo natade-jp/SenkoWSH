@@ -1672,7 +1672,6 @@ declare class System {
     static initializeCurrentDirectory(): void;
     /**
      * PowerShell を実行する
-     * - スレッドセーフモード、コマンドモードで実行します
      *
      * @param {string} source
      * @returns {string}

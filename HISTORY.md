@@ -1,5 +1,10 @@
 # History
 
+## SenkoWSH v3.9.0b
+### 更新点
+- `System.PowerShell` で複数行の文字列を引数に入れることを可能とするように改善
+- `Dialog.popupSaveAs` にて `PowerShell` のコマンドの真偽値の設定方法が正しくなく動作に問題があったのを修正
+
 ## SenkoWSH v3.8.0
 ### 更新点
 - グローバル空間を示す `globalThis`, `global`, `window` を追加
