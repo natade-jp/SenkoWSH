@@ -29,7 +29,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SenkoWSH">SenkoWSH</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
@@ -741,8 +742,9 @@ export default class SFile {
 		const inewline = &quot;\n&quot;; //javascript&#x4E0A;&#x3067;&#x306E;&#x6539;&#x884C;
 		let text = null;
 		if(/^htt/.test(this.pathname)) {
-			const http = SFile.createXMLHttpRequest();
+			const http = System.createXMLHttpRequest();
 			if(http === null) {
+				console.log(&quot;createXMLHttpRequest&quot;)
 				return null;
 			}
 			http.open(&quot;GET&quot;, this.pathname, false);
@@ -858,7 +860,7 @@ export default class SFile {
 	 * @param {string} text
 	 * @param {string} [charset=&quot;utf-8&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
 	 * @param {string} [newline=&quot;\n&quot;] - &#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;
-	 * @param {boolean} [issetBOM=true] - BOM&#x306E;&#x6709;&#x7121;(utf-8&#x306E;&#x307F;&#x6709;&#x52B9; )
+	 * @param {boolean} [issetBOM=true] - BOM&#x306E;&#x6709;&#x7121;(`utf-8`&#x306E;&#x307F;&#x6709;&#x52B9; )
 	 * @returns {boolean}
 	 */
 	setTextFile(text, charset, newline, issetBOM) {
@@ -902,11 +904,13 @@ export default class SFile {
 			stream.open();
 			stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7D71;&#x4E00;
 			if(/utf-8/.test(icharset.toLowerCase()) &amp;&amp; (!iissetBOM)) {
+				// &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x578B;&#x306B;&#x3057;&#x3066;3&#x30D0;&#x30A4;&#x30C8;&#x76EE;&#x4EE5;&#x964D;&#x3092;&#x30D0;&#x30A4;&#x30C8;&#x578B;&#x3067;&#x53D6;&#x5F97;
 				stream.position = 0;
 				stream.type = adTypeBinary;
 				stream.position = 3;
 				const binary = stream.read();
 				stream.close();
+				// &#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30C7;&#x30FC;&#x30BF;&#x3092;1&#x30D0;&#x30A4;&#x30C8;&#x76EE;&#x304B;&#x3089;&#x66F8;&#x304D;&#x3053;&#x3080;
 				stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
 				stream.type = adTypeBinary;
 				stream.open();
@@ -919,108 +923,191 @@ export default class SFile {
 	}
 
 	/**
-	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;&#xFF08;&#x6FC0;&#x91CD;&#xFF09;
+	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;
+	 * - &#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;0.5 sec/MB
+	 * - &#x5DE8;&#x5927;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x4E00;&#x90E8;&#x3092;&#x8ABF;&#x3079;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x4F4D;&#x7F6E;&#x3068;&#x30B5;&#x30A4;&#x30BA;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x65B9;&#x304C;&#x3088;&#x3044;
+	 * 
+	 * @param {number} [offset] - &#x4F4D;&#x7F6E;&#xFF08;&#x203B; &#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x901F;&#x5EA6;&#x304C;&#x4F4E;&#x4E0B;&#x3059;&#x308B;&#xFF09;
+	 * @param {number} [size] - &#x30B5;&#x30A4;&#x30BA;&#xFF08;&#x203B; &#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x901F;&#x5EA6;&#x304C;&#x4F4E;&#x4E0B;&#x3059;&#x308B;&#xFF09;
 	 * @returns {number[]}
 	 */
-	getBinaryFile() {
+	getBinaryFile(offset, size) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		const adTypeText = 2;
-		const adReadAll = -1;
-		const charset = &quot;iso-8859-1&quot;;
-		
-		/**
-		 * @type {Object&lt;number, number&gt;}
-		 * @private
-		 */
-		const map = {
-			0x20AC	:	0x80	,	//	8364	128
-			0x201A	:	0x82	,	//	8218	130
-			0x0192	:	0x83	,	//	402	131
-			0x201E	:	0x84	,	//	8222	132
-			0x2026	:	0x85	,	//	8230	133
-			0x2020	:	0x86	,	//	8224	134
-			0x2021	:	0x87	,	//	8225	135
-			0x02C6	:	0x88	,	//	710	136
-			0x2030	:	0x89	,	//	8240	137
-			0x0160	:	0x8A	,	//	352	138
-			0x2039	:	0x8B	,	//	8249	139
-			0x0152	:	0x8C	,	//	338	140
-			0x017D	:	0x8E	,	//	381	142
-			0x2018	:	0x91	,	//	8216	145
-			0x2019	:	0x92	,	//	8217	146
-			0x201C	:	0x93	,	//	8220	147
-			0x201D	:	0x94	,	//	8221	148
-			0x2022	:	0x95	,	//	8226	149
-			0x2013	:	0x96	,	//	8211	150
-			0x2014	:	0x97	,	//	8212	151
-			0x02DC	:	0x98	,	//	732	152
-			0x2122	:	0x99	,	//	8482	153
-			0x0161	:	0x9A	,	//	353	154
-			0x203A	:	0x9B	,	//	8250	155
-			0x0153	:	0x9C	,	//	339	156
-			0x017E	:	0x9E	,	//	382	158
-			0x0178	:	0x9F		//	376	159
-		};
-		try {
-			const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
-			stream.type = adTypeText;
-			stream.charset = charset;
-			stream.open();
-			stream.loadFromFile(this.pathname);
-			const text = stream.readText(adReadAll);
-			stream.close();
-			const out = new Array(text.length);
-			for(let i = 0;i &lt; text.length;i++) {
-				const x = text.charCodeAt(i);
-				if(0xFF &lt; x) {
-					out[i] = map[x];
+		// &#x4F4D;&#x7F6E;&#x3092;&#x7121;&#x6307;&#x5B9A;
+		if(offset === undefined) {
+			const adTypeText = 2;
+			const adReadAll = -1;
+			const charset = &quot;iso-8859-1&quot;;
+			/**
+			 * @type {Object&lt;number, number&gt;}
+			 * @private
+			 */
+			const map = {
+				0x20AC	:	0x80	,	//	8364	128
+				0x201A	:	0x82	,	//	8218	130
+				0x0192	:	0x83	,	//	402	131
+				0x201E	:	0x84	,	//	8222	132
+				0x2026	:	0x85	,	//	8230	133
+				0x2020	:	0x86	,	//	8224	134
+				0x2021	:	0x87	,	//	8225	135
+				0x02C6	:	0x88	,	//	710	136
+				0x2030	:	0x89	,	//	8240	137
+				0x0160	:	0x8A	,	//	352	138
+				0x2039	:	0x8B	,	//	8249	139
+				0x0152	:	0x8C	,	//	338	140
+				0x017D	:	0x8E	,	//	381	142
+				0x2018	:	0x91	,	//	8216	145
+				0x2019	:	0x92	,	//	8217	146
+				0x201C	:	0x93	,	//	8220	147
+				0x201D	:	0x94	,	//	8221	148
+				0x2022	:	0x95	,	//	8226	149
+				0x2013	:	0x96	,	//	8211	150
+				0x2014	:	0x97	,	//	8212	151
+				0x02DC	:	0x98	,	//	732	152
+				0x2122	:	0x99	,	//	8482	153
+				0x0161	:	0x9A	,	//	353	154
+				0x203A	:	0x9B	,	//	8250	155
+				0x0153	:	0x9C	,	//	339	156
+				0x017E	:	0x9E	,	//	382	158
+				0x0178	:	0x9F		//	376	159
+			};
+			try {
+				const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.type = adTypeText;
+				stream.charset = charset;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				const text = stream.readText(adReadAll);
+				stream.close();
+				const out = new Array(text.length);
+				for(let i = 0;i &lt; text.length;i++) {
+					const x = text.charCodeAt(i);
+					if(0xFF &lt; x) {
+						out[i] = map[x];
+					}
+					else {
+						out[i] = x;
+					}
 				}
-				else {
-					out[i] = x;
-				}
+				return out;
 			}
-			return out;
+			catch (e) {
+				console.log(e);
+				return [];
+			}
 		}
-		catch (e) {
-			console.log(e);
-			return [];
+		else {
+			try {
+				const filesize = this.length();
+				if(filesize === -1) {
+					console.log(&quot;filesize error&quot;);
+					return [];
+				}
+				// &#x4F4D;&#x7F6E;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;
+				if(offset &lt; 0 || filesize &lt;= offset) {
+					console.log(&quot;offset error&quot;);
+					return [];
+				}
+				const ioffset = offset;
+				let isize = size !== undefined ? size : filesize - ioffset;
+				// &#x9577;&#x3055;&#x306E;&#x30C1;&#x30A7;&#x30C3;&#x30AF;
+				if(filesize &lt; (ioffset + isize) || isize &lt; 0) {
+					isize = filesize - ioffset;
+				}
+				// &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;&#x3092;&#x8AAD;&#x307F;&#x8FBC;&#x3080;
+				const adTypeBinary = 1;
+				const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.Type = adTypeBinary;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				stream.position = ioffset;
+				const byte_array = stream.read(isize);
+				stream.close();
+				return System.createNumberArrayFromByteArray(byte_array);
+			}
+			catch (e) {
+				console.log(e);
+				return [];
+			}
 		}
 	}
 
 	/**
-	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;&#xFF08;&#x6FC0;&#x91CD;&#xFF09;
+	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;
+	 * - &#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;1.0 sec/MB
+	 * 
 	 * @param {number[]} array_
+	 * @param {number} [offset] - &#x4F4D;&#x7F6E;&#xFF08;&#x203B; &#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x901F;&#x5EA6;&#x304C;&#x4F4E;&#x4E0B;&#x3059;&#x308B;&#xFF09;
 	 * @returns {boolean}
 	 */
-	setBinaryFile(array_) {
+	setBinaryFile(array_, offset) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
+		// &#x4F4D;&#x7F6E;&#x3092;&#x7121;&#x6307;&#x5B9A;
 		let is_write = true;
-		const adTypeText = 2;
-		const adSaveCreateOverWrite = 2;
-		const charset = &quot;iso-8859-1&quot;;
-		const buffersize = 512;
-		try {
-			const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
-			stream.type = adTypeText;
-			stream.charset = charset;
-			stream.open();
-			for(let i = 0;i &lt; array_.length;) {
-				const text = [];
-				for(let j = 0; (j &lt; buffersize) &amp;&amp; (i &lt; array_.length); j++, i++) {
-					text[j] = String.fromCharCode(array_[i]);
+		if((offset === undefined) || offset === 0) {
+			try {
+				const adTypeText = 2;
+				const adSaveCreateOverWrite = 2;
+				const charset = &quot;iso-8859-1&quot;;
+				const buffersize = 1024 * 128;
+				const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.type = adTypeText;
+				stream.charset = charset;
+				stream.open();
+				for(let i = 0;i &lt; array_.length;) {
+					const text = [];
+					for(let j = 0; (j &lt; buffersize) &amp;&amp; (i &lt; array_.length); j++, i++) {
+						text[j] = String.fromCharCode(array_[i]);
+					}
+					stream.writeText(text.join(&quot;&quot;));
 				}
-				stream.writeText(text.join(&quot;&quot;));
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
 			}
-			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-			stream.close();
+			catch (e) {
+				console.log(e);
+				is_write = false;
+			}
 		}
-		catch (e) {
-			console.log(e);
-			is_write = false;
+		else {
+			const adTypeBinary = 1;
+			const adSaveCreateOverWrite = 2;
+			if(!this.isFile()) {
+				const byte_array = System.createByteArrayFromNumberArray(array_, offset);
+				if(byte_array === null) {
+					console.log(&quot;createByteArrayFromNumberArray&quot;);
+					return false;
+				}
+				const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.Type = adTypeBinary;
+				stream.open();
+				stream.write(byte_array);
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
+			}
+			try {
+				const byte_array = System.createByteArrayFromNumberArray(array_);
+				if(byte_array === null) {
+					console.log(&quot;createByteArrayFromNumberArray&quot;);
+					return false;
+				}
+				const stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+				stream.Type = adTypeBinary;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				stream.position = offset;
+				stream.write(byte_array);
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
+			}
+			catch (e) {
+				console.log(e);
+				is_write = false;
+			}
 		}
 		return is_write;
 	}
@@ -1028,7 +1115,7 @@ export default class SFile {
 	/**
 	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x30CF;&#x30C3;&#x30B7;&#x30E5;&#x5024;&#x3092;&#x8A08;&#x7B97;&#x3059;&#x308B;
 	 * @param {string} [algorithm=&quot;MD5&quot;] - &#x30A2;&#x30EB;&#x30B4;&#x30EA;&#x30BA;&#x30E0;
-	 * @returns {string} &#x534A;&#x89D2;&#x82F1;&#x6570;&#x306E;16&#x9032;&#x6570;&#x3067;&#x8868;&#x3057;&#x305F;&#x30CF;&#x30C3;&#x30B7;&#x30E5;&#x5024;&#x3001;&#x5931;&#x6557;&#x6642;&#x306F;&quot;0&quot;
+	 * @returns {string} &#x534A;&#x89D2;&#x82F1;&#x6570;&#x306E;16&#x9032;&#x6570;&#x3067;&#x8868;&#x3057;&#x305F;&#x30CF;&#x30C3;&#x30B7;&#x30E5;&#x5024;&#x3001;&#x5931;&#x6557;&#x6642;&#x306F;`&quot;0&quot;`
 	 */
 	getHashCode(algorithm) {
 		if(this.is_http) {
@@ -1058,46 +1145,6 @@ export default class SFile {
 		return hash[0].replace(/ /g, &quot;&quot;);
 	}
 
-	/**
-	 * XMLHttpRequest&#x3092;&#x4F5C;&#x6210;
-	 * @returns {XMLHttpRequest}
-	 */
-	static createXMLHttpRequest() {
-		try {
-			return new XMLHttpRequest();
-		}
-		catch (e) {
-			const MSXMLHTTP = [
-				&quot;WinHttp.WinHttpRequest.5.1&quot;,
-				&quot;WinHttp.WinHttpRequest.5&quot;,
-				&quot;WinHttp.WinHttpRequest&quot;,
-				&quot;Msxml2.ServerXMLHTTP.6.0&quot;,
-				&quot;Msxml2.ServerXMLHTTP.5.0&quot;,
-				&quot;Msxml2.ServerXMLHTTP.4.0&quot;,
-				&quot;Msxml2.ServerXMLHTTP.3.0&quot;,
-				&quot;Msxml2.ServerXMLHTTP&quot;,
-				&quot;Microsoft.ServerXMLHTTP&quot;,
-				&quot;Msxml2.XMLHTTP.6.0&quot;,
-				&quot;Msxml2.XMLHTTP.5.0&quot;,
-				&quot;Msxml2.XMLHTTP.4.0&quot;,
-				&quot;Msxml2.XMLHTTP.3.0&quot;,
-				&quot;Msxml2.XMLHTTP&quot;,
-				&quot;Microsoft.XMLHTTP&quot;
-			];
-			// &#x203B; WinHttp.WinHttpRequest &#x306F; onreadystatechange &#x306E;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x304C;&#x3067;&#x304D;&#x306A;&#x3044;
-			let i;
-			for(i = 0; i &lt; MSXMLHTTP.length; i++) {
-				try {
-					return new ActiveXObject(MSXMLHTTP[i]);
-				}
-				catch (e) {
-					continue;
-				}
-			}
-			return null;
-		}
-	}
-	
 	/**
 	 * &#x30C6;&#x30F3;&#x30DD;&#x30E9;&#x30EA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x5185;&#x306E;&#x9069;&#x5F53;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x53D6;&#x5F97;
 	 * @returns {SFile}
@@ -1131,7 +1178,7 @@ export default class SFile {
 
 	/**
 	 * &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x4E2D;&#x306E;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3068;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x95A2;&#x6570;&#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
-	 * @param {function(SFile): boolean} func &#x623B;&#x308A;&#x5024;&#x304C;false&#x3067;&#x51E6;&#x7406;&#x3092;&#x7D42;&#x4E86;&#x3002;
+	 * @param {function(SFile): boolean} func &#x623B;&#x308A;&#x5024;&#x304C;`false`&#x3067;&#x51E6;&#x7406;&#x3092;&#x7D42;&#x4E86;&#x3002;
 	 * @returns {boolean} result
 	 */
 	each(func) {

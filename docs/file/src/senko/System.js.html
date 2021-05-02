@@ -29,7 +29,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SenkoWSH">SenkoWSH</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
@@ -69,6 +70,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Polyfill from &quot;./polyfill/Polyfill.js&quot;;
 import Format from &quot;./Format.js&quot;;
 
 /**
@@ -188,7 +190,7 @@ export default class System {
 
 	/**
 	 * &#x51E6;&#x7406;&#x3092;&#x4E00;&#x6642;&#x505C;&#x6B62;
-	 * @param {number} time_sec
+	 * @param {number} time_sec &#x505C;&#x6B62;&#x3059;&#x308B;&#x79D2;&#x6570;
 	 */
 	static sleep(time_sec) {
 		WScript.Sleep((time_sec * 1000) | 0);
@@ -259,7 +261,16 @@ export default class System {
 			error : error
 		};
 	}
-
+	
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x5909;&#x6570;&#x304C;&#x5B9A;&#x7FA9;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x304B;&#x8ABF;&#x3079;&#x308B;
+	 * @param {string} variable_name
+	 * @returns {boolean}
+	 */
+	 static isDefined(variable_name) {
+		return variable_name in globalThis;
+	}
+	
 	/**
 	 * &#x30D7;&#x30ED;&#x30B0;&#x30E9;&#x30E0;&#x3092;&#x7D42;&#x4E86;&#x3055;&#x305B;&#x307E;&#x3059;&#x3002;
 	 * @param {number} [exit_code=0] 
@@ -270,7 +281,7 @@ export default class System {
 	
 	/**
 	 * CUI&#x3067;&#x8D77;&#x52D5;&#x3057;&#x306A;&#x304A;&#x3059;
-	 * @param {boolean} is_use_chakra - &#x9AD8;&#x901F;&#x306A;Chakra&#x30A8;&#x30F3;&#x30B8;&#x30F3;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;&#xFF08;wsf&#x304C;&#x958B;&#x3051;&#x306A;&#x304F;&#x306A;&#x308B;&#xFF09;
+	 * @param {boolean} [is_use_chakra] - &#x9AD8;&#x901F;&#x306A;Chakra&#x30A8;&#x30F3;&#x30B8;&#x30F3;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;&#xFF08;wsf&#x304C;&#x958B;&#x3051;&#x306A;&#x304F;&#x306A;&#x308B;&#xFF09;
 	 */
 	static executeOnCScript(is_use_chakra) {
 		const iis_use_chakra = is_use_chakra !== undefined ? is_use_chakra : false;
@@ -372,10 +383,13 @@ export default class System {
 
 	/**
 	 * PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * - &#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3001;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3057;&#x307E;&#x3059;
+	 * 
 	 * @param {string} source
 	 * @returns {string}
 	 */
 	static PowerShell(source) {
+		// &#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
 		const powershell_base = &quot;powershell -sta -Command&quot;;
 		const command = (powershell_base + &quot; &quot; + source).replace(/([\\&quot;])/g, &quot;\\$1&quot;);
 		return System.exec(command).out.replace(/\r?\n$/, &quot;&quot;);
@@ -385,11 +399,11 @@ export default class System {
 	 * WindowsAPI &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
 	 * 
 	 * &#x4F8B;
-	 * - dll_name : user32.dll
-	 * - function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)
-	 * - exec_text : $api::MessageBox(0, &quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&quot;, &quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&quot;, 0);
+	 * - `dll_name` : `&quot;user32.dll&quot;`
+	 * - `function_text` : `&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;&quot;`
+	 * - `exec_text` : `&quot;$api::MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0);&quot;`
 	 * @param {string} dll_name - &#x5229;&#x7528;&#x3059;&#x308B;dll
-	 * @param {string} function_text - &#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;($api&#x306B;&#x4EE3;&#x5165;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;)
+	 * @param {string} function_text - &#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;(`$api`&#x306B;&#x4EE3;&#x5165;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;)
 	 * @param {string} exec_text - &#x5B9F;&#x884C;&#x30B3;&#x30DE;&#x30F3;&#x30C9;
 	 * @returns {string}
 	 */
@@ -400,6 +414,16 @@ export default class System {
 		// 	&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;,
 		// 	&quot;$api::MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0);&quot;
 		// );
+		//
+
+		/*
+			PowerShell 2.0 &#x306E; Add-Type &#x3092;&#x4F7F;&#x7528;&#x3057;&#x3066;&#x3044;&#x308B;
+			$api = Add-Type -Name &quot;api&quot; -MemberDefinition &apos;
+				[DllImport(&quot;user32.dll&quot;)] public extern static int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType);
+			&apos; -PassThru;
+			$api::MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0);
+		*/
+
 		// &#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3060;&#x3068;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x304C;&#x9762;&#x5012;&#x306A;&#x306E;&#x3067;&#x3001;&#x3053;&#x3053;&#x306F;&#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;&#x3092;&#x4F7F;&#x7528;&#x3059;&#x308B;
 		// eslint-disable-next-line quotes
 		const api_base = `$api = Add-Type -Name &quot;api&quot; -MemberDefinition &quot;[DllImport(&quot;&quot;` + dll_name + `&quot;&quot;)] public extern static ` + function_text + `;&quot; -PassThru;`;
@@ -412,6 +436,10 @@ export default class System {
 	 * @returns {string}
 	 */
 	static getClipBoardText() {
+		/*
+			Add-Type -Assembly System.Windows.Forms;
+			[System.Windows.Forms.Clipboard]::GetText();
+		*/
 		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();&quot;;
 		return System.PowerShell(command);
 	}
@@ -421,10 +449,153 @@ export default class System {
 	 * @param {string} text
 	 */
 	static setClipBoardText(text) {
+		/*
+			Add-Type -Assembly System.Windows.Forms;
+			[System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);
+		*/
+		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);&quot;;
 		// PowerShell 5.0&#x4EE5;&#x964D;
 		// command = &quot;Set-Clipboard \&quot;&#x3053;&#x308C;&#x3067;&#x3082;&#x30B3;&#x30D4;&#x30FC;&#x53EF;&#x80FD;\&quot;&quot;;
-		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);&quot;;
 		System.PowerShell(command);
+	}
+
+	/**
+	 * `XMLHttpRequest` &#x3092;&#x4F5C;&#x6210;
+	 * - &#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; `null`
+	 * 
+	 * @returns {XMLHttpRequest}
+	 */
+	 static createXMLHttpRequest() {
+		try {
+			return new XMLHttpRequest();
+		}
+		catch (e) {
+			const MSXMLHTTP = [
+				&quot;WinHttp.WinHttpRequest.5.1&quot;,
+				&quot;WinHttp.WinHttpRequest.5&quot;,
+				&quot;WinHttp.WinHttpRequest&quot;,
+				&quot;Msxml2.ServerXMLHTTP.6.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP.5.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP.4.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP.3.0&quot;,
+				&quot;Msxml2.ServerXMLHTTP&quot;,
+				&quot;Microsoft.ServerXMLHTTP&quot;,
+				&quot;Msxml2.XMLHTTP.6.0&quot;,
+				&quot;Msxml2.XMLHTTP.5.0&quot;,
+				&quot;Msxml2.XMLHTTP.4.0&quot;,
+				&quot;Msxml2.XMLHTTP.3.0&quot;,
+				&quot;Msxml2.XMLHTTP&quot;,
+				&quot;Microsoft.XMLHTTP&quot;
+			];
+			// &#x203B; WinHttp.WinHttpRequest &#x306F; onreadystatechange &#x306E;&#x66F8;&#x304D;&#x63DB;&#x3048;&#x304C;&#x3067;&#x304D;&#x306A;&#x3044;
+			for(let i = 0; i &lt; MSXMLHTTP.length; i++) {
+				try {
+					return new ActiveXObject(MSXMLHTTP[i]);
+				}
+				catch (e) {
+					continue;
+				}
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * `MSXML2.DOMDocument` &#x3092;&#x4F5C;&#x6210;
+	 * - &#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; `null`
+	 * 
+	 * @returns {any}
+	 */
+	 static createMSXMLDOMDocument() {
+		const MSXMLDOM = [
+			&quot;Msxml2.DOMDocument.6.0&quot;,
+			&quot;Msxml2.DOMDocument.3.0&quot;,
+			&quot;Msxml2.DOMDocument&quot;,
+			&quot;Microsoft.XMLDOM&quot;
+		];
+		for(let i = 0; i &lt; MSXMLDOM.length; i++) {
+			try {
+				return new ActiveXObject(MSXMLDOM[i]);
+			}
+			catch (e) {
+				continue;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * `Byte &#x914D;&#x5217;` &#x304B;&#x3089;&#x6570;&#x5024;&#x914D;&#x5217;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;
+	 * - `ADODB.Stream` &#x306A;&#x3069;&#x3092;&#x7528;&#x3044;&#x3066;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x3092; `JavaScript` &#x3067;&#x3082;&#x6271;&#x3048;&#x308B;&#x578B;&#x3078;&#x5909;&#x66F4;&#x3059;&#x308B;
+	 * 
+	 * @param {any} byte_array
+	 * @returns {number[]}
+	 */
+	static createNumberArrayFromByteArray(byte_array) {
+		const dom = System.createMSXMLDOMDocument();
+		if(dom === null) {
+			console.log(&quot;createMSXMLDOMDocument&quot;)
+			return [];
+		}
+
+		// &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;&#x304B;&#x3089;16&#x9032;&#x6570;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3078;&#x5909;&#x63DB;
+		// &#x53C2;&#x8003;
+		// https://qiita.com/tnakagawa/items/9bcc26b501f5b995d896
+		const element = dom.createElement(&quot;hex&quot;);
+		element.dataType = &quot;bin.hex&quot;;
+		element.nodeTypedValue = byte_array;
+		/**
+		 * @type {string}
+		 */
+		const hex_text = element.text;
+		const out = new Array(hex_text.length / 2);
+		// &#x30D0;&#x30A4;&#x30C8;&#x6587;&#x5B57;&#x5217;&#x304B;&#x3089;&#x914D;&#x5217;&#x3078;&#x5909;&#x66F4;
+		for(let i = 0; i &lt; out.length; i++) {
+			out[i] = Number.parseInt(hex_text.substr(i * 2, 2), 16);
+		}
+		return out;
+	}
+
+	/**
+	 * &#x6570;&#x5024;&#x914D;&#x5217;&#x304B;&#x3089;`Byte &#x914D;&#x5217;`&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;
+	 * - `ADODB.Stream` &#x306A;&#x3069;&#x3092;&#x7528;&#x3044;&#x3066;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x3092; `JavaScript` &#x3067;&#x3082;&#x6271;&#x3048;&#x308B;&#x578B;&#x3078;&#x5909;&#x66F4;&#x3059;&#x308B;
+	 * - `offset` &#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;&#x3001;&#x51FA;&#x529B;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;&#x306F;&#x305D;&#x306E;&#x4F4D;&#x7F6E;&#x307E;&#x3067;&#x306F; `NUL` &#x3067;&#x57CB;&#x307E;&#x3063;&#x305F;&#x914D;&#x5217;&#x3068;&#x306A;&#x308B;
+	 * 
+	 * @param {number[]} number_array
+	 * @param {number} [offset = 0]
+	 * @returns {any}
+	 */
+	 static createByteArrayFromNumberArray(number_array, offset) {
+		const dom = System.createMSXMLDOMDocument();
+		if(dom === null) {
+			console.log(&quot;createMSXMLDOMDocument&quot;)
+			return null;
+		}
+		let max_size = offset !== undefined ? offset : 0;
+		let hex_string = [];
+		// offset&#x304C;&#x8A2D;&#x5B9A;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30AA;&#x30D5;&#x30BB;&#x30C3;&#x30C8;&#x4F4D;&#x7F6E;&#x307E;&#x3067;00&#x3067;&#x57CB;&#x3081;&#x308B;
+		let p;
+		for(p = 0; p &lt; max_size; p++) {
+			hex_string[p] = &quot;00&quot;;
+		}
+		max_size += number_array.length;
+		// 16&#x9032;&#x6570;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;
+		for(let i = 0; p &lt; max_size; i++, p++) {
+			if(number_array[i] &lt; 16) {
+				hex_string[p] = &quot;0&quot; + number_array[i].toString(16);
+			}
+			else {
+				hex_string[p] = number_array[i].toString(16);
+			}
+		}
+		// &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;&#x304B;&#x3089;16&#x9032;&#x6570;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3078;&#x5909;&#x63DB;
+		// &#x53C2;&#x8003;
+		// https://qiita.com/tnakagawa/items/9bcc26b501f5b995d896
+		const element = dom.createElement(&quot;hex&quot;);
+		element.dataType = &quot;bin.hex&quot;;
+		element.text = hex_string.join(&quot;&quot;);
+		const byte_array = element.nodeTypedValue;
+		return byte_array;
 	}
 
 }

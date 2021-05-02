@@ -680,8 +680,9 @@ export default class SFile {
 		const inewline = "\n"; //javascript上での改行
 		let text = null;
 		if(/^htt/.test(this.pathname)) {
-			const http = SFile.createXMLHttpRequest();
+			const http = System.createXMLHttpRequest();
 			if(http === null) {
+				console.log("createXMLHttpRequest")
 				return null;
 			}
 			http.open("GET", this.pathname, false);
@@ -841,11 +842,13 @@ export default class SFile {
 			stream.open();
 			stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //改行コードを統一
 			if(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {
+				// バイナリ型にして3バイト目以降をバイト型で取得
 				stream.position = 0;
 				stream.type = adTypeBinary;
 				stream.position = 3;
 				const binary = stream.read();
 				stream.close();
+				// 取得したバイナリデータを1バイト目から書きこむ
 				stream = new ActiveXObject("ADODB.Stream");
 				stream.type = adTypeBinary;
 				stream.open();
@@ -860,73 +863,112 @@ export default class SFile {
 	/**
 	 * バイナリファイルを開く
 	 * - 参考速度：0.5 sec/MB
+	 * - 巨大なファイルの一部を調べる場合は、位置とサイズを指定した方がよい
 	 * 
+	 * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
+	 * @param {number} [size] - サイズ（※ 指定すると速度が低下する）
 	 * @returns {number[]}
 	 */
-	getBinaryFile() {
+	getBinaryFile(offset, size) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		const adTypeText = 2;
-		const adReadAll = -1;
-		const charset = "iso-8859-1";
-		
-		/**
-		 * @type {Object<number, number>}
-		 * @private
-		 */
-		const map = {
-			0x20AC	:	0x80	,	//	8364	128
-			0x201A	:	0x82	,	//	8218	130
-			0x0192	:	0x83	,	//	402	131
-			0x201E	:	0x84	,	//	8222	132
-			0x2026	:	0x85	,	//	8230	133
-			0x2020	:	0x86	,	//	8224	134
-			0x2021	:	0x87	,	//	8225	135
-			0x02C6	:	0x88	,	//	710	136
-			0x2030	:	0x89	,	//	8240	137
-			0x0160	:	0x8A	,	//	352	138
-			0x2039	:	0x8B	,	//	8249	139
-			0x0152	:	0x8C	,	//	338	140
-			0x017D	:	0x8E	,	//	381	142
-			0x2018	:	0x91	,	//	8216	145
-			0x2019	:	0x92	,	//	8217	146
-			0x201C	:	0x93	,	//	8220	147
-			0x201D	:	0x94	,	//	8221	148
-			0x2022	:	0x95	,	//	8226	149
-			0x2013	:	0x96	,	//	8211	150
-			0x2014	:	0x97	,	//	8212	151
-			0x02DC	:	0x98	,	//	732	152
-			0x2122	:	0x99	,	//	8482	153
-			0x0161	:	0x9A	,	//	353	154
-			0x203A	:	0x9B	,	//	8250	155
-			0x0153	:	0x9C	,	//	339	156
-			0x017E	:	0x9E	,	//	382	158
-			0x0178	:	0x9F		//	376	159
-		};
-		try {
-			const stream = new ActiveXObject("ADODB.Stream");
-			stream.type = adTypeText;
-			stream.charset = charset;
-			stream.open();
-			stream.loadFromFile(this.pathname);
-			const text = stream.readText(adReadAll);
-			stream.close();
-			const out = new Array(text.length);
-			for(let i = 0;i < text.length;i++) {
-				const x = text.charCodeAt(i);
-				if(0xFF < x) {
-					out[i] = map[x];
+		// 位置を無指定
+		if(offset === undefined) {
+			const adTypeText = 2;
+			const adReadAll = -1;
+			const charset = "iso-8859-1";
+			/**
+			 * @type {Object<number, number>}
+			 * @private
+			 */
+			const map = {
+				0x20AC	:	0x80	,	//	8364	128
+				0x201A	:	0x82	,	//	8218	130
+				0x0192	:	0x83	,	//	402	131
+				0x201E	:	0x84	,	//	8222	132
+				0x2026	:	0x85	,	//	8230	133
+				0x2020	:	0x86	,	//	8224	134
+				0x2021	:	0x87	,	//	8225	135
+				0x02C6	:	0x88	,	//	710	136
+				0x2030	:	0x89	,	//	8240	137
+				0x0160	:	0x8A	,	//	352	138
+				0x2039	:	0x8B	,	//	8249	139
+				0x0152	:	0x8C	,	//	338	140
+				0x017D	:	0x8E	,	//	381	142
+				0x2018	:	0x91	,	//	8216	145
+				0x2019	:	0x92	,	//	8217	146
+				0x201C	:	0x93	,	//	8220	147
+				0x201D	:	0x94	,	//	8221	148
+				0x2022	:	0x95	,	//	8226	149
+				0x2013	:	0x96	,	//	8211	150
+				0x2014	:	0x97	,	//	8212	151
+				0x02DC	:	0x98	,	//	732	152
+				0x2122	:	0x99	,	//	8482	153
+				0x0161	:	0x9A	,	//	353	154
+				0x203A	:	0x9B	,	//	8250	155
+				0x0153	:	0x9C	,	//	339	156
+				0x017E	:	0x9E	,	//	382	158
+				0x0178	:	0x9F		//	376	159
+			};
+			try {
+				const stream = new ActiveXObject("ADODB.Stream");
+				stream.type = adTypeText;
+				stream.charset = charset;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				const text = stream.readText(adReadAll);
+				stream.close();
+				const out = new Array(text.length);
+				for(let i = 0;i < text.length;i++) {
+					const x = text.charCodeAt(i);
+					if(0xFF < x) {
+						out[i] = map[x];
+					}
+					else {
+						out[i] = x;
+					}
 				}
-				else {
-					out[i] = x;
-				}
+				return out;
 			}
-			return out;
+			catch (e) {
+				console.log(e);
+				return [];
+			}
 		}
-		catch (e) {
-			console.log(e);
-			return [];
+		else {
+			try {
+				const filesize = this.length();
+				if(filesize === -1) {
+					console.log("filesize error");
+					return [];
+				}
+				// 位置を指定している場合
+				if(offset < 0 || filesize <= offset) {
+					console.log("offset error");
+					return [];
+				}
+				const ioffset = offset;
+				let isize = size !== undefined ? size : filesize - ioffset;
+				// 長さのチェック
+				if(filesize < (ioffset + isize) || isize < 0) {
+					isize = filesize - ioffset;
+				}
+				// バイト配列を読み込む
+				const adTypeBinary = 1;
+				const stream = new ActiveXObject("ADODB.Stream");
+				stream.Type = adTypeBinary;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				stream.position = ioffset;
+				const byte_array = stream.read(isize);
+				stream.close();
+				return System.createNumberArrayFromByteArray(byte_array);
+			}
+			catch (e) {
+				console.log(e);
+				return [];
+			}
 		}
 	}
 
@@ -935,35 +977,75 @@ export default class SFile {
 	 * - 参考速度：1.0 sec/MB
 	 * 
 	 * @param {number[]} array_
+	 * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
 	 * @returns {boolean}
 	 */
-	setBinaryFile(array_) {
+	setBinaryFile(array_, offset) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
+		// 位置を無指定
 		let is_write = true;
-		const adTypeText = 2;
-		const adSaveCreateOverWrite = 2;
-		const charset = "iso-8859-1";
-		const buffersize = 1024 * 128;
-		try {
-			const stream = new ActiveXObject("ADODB.Stream");
-			stream.type = adTypeText;
-			stream.charset = charset;
-			stream.open();
-			for(let i = 0;i < array_.length;) {
-				const text = [];
-				for(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {
-					text[j] = String.fromCharCode(array_[i]);
+		if((offset === undefined) || offset === 0) {
+			try {
+				const adTypeText = 2;
+				const adSaveCreateOverWrite = 2;
+				const charset = "iso-8859-1";
+				const buffersize = 1024 * 128;
+				const stream = new ActiveXObject("ADODB.Stream");
+				stream.type = adTypeText;
+				stream.charset = charset;
+				stream.open();
+				for(let i = 0;i < array_.length;) {
+					const text = [];
+					for(let j = 0; (j < buffersize) && (i < array_.length); j++, i++) {
+						text[j] = String.fromCharCode(array_[i]);
+					}
+					stream.writeText(text.join(""));
 				}
-				stream.writeText(text.join(""));
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
 			}
-			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-			stream.close();
+			catch (e) {
+				console.log(e);
+				is_write = false;
+			}
 		}
-		catch (e) {
-			console.log(e);
-			is_write = false;
+		else {
+			const adTypeBinary = 1;
+			const adSaveCreateOverWrite = 2;
+			if(!this.isFile()) {
+				const byte_array = System.createByteArrayFromNumberArray(array_, offset);
+				if(byte_array === null) {
+					console.log("createByteArrayFromNumberArray");
+					return false;
+				}
+				const stream = new ActiveXObject("ADODB.Stream");
+				stream.Type = adTypeBinary;
+				stream.open();
+				stream.write(byte_array);
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
+			}
+			try {
+				const byte_array = System.createByteArrayFromNumberArray(array_);
+				if(byte_array === null) {
+					console.log("createByteArrayFromNumberArray");
+					return false;
+				}
+				const stream = new ActiveXObject("ADODB.Stream");
+				stream.Type = adTypeBinary;
+				stream.open();
+				stream.loadFromFile(this.pathname);
+				stream.position = offset;
+				stream.write(byte_array);
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
+			}
+			catch (e) {
+				console.log(e);
+				is_write = false;
+			}
 		}
 		return is_write;
 	}
@@ -1001,46 +1083,6 @@ export default class SFile {
 		return hash[0].replace(/ /g, "");
 	}
 
-	/**
-	 * XMLHttpRequestを作成
-	 * @returns {XMLHttpRequest}
-	 */
-	static createXMLHttpRequest() {
-		try {
-			return new XMLHttpRequest();
-		}
-		catch (e) {
-			const MSXMLHTTP = [
-				"WinHttp.WinHttpRequest.5.1",
-				"WinHttp.WinHttpRequest.5",
-				"WinHttp.WinHttpRequest",
-				"Msxml2.ServerXMLHTTP.6.0",
-				"Msxml2.ServerXMLHTTP.5.0",
-				"Msxml2.ServerXMLHTTP.4.0",
-				"Msxml2.ServerXMLHTTP.3.0",
-				"Msxml2.ServerXMLHTTP",
-				"Microsoft.ServerXMLHTTP",
-				"Msxml2.XMLHTTP.6.0",
-				"Msxml2.XMLHTTP.5.0",
-				"Msxml2.XMLHTTP.4.0",
-				"Msxml2.XMLHTTP.3.0",
-				"Msxml2.XMLHTTP",
-				"Microsoft.XMLHTTP"
-			];
-			// ※ WinHttp.WinHttpRequest は onreadystatechange の書き換えができない
-			let i;
-			for(i = 0; i < MSXMLHTTP.length; i++) {
-				try {
-					return new ActiveXObject(MSXMLHTTP[i]);
-				}
-				catch (e) {
-					continue;
-				}
-			}
-			return null;
-		}
-	}
-	
 	/**
 	 * テンポラリフォルダ内の適当なファイル名を取得
 	 * @returns {SFile}

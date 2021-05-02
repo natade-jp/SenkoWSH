@@ -60,6 +60,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "senkowsh/src/senkowsh.js~senkowsh",
+    "variable/index.html#static-variable-SenkoWSH",
+    "<span>SenkoWSH</span> <span class=\"search-result-import-path\">senkowsh/src/SenkoWSH.js</span>",
+    "variable"
+  ],
+  [
     "senkowsh/src/mojijs/stringcomparator.js~stringcomparator",
     "class/src/mojijs/StringComparator.js~StringComparator.html",
     "<span>StringComparator</span> <span class=\"search-result-import-path\">senkowsh/src/mojijs/StringComparator.js</span>",
@@ -1092,12 +1098,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/sfile.js~sfile.createxmlhttprequest",
-    "class/src/senko/SFile.js~SFile.html#static-method-createXMLHttpRequest",
-    "src/senko/SFile.js~SFile.createXMLHttpRequest",
-    "method"
-  ],
-  [
     "src/senko/sfile.js~sfile.extract",
     "class/src/senko/SFile.js~SFile.html#static-method-extract",
     "src/senko/SFile.js~SFile.extract",
@@ -1149,6 +1149,30 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.beep",
     "class/src/senko/System.js~System.html#static-method-beep",
     "src/senko/System.js~System.beep",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.createbytearrayfromnumberarray",
+    "class/src/senko/System.js~System.html#static-method-createByteArrayFromNumberArray",
+    "src/senko/System.js~System.createByteArrayFromNumberArray",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.createmsxmldomdocument",
+    "class/src/senko/System.js~System.html#static-method-createMSXMLDOMDocument",
+    "src/senko/System.js~System.createMSXMLDOMDocument",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.createnumberarrayfrombytearray",
+    "class/src/senko/System.js~System.html#static-method-createNumberArrayFromByteArray",
+    "src/senko/System.js~System.createNumberArrayFromByteArray",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.createxmlhttprequest",
+    "class/src/senko/System.js~System.html#static-method-createXMLHttpRequest",
+    "src/senko/System.js~System.createXMLHttpRequest",
     "method"
   ],
   [
@@ -1215,6 +1239,12 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.initializecurrentdirectory",
     "class/src/senko/System.js~System.html#static-method-initializeCurrentDirectory",
     "src/senko/System.js~System.initializeCurrentDirectory",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.isdefined",
+    "class/src/senko/System.js~System.html#static-method-isDefined",
+    "src/senko/System.js~System.isDefined",
     "method"
   ],
   [
@@ -1440,12 +1470,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/polyfill/extendsstring.js~extendsstring.fromcodepoint",
-    "class/src/senko/polyfill/ExtendsString.js~ExtendsString.html#static-method-fromCodePoint",
-    "src/senko/polyfill/ExtendsString.js~ExtendsString.fromCodePoint",
-    "method"
-  ],
-  [
     "src/senko/polyfill/extendsstring.js~extendsstring.ishighsurrogateat",
     "class/src/senko/polyfill/ExtendsString.js~ExtendsString.html#static-method-isHighSurrogateAt",
     "src/senko/polyfill/ExtendsString.js~ExtendsString.isHighSurrogateAt",
@@ -1479,12 +1503,6 @@ window.esdocSearchIndex = [
     "src/senko/polyfill/extendsstring.js~extendsstring.startswith",
     "class/src/senko/polyfill/ExtendsString.js~ExtendsString.html#static-method-startsWith",
     "src/senko/polyfill/ExtendsString.js~ExtendsString.startsWith",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsstring.js~extendsstring.toutf16arrayfromcodepoint",
-    "class/src/senko/polyfill/ExtendsString.js~ExtendsString.html#static-method-toUTF16ArrayfromCodePoint",
-    "src/senko/polyfill/ExtendsString.js~ExtendsString.toUTF16ArrayfromCodePoint",
     "method"
   ],
   [

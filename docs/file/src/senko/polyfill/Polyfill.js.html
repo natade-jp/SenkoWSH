@@ -29,7 +29,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SenkoWSH">SenkoWSH</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
@@ -72,6 +73,28 @@
 import typeExtendsArray from &quot;./ExtendsArray.js&quot;;
 import typeExtendsObject from &quot;./ExtendsObject.js&quot;;
 import typeExtendsString from &quot;./ExtendsString.js&quot;;
+
+/**
+ * &#x30B0;&#x30ED;&#x30FC;&#x30D0;&#x30EB;&#x7A7A;&#x9593;
+ * &#x53C2;&#x8003;
+ *  JavaScript&#x5927;&#x57DF;&#x5909;&#x6570;&#x306E;&#x5B58;&#x5728;&#x78BA;&#x8A8D;
+ *  https://m-hiyama.hatenablog.com/entry/20071126/1196037633
+ * @private
+ */
+var global_var = ( function() { return this; } ).apply( null, [] );
+
+if(!(&quot;globalThis&quot; in global_var)) {
+	// @ts-ignore
+	globalThis = global_var;
+}
+if(!(&quot;global&quot; in globalThis)) {
+	// @ts-ignore
+	global = globalThis;
+}
+if(!(&quot;window&quot; in globalThis)) {
+	// @ts-ignore
+	window = globalThis;
+}
 
 /**
  * @type {typeof typeExtendsArray}
@@ -123,6 +146,27 @@ const extendClass = function(original, extension) {
 extendClass(Array, typeExtendsArray);
 extendClass(Object, typeExtendsObject);
 extendClass(String, typeExtendsString);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Class for improving compatibility.
@@ -201,7 +245,72 @@ export default class Polyfill {
 				return Array.prototype.slice.call(arguments);
 			};
 		}
+		if(!String.fromCodePoint) {
+			/**
+			 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;UTF16&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+			 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;UTF-32&#x306E;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+			 * @returns {Array&lt;number&gt;} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+			 * @private
+			 */
+			const toUTF16ArrayfromCodePoint = function() {
+				/**
+				 * @type {Array&lt;number&gt;}
+				 * @private
+				 */
+				const utf16_array = [];
+				/**
+				 * @type {Array&lt;number&gt;}
+				 * @private
+				 */
+				let codepoint_array = [];
+				if(arguments[0].length) {
+					codepoint_array = arguments[0];
+				}
+				else {
+					for(let i = 0;i &lt; arguments.length;i++) {
+						codepoint_array[i] = arguments[i];
+					}
+				}
+				for(let i = 0;i &lt; codepoint_array.length;i++) {
+					const codepoint = codepoint_array[i];
+					if(0x10000 &lt;= codepoint) {
+						const high = (( codepoint - 0x10000 ) &gt;&gt; 10) + 0xD800;
+						const low  = (codepoint &amp; 0x3FF) + 0xDC00;
+						utf16_array.push(high);
+						utf16_array.push(low);
+					}
+					else {
+						utf16_array.push(codepoint);
+					}
+				}
+				return utf16_array;
+			}
 
+			/**
+			 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+			 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x6570;&#x5024;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+			 * @returns {string} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+			 */
+			String.fromCodePoint = function(codepoint) {
+				let utf16_array = null;
+				if(codepoint instanceof Array) {
+					utf16_array = toUTF16ArrayfromCodePoint(codepoint);
+				}
+				else {
+					const codepoint_array = [];
+					for(let i = 0;i &lt; arguments.length;i++) {
+						codepoint_array[i] = arguments[i];
+					}
+					utf16_array = toUTF16ArrayfromCodePoint(codepoint_array);
+				}
+				const text = [];
+				for(let i = 0;i &lt; utf16_array.length;i++) {
+					text[text.length] = String.fromCharCode(utf16_array[i]);
+				}
+				return text.join(&quot;&quot;);
+			};
+
+		}
 	}
 }
 

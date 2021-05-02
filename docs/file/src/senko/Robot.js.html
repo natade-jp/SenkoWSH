@@ -29,7 +29,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SenkoWSH">SenkoWSH</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
@@ -557,6 +558,21 @@ export default class Robot {
 			}
 		}
 		code += &quot;}&quot;;
+		/*
+			user32.dll
+			void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)
+			for ($i=0; $i -lt &quot; + count_max + &quot;; $i++){
+				$api::keybd_event(&quot; + VK_DATA.VK_SHIFT.code + &quot;, 0, 0, 0);
+				$api::keybd_event(&quot; + VK_DATA.VK_MENU.code + &quot;, 0, 0, 0);
+				$api::keybd_event(&quot; + VK_DATA.VK_CONTROL.code + &quot;, 0, 0, 0);
+				$api::keybd_event(&quot; + vkcode.code + &quot;, 0, 0, 0);
+				Start-Sleep -m &quot; + time_ms + &quot;;
+				$api::keybd_event(&quot; + vkcode.code + &quot;, 0, &quot; + KEYEVENTF_KEYUP + &quot;, 0);
+				$api::keybd_event(&quot; + VK_DATA.VK_CONTROL.code + &quot;, 0, &quot; + KEYEVENTF_KEYUP + &quot;, 0);
+				$api::keybd_event(&quot; + VK_DATA.VK_MENU.code + &quot;, 0, &quot; + KEYEVENTF_KEYUP + &quot;, 0);
+				$api::keybd_event(&quot; + VK_DATA.VK_SHIFT.code + &quot;, 0, &quot; + KEYEVENTF_KEYUP + &quot;, 0);
+			}
+		*/
 		System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)&quot;,
@@ -615,6 +631,15 @@ export default class Robot {
 			code += &quot;$api::mouse_event(&quot; + released_code + &quot;, 0, 0, 0, 0);&quot;;
 		}
 		code += &quot;}&quot;;
+		/*
+			user32.dll
+			void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)
+			for ($i=0; $i -lt &quot; + count_max + &quot;; $i++){
+				$api::mouse_event(&quot; + pushed_code + &quot;, 0, 0, 0, 0);
+				Start-Sleep -m &quot; + time_ms + &quot;;
+				$api::mouse_event(&quot; + released_code + &quot;, 0, 0, 0, 0);
+			}
+		*/
 		System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)&quot;,
@@ -628,11 +653,10 @@ export default class Robot {
 	 */
 	static getCursorPosition() {
 		/*
-		&#x4EE5;&#x4E0B;&#x306E;&#x884C;&#x3092;1&#x884C;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
-		[void] [System.Reflection.Assembly]::LoadWithPartialName(&quot;System.Windows.Forms&quot;);
-		$X = [System.Windows.Forms.Cursor]::Position.X;
-		$Y = [System.Windows.Forms.Cursor]::Position.Y;
-		&quot;$X,$Y&quot;
+			[void] [System.Reflection.Assembly]::LoadWithPartialName(&quot;System.Windows.Forms&quot;);
+			$X = [System.Windows.Forms.Cursor]::Position.X;
+			$Y = [System.Windows.Forms.Cursor]::Position.Y;
+			&quot;$X,$Y&quot;
 		*/
 		// eslint-disable-next-line quotes
 		const text = System.PowerShell(&apos;[void] [System.Reflection.Assembly]::LoadWithPartialName(&quot;System.Windows.Forms&quot;);$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;&quot;$X,$Y&quot;&apos;);
@@ -649,6 +673,11 @@ export default class Robot {
 	 * @param {WSHRobotPosition} position
 	 */
 	static setCursorPosition(position) {
+		/*
+			user32.dll
+			void SetCursorPos(int X, int Y)
+			$api::SetCursorPos(&quot; + position.x + &quot;, &quot; + position.y + &quot;);
+		*/
 		System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;void SetCursorPos(int X, int Y)&quot;,
@@ -676,6 +705,13 @@ export default class Robot {
 		let command = &quot;$api::FindWindow(&quot;;
 		command += (get_handle_data.classname ? &quot;\&quot;&quot; + get_handle_data.classname + &quot;\&quot;&quot; : &quot;0&quot;) + &quot;,&quot;;
 		command += (get_handle_data.windowtext ? &quot;\&quot;&quot; + get_handle_data.windowtext + &quot;\&quot;&quot; : &quot;0&quot;) + &quot;);&quot;;
+		/*
+			user32.dll
+			IntPtr FindWindow(string lpClassName, string lpWindowName)
+			IntPtr FindWindow(string lpClassName, IntPtr lpWindowName)
+			IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)
+			$api::FindWindow(*,*);
+		*/
 		return parseFloat(System.WindowsAPI( &quot;user32.dll&quot;, function_text, command));
 	}
 
@@ -695,6 +731,13 @@ export default class Robot {
 	 * @returns {string}
 	 */
 	static getClassName(handle) {
+		/*
+			user32.dll
+			IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)
+			$buff = New-Object System.Text.StringBuilder 256;
+			$null = $api::GetClassName(&quot; + handle + &quot;, $buff, 256);
+			$($buff.ToString());
+		 */
 		return System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)&quot;,
@@ -718,6 +761,13 @@ export default class Robot {
 	 * @returns {string}
 	 */
 	static getWindowText(handle) {
+		/*
+			user32.dll
+			IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)
+			$buff = New-Object System.Text.StringBuilder 256;
+			$null = $api::GetWindowText(&quot; + handle + &quot;, $buff, 256);
+			$($buff.ToString());
+		 */
 		return System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)&quot;,
@@ -732,18 +782,17 @@ export default class Robot {
 	 */
 	static getWindowRect(handle) {
 		/*
-		&#x4EE5;&#x4E0B;&#x306E;&#x884C;&#x3092;1&#x884C;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
-		Add-Type -TypeDefinition @&quot;
-		using System;
-		using System.Runtime.InteropServices;
-		public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
-		public class API {
-			[DllImport(&quot;user32.dll&quot;)] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-			public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }
-		}
-		&quot;@
-		$rect = [API]::getrect(x);
-		&quot;$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)&quot;
+			Add-Type -TypeDefinition @&quot;
+			using System;
+			using System.Runtime.InteropServices;
+			public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+			public class API {
+				[DllImport(&quot;user32.dll&quot;)] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+				public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; }
+			}
+			&quot;@
+			$rect = [API]::getrect(x);
+			&quot;$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)&quot;
 		*/
 		// eslint-disable-next-line quotes
 		const command = `Add-Type -TypeDefinition &quot;using System; using System.Runtime.InteropServices; public struct RECT { public int Left; public int Top; public int Right; public int Bottom; } public class API { [DllImport(&quot;&quot;user32.dll&quot;&quot;)] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect); public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; } }&quot;;  $rect = [API]::getrect(` + handle + `); &quot;$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)&quot;`;
@@ -771,6 +820,11 @@ export default class Robot {
 	 * @returns {void}
 	 */
 	static setWindowRect(handle, rect) {
+		/*
+			user32.dll
+			bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)
+			$api::MoveWindow(&quot; + handle + &quot; , &quot; + (rect.x|0) + &quot;, &quot; + (rect.y|0) + &quot;, &quot; + (rect.width|0) + &quot;, &quot; + (rect.height|0) + &quot;, 1 );
+		 */
 		System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)&quot;,
@@ -783,6 +837,11 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getActiveWindow() {
+		/*
+			user32.dll
+			IntPtr GetForegroundWindow()
+			$api::GetForegroundWindow();
+		*/
 		return parseFloat(System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;IntPtr GetForegroundWindow()&quot;,
@@ -796,6 +855,11 @@ export default class Robot {
 	 * @returns {void}
 	 */
 	static setActiveWindow(handle) {
+		/*
+			user32.dll
+			bool SetForegroundWindow(IntPtr hWnd)
+			$api::SetForegroundWindow(&quot; + handle + &quot;);
+		*/
 		System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;bool SetForegroundWindow(IntPtr hWnd)&quot;,
@@ -809,6 +873,13 @@ export default class Robot {
 	 * @returns {number}
 	 */
 	static getPID(handle) {
+		/*
+			user32.dll
+			IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)
+			$getpid = 0;
+			$null = $api::GetWindowThreadProcessId(&quot; + handle + &quot;, [ref] $getpid);
+			$getpid;
+		 */
 		return parseFloat(System.WindowsAPI(
 			&quot;user32.dll&quot;,
 			&quot;IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)&quot;,
@@ -817,17 +888,12 @@ export default class Robot {
 	}
 
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D7;&#x30ED;&#x30BB;&#x30B9;ID&#x3092;&#x4FEE;&#x4E86;&#x3055;&#x305B;&#x308B;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D7;&#x30ED;&#x30BB;&#x30B9;ID&#x3092;&#x7D42;&#x4E86;&#x3055;&#x305B;&#x308B;
 	 * @param {number} pid 
 	 */
 	static terminateProcess(pid) {
 		return System.run(&quot;taskkill /PID &quot; + pid, 0, true);
 	}
-
-	
-
-
-	// TODO &#x30DE;&#x30A6;&#x30B9;&#x3092;&#x79FB;&#x52D5;&#x3055;&#x305B;&#x305F;&#x308A;&#x3001;&#x30AD;&#x30FC;&#x30DC;&#x30FC;&#x30C9;&#x3092;&#x5165;&#x529B;&#x3059;&#x308B;&#x64CD;&#x4F5C;&#x3092;&#x8FFD;&#x52A0;&#x3059;&#x308B;&#x4E88;&#x5B9A;
 
 }
 

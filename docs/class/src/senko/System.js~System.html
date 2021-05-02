@@ -29,7 +29,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SenkoWSH">SenkoWSH</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
@@ -59,13 +60,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import System from &apos;<span><a href="file/src/senko/System.js.html#lineNumber65">senkowsh/src/senko/System.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import System from &apos;<span><a href="file/src/senko/System.js.html#lineNumber66">senkowsh/src/senko/System.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/senko/System.js.html#lineNumber65">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/senko/System.js.html#lineNumber66">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -131,6 +132,9 @@
         
         
         <div data-ice="description"><p>PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3001;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3057;&#x307E;&#x3059;</li>
+</ul>
 </div>
       </div>
     </td>
@@ -189,6 +193,135 @@
         
         
         <div data-ice="description"><p>&#x30D3;&#x30FC;&#x30D7;&#x97F3;&#x3092;&#x9CF4;&#x3089;&#x3059;</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-createByteArrayFromNumberArray">createByteArrayFromNumberArray</a></span></span><span class="code" data-ice="signature">(number_array: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span>, offset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span>any</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>&#x6570;&#x5024;&#x914D;&#x5217;&#x304B;&#x3089;<code>Byte &#x914D;&#x5217;</code>&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;</p>
+<ul>
+<li><code>ADODB.Stream</code> &#x306A;&#x3069;&#x3092;&#x7528;&#x3044;&#x3066;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x3092; <code>JavaScript</code> &#x3067;&#x3082;&#x6271;&#x3048;&#x308B;&#x578B;&#x3078;&#x5909;&#x66F4;&#x3059;&#x308B;</li>
+<li><code>offset</code> &#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;&#x3001;&#x51FA;&#x529B;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;&#x306F;&#x305D;&#x306E;&#x4F4D;&#x7F6E;&#x307E;&#x3067;&#x306F; <code>NUL</code> &#x3067;&#x57CB;&#x307E;&#x3063;&#x305F;&#x914D;&#x5217;&#x3068;&#x306A;&#x308B;</li>
+</ul>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-createMSXMLDOMDocument">createMSXMLDOMDocument</a></span></span><span class="code" data-ice="signature">(): <span>any</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p><code>MSXML2.DOMDocument</code> &#x3092;&#x4F5C;&#x6210;</p>
+<ul>
+<li>&#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code></li>
+</ul>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-createNumberArrayFromByteArray">createNumberArrayFromByteArray</a></span></span><span class="code" data-ice="signature">(byte_array: <span>any</span>): <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p><code>Byte &#x914D;&#x5217;</code> &#x304B;&#x3089;&#x6570;&#x5024;&#x914D;&#x5217;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;</p>
+<ul>
+<li><code>ADODB.Stream</code> &#x306A;&#x3069;&#x3092;&#x7528;&#x3044;&#x3066;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x3092; <code>JavaScript</code> &#x3067;&#x3082;&#x6271;&#x3048;&#x308B;&#x578B;&#x3078;&#x5909;&#x66F4;&#x3059;&#x308B;</li>
+</ul>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-createXMLHttpRequest">createXMLHttpRequest</a></span></span><span class="code" data-ice="signature">(): <span>XMLHttpRequest</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p><code>XMLHttpRequest</code> &#x3092;&#x4F5C;&#x6210;</p>
+<ul>
+<li>&#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code></li>
+</ul>
 </div>
       </div>
     </td>
@@ -530,6 +663,35 @@
           
           
           
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-isDefined">isDefined</a></span></span><span class="code" data-ice="signature">(variable_name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5909;&#x6570;&#x304C;&#x5B9A;&#x7FA9;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x304B;&#x8ABF;&#x3079;&#x308B;</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      <span data-ice="static">static</span>
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
           <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-print">print</a></span></span><span class="code" data-ice="signature">(text: <span>any</span>)</span>
         </p>
       </div>
@@ -801,7 +963,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber317">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber329">source</a></span></span>
     </span>
   </h3>
 
@@ -809,6 +971,9 @@
   
   
   <div data-ice="description"><p>PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3001;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3057;&#x307E;&#x3059;</li>
+</ul>
 </div>
 
   
@@ -873,7 +1038,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber335">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber348">source</a></span></span>
     </span>
   </h3>
 
@@ -883,9 +1048,9 @@
   <div data-ice="description"><p>WindowsAPI &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
 <p>&#x4F8B;</p>
 <ul>
-<li>dll_name : user32.dll</li>
-<li>function_text : int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)</li>
-<li>exec_text : $api::MessageBox(0, &quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&quot;, &quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&quot;, 0);</li>
+<li><code>dll_name</code> : <code>&quot;user32.dll&quot;</code></li>
+<li><code>function_text</code> : <code>&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;&quot;</code></li>
+<li><code>exec_text</code> : <code>&quot;$api::MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0);&quot;</code></li>
 </ul>
 </div>
 
@@ -910,7 +1075,7 @@
       <td data-ice="name" class="code" data-depth="0">function_text</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>&#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;($api&#x306B;&#x4EE3;&#x5165;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;)</p>
+      <td data-ice="description"><p>&#x95A2;&#x6570;&#x306E;&#x5B9A;&#x7FA9;&#x30C7;&#x30FC;&#x30BF;(<code>$api</code>&#x306B;&#x4EE3;&#x5165;&#x3055;&#x308C;&#x307E;&#x3059;&#x3002;)</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
@@ -966,7 +1131,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber150">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber151">source</a></span></span>
     </span>
   </h3>
 
@@ -1023,6 +1188,282 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-createByteArrayFromNumberArray">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">createByteArrayFromNumberArray</span><span class="code" data-ice="signature">(number_array: <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span>, offset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span>any</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber506">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>&#x6570;&#x5024;&#x914D;&#x5217;&#x304B;&#x3089;<code>Byte &#x914D;&#x5217;</code>&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;</p>
+<ul>
+<li><code>ADODB.Stream</code> &#x306A;&#x3069;&#x3092;&#x7528;&#x3044;&#x3066;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x3092; <code>JavaScript</code> &#x3067;&#x3082;&#x6271;&#x3048;&#x308B;&#x578B;&#x3078;&#x5909;&#x66F4;&#x3059;&#x308B;</li>
+<li><code>offset</code> &#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;&#x3001;&#x51FA;&#x529B;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;&#x306F;&#x305D;&#x306E;&#x4F4D;&#x7F6E;&#x307E;&#x3067;&#x306F; <code>NUL</code> &#x3067;&#x57CB;&#x307E;&#x3063;&#x305F;&#x914D;&#x5217;&#x3068;&#x306A;&#x308B;</li>
+</ul>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">number_array</td>
+      <td data-ice="type" class="code"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">offset</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default:  0</li></ul></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span>any</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-createMSXMLDOMDocument">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">createMSXMLDOMDocument</span><span class="code" data-ice="signature">(): <span>any</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber447">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p><code>MSXML2.DOMDocument</code> &#x3092;&#x4F5C;&#x6210;</p>
+<ul>
+<li>&#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code></li>
+</ul>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span>any</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-createNumberArrayFromByteArray">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">createNumberArrayFromByteArray</span><span class="code" data-ice="signature">(byte_array: <span>any</span>): <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber472">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p><code>Byte &#x914D;&#x5217;</code> &#x304B;&#x3089;&#x6570;&#x5024;&#x914D;&#x5217;&#x3092;&#x4F5C;&#x6210;&#x3059;&#x308B;</p>
+<ul>
+<li><code>ADODB.Stream</code> &#x306A;&#x3069;&#x3092;&#x7528;&#x3044;&#x3066;&#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x3092; <code>JavaScript</code> &#x3067;&#x3082;&#x6271;&#x3048;&#x308B;&#x578B;&#x3078;&#x5909;&#x66F4;&#x3059;&#x308B;</li>
+</ul>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">byte_array</td>
+      <td data-ice="type" class="code"><span>any</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-createXMLHttpRequest">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">createXMLHttpRequest</span><span class="code" data-ice="signature">(): <span>XMLHttpRequest</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber406">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p><code>XMLHttpRequest</code> &#x3092;&#x4F5C;&#x6210;</p>
+<ul>
+<li>&#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code></li>
+</ul>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span>XMLHttpRequest</span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="static-method-currentTimeMillis">
     <span class="access" data-ice="access">public</span>
     <span data-ice="static">static</span>
@@ -1034,7 +1475,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber123">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber124">source</a></span></span>
     </span>
   </h3>
 
@@ -1090,7 +1531,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber178">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber179">source</a></span></span>
     </span>
   </h3>
 
@@ -1162,7 +1603,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber214">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber224">source</a></span></span>
     </span>
   </h3>
 
@@ -1185,7 +1626,7 @@
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" class="code" data-depth="0">is_use_chakra</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
-      <td data-ice="appendix"></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>&#x9AD8;&#x901F;&#x306A;Chakra&#x30A8;&#x30F3;&#x30B8;&#x30F3;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;&#xFF08;wsf&#x304C;&#x958B;&#x3051;&#x306A;&#x304F;&#x306A;&#x308B;&#xFF09;</p>
 </td>
     </tr>
@@ -1223,7 +1664,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber237">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber247">source</a></span></span>
     </span>
   </h3>
 
@@ -1267,7 +1708,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber206">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber216">source</a></span></span>
     </span>
   </h3>
 
@@ -1328,7 +1769,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber269">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber279">source</a></span></span>
     </span>
   </h3>
 
@@ -1384,7 +1825,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber353">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber376">source</a></span></span>
     </span>
   </h3>
 
@@ -1440,7 +1881,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber290">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber300">source</a></span></span>
     </span>
   </h3>
 
@@ -1496,7 +1937,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber258">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber268">source</a></span></span>
     </span>
   </h3>
 
@@ -1569,7 +2010,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber299">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber309">source</a></span></span>
     </span>
   </h3>
 
@@ -1625,7 +2066,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber307">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber317">source</a></span></span>
     </span>
   </h3>
 
@@ -1658,6 +2099,78 @@
   
 </div>
 <div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="static-method-isDefined">
+    <span class="access" data-ice="access">public</span>
+    <span data-ice="static">static</span>
+    
+    
+    
+    
+    <span class="code" data-ice="name">isDefined</span><span class="code" data-ice="signature">(variable_name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber208">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5909;&#x6570;&#x304C;&#x5B9A;&#x7FA9;&#x3055;&#x308C;&#x3066;&#x3044;&#x308B;&#x304B;&#x8ABF;&#x3079;&#x308B;</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">variable_name</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
   <h3 data-ice="anchor" id="static-method-print">
     <span class="access" data-ice="access">public</span>
     <span data-ice="static">static</span>
@@ -1669,7 +2182,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber71">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber72">source</a></span></span>
     </span>
   </h3>
 
@@ -1729,7 +2242,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber100">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber101">source</a></span></span>
     </span>
   </h3>
 
@@ -1796,7 +2309,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber85">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber86">source</a></span></span>
     </span>
   </h3>
 
@@ -1856,7 +2369,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber115">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber116">source</a></span></span>
     </span>
   </h3>
 
@@ -1912,7 +2425,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber164">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber165">source</a></span></span>
     </span>
   </h3>
 
@@ -2001,7 +2514,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber362">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber389">source</a></span></span>
     </span>
   </h3>
 
@@ -2061,7 +2574,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber281">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber291">source</a></span></span>
     </span>
   </h3>
 
@@ -2121,7 +2634,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber132">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber133">source</a></span></span>
     </span>
   </h3>
 
@@ -2145,7 +2658,8 @@
       <td data-ice="name" class="code" data-depth="0">time_sec</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>&#x505C;&#x6B62;&#x3059;&#x308B;&#x79D2;&#x6570;</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -2181,7 +2695,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber139">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber140">source</a></span></span>
     </span>
   </h3>
 

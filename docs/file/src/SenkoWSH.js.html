@@ -29,7 +29,8 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-SenkoWSH">SenkoWSH</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#konpeito">konpeito</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/konpeito/Random.js~Random.html">Random</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#mojijs">mojijs</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/Japanese.js~Japanese.html">Japanese</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/mojijs/StringComparator.js~StringComparator.html">StringComparator</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko">senko</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/CSV.js~CSV.html">CSV</a></span></span></li>
@@ -81,12 +82,11 @@ import typeStringComparator from &quot;./mojijs/StringComparator.js&quot;;
 import typeSystem from &quot;./senko/System.js&quot;;
 
 /**
- * &#x4E0A;&#x66F8;&#x304D;&#x9632;&#x6B62;&#x7528;
- * @private
+ * SenkoWSH
  */
 // @ts-ignore
 // eslint-disable-next-line no-undef
-SenkoWSH = {
+const SenkoWSH = {
 	
 	/**
  	 * @type {typeof typeCSV}
@@ -135,91 +135,76 @@ SenkoWSH = {
 
 };
 
-/**
- * @type {typeof typeCSV}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-CSV = typeCSV;
+export default SenkoWSH;
 
-/**
- * @type {typeof typeDialog}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Dialog = typeDialog;
-
-/**
- * @type {typeof typeSFile}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-SFile = typeSFile;
-
-/**
- * @type {typeof typeRobot}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Robot = typeRobot;
-
-/**
- * @type {typeof typeFormat}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Format = typeFormat;
-
-/**
- * @type {typeof typeRandom}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Random = typeRandom;
-
-/**
- * @type {typeof typeJapanese}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-Japanese = typeJapanese;
-
-/**
- * @type {typeof typeStringComparator}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-StringComparator = typeStringComparator;
-
-/**
- * @type {typeof typeSystem}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-System = typeSystem;
-
-/**
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-global-assign
-console = {
+if(!(typeSystem.isDefined(&quot;CSV&quot;))) {
 	// @ts-ignore
-	log : function(text) {
-		// @ts-ignore
-		// eslint-disable-next-line no-undef
-		SenkoWSH.System.println(text);
+	// eslint-disable-next-line no-undef
+	CSV = typeCSV;
+}
+
+if(!(typeSystem.isDefined(&quot;Dialog&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Dialog = typeDialog;
+}
+
+if(!(typeSystem.isDefined(&quot;SFile&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	SFile = typeSFile;
+}
+
+if(!(typeSystem.isDefined(&quot;Robot&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Robot = typeRobot;
+}
+
+if(!(typeSystem.isDefined(&quot;Format&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Format = typeFormat;
+}
+
+if(!(typeSystem.isDefined(&quot;Random&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Random = typeRandom;
+}
+
+if(!(typeSystem.isDefined(&quot;Japanese&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	Japanese = typeJapanese;
+}
+
+if(!(typeSystem.isDefined(&quot;StringComparator&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	StringComparator = typeStringComparator;
+}
+
+if(!(typeSystem.isDefined(&quot;System&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-undef
+	System = typeSystem;
+}
+
+if(!(typeSystem.isDefined(&quot;console&quot;))) {
+	// @ts-ignore
+	// eslint-disable-next-line no-global-assign
+	global.console = {}
+}
+
+if(console.log === undefined) {
+	// @ts-ignore
+	console.log = function(text) {
+		if((/cscript\.exe$/i.test(WSH.FullName))) {
+			typeSystem.println(text);
+		}
 	}
-};
+}
 
 </code></pre>
 

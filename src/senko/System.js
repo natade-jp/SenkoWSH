@@ -397,6 +397,145 @@ export default class System {
 		System.PowerShell(command);
 	}
 
+	/**
+	 * `XMLHttpRequest` を作成
+	 * - 取得できない場合は `null`
+	 * 
+	 * @returns {XMLHttpRequest}
+	 */
+	 static createXMLHttpRequest() {
+		try {
+			return new XMLHttpRequest();
+		}
+		catch (e) {
+			const MSXMLHTTP = [
+				"WinHttp.WinHttpRequest.5.1",
+				"WinHttp.WinHttpRequest.5",
+				"WinHttp.WinHttpRequest",
+				"Msxml2.ServerXMLHTTP.6.0",
+				"Msxml2.ServerXMLHTTP.5.0",
+				"Msxml2.ServerXMLHTTP.4.0",
+				"Msxml2.ServerXMLHTTP.3.0",
+				"Msxml2.ServerXMLHTTP",
+				"Microsoft.ServerXMLHTTP",
+				"Msxml2.XMLHTTP.6.0",
+				"Msxml2.XMLHTTP.5.0",
+				"Msxml2.XMLHTTP.4.0",
+				"Msxml2.XMLHTTP.3.0",
+				"Msxml2.XMLHTTP",
+				"Microsoft.XMLHTTP"
+			];
+			// ※ WinHttp.WinHttpRequest は onreadystatechange の書き換えができない
+			for(let i = 0; i < MSXMLHTTP.length; i++) {
+				try {
+					return new ActiveXObject(MSXMLHTTP[i]);
+				}
+				catch (e) {
+					continue;
+				}
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * `MSXML2.DOMDocument` を作成
+	 * - 取得できない場合は `null`
+	 * 
+	 * @returns {any}
+	 */
+	 static createMSXMLDOMDocument() {
+		const MSXMLDOM = [
+			"Msxml2.DOMDocument.6.0",
+			"Msxml2.DOMDocument.3.0",
+			"Msxml2.DOMDocument",
+			"Microsoft.XMLDOM"
+		];
+		for(let i = 0; i < MSXMLDOM.length; i++) {
+			try {
+				return new ActiveXObject(MSXMLDOM[i]);
+			}
+			catch (e) {
+				continue;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * `Byte 配列` から数値配列を作成する
+	 * - `ADODB.Stream` などを用いて取得したバイナリ配列を `JavaScript` でも扱える型へ変更する
+	 * 
+	 * @param {any} byte_array
+	 * @returns {number[]}
+	 */
+	static createNumberArrayFromByteArray(byte_array) {
+		const dom = System.createMSXMLDOMDocument();
+		if(dom === null) {
+			console.log("createMSXMLDOMDocument")
+			return [];
+		}
+
+		// バイト配列から16進数テキストへ変換
+		// 参考
+		// https://qiita.com/tnakagawa/items/9bcc26b501f5b995d896
+		const element = dom.createElement("hex");
+		element.dataType = "bin.hex";
+		element.nodeTypedValue = byte_array;
+		/**
+		 * @type {string}
+		 */
+		const hex_text = element.text;
+		const out = new Array(hex_text.length / 2);
+		// バイト文字列から配列へ変更
+		for(let i = 0; i < out.length; i++) {
+			out[i] = Number.parseInt(hex_text.substr(i * 2, 2), 16);
+		}
+		return out;
+	}
+
+	/**
+	 * 数値配列から`Byte 配列`を作成する
+	 * - `ADODB.Stream` などを用いて取得したバイナリ配列を `JavaScript` でも扱える型へ変更する
+	 * - `offset` を指定した場合は、出力したバイト配列はその位置までは `NUL` で埋まった配列となる
+	 * 
+	 * @param {number[]} number_array
+	 * @param {number} [offset = 0]
+	 * @returns {any}
+	 */
+	 static createByteArrayFromNumberArray(number_array, offset) {
+		const dom = System.createMSXMLDOMDocument();
+		if(dom === null) {
+			console.log("createMSXMLDOMDocument")
+			return null;
+		}
+		let max_size = offset !== undefined ? offset : 0;
+		let hex_string = [];
+		// offsetが設定されている場合は、オフセット位置まで00で埋める
+		let p;
+		for(p = 0; p < max_size; p++) {
+			hex_string[p] = "00";
+		}
+		max_size += number_array.length;
+		// 16進数の文字列を作成する
+		for(let i = 0; p < max_size; i++, p++) {
+			if(number_array[i] < 16) {
+				hex_string[p] = "0" + number_array[i].toString(16);
+			}
+			else {
+				hex_string[p] = number_array[i].toString(16);
+			}
+		}
+		// バイト配列から16進数テキストへ変換
+		// 参考
+		// https://qiita.com/tnakagawa/items/9bcc26b501f5b995d896
+		const element = dom.createElement("hex");
+		element.dataType = "bin.hex";
+		element.text = hex_string.join("");
+		const byte_array = element.nodeTypedValue;
+		return byte_array;
+	}
+
 }
 
 

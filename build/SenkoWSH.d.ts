@@ -239,9 +239,9 @@ declare class CSV {
 /**
  * ポップアップ用のオプション
  * @typedef {Object} PopupOption
- * @property {number} [secondstowait=0] タイムアウト時間(0で無効)
+ * @property {number} [secondstowait=0] タイムアウト時間(`0`で無効)
  * @property {string} [caption=""] タイトルバー
- * @property {number} [type=0] Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3 など
+ * @property {number} [type=0] `Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3` など
  */
 declare type PopupOption = {
     secondstowait?: number;
@@ -252,9 +252,9 @@ declare type PopupOption = {
 /**
  * 「ファイルを開く」ダイアログ用のオプション
  * @typedef {Object} OpenFileOption
- * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
- * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
- * @property {string} [title] タイトル(「ファイルを選択してください」など)
+ * @property {string} [initial_directory] 初期ディレクトリ(`"C:\"`など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（`"画像ファイル(*.png;*.bmp)|*.png;*.bmp"`など）
+ * @property {string} [title] タイトル(「`ファイルを選択してください`」など)
  */
 declare type OpenFileOption = {
     initial_directory?: string;
@@ -265,8 +265,8 @@ declare type OpenFileOption = {
 /**
  * 「フォルダを開く」ダイアログ用のオプション
  * @typedef {Object} OpenDirectoryOption
- * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
- * @property {string} [title] タイトル(「フォルダを選択してください」など)
+ * @property {string} [initial_directory] 初期ディレクトリ(`"C:\"`など)
+ * @property {string} [title] タイトル(「`フォルダを選択してください`」など)
  */
 declare type OpenDirectoryOption = {
     initial_directory?: string;
@@ -276,11 +276,11 @@ declare type OpenDirectoryOption = {
 /**
  * 「名前を付けて保存する」ダイアログ用のオプション
  * @typedef {Object} SaveAsOption
- * @property {string} [initial_directory] 初期ディレクトリ("C:\"など)
- * @property {string} [default_ext] 拡張子を省略した場合の値(".txt"など)
- * @property {string} [file_name] ファイル名の初期値("新しいファイル.txt"など)
- * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（"画像ファイル(*.png;*.bmp)|*.png;*.bmp"など）
- * @property {string} [title] タイトル(「保存するファイル名を設定してください」など)
+ * @property {string} [initial_directory] 初期ディレクトリ(`"C:\"`など)
+ * @property {string} [default_ext] 拡張子を省略した場合の値(`".txt"`など)
+ * @property {string} [file_name] ファイル名の初期値(`"新しいファイル.txt"`など)
+ * @property {string} [filter="All files(*.*)|*.*"] ファイル形式（`"画像ファイル(*.png;*.bmp)|*.png;*.bmp"`など）
+ * @property {string} [title] タイトル(「`保存するファイル名を設定してください`」など)
  */
 declare type SaveAsOption = {
     initial_directory?: string;
@@ -446,9 +446,9 @@ declare class Dialog {
  */
 declare class Format {
     /**
-     * printf に似た書式に合わせて文字列を組み立てる
+     * `printf` に似た書式に合わせて文字列を組み立てる
      * - ロケール、日付時刻等はサポートしていません。
-     * - 変換指定子のpとnはサポートしていません。
+     * - 変換指定子の`p`と`n`はサポートしていません。
      * @param {String} text
      * @param {...any} parm パラメータは可変引数
      * @returns {String}
@@ -456,7 +456,7 @@ declare class Format {
     static textf(text: string, ...parm: any[]): string;
     /**
      * 時刻用の書式に合わせて文字列を組み立てる
-     * - YYYY-MM-DD hh:mm:ss のように指定できる。
+     * - `YYYY-MM-DD hh:mm:ss` のように指定できる。
      * @param {String} text
      * @param {Date} date 時刻情報
      * @returns {String}
@@ -679,12 +679,6 @@ declare class ExtendsString {
      * @returns {number} ずらしたインデックス
      */
     static offsetByCodePoints(text: string, index: number, codePointOffset: number): number;
-    /**
-     * コードポイントの数値データを文字列に変換
-     * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-     * @returns {string} 変換後のテキスト
-     */
-    static fromCodePoint(...codepoint: (number | number[])[]): string;
     /**
      * @param {string} text
      * @param {string} prefix
@@ -1448,32 +1442,35 @@ declare class SFile {
      * @param {string} text
      * @param {string} [charset="utf-8"] - 文字コード
      * @param {string} [newline="\n"] - 改行コード
-     * @param {boolean} [issetBOM=true] - BOMの有無(utf-8のみ有効 )
+     * @param {boolean} [issetBOM=true] - BOMの有無(`utf-8`のみ有効 )
      * @returns {boolean}
      */
     setTextFile(text: string, charset?: string, newline?: string, issetBOM?: boolean): boolean;
     /**
-     * バイナリファイルを開く（激重）
+     * バイナリファイルを開く
+     * - 参考速度：0.5 sec/MB
+     * - 巨大なファイルの一部を調べる場合は、位置とサイズを指定した方がよい
+     *
+     * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
+     * @param {number} [size] - サイズ（※ 指定すると速度が低下する）
      * @returns {number[]}
      */
-    getBinaryFile(): number[];
+    getBinaryFile(offset?: number, size?: number): number[];
     /**
-     * バイナリファイルを保存（激重）
+     * バイナリファイルを保存
+     * - 参考速度：1.0 sec/MB
+     *
      * @param {number[]} array_
+     * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
      * @returns {boolean}
      */
-    setBinaryFile(array_: number[]): boolean;
+    setBinaryFile(array_: number[], offset?: number): boolean;
     /**
      * ファイルのハッシュ値を計算する
      * @param {string} [algorithm="MD5"] - アルゴリズム
-     * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は"0"
+     * @returns {string} 半角英数の16進数で表したハッシュ値、失敗時は`"0"`
      */
     getHashCode(algorithm?: string): string;
-    /**
-     * XMLHttpRequestを作成
-     * @returns {XMLHttpRequest}
-     */
-    static createXMLHttpRequest(): XMLHttpRequest;
     /**
      * テンポラリフォルダ内の適当なファイル名を取得
      * @returns {SFile}
@@ -1491,7 +1488,7 @@ declare class SFile {
     static setCurrentDirectory(file_obj: string | SFile): void;
     /**
      * フォルダの中のフォルダとファイルに対して指定した関数を実行する
-     * @param {function(SFile): boolean} func 戻り値がfalseで処理を終了。
+     * @param {function(SFile): boolean} func 戻り値が`false`で処理を終了。
      * @returns {boolean} result
      */
     each(func: (...params: any[]) => any): boolean;
@@ -1597,7 +1594,7 @@ declare class System {
     static currentTimeMillis(): number;
     /**
      * 処理を一時停止
-     * @param {number} time_sec
+     * @param {number} time_sec 停止する秒数
      */
     static sleep(time_sec: number): void;
     /**
@@ -1704,6 +1701,38 @@ declare class System {
      * @param {string} text
      */
     static setClipBoardText(text: string): void;
+    /**
+     * `XMLHttpRequest` を作成
+     * - 取得できない場合は `null`
+     *
+     * @returns {XMLHttpRequest}
+     */
+    static createXMLHttpRequest(): XMLHttpRequest;
+    /**
+     * `MSXML2.DOMDocument` を作成
+     * - 取得できない場合は `null`
+     *
+     * @returns {any}
+     */
+    static createMSXMLDOMDocument(): any;
+    /**
+     * `Byte 配列` から数値配列を作成する
+     * - `ADODB.Stream` などを用いて取得したバイナリ配列を `JavaScript` でも扱える型へ変更する
+     *
+     * @param {any} byte_array
+     * @returns {number[]}
+     */
+    static createNumberArrayFromByteArray(byte_array: any): number[];
+    /**
+     * 数値配列から`Byte 配列`を作成する
+     * - `ADODB.Stream` などを用いて取得したバイナリ配列を `JavaScript` でも扱える型へ変更する
+     * - `offset` を指定した場合は、出力したバイト配列はその位置までは `NUL` で埋まった配列となる
+     *
+     * @param {number[]} number_array
+     * @param {number} [offset = 0]
+     * @returns {any}
+     */
+    static createByteArrayFromNumberArray(number_array: number[], offset?: number): any;
 }
 
 /**

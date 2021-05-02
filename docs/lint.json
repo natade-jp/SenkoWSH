@@ -9,7 +9,7 @@
       },
       {
         "lineNumber": 18,
-        "line": "\t * printf に似た書式に合わせて文字列を組み立てる"
+        "line": "\t * `printf` に似た書式に合わせて文字列を組み立てる"
       },
       {
         "lineNumber": 19,
@@ -17,7 +17,7 @@
       },
       {
         "lineNumber": 20,
-        "line": "\t * - 変換指定子のpとnはサポートしていません。"
+        "line": "\t * - 変換指定子の`p`と`n`はサポートしていません。"
       },
       {
         "lineNumber": 21,
@@ -47,69 +47,31 @@
     ]
   },
   {
-    "name": "ExtendsString.toUTF16ArrayfromCodePoint",
-    "filePath": "src/senko/polyfill/ExtendsString.js",
-    "lines": [
-      {
-        "lineNumber": 185,
-        "line": "\t/**"
-      },
-      {
-        "lineNumber": 186,
-        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
-      },
-      {
-        "lineNumber": 187,
-        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
-      },
-      {
-        "lineNumber": 188,
-        "line": "\t * @returns {Array<number>} 変換後のテキスト"
-      },
-      {
-        "lineNumber": 189,
-        "line": "\t * @private"
-      },
-      {
-        "lineNumber": 190,
-        "line": "\t */"
-      },
-      {
-        "lineNumber": 191,
-        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
-      }
-    ],
-    "codeParams": [],
-    "docParams": [
-      "codepoint"
-    ]
-  },
-  {
     "name": "System.printf",
     "filePath": "src/senko/System.js",
     "lines": [
       {
-        "lineNumber": 94,
+        "lineNumber": 95,
         "line": "\t/**"
       },
       {
-        "lineNumber": 95,
+        "lineNumber": 96,
         "line": "\t * 指定したフォーマットで整形した文字列を表示"
       },
       {
-        "lineNumber": 96,
+        "lineNumber": 97,
         "line": "\t * @param {any} text "
       },
       {
-        "lineNumber": 97,
+        "lineNumber": 98,
         "line": "\t * @param {...any} parm パラメータは可変引数"
       },
       {
-        "lineNumber": 98,
+        "lineNumber": 99,
         "line": "\t */"
       },
       {
-        "lineNumber": 99,
+        "lineNumber": 100,
         "line": "\tstatic printf() {"
       }
     ],

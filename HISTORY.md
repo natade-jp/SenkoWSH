@@ -1,6 +1,6 @@
 # History
 
-## SenkoWSH v3.8.0b
+## SenkoWSH v3.8.0
 ### 更新点
 - グローバル空間を示す `globalThis`, `global`, `window` を追加
 - 指定した変数が定義されているかを調べる `System.isDefined()` を追加
@@ -9,6 +9,10 @@
 - `WindowsAPI` を使用している個所にコメントを追加
 - `String.fromCodePoint()` が正しく動作していなかった問題を修正
 - `SFile.setBinaryFile()` のバッファを調整して、速度を4倍程度へ高速化
+- `SFile.createXMLHttpRequest` を `System.createXMLHttpRequest` へ移動
+- `System.createMSXMLDOMDocument` を追加
+- バイト配列と相互変換する `System.createNumberArrayFromByteArray`, `System.createByteArrayFromNumberArray`
+- バイナリを読み書きする `SFile.getBinaryFile`, `SFile.setBinaryFile` について、途中から読み書きできる機能を追加
 
 ## SenkoWSH v3.7.0
 ### 更新点
