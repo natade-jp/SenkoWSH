@@ -8,6 +8,7 @@
 - `console.log` は、`cscript` でのみ動作するように変更
 - `WindowsAPI` を使用している個所にコメントを追加
 - `String.fromCodePoint()` が正しく動作していなかった問題を修正
+- `SFile.setBinaryFile()` のバッファを調整して、速度を4倍程度へ高速化
 
 ## SenkoWSH v3.7.0
 ### 更新点

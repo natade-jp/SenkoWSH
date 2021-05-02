@@ -858,7 +858,9 @@ export default class SFile {
 	}
 
 	/**
-	 * バイナリファイルを開く（激重）
+	 * バイナリファイルを開く
+	 * - 参考速度：0.5 sec/MB
+	 * 
 	 * @returns {number[]}
 	 */
 	getBinaryFile() {
@@ -929,7 +931,9 @@ export default class SFile {
 	}
 
 	/**
-	 * バイナリファイルを保存（激重）
+	 * バイナリファイルを保存
+	 * - 参考速度：1.0 sec/MB
+	 * 
 	 * @param {number[]} array_
 	 * @returns {boolean}
 	 */
@@ -941,7 +945,7 @@ export default class SFile {
 		const adTypeText = 2;
 		const adSaveCreateOverWrite = 2;
 		const charset = "iso-8859-1";
-		const buffersize = 512;
+		const buffersize = 1024 * 128;
 		try {
 			const stream = new ActiveXObject("ADODB.Stream");
 			stream.type = adTypeText;

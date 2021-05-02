@@ -128,7 +128,7 @@ export default class System {
 
 	/**
 	 * 処理を一時停止
-	 * @param {number} time_sec
+	 * @param {number} time_sec 停止する秒数
 	 */
 	static sleep(time_sec) {
 		WScript.Sleep((time_sec * 1000) | 0);
