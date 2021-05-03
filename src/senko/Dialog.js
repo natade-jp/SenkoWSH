@@ -126,14 +126,14 @@ export default class Dialog {
 		command += (option && option.filter) ? ("$dialog.Filter = \"" + option.file_name.replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.initial_directory) ? ("$dialog.InitialDirectory = \"" + option.initial_directory.toString().replace(/"/g, "\\\"") + "\";"): "";
 		command += (option && option.title) ? ("$dialog.Title = \"" + option.title.replace(/"/g, "\\\"") + "\";"): "";
-		command += "$dialog.ShowHelp = $TRUE;";
+		command += "$dialog.ShowHelp = $FALSE;";
 		command += "$dialog.OverwritePrompt = $TRUE;";
 		command += "if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}";
 		/*
 			Add-Type -AssemblyName System.Windows.Forms;
 			$dialog = New-Object System.Windows.Forms.SaveFileDialog;
 			$dialog.Title = "ファイルを指定して下さい。";
-			$dialog.ShowHelp = $TRUE;
+			$dialog.ShowHelp = $FALSE;
 			$dialog.OverwritePrompt = $TRUE;
 			if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
 				$dialog.FileName;

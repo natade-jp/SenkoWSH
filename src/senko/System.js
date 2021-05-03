@@ -321,6 +321,47 @@ export default class System {
 	}
 
 	/**
+	 * BatchScript を実行する
+	 * 
+	 * @param {string} source
+	 * @param {string} [charset="ansi"] - 文字コード
+	 * @returns {SystemExecResult|null}
+	 */
+	static BatchScript(source, charset) {
+		const icharset = charset !== undefined ? charset.toLowerCase() : "ansi";
+		const is_ansi = /shift_jis|sjis|ascii|ansi/i.test(icharset);
+		const is_utf16 = /unicode|utf-16le/i.test(icharset);
+		const is_line = !/\n/.test(source);
+
+		// 改行がない場合はコマンドモードで実行する
+		if(is_line) {
+			// コマンドモードで実行する
+			const cmd_base = is_utf16 ? "cmd /u /d /c" : "cmd /d /c";
+			// コマンドモードで実行するため、特定の文字をエスケープさせる
+			const command = cmd_base + " " + source;
+			const exec = System.exec(command);
+			return exec;
+		}
+		else {
+			const file = new SFile(SFile.createTempFile().getAbsolutePath() + ".bat");
+			let cs;
+			cs = is_ansi ? "shift_jis" : "";
+			cs = is_utf16 ? "shift_jis" : cs;
+			cs = cs === "" ? icharset : cs;
+			const ret = file.setTextFile(source, cs, "\r\n");
+			if(ret === false) {
+				console.log(cs);
+				return null;
+			}
+			const cmd_base = is_utf16 ? "cmd /u /d /c" : "cmd /d /c";
+			const command = cmd_base + " \"" + file + "\"";
+			const exec = System.exec(command);
+			file.remove();
+			return exec;
+		}
+	}
+
+	/**
 	 * PowerShell を実行する
 	 * 
 	 * @param {string} source

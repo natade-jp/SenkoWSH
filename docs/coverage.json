@@ -1,7 +1,7 @@
 {
   "coverage": "100%",
-  "expectCount": 202,
-  "actualCount": 202,
+  "expectCount": 203,
+  "actualCount": 203,
   "files": {
     "src/konpeito/Random.js": {
       "expectCount": 20,
@@ -69,8 +69,8 @@
       "undocumentLines": []
     },
     "src/senko/System.js": {
-      "expectCount": 32,
-      "actualCount": 32,
+      "expectCount": 33,
+      "actualCount": 33,
       "undocumentLines": []
     },
     "src/SenkoWSH.js": {

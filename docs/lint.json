@@ -51,27 +51,27 @@
     "filePath": "src/senko/System.js",
     "lines": [
       {
-        "lineNumber": 95,
+        "lineNumber": 96,
         "line": "\t/**"
       },
       {
-        "lineNumber": 96,
+        "lineNumber": 97,
         "line": "\t * 指定したフォーマットで整形した文字列を表示"
       },
       {
-        "lineNumber": 97,
+        "lineNumber": 98,
         "line": "\t * @param {any} text "
       },
       {
-        "lineNumber": 98,
+        "lineNumber": 99,
         "line": "\t * @param {...any} parm パラメータは可変引数"
       },
       {
-        "lineNumber": 99,
+        "lineNumber": 100,
         "line": "\t */"
       },
       {
-        "lineNumber": 100,
+        "lineNumber": 101,
         "line": "\tstatic printf() {"
       }
     ],

@@ -95,6 +95,10 @@ if(!(&quot;window&quot; in globalThis)) {
 	// @ts-ignore
 	window = globalThis;
 }
+if(!(&quot;JSON&quot; in globalThis)) {
+	// @ts-ignore
+	JSON = {};
+}
 
 /**
  * @type {typeof typeExtendsArray}
@@ -146,27 +150,6 @@ const extendClass = function(original, extension) {
 extendClass(Array, typeExtendsArray);
 extendClass(Object, typeExtendsObject);
 extendClass(String, typeExtendsString);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Class for improving compatibility.
@@ -309,7 +292,126 @@ export default class Polyfill {
 				}
 				return text.join(&quot;&quot;);
 			};
-
+		}
+		if(!Date.now) {
+			// @ts-ignore
+			Date.now = function() {
+				return (new Date()).getTime();
+			};
+		}
+		if(!JSON.parse) {
+			JSON.parse = function(json_text) {
+				return eval(&quot;(&quot; + json_text + &quot;)&quot;);
+			};
+		}
+		if(!JSON.stringify) {
+			/**
+			 * @type {Object&lt;string, string&gt;} 
+			 */
+			const escapeMap = {
+				&quot;\u0022&quot; : &quot;\\\&quot;&quot;,
+				&quot;\u005C&quot; : &quot;\\\\&quot;,
+				&quot;\u002F&quot; : &quot;\\/&quot;,
+				&quot;\u0008&quot; : &quot;\\b&quot;,
+				&quot;\u000C&quot; : &quot;\\f&quot;,
+				&quot;\u000A&quot; : &quot;\\n&quot;,
+				&quot;\u000D&quot; : &quot;\\r&quot;,
+				&quot;\u0009&quot; : &quot;\\t&quot;
+			};
+			/**
+			 * @param {string} str
+			 * @returns {string}
+			 */
+			const escapeString = function(str) {
+				return escapeMap[str];
+			};
+			/**
+			 * https://tools.ietf.org/html/rfc8259
+			 * @param {string} str
+			 * @returns {string}
+			 */
+			const escape = function(str) {
+				return str.replace(/[\u0022\u005C\u002F\u0008\u000C\u000A\u000D\u0009]/g, escapeString);;
+			};
+			/**
+			 * @param {any} data
+			 * @returns {string}
+			 */
+			const stringify = function(data) {
+				const type = Object.prototype.toString.call(data);
+				if((type === &quot;[object Number]&quot;) || (type === &quot;[object Boolean]&quot;)) {
+					return data.toString();
+				}
+				else if(type === &quot;[object String]&quot;) {
+					return &quot;\&quot;&quot; + escape(data) + &quot;\&quot;&quot;;
+				}
+				else if(type === &quot;[object Date]&quot;) {
+					// JScript &#x306B;&#x306F; toISOString &#x304C;&#x306A;&#x3044;&#x306E;&#x3067;&#x3002;
+					return &quot;\&quot;&quot; + data.toGMTString() + &quot;\&quot;&quot;;
+				}
+				else if(type === &quot;[object Function]&quot;) {
+					return &quot;null&quot;;
+				}
+				else if(type === &quot;[object RegExp]&quot;) {
+					return &quot;{}&quot;;
+				}
+				else if(type === &quot;[object Null]&quot;) {
+					return &quot;null&quot;;
+				}
+				else if(type === &quot;[object Undefined]&quot;) {
+					return &quot;undefined&quot;;
+				}
+				else if(type === &quot;[object Array]&quot;) {
+					/**
+					 * @type {string[]}
+					 */
+					let output = [];
+					output.push(&quot;[&quot;);
+					/**
+					 * @type {string[]}
+					 */
+					let array_data = [];
+					for(let i = 0; i &lt; data.length; i++) {
+						array_data.push(stringify(data[i]));
+					}
+					output.push(array_data.join(&quot;,&quot;));
+					output.push(&quot;]&quot;);
+					return output.join(&quot;&quot;);
+				}
+				else if(type === &quot;[object Object]&quot;) {
+					/**
+					 * @type {string[]}
+					 */
+					let output = [];
+					output.push(&quot;{&quot;);
+					/**
+					 * @type {string[]}
+					 */
+					let object_data = [];
+					for(const key in data) {
+						const value = data[key];
+						// &#x95A2;&#x6570;&#x306E;&#x5834;&#x5408;&#x306F;&#x7121;&#x8996;&#x3059;&#x308B;
+						if(Object.prototype.toString.call(value) === &quot;[object Function]&quot;) {
+							continue;
+						}
+						/**
+						 * @type {string[]}
+						 */
+						const line = [];
+						line.push(&quot;\&quot;&quot; + key + &quot;\&quot;&quot;);
+						line.push(&quot;:&quot;);
+						line.push(stringify(value));
+						object_data.push(line.join(&quot;&quot;));
+					}
+					output.push(object_data.join(&quot;,&quot;));
+					output.push(&quot;}&quot;);
+					return output.join(&quot;&quot;);
+				}
+				else {
+					return &quot;\&quot;&quot; + escape(data.toString()) + &quot;\&quot;&quot;
+				}
+			};
+			JSON.stringify = stringify;
 		}
 	}
 }

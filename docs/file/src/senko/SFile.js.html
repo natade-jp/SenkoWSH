@@ -70,6 +70,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Polyfill from &quot;./polyfill/Polyfill.js&quot;;
 import Format from &quot;./Format.js&quot;;
 import System from &quot;./System.js&quot;;
  
@@ -758,28 +759,37 @@ export default class SFile {
 			}
 		}
 		else {
-			if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+			const is_fso = /shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset);
+			if(is_fso) {
 				// Scripting.FileSystemObject &#x3067;&#x958B;&#x304F;
-				const forreading = 1;
+				// &#x5165;&#x51FA;&#x529B;&#x30E2;&#x30FC;&#x30C9; = &#x8AAD;&#x53D6;&#x5C02;&#x7528;&#x30E2;&#x30FC;&#x30C9;
+				const ForReading = 1;
+				const mode = ForReading;
+				// &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x65B0;&#x898F;&#x4F5C;&#x6210; = &#x65B0;&#x898F;&#x4F5C;&#x6210;&#x3057;&#x306A;&#x3044;
+				const option = false;
+				// &#x6587;&#x5B57;&#x306E;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;
+				const TristateFalse			= 0;	// ASCII(Shift-JIS)
+				const TristateTrue			= -1;	// Unicode(UTF-16)
+				const TristateUseDefault	= -2;	// &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306E;&#x898F;&#x5B9A;&#x5024;
 				let tristate = 0;
 				if(/ascii/i.test(icharset)) {
 					// ASCII
-					tristate = 0;
+					tristate = TristateFalse;
 				}
 				else if(/shift_jis|sjis/i.test(icharset)) {
 					// &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;(&#x65E5;&#x672C;&#x8A9E;&#x306E;OS&#x3060;&#x3068;&#x4EEE;&#x5B9A;)
-					tristate = -2;
+					tristate = TristateUseDefault;
 				}
 				else {
 					// utf-16le
-					tristate = -1;
+					tristate = TristateTrue;
 				}
-				const open_file = this.fso.OpenTextFile(this.pathname, forreading, true, tristate );
+				const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
 				text = open_file.ReadAll();
 				open_file.Close();
 			}
 			else {
-				// &#x3088;&#x308A;&#x81EA;&#x7531;&#x306A;&#x30B3;&#x30FC;&#x30C9;&#x3067;&#x958B;&#x304F;&#xFF08;&#x901F;&#x5EA6;&#x306F;&#x9045;&#x3044;&#xFF09;
+				// &#x81EA;&#x7531;&#x306A;&#x6587;&#x5B57;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#x3067;&#x958B;&#x304F;&#xFF08;&#x901F;&#x5EA6;&#x306F;&#x9045;&#x3044;&#xFF09;
 				// &#x4F7F;&#x7528;&#x53EF;&#x80FD;&#x306A; charset &#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x4E0B;&#x8A18;&#x3092;&#x53C2;&#x7167;
 				// HKEY_CLASSES_ROOT\MIME\Database\Charset
 				const adTypeText = 2;
@@ -870,23 +880,32 @@ export default class SFile {
 		const icharset = charset !== undefined ? charset : &quot;utf-8&quot;;
 		const inewline = newline !== undefined ? newline : &quot;\n&quot;;
 		const iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8&#x306E;&#x307F;&#x6709;&#x52B9; BOM&#x3042;&#x308A;&#x304B;&#x306A;&#x3057;
-		if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+		const is_fso = /shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset);
+		if(is_fso) {
 			// Scripting.FileSystemObject &#x3067;&#x66F8;&#x304D;&#x8FBC;&#x3080;
-			const forwriting = 2;
+			// &#x5165;&#x51FA;&#x529B;&#x30E2;&#x30FC;&#x30C9; = &#x4E0A;&#x66F8;&#x304D;&#x30E2;&#x30FC;&#x30C9;
+			const ForWriting = 2;
+			const mode = ForWriting;
+			// &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x65B0;&#x898F;&#x4F5C;&#x6210; = &#x4F5C;&#x6210;
+			const option = true;
+			// &#x6587;&#x5B57;&#x306E;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;
+			const TristateFalse			= 0;	// ASCII(Shift-JIS)
+			const TristateTrue			= -1;	// Unicode(UTF-16)
+			const TristateUseDefault	= -2;	// &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306E;&#x898F;&#x5B9A;&#x5024;
 			let tristate = 0;
 			if(/ascii/i.test(icharset)) {
 				// ASCII
-				tristate = 0;
+				tristate = TristateFalse;
 			}
 			else if(/shift_jis|sjis/i.test(icharset)) {
 				// &#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;(&#x65E5;&#x672C;&#x8A9E;&#x306E;OS&#x3060;&#x3068;&#x4EEE;&#x5B9A;)
-				tristate = -2;
+				tristate = TristateUseDefault;
 			}
 			else {
 				// utf-16le
-				tristate = -1;
+				tristate = TristateTrue;
 			}
-			const open_file = this.fso.OpenTextFile(this.pathname, forwriting, true, tristate );
+			const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
 			open_file.Write(text.replace(/\r\n?|\n/g, inewline));
 			open_file.Close();
 		}
@@ -895,29 +914,35 @@ export default class SFile {
 			const adTypeBinary = 1;
 			const adTypeText = 2;
 			const adSaveCreateOverWrite = 2;
-			// &#x4F7F;&#x7528;&#x53EF;&#x80FD;&#x306A; charset &#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x4E0B;&#x8A18;&#x3092;&#x53C2;&#x7167;
-			// HKEY_CLASSES_ROOT\MIME\Database\Charset
-			let stream;
-			stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
-			stream.type = adTypeText;
-			stream.charset = icharset;
-			stream.open();
-			stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7D71;&#x4E00;
-			if(/utf-8/.test(icharset.toLowerCase()) &amp;&amp; (!iissetBOM)) {
-				// &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x578B;&#x306B;&#x3057;&#x3066;3&#x30D0;&#x30A4;&#x30C8;&#x76EE;&#x4EE5;&#x964D;&#x3092;&#x30D0;&#x30A4;&#x30C8;&#x578B;&#x3067;&#x53D6;&#x5F97;
-				stream.position = 0;
-				stream.type = adTypeBinary;
-				stream.position = 3;
-				const binary = stream.read();
-				stream.close();
-				// &#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30C7;&#x30FC;&#x30BF;&#x3092;1&#x30D0;&#x30A4;&#x30C8;&#x76EE;&#x304B;&#x3089;&#x66F8;&#x304D;&#x3053;&#x3080;
+			try {
+				// &#x4F7F;&#x7528;&#x53EF;&#x80FD;&#x306A; charset &#x306B;&#x3064;&#x3044;&#x3066;&#x306F;&#x4E0B;&#x8A18;&#x3092;&#x53C2;&#x7167;
+				// HKEY_CLASSES_ROOT\MIME\Database\Charset
+				let stream;
 				stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
-				stream.type = adTypeBinary;
+				stream.type = adTypeText;
+				stream.charset = icharset;
 				stream.open();
-				stream.write(binary);
+				stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x7D71;&#x4E00;
+				if(/utf-8/.test(icharset.toLowerCase()) &amp;&amp; (!iissetBOM)) {
+					// &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x578B;&#x306B;&#x3057;&#x3066;3&#x30D0;&#x30A4;&#x30C8;&#x76EE;&#x4EE5;&#x964D;&#x3092;&#x30D0;&#x30A4;&#x30C8;&#x578B;&#x3067;&#x53D6;&#x5F97;
+					stream.position = 0;
+					stream.type = adTypeBinary;
+					stream.position = 3;
+					const binary = stream.read();
+					stream.close();
+					// &#x53D6;&#x5F97;&#x3057;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30C7;&#x30FC;&#x30BF;&#x3092;1&#x30D0;&#x30A4;&#x30C8;&#x76EE;&#x304B;&#x3089;&#x66F8;&#x304D;&#x3053;&#x3080;
+					stream = new ActiveXObject(&quot;ADODB.Stream&quot;);
+					stream.type = adTypeBinary;
+					stream.open();
+					stream.write(binary);
+				}
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
 			}
-			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-			stream.close();
+			catch (e) {
+				console.log(e);
+				return false;
+			}
 		}
 		return true;
 	}

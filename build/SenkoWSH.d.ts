@@ -1671,6 +1671,14 @@ declare class System {
      */
     static initializeCurrentDirectory(): void;
     /**
+     * BatchScript を実行する
+     *
+     * @param {string} source
+     * @param {string} [charset="ansi"] - 文字コード
+     * @returns {SystemExecResult|null}
+     */
+    static BatchScript(source: string, charset?: string): SystemExecResult | null;
+    /**
      * PowerShell を実行する
      *
      * @param {string} source

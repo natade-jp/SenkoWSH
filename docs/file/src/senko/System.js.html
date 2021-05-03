@@ -71,6 +71,7 @@
  */
 
 import Polyfill from &quot;./polyfill/Polyfill.js&quot;;
+import SFile from &quot;./SFile.js&quot;;
 import Format from &quot;./Format.js&quot;;
 
 /**
@@ -382,17 +383,80 @@ export default class System {
 	}
 
 	/**
+	 * BatchScript &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * 
+	 * @param {string} source
+	 * @param {string} [charset=&quot;ansi&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
+	 * @returns {SystemExecResult|null}
+	 */
+	static BatchScript(source, charset) {
+		const icharset = charset !== undefined ? charset.toLowerCase() : &quot;ansi&quot;;
+		const is_ansi = /shift_jis|sjis|ascii|ansi/i.test(icharset);
+		const is_utf16 = /unicode|utf-16le/i.test(icharset);
+		const is_line = !/\n/.test(source);
+
+		// &#x6539;&#x884C;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
+		if(is_line) {
+			// &#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
+			const cmd_base = is_utf16 ? &quot;cmd /u /d /c&quot; : &quot;cmd /d /c&quot;;
+			// &#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;&#x7279;&#x5B9A;&#x306E;&#x6587;&#x5B57;&#x3092;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x3055;&#x305B;&#x308B;
+			const command = cmd_base + &quot; &quot; + source;
+			const exec = System.exec(command);
+			return exec;
+		}
+		else {
+			const file = new SFile(SFile.createTempFile().getAbsolutePath() + &quot;.bat&quot;);
+			let cs;
+			cs = is_ansi ? &quot;shift_jis&quot; : &quot;&quot;;
+			cs = is_utf16 ? &quot;shift_jis&quot; : cs;
+			cs = cs === &quot;&quot; ? icharset : cs;
+			const ret = file.setTextFile(source, cs, &quot;\r\n&quot;);
+			if(ret === false) {
+				console.log(cs);
+				return null;
+			}
+			const cmd_base = is_utf16 ? &quot;cmd /u /d /c&quot; : &quot;cmd /d /c&quot;;
+			const command = cmd_base + &quot; \&quot;&quot; + file + &quot;\&quot;&quot;;
+			const exec = System.exec(command);
+			file.remove();
+			return exec;
+		}
+	}
+
+	/**
 	 * PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
-	 * - &#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3001;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3057;&#x307E;&#x3059;
 	 * 
 	 * @param {string} source
 	 * @returns {string}
 	 */
 	static PowerShell(source) {
-		// &#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
-		const powershell_base = &quot;powershell -sta -Command&quot;;
-		const command = (powershell_base + &quot; &quot; + source).replace(/([\\&quot;])/g, &quot;\\$1&quot;);
-		return System.exec(command).out.replace(/\r?\n$/, &quot;&quot;);
+		// &#x6539;&#x884C;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
+		if(!/\n/.test(source)) {
+			// &#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
+			const powershell_base = &quot;powershell -sta -Command&quot;;
+			// &#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;&#x7279;&#x5B9A;&#x306E;&#x6587;&#x5B57;&#x3092;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x3055;&#x305B;&#x308B;
+			const command = (powershell_base + &quot; &quot; + source).replace(/([\\&quot;])/g, &quot;\\$1&quot;);
+			const exec = System.exec(command);
+			if(exec.exit_code !== 0) {
+				console.log(exec.exit_code);
+			}
+			// &#x6700;&#x7D42;&#x884C;&#x3092;&#x9664;&#x53BB;&#x3057;&#x3066;&#x306A;&#x308B;&#x3079;&#x304F;1&#x884C;&#x3067;&#x8FD4;&#x3059;
+			return exec.out.replace(/\r?\n$/, &quot;&quot;);
+		}
+		else {
+			const file = new SFile(SFile.createTempFile().getAbsolutePath() + &quot;.ps1&quot;);
+			file.setTextFile(source, &quot;utf-16le&quot;, &quot;\r\n&quot;);
+			// &#x672C;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x3067;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x306E;&#x5B9F;&#x884C;&#x304C;&#x7121;&#x52B9;&#x306B;&#x306A;&#x3063;&#x3066;&#x3044;&#x308B;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x3042;&#x308B;&#x305F;&#x3081;&#x4E00;&#x6642;&#x7684;&#x306B;&#x5B9F;&#x884C;&#x30DD;&#x30EA;&#x30B7;&#x30FC;&#x3092;&#x5909;&#x66F4;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;
+			// &#x203B;&#x5909;&#x66F4;&#x3057;&#x306A;&#x3044;&#x3068;&#x300C;ParentContainsErrorRecordException&#x300D;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x5834;&#x5408;&#x304C;&#x3042;&#x308B;
+			const powershell_base = &quot;powershell -NoProfile -ExecutionPolicy Unrestricted&quot;;
+			const command = powershell_base + &quot; \&quot;&quot; + file + &quot;\&quot;&quot;;
+			const exec = System.exec(command);
+			file.remove();
+			if(exec.exit_code !== 0) {
+				console.log(exec.exit_code);
+			}
+			return exec.out;
+		}
 	}
 
 	/**

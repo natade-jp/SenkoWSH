@@ -1134,6 +1134,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/senko/system.js~system.batchscript",
+    "class/src/senko/System.js~System.html#static-method-BatchScript",
+    "src/senko/System.js~System.BatchScript",
+    "method"
+  ],
+  [
     "src/senko/system.js~system.powershell",
     "class/src/senko/System.js~System.html#static-method-PowerShell",
     "src/senko/System.js~System.PowerShell",

@@ -188,13 +188,15 @@ export default class Dialog {
 		command += (option &amp;&amp; option.filter) ? (&quot;$dialog.Filter = \&quot;&quot; + option.file_name.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += (option &amp;&amp; option.initial_directory) ? (&quot;$dialog.InitialDirectory = \&quot;&quot; + option.initial_directory.toString().replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
 		command += (option &amp;&amp; option.title) ? (&quot;$dialog.Title = \&quot;&quot; + option.title.replace(/&quot;/g, &quot;\\\&quot;&quot;) + &quot;\&quot;;&quot;): &quot;&quot;;
-		command += &quot;$dialog.ShowHelp = true;&quot;;
-		command += &quot;$dialog.OverwritePrompt = true;&quot;;
+		command += &quot;$dialog.ShowHelp = $FALSE;&quot;;
+		command += &quot;$dialog.OverwritePrompt = $TRUE;&quot;;
 		command += &quot;if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$dialog.FileName;}&quot;;
 		/*
 			Add-Type -AssemblyName System.Windows.Forms;
 			$dialog = New-Object System.Windows.Forms.SaveFileDialog;
-			...
+			$dialog.Title = &quot;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x3066;&#x4E0B;&#x3055;&#x3044;&#x3002;&quot;;
+			$dialog.ShowHelp = $FALSE;
+			$dialog.OverwritePrompt = $TRUE;
 			if($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){
 				$dialog.FileName;
 			}

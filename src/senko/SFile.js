@@ -697,7 +697,8 @@ export default class SFile {
 			}
 		}
 		else {
-			if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+			const is_fso = /shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset);
+			if(is_fso) {
 				// Scripting.FileSystemObject で開く
 				// 入出力モード = 読取専用モード
 				const ForReading = 1;
@@ -817,7 +818,8 @@ export default class SFile {
 		const icharset = charset !== undefined ? charset : "utf-8";
 		const inewline = newline !== undefined ? newline : "\n";
 		const iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし
-		if(/shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset)) {
+		const is_fso = /shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset);
+		if(is_fso) {
 			// Scripting.FileSystemObject で書き込む
 			// 入出力モード = 上書きモード
 			const ForWriting = 2;
@@ -850,29 +852,35 @@ export default class SFile {
 			const adTypeBinary = 1;
 			const adTypeText = 2;
 			const adSaveCreateOverWrite = 2;
-			// 使用可能な charset については下記を参照
-			// HKEY_CLASSES_ROOT\MIME\Database\Charset
-			let stream;
-			stream = new ActiveXObject("ADODB.Stream");
-			stream.type = adTypeText;
-			stream.charset = icharset;
-			stream.open();
-			stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //改行コードを統一
-			if(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {
-				// バイナリ型にして3バイト目以降をバイト型で取得
-				stream.position = 0;
-				stream.type = adTypeBinary;
-				stream.position = 3;
-				const binary = stream.read();
-				stream.close();
-				// 取得したバイナリデータを1バイト目から書きこむ
+			try {
+				// 使用可能な charset については下記を参照
+				// HKEY_CLASSES_ROOT\MIME\Database\Charset
+				let stream;
 				stream = new ActiveXObject("ADODB.Stream");
-				stream.type = adTypeBinary;
+				stream.type = adTypeText;
+				stream.charset = icharset;
 				stream.open();
-				stream.write(binary);
+				stream.writeText(text.replace(/\r\n?|\n/g, inewline)); //改行コードを統一
+				if(/utf-8/.test(icharset.toLowerCase()) && (!iissetBOM)) {
+					// バイナリ型にして3バイト目以降をバイト型で取得
+					stream.position = 0;
+					stream.type = adTypeBinary;
+					stream.position = 3;
+					const binary = stream.read();
+					stream.close();
+					// 取得したバイナリデータを1バイト目から書きこむ
+					stream = new ActiveXObject("ADODB.Stream");
+					stream.type = adTypeBinary;
+					stream.open();
+					stream.write(binary);
+				}
+				stream.saveToFile(this.pathname, adSaveCreateOverWrite);
+				stream.close();
 			}
-			stream.saveToFile(this.pathname, adSaveCreateOverWrite);
-			stream.close();
+			catch (e) {
+				console.log(e);
+				return false;
+			}
 		}
 		return true;
 	}
