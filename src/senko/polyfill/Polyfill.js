@@ -33,6 +33,10 @@ if(!("window" in globalThis)) {
 	// @ts-ignore
 	window = globalThis;
 }
+if(!("JSON" in globalThis)) {
+	// @ts-ignore
+	JSON = {};
+}
 
 /**
  * @type {typeof typeExtendsArray}
@@ -84,27 +88,6 @@ const extendClass = function(original, extension) {
 extendClass(Array, typeExtendsArray);
 extendClass(Object, typeExtendsObject);
 extendClass(String, typeExtendsString);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Class for improving compatibility.
@@ -247,7 +230,126 @@ export default class Polyfill {
 				}
 				return text.join("");
 			};
-
+		}
+		if(!Date.now) {
+			// @ts-ignore
+			Date.now = function() {
+				return (new Date()).getTime();
+			};
+		}
+		if(!JSON.parse) {
+			JSON.parse = function(json_text) {
+				return eval("(" + json_text + ")");
+			};
+		}
+		if(!JSON.stringify) {
+			/**
+			 * @type {Object<string, string>} 
+			 */
+			const escapeMap = {
+				"\u0022" : "\\\"",
+				"\u005C" : "\\\\",
+				"\u002F" : "\\/",
+				"\u0008" : "\\b",
+				"\u000C" : "\\f",
+				"\u000A" : "\\n",
+				"\u000D" : "\\r",
+				"\u0009" : "\\t"
+			};
+			/**
+			 * @param {string} str
+			 * @returns {string}
+			 */
+			const escapeString = function(str) {
+				return escapeMap[str];
+			};
+			/**
+			 * https://tools.ietf.org/html/rfc8259
+			 * @param {string} str
+			 * @returns {string}
+			 */
+			const escape = function(str) {
+				return str.replace(/[\u0022\u005C\u002F\u0008\u000C\u000A\u000D\u0009]/g, escapeString);;
+			};
+			/**
+			 * @param {any} data
+			 * @returns {string}
+			 */
+			const stringify = function(data) {
+				const type = Object.prototype.toString.call(data);
+				if((type === "[object Number]") || (type === "[object Boolean]")) {
+					return data.toString();
+				}
+				else if(type === "[object String]") {
+					return "\"" + escape(data) + "\"";
+				}
+				else if(type === "[object Date]") {
+					// JScript には toISOString がないので。
+					return "\"" + data.toGMTString() + "\"";
+				}
+				else if(type === "[object Function]") {
+					return "null";
+				}
+				else if(type === "[object RegExp]") {
+					return "{}";
+				}
+				else if(type === "[object Null]") {
+					return "null";
+				}
+				else if(type === "[object Undefined]") {
+					return "undefined";
+				}
+				else if(type === "[object Array]") {
+					/**
+					 * @type {string[]}
+					 */
+					let output = [];
+					output.push("[");
+					/**
+					 * @type {string[]}
+					 */
+					let array_data = [];
+					for(let i = 0; i < data.length; i++) {
+						array_data.push(stringify(data[i]));
+					}
+					output.push(array_data.join(","));
+					output.push("]");
+					return output.join("");
+				}
+				else if(type === "[object Object]") {
+					/**
+					 * @type {string[]}
+					 */
+					let output = [];
+					output.push("{");
+					/**
+					 * @type {string[]}
+					 */
+					let object_data = [];
+					for(const key in data) {
+						const value = data[key];
+						// 関数の場合は無視する
+						if(Object.prototype.toString.call(value) === "[object Function]") {
+							continue;
+						}
+						/**
+						 * @type {string[]}
+						 */
+						const line = [];
+						line.push("\"" + key + "\"");
+						line.push(":");
+						line.push(stringify(value));
+						object_data.push(line.join(""));
+					}
+					output.push(object_data.join(","));
+					output.push("}");
+					return output.join("");
+				}
+				else {
+					return "\"" + escape(data.toString()) + "\""
+				}
+			};
+			JSON.stringify = stringify;
 		}
 	}
 }

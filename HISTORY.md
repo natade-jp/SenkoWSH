@@ -4,6 +4,7 @@
 ### 更新点
 - `System.PowerShell` で複数行の文字列を引数に入れることを可能とするように改善
 - `Dialog.popupSaveAs` にて `PowerShell` のコマンドの真偽値の設定方法が正しくなく動作に問題があったのを修正
+- `polyfill` を強化(`JSON.parse`, `JSON.stringify`の追加など)
 
 ## SenkoWSH v3.8.0
 ### 更新点
