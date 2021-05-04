@@ -72,50 +72,9 @@
 
 /**
  * ES3&#x76F8;&#x5F53;&#x306E;JScirpt&#x306E;Array&#x62E1;&#x5F35;&#x7528;&#x30AF;&#x30E9;&#x30B9;
- * - Array.prototype&#x306B;&#x62E1;&#x5F35;&#x3057;&#x307E;&#x3059;
+ * - ES3 &#x306B;&#x6A5F;&#x80FD;&#x62E1;&#x5F35;&#x3059;&#x308B;&#x4E88;&#x5B9A;&#x3067;&#x3057;&#x305F;&#x304C; for in &#x306E;&#x52D5;&#x4F5C;&#x306B;&#x652F;&#x969C;&#x304C;&#x51FA;&#x308B;&#x305F;&#x3081;&#x62E1;&#x5F35;&#x306A;&#x3057;&#x3068;&#x3059;&#x308B;
  */
 export default class ExtendsArray {
-
-	/**
-	 * @param {any[]} array
-	 * @param {any} object
-	 * @returns {boolean}
-	 */
-	static includes(array, object) {
-		return ExtendsArray.indexOf(array, object) !== -1;
-	}
-
-	/**
-	 * @param {any[]} array
-	 * @param {any} object
-	 * @param {number} [fromIndex=0]
-	 * @returns {number}
-	 */
-	static indexOf(array, object, fromIndex) {
-		let i = fromIndex !== undefined ? fromIndex : 0;
-		for(; i &lt; array.length; i++) {
-			if(array[i] === object) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 * @param {any[]} array
-	 * @param {any} object
-	 * @param {number} [fromIndex]
-	 * @returns {number}
-	 */
-	static lastIndexOf(array, object, fromIndex) {
-		let i = fromIndex !== undefined ? fromIndex : array.length - 1;
-		for(; i &gt;= 0; i--) {
-			if(array[i] === object) {
-				return i;
-			}
-		}
-		return -1;
-	}
 
 	/**
 	 * &#x5B89;&#x5B9A;&#x30BD;&#x30FC;&#x30C8;
@@ -195,96 +154,6 @@ export default class ExtendsArray {
 	 */
 	static toString(array) {
 		return array.join(&quot;, &quot;);
-	}
-
-	/**
-	 * &#x30C7;&#x30A3;&#x30FC;&#x30D7;&#x30B3;&#x30D4;&#x30FC;
-	 * @param {any[]} array
-	 * @returns {any[]}
-	 */
-	static clone(array) {
-		const out = new Array(array.length);
-		for(let i = 0; i &lt; array.length; i++) {
-			out[i] = array[i];
-		}
-		return out;
-	}
-	
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x633F;&#x5165;
-	 * @param {any[]} array
-	 * @param {any|number} index_or_object
-	 * @param {any} [object]
-	 */
-	static add(array, index_or_object, object) {
-		if(object === undefined) {
-			array.push(index_or_object);
-		}
-		else {
-			array.splice(index_or_object, 0, object);
-		}
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x914D;&#x5217;&#x3092;&#x633F;&#x5165;
-	 * @param {any[]} array
-	 * @param {any[]|number} index_or_arraylist
-	 * @param {any[]} [arraylist]
-	 */
-	static addAll(array, index_or_arraylist, arraylist) {
-		if((arraylist === undefined) &amp;&amp; ((typeof index_or_arraylist !== &quot;number&quot;))) {
-			const list = index_or_arraylist;
-			let j = array.length;
-			for(let i = 0; i &lt; list.length; i++) {
-				array[j++] = list[i];
-			}
-		}
-		else if(typeof index_or_arraylist === &quot;number&quot;) {
-			let index = index_or_arraylist;
-			let list = arraylist;
-			if(list === array) {
-				list = array.slice(0);
-			}
-			let size = array.length - index;
-			let target_i = array.length + list.length - 1;
-			let source_i = array.length - 1;
-			for(let i = 0; i &lt; size ; i++ ) {
-				array[target_i--] = array[source_i--];
-			}
-			size = list.length;
-			for(let i = 0; i &lt; size; i++) {
-				array[index++] = list[i];
-			}
-		}
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x4F4D;&#x7F6E;&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x524A;&#x9664;
-	 * @param {any[]} array
-	 * @param {number} index 
-	 */
-	static remove(array, index) {
-		array.splice(index, 1);
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x7BC4;&#x56F2;&#x3092;&#x524A;&#x9664;
-	 * @param {any[]} array
-	 * @param {number} fromIndex 
-	 * @param {number} toIndex 
-	 */
-	static removeRange(array, fromIndex, toIndex) {
-		array.splice(fromIndex, toIndex - fromIndex);
-	}
-	
-	/**
-	 * &#x7A7A;&#x304B;&#x3069;&#x3046;&#x304B;
-	 * @param {any[]} array
-	 * @returns {boolean}
-	 */
-	static isEmpty(array) {
-		return array.length === 0;
 	}
 
 }

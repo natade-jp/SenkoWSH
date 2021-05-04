@@ -72,65 +72,29 @@
 
 /**
  * ES3&#x76F8;&#x5F53;&#x306E;JScirpt&#x306E;Object&#x62E1;&#x5F35;&#x7528;&#x30AF;&#x30E9;&#x30B9;
- * - Object.prototype&#x306B;&#x62E1;&#x5F35;&#x3057;&#x307E;&#x3059;
+ * - ES3 &#x306B;&#x6A5F;&#x80FD;&#x62E1;&#x5F35;&#x3059;&#x308B;&#x4E88;&#x5B9A;&#x3067;&#x3057;&#x305F;&#x304C; for in &#x306E;&#x52D5;&#x4F5C;&#x306B;&#x652F;&#x969C;&#x304C;&#x51FA;&#x308B;&#x305F;&#x3081;&#x62E1;&#x5F35;&#x306A;&#x3057;&#x3068;&#x3059;&#x308B;
  */
 export default class ExtendsObject {
 
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30AD;&#x30FC;&#x304C;&#x542B;&#x307E;&#x308C;&#x308B;&#x304B;
-	 * @param {any} obj
-	 * @param {any} key 
-	 * @returns {boolean}
-	 */
-	static containsKey(obj, key) {
-		return typeof obj[key] !== &quot;undefined&quot;;
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x5024;&#x304C;&#x542B;&#x307E;&#x308C;&#x308B;&#x304B;
-	 * @param {any} obj
-	 * @param {any} value 
-	 * @returns {boolean}
-	 */
-	static containsValue(obj, value) {
-		for(const key in obj) {
-			if(obj[key] === value) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * &#x540D;&#x524D;&#x306E;&#x914D;&#x5217;
-	 * @param {Object} obj
-	 * @returns {string[]}
-	 */
-	static keys(obj) {
-		const data = [];
-		for(const key in obj) {
-			data.push(key);
-		}
-		return data;
-	}
-	
-	/**
-	 * &#x7A7A;&#x304B;&#x3069;&#x3046;&#x304B;
-	 * @param {Object} obj
-	 * @returns {boolean}
-	 */
-	static isEmpty(obj) {
-		return ExtendsObject.keys(obj).length === 0;
-	}
-	
 	/**
 	 * &#x6587;&#x5B57;&#x5217;&#x5316;
 	 * @param {any} obj
 	 * @returns {string}
 	 */
 	static toString(obj) {
-		const length = ExtendsObject.keys(obj).length;
+		/**
+		 * &#x540D;&#x524D;&#x306E;&#x914D;&#x5217;
+		 * @param {Object} obj
+		 * @returns {string[]}
+		 */
+		const keys = function(obj) {
+			const data = [];
+			for(const key in obj) {
+				data.push(key);
+			}
+			return data;
+		}
+		const length = keys(obj).length;
 		let output = &quot;&quot;;
 		let i = 0;
 		for(const key in obj) {
@@ -141,55 +105,6 @@ export default class ExtendsObject {
 			}
 		}
 		return output;
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30AD;&#x30FC;&#x3001;&#x305D;&#x306E;&#x5024;&#x3092;&#x767B;&#x9332;
-	 * @param {any} obj
-	 * @param {string} key 
-	 * @param {any} value 
-	 * @returns {null|any}
-	 */
-	static put(obj, key, value) {
-		if(!ExtendsObject.containsKey(obj, key)) {
-			obj[key] = value;
-			return null;
-		}
-		else {
-			const output = obj[key];
-			obj[key] = value;
-			return output;
-		}
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30AD;&#x30FC;&#x3001;&#x305D;&#x306E;&#x5024;&#x3092;&#x5168;&#x3066;&#x767B;&#x9332;
-	 * @param {any} obj
-	 * @param {Object&lt;string, any&gt;} hashmap 
-	 */
-	static putAll(obj, hashmap) {
-		for(const key in hashmap) {
-			if(typeof obj[key] === &quot;undefined&quot;) {
-				obj[key] = hashmap[key];
-			}
-		}
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30AD;&#x30FC;&#x306E;&#x5024;&#x3092;&#x524A;&#x9664;
-	 * @param {any} obj
-	 * @param {string} key 
-	 * @returns {null|any}
-	 */
-	static remove(obj, key) {
-		if(!ExtendsObject.containsKey(obj, key)) {
-			return null;
-		}
-		else {
-			const output = obj[key];
-			delete obj[key];
-			return output;
-		}
 	}
 
 }

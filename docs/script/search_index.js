@@ -1320,60 +1320,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/senko/polyfill/extendsarray.js~extendsarray.add",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-add",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.add",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.addall",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-addAll",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.addAll",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.clone",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-clone",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.clone",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.includes",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-includes",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.includes",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.indexof",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-indexOf",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.indexOf",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.isempty",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-isEmpty",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.isEmpty",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.lastindexof",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-lastIndexOf",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.lastIndexOf",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.remove",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-remove",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.remove",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.removerange",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-removeRange",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.removeRange",
-    "method"
-  ],
-  [
     "src/senko/polyfill/extendsarray.js~extendsarray.sort",
     "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-sort",
     "src/senko/polyfill/ExtendsArray.js~ExtendsArray.sort",
@@ -1390,48 +1336,6 @@ window.esdocSearchIndex = [
     "file/src/senko/polyfill/ExtendsObject.js.html",
     "src/senko/polyfill/ExtendsObject.js",
     "file"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.containskey",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-containsKey",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.containsKey",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.containsvalue",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-containsValue",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.containsValue",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.isempty",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-isEmpty",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.isEmpty",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.keys",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-keys",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.keys",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.put",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-put",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.put",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.putall",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-putAll",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.putAll",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.remove",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-remove",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.remove",
-    "method"
   ],
   [
     "src/senko/polyfill/extendsobject.js~extendsobject.tostring",

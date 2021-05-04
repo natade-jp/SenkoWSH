@@ -10,65 +10,29 @@
 
 /**
  * ES3相当のJScirptのObject拡張用クラス
- * - Object.prototypeに拡張します
+ * - ES3 に機能拡張する予定でしたが for in の動作に支障が出るため拡張なしとする
  */
 export default class ExtendsObject {
 
-
-	/**
-	 * 指定したキーが含まれるか
-	 * @param {any} obj
-	 * @param {any} key 
-	 * @returns {boolean}
-	 */
-	static containsKey(obj, key) {
-		return typeof obj[key] !== "undefined";
-	}
-	
-	/**
-	 * 指定した値が含まれるか
-	 * @param {any} obj
-	 * @param {any} value 
-	 * @returns {boolean}
-	 */
-	static containsValue(obj, value) {
-		for(const key in obj) {
-			if(obj[key] === value) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 名前の配列
-	 * @param {Object} obj
-	 * @returns {string[]}
-	 */
-	static keys(obj) {
-		const data = [];
-		for(const key in obj) {
-			data.push(key);
-		}
-		return data;
-	}
-	
-	/**
-	 * 空かどうか
-	 * @param {Object} obj
-	 * @returns {boolean}
-	 */
-	static isEmpty(obj) {
-		return ExtendsObject.keys(obj).length === 0;
-	}
-	
 	/**
 	 * 文字列化
 	 * @param {any} obj
 	 * @returns {string}
 	 */
 	static toString(obj) {
-		const length = ExtendsObject.keys(obj).length;
+		/**
+		 * 名前の配列
+		 * @param {Object} obj
+		 * @returns {string[]}
+		 */
+		const keys = function(obj) {
+			const data = [];
+			for(const key in obj) {
+				data.push(key);
+			}
+			return data;
+		}
+		const length = keys(obj).length;
 		let output = "";
 		let i = 0;
 		for(const key in obj) {
@@ -79,55 +43,6 @@ export default class ExtendsObject {
 			}
 		}
 		return output;
-	}
-
-	/**
-	 * 指定したキー、その値を登録
-	 * @param {any} obj
-	 * @param {string} key 
-	 * @param {any} value 
-	 * @returns {null|any}
-	 */
-	static put(obj, key, value) {
-		if(!ExtendsObject.containsKey(obj, key)) {
-			obj[key] = value;
-			return null;
-		}
-		else {
-			const output = obj[key];
-			obj[key] = value;
-			return output;
-		}
-	}
-
-	/**
-	 * 指定したキー、その値を全て登録
-	 * @param {any} obj
-	 * @param {Object<string, any>} hashmap 
-	 */
-	static putAll(obj, hashmap) {
-		for(const key in hashmap) {
-			if(typeof obj[key] === "undefined") {
-				obj[key] = hashmap[key];
-			}
-		}
-	}
-	
-	/**
-	 * 指定したキーの値を削除
-	 * @param {any} obj
-	 * @param {string} key 
-	 * @returns {null|any}
-	 */
-	static remove(obj, key) {
-		if(!ExtendsObject.containsKey(obj, key)) {
-			return null;
-		}
-		else {
-			const output = obj[key];
-			delete obj[key];
-			return output;
-		}
 	}
 
 }

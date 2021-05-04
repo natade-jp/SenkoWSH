@@ -1,5 +1,9 @@
 # History
 
+## SenkoWSH v4.0.0
+### 更新点
+- `v3.0.0` で拡張した `Array` と `Object` に対しての機能追加の中で `for in` の動作に支障が出るメソッドを消去
+
 ## SenkoWSH v3.9.0
 ### 更新点
 - `System.PowerShell` で複数行の文字列を引数に入れることを可能とするように改善
