@@ -59,6 +59,13 @@
 - ヘルプファイルの作成は、`npm run doc`
 - サンプルファイルの実行は、`npm run start` (`JScript`でサンプルファイルが実行される)
 
+## その他のライブラリ
+
+以下のライブラリは、`JScript` 及び `SenkoWSH` と組み合わせ踏査していることを確認しています。
+
+- [MojiJS](https://github.com/natade-jp/MojiJS) - 文字のエンコード、漢字水準の調査など
+- [konpeitoWSH](https://github.com/natade-jp/konpeitoWSH) - 行列計算、統計計算など
+
 ## Author
 
 - [natade-jp](https://github.com/natade-jp/)
