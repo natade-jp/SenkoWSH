@@ -1324,9 +1324,11 @@ declare class SFile {
      */
     writeLine(text: string): boolean;
     /**
-     * テキストファイルを開く
+     * ローカル、インターネット上のファイルをテキストとして開く
+     * - 改行コードは `\n` に統一されます
+     *
      * @param {string} [charset="_autodetect_all"] - 文字コード
-     * @returns {string}
+     * @returns {string} 失敗時は null
      */
     getTextFile(charset?: string): string;
     /**
@@ -1339,7 +1341,7 @@ declare class SFile {
      */
     setTextFile(text: string, charset?: string, newline?: string, issetBOM?: boolean): boolean;
     /**
-     * バイナリファイルを開く
+     * ローカル、インターネット上のファイルをバイナリとして開く
      * - 参考速度：0.5 sec/MB
      * - 巨大なファイルの一部を調べる場合は、位置とサイズを指定した方がよい
      *

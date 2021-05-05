@@ -672,9 +672,11 @@ export default class SFile {
 	}
 
 	/**
-	 * テキストファイルを開く
+	 * ローカル、インターネット上のファイルをテキストとして開く
+	 * - 改行コードは `\n` に統一されます
+	 * 
 	 * @param {string} [charset="_autodetect_all"] - 文字コード
-	 * @returns {string}
+	 * @returns {string} 失敗時は null
 	 */
 	getTextFile(charset) {
 		const icharset = charset !== undefined ? charset : "_autodetect_all";
@@ -689,11 +691,15 @@ export default class SFile {
 			http.open("GET", this.pathname, false);
 			try {
 				http.send(null);
-				text = http.responseText;
+				if(http.status === 200) {
+					text = http.responseText;
+				}
+				else {
+					console.log("HTTP status codes " + http.status);
+				}
 			}
 			catch (e) {
 				console.log(e);
-				text = "error";
 			}
 		}
 		else {
@@ -886,7 +892,7 @@ export default class SFile {
 	}
 
 	/**
-	 * バイナリファイルを開く
+	 * ローカル、インターネット上のファイルをバイナリとして開く
 	 * - 参考速度：0.5 sec/MB
 	 * - 巨大なファイルの一部を調べる場合は、位置とサイズを指定した方がよい
 	 * 
@@ -895,8 +901,30 @@ export default class SFile {
 	 * @returns {number[]}
 	 */
 	getBinaryFile(offset, size) {
-		if(this.is_http) {
-			throw "IllegalMethod";
+		if(/^htt/.test(this.pathname)) {
+			const http = System.createXMLHttpRequest();
+			if(http === null) {
+				console.log("createXMLHttpRequest")
+				return null;
+			}
+			http.open("GET", this.pathname, false);
+			let byte_array = null;
+			try {
+				http.send(null);
+				if(http.status === 200) {
+					// @ts-ignore
+					byte_array = http.responseBody;
+				}
+				else {
+					console.log("HTTP status codes " + http.status);
+					return [];
+				}
+			}
+			catch (e) {
+				console.log(e);
+				return [];
+			}
+			return System.createNumberArrayFromByteArray(byte_array);
 		}
 		// 位置を無指定
 		if(offset === undefined) {

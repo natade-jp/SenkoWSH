@@ -734,9 +734,11 @@ export default class SFile {
 	}
 
 	/**
-	 * &#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;
+	 * &#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30CD;&#x30C3;&#x30C8;&#x4E0A;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3068;&#x3057;&#x3066;&#x958B;&#x304F;
+	 * - &#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x306F; `\n` &#x306B;&#x7D71;&#x4E00;&#x3055;&#x308C;&#x307E;&#x3059;
+	 * 
 	 * @param {string} [charset=&quot;_autodetect_all&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
-	 * @returns {string}
+	 * @returns {string} &#x5931;&#x6557;&#x6642;&#x306F; null
 	 */
 	getTextFile(charset) {
 		const icharset = charset !== undefined ? charset : &quot;_autodetect_all&quot;;
@@ -751,11 +753,15 @@ export default class SFile {
 			http.open(&quot;GET&quot;, this.pathname, false);
 			try {
 				http.send(null);
-				text = http.responseText;
+				if(http.status === 200) {
+					text = http.responseText;
+				}
+				else {
+					console.log(&quot;HTTP status codes &quot; + http.status);
+				}
 			}
 			catch (e) {
 				console.log(e);
-				text = &quot;error&quot;;
 			}
 		}
 		else {
@@ -948,7 +954,7 @@ export default class SFile {
 	}
 
 	/**
-	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x958B;&#x304F;
+	 * &#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30CD;&#x30C3;&#x30C8;&#x4E0A;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x3068;&#x3057;&#x3066;&#x958B;&#x304F;
 	 * - &#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;0.5 sec/MB
 	 * - &#x5DE8;&#x5927;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x4E00;&#x90E8;&#x3092;&#x8ABF;&#x3079;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x4F4D;&#x7F6E;&#x3068;&#x30B5;&#x30A4;&#x30BA;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x65B9;&#x304C;&#x3088;&#x3044;
 	 * 
@@ -957,8 +963,30 @@ export default class SFile {
 	 * @returns {number[]}
 	 */
 	getBinaryFile(offset, size) {
-		if(this.is_http) {
-			throw &quot;IllegalMethod&quot;;
+		if(/^htt/.test(this.pathname)) {
+			const http = System.createXMLHttpRequest();
+			if(http === null) {
+				console.log(&quot;createXMLHttpRequest&quot;)
+				return null;
+			}
+			http.open(&quot;GET&quot;, this.pathname, false);
+			let byte_array = null;
+			try {
+				http.send(null);
+				if(http.status === 200) {
+					// @ts-ignore
+					byte_array = http.responseBody;
+				}
+				else {
+					console.log(&quot;HTTP status codes &quot; + http.status);
+					return [];
+				}
+			}
+			catch (e) {
+				console.log(e);
+				return [];
+			}
+			return System.createNumberArrayFromByteArray(byte_array);
 		}
 		// &#x4F4D;&#x7F6E;&#x3092;&#x7121;&#x6307;&#x5B9A;
 		if(offset === undefined) {

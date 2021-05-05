@@ -1,5 +1,10 @@
 # History
 
+## SenkoWSH v4.1.0
+### 更新点
+- `SFile.prototype.getTextFile` でWeb上のファイルを開いた時のエラー処理を強化
+- バイナリを取得する `SFile.prototype.getBinaryFile` をWeb上のサイトのファイルでも読み込めるように改善
+
 ## SenkoWSH v4.0.0
 ### 更新点
 - `v3.0.0` で拡張した `Array` と `Object` に対しての機能追加の中で `for in` の動作に支障が出るメソッドを消去
@@ -10,7 +15,7 @@
 - `System.BatchScript` を追加
 - `Dialog.popupSaveAs` にて `PowerShell` のコマンドの真偽値の設定誤りにより動作に問題があったのを修正
 - `polyfill` を強化(`JSON.parse`, `JSON.stringify`の追加など)
-- `SFile.setTextFile` のエラー処理を強化
+- `SFile.prototype.setTextFile` のエラー処理を強化
 
 ## SenkoWSH v3.8.0
 ### 更新点
@@ -20,11 +25,11 @@
 - `console.log` は、`cscript` でのみ動作するように変更
 - `WindowsAPI` を使用している個所にコメントを追加
 - `String.fromCodePoint()` が正しく動作していなかった問題を修正
-- `SFile.setBinaryFile()` のバッファを調整して、速度を4倍程度へ高速化
+- `SFile.prototype.setBinaryFile()` のバッファを調整して、速度を4倍程度へ高速化
 - `SFile.createXMLHttpRequest` を `System.createXMLHttpRequest` へ移動
 - `System.createMSXMLDOMDocument` を追加
 - バイト配列と相互変換する `System.createNumberArrayFromByteArray`, `System.createByteArrayFromNumberArray`
-- バイナリを読み書きする `SFile.getBinaryFile`, `SFile.setBinaryFile` について、途中から読み書きできる機能を追加
+- バイナリを読み書きする `SFile.prototype.getBinaryFile`, `SFile.prototype.setBinaryFile` について、途中から読み書きできる機能を追加
 
 ## SenkoWSH v3.7.0
 ### 更新点
@@ -50,7 +55,7 @@
 ## SenkoWSH v3.4.1
 ### 更新点
 - `Robot` に `ウィンドウ名`, `クラス名` 両方指定できるメソッドを追加
-- `SFile.lastModified` が `VT_DATE値` を返してしまっていたのを修正
+- `SFile.prototype.lastModified` が `VT_DATE値` を返してしまっていたのを修正
 
 ## SenkoWSH v3.4.0
 ### 更新点
