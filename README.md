@@ -64,7 +64,7 @@
 以下のライブラリは、`JScript` 及び `SenkoWSH` と組み合わせ踏査していることを確認しています。
 
 - [MojiJS](https://github.com/natade-jp/MojiJS) - 文字のエンコード、漢字水準の調査など
-- [konpeitoWSH](https://github.com/natade-jp/konpeitoWSH) - 行列計算、統計計算など
+- [konpeito-ES3](https://github.com/natade-jp/konpeito-ES3) - 行列計算、統計計算など
 
 ## Author
 
