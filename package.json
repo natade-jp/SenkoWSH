@@ -1,6 +1,6 @@
 {
 	"name": "senkowsh",
-	"version": "4.1.1",
+	"version": "4.2.0",
 	"description": "JScirpt library for WSH that gathers various functions.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {

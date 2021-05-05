@@ -1,5 +1,12 @@
 # History
 
+## SenkoWSH v4.2.0
+### 更新点
+- 変数の型名を取得する `System.typeOf` を追加
+- `SFile.prototype.searchFile` について引数に正規表現を入れるなどの改善、及び複数ファイルを探すような機能を追加
+- `SFile.prototype.move` のエラー処理を強化、詳細な動作仕様をメソッドの説明に記載
+- `SFile.prototype.renameTo` のエラー処理を強化、詳細な動作仕様をメソッドの説明に記載
+
 ## SenkoWSH v4.1.1
 ### 更新点
 - `SFile` の入力引数に `SFile` 型を入力するとエラーが発生する場合があったのを回避

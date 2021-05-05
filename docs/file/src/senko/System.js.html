@@ -662,6 +662,17 @@ export default class System {
 		return byte_array;
 	}
 
+	/**
+	 * &#x30C7;&#x30FC;&#x30BF;&#x306E;&#x578B;&#x3092;&#x5C0F;&#x6587;&#x5B57;&#x306E;&#x82F1;&#x5B57;&#x3067;&#x8FD4;&#x3059;
+	 * - &#x914D;&#x5217;&#x3067;&#x3042;&#x308C;&#x3070; `array`&#x3001;&#x6B63;&#x898F;&#x8868;&#x73FE;&#x3067;&#x3042;&#x308C;&#x3070; `regexp` &#x306A;&#x3069;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
+	 * 
+	 * @param {any} x
+	 * @returns {string}
+	 */
+	static typeOf(x) {
+		return Object.prototype.toString.call(x).slice(8, -1).toLowerCase();
+	}
+
 }
 
 

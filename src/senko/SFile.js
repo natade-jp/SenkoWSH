@@ -118,32 +118,55 @@ export default class SFile {
 
 	/**
 	 * ファイルの移動
-	 * @param {string|SFile} file_obj
+	 * - 移動後の `this` は、移動後のファイルを指す
+	 * - `this` がファイルの場合、ディレクトリを選択すると、ディレクトリ内へファイルを移動させます
+	 * - `this` がファイルの場合、ファイルを選択すると、ディレクトリの移動かつファイル名を変更します
+	 * - `this` がディレクトリの場合、指定したディレクトリへファイルを移動させるため、ディレクトリ名の変更は行えません
+	 * 
+	 * @param {string|SFile} file_obj - 移動先のファイル名及びディレクトリ
 	 * @returns {boolean}
 	 */
 	move(file_obj) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
-		const file = new SFile(file_obj);
-		if(this.isFile()) {
-			this.fso.MoveFile(this.pathname, file.getAbsolutePath());
-			this.pathname = file.getAbsolutePath();
-			return true;
+		const folder = new SFile(file_obj);
+		try {
+			if(this.isFile()) {
+				if(!folder.isDirectory()) {
+					// ディレクトリを指していない場合は、移動 + ファイル名の変更
+					this.fso.MoveFile(this.pathname, folder.getAbsolutePath());
+					this.pathname = folder.getAbsolutePath();
+				}
+				else {
+					// 宛先がディレクトリ内へ移動になる
+					this.fso.MoveFile(this.pathname, folder.getAbsolutePath() + "\\");
+					this.pathname = folder.getAbsolutePath() + "/" + this.getName();
+				}
+				return true;
+			}
+			else if(this.isDirectory()) {
+				// フォルダを指定したフォルダ内へ移動
+				this.fso.MoveFolder(this.getAbsolutePath(), folder.getAbsolutePath() + "/");
+				this.pathname = folder.getAbsolutePath() + "/" + this.getName();
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
-		else if(this.isDirectory()) {
-			this.fso.MoveFolder(this.pathname, file.getAbsolutePath());
-			this.pathname = file.getAbsolutePath();
-			return true;
-		}
-		else {
+		catch (e) {
+			console.log(e);
 			return false;
 		}
 	}
 
 	/**
 	 * ファイル名を変更
-	 * @param {string|SFile} file_obj
+	 * - 変更後の `this` は、変更後のファイルを指す
+	 * - 引数はフルパスを渡した場合でもファイル名のみ使用する
+	 * 
+	 * @param {string|SFile} file_obj 変更後のファイル名
 	 * @returns {boolean}
 	 */
 	renameTo(file_obj) {
@@ -153,16 +176,27 @@ export default class SFile {
 		if(!this.isFile() && !this.isDirectory()) {
 			return false;
 		}
-		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
-		const name = new SFile(file_obj);
-		// 例えばファイル名を大文字から小文字に変換といった場合、
-		// Scripting.FileSystemObject の仕様によりエラーが発生するため、
-		// 別のファイル名を経由する
-		const key = ((Math.random() * 0x7FFFFFFF) & 0x7FFFFFFF).toString(16);
-		file.Name = name.getName() + key;
-		file.Name = name.getName();
-		this.pathname = name.getAbsolutePath();
-		return true;
+		// `GetFile` や `GetFolder` のプロパティ `.Name` で名前を変更した場合、
+		// 例えばファイル名を大文字から小文字に変更すると
+		// `Scripting.FileSystemObject` の仕様によりエラーが発生する
+		// そのため `MoveFile`, `MoveFolder` を使用する
+		try {
+			// getAbsolutePath で取得すると同一名のファイルが正しく取得できないので
+			// 直接作成する
+			const dst = this.getParent() + "\\" + new SFile(file_obj).getName();
+			if(this.isFile()) {
+				this.fso.MoveFile(this.getAbsolutePath(), dst);
+			}
+			else if(this.isDirectory()) {
+				this.fso.MoveFolder(this.getAbsolutePath(), dst);
+			}
+			this.pathname = new SFile(dst).getAbsolutePath();
+			return true;
+		}
+		catch (e) {
+			console.log(e);
+			return false;
+		}
 	}
 
 	/**
@@ -193,7 +227,9 @@ export default class SFile {
 
 	/**
 	 * 親フォルダの絶対パス
-	 * URLなら最後にスラッシュをつけて返す
+	 * - 通常のフォルダの場合は、最後の「`/`」は除去される
+	 * - URLなら最後にスラッシュをつけて返す
+	 * 
 	 * @returns {string} 
 	 */
 	getParent() {
@@ -1267,39 +1303,75 @@ export default class SFile {
 
 	/**
 	 * 指定した条件にあうファイルを探す
-	 * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
-	 * @param {string|SFile|function(string, string): boolean} file_obj
-	 * @returns {SFile|null}
+	 * - 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
+	 * 
+	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @param {boolean} [is_all_file=false] trueで指定した場合は条件に合うファイルを複数見つけて配列で返す
+	 * @returns {SFile|SFile[]|null}
 	 */
-	searchFile(file_obj) {
-		let target_file = null;
+	searchFile(file_obj, is_all_file) {
+		const is_all_file_ = is_all_file !== undefined ? is_all_file : false;
+
 		/**
-		 * @type {function(string, string): boolean}
+		 * @type {function(SFile): boolean}
 		 * @private
 		 */
 		let isTarget;
 		if(typeof file_obj !== "function") {
-			const file = new SFile(file_obj);
-			const buffer = file.getName();
-			isTarget = function(name, fullpath) {
-				return name === buffer;
-			};
+			if(System.typeOf(file_obj) === "regexp") {
+				/**
+				 * @type {RegExp}
+				 */
+				// @ts-ignore
+				const reg = file_obj;
+				isTarget = function(file) {
+					const result = reg.exec(file.getAbsolutePath());
+					return result !== null;
+				};
+			}
+			else {
+				// @ts-ignore
+				const file = new SFile(file_obj);
+				const buffer = file.getName();
+				isTarget = function(file) {
+					return file.getName() === buffer;
+				};
+			}
 		}
 		else {
 			isTarget = file_obj;
 		}
 		/**
+		 * @type {SFile}
+		 */
+		let target_file = null;
+		/**
+		 * @type {SFile[]}
+		 */
+		let target_files = [];
+		/**
 		 * @type {function(SFile): boolean}
 		 */
 		const func = function(file) {
-			if(isTarget(file.getName(), file.getAbsolutePath())) {
-				target_file = file;
-				return false;
+			if(isTarget(file)) {
+				if(is_all_file_) {
+					target_files.push(file);
+					return true;
+				}
+				else {
+					target_file = file;
+					return false;
+				}
 			}
 			return true;
 		};
 		this.each(func);
-		return target_file;
+		if(is_all_file_) {
+			return target_files;
+		}
+		else {
+			return target_file;
+		}
 	}
 
 	/**

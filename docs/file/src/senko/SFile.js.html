@@ -180,32 +180,55 @@ export default class SFile {
 
 	/**
 	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x79FB;&#x52D5;
-	 * @param {string|SFile} file_obj
+	 * - &#x79FB;&#x52D5;&#x5F8C;&#x306E; `this` &#x306F;&#x3001;&#x79FB;&#x52D5;&#x5F8C;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x6307;&#x3059;
+	 * - `this` &#x304C;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x5834;&#x5408;&#x3001;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x9078;&#x629E;&#x3059;&#x308B;&#x3068;&#x3001;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x5185;&#x3078;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x79FB;&#x52D5;&#x3055;&#x305B;&#x307E;&#x3059;
+	 * - `this` &#x304C;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x5834;&#x5408;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x9078;&#x629E;&#x3059;&#x308B;&#x3068;&#x3001;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x306E;&#x79FB;&#x52D5;&#x304B;&#x3064;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5909;&#x66F4;&#x3057;&#x307E;&#x3059;
+	 * - `this` &#x304C;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x306E;&#x5834;&#x5408;&#x3001;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3078;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x79FB;&#x52D5;&#x3055;&#x305B;&#x308B;&#x305F;&#x3081;&#x3001;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x540D;&#x306E;&#x5909;&#x66F4;&#x306F;&#x884C;&#x3048;&#x307E;&#x305B;&#x3093;
+	 * 
+	 * @param {string|SFile} file_obj - &#x79FB;&#x52D5;&#x5148;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x53CA;&#x3073;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;
 	 * @returns {boolean}
 	 */
 	move(file_obj) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
-		const file = new SFile(file_obj);
-		if(this.isFile()) {
-			this.fso.MoveFile(this.pathname, file.getAbsolutePath());
-			this.pathname = file.getAbsolutePath();
-			return true;
+		const folder = new SFile(file_obj);
+		try {
+			if(this.isFile()) {
+				if(!folder.isDirectory()) {
+					// &#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x3092;&#x6307;&#x3057;&#x3066;&#x3044;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x3001;&#x79FB;&#x52D5; + &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x306E;&#x5909;&#x66F4;
+					this.fso.MoveFile(this.pathname, folder.getAbsolutePath());
+					this.pathname = folder.getAbsolutePath();
+				}
+				else {
+					// &#x5B9B;&#x5148;&#x304C;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x5185;&#x3078;&#x79FB;&#x52D5;&#x306B;&#x306A;&#x308B;
+					this.fso.MoveFile(this.pathname, folder.getAbsolutePath() + &quot;\\&quot;);
+					this.pathname = folder.getAbsolutePath() + &quot;/&quot; + this.getName();
+				}
+				return true;
+			}
+			else if(this.isDirectory()) {
+				// &#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x5185;&#x3078;&#x79FB;&#x52D5;
+				this.fso.MoveFolder(this.getAbsolutePath(), folder.getAbsolutePath() + &quot;/&quot;);
+				this.pathname = folder.getAbsolutePath() + &quot;/&quot; + this.getName();
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
-		else if(this.isDirectory()) {
-			this.fso.MoveFolder(this.pathname, file.getAbsolutePath());
-			this.pathname = file.getAbsolutePath();
-			return true;
-		}
-		else {
+		catch (e) {
+			console.log(e);
 			return false;
 		}
 	}
 
 	/**
 	 * &#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5909;&#x66F4;
-	 * @param {string|SFile} file_obj
+	 * - &#x5909;&#x66F4;&#x5F8C;&#x306E; `this` &#x306F;&#x3001;&#x5909;&#x66F4;&#x5F8C;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x6307;&#x3059;
+	 * - &#x5F15;&#x6570;&#x306F;&#x30D5;&#x30EB;&#x30D1;&#x30B9;&#x3092;&#x6E21;&#x3057;&#x305F;&#x5834;&#x5408;&#x3067;&#x3082;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x306E;&#x307F;&#x4F7F;&#x7528;&#x3059;&#x308B;
+	 * 
+	 * @param {string|SFile} file_obj &#x5909;&#x66F4;&#x5F8C;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;
 	 * @returns {boolean}
 	 */
 	renameTo(file_obj) {
@@ -215,16 +238,27 @@ export default class SFile {
 		if(!this.isFile() &amp;&amp; !this.isDirectory()) {
 			return false;
 		}
-		const file = this.isFile() ? this.fso.GetFile(this.pathname) : this.fso.GetFolder(this.pathname);
-		const name = new SFile(file_obj);
-		// &#x4F8B;&#x3048;&#x3070;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5927;&#x6587;&#x5B57;&#x304B;&#x3089;&#x5C0F;&#x6587;&#x5B57;&#x306B;&#x5909;&#x63DB;&#x3068;&#x3044;&#x3063;&#x305F;&#x5834;&#x5408;&#x3001;
-		// Scripting.FileSystemObject &#x306E;&#x4ED5;&#x69D8;&#x306B;&#x3088;&#x308A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;
-		// &#x5225;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x7D4C;&#x7531;&#x3059;&#x308B;
-		const key = ((Math.random() * 0x7FFFFFFF) &amp; 0x7FFFFFFF).toString(16);
-		file.Name = name.getName() + key;
-		file.Name = name.getName();
-		this.pathname = name.getAbsolutePath();
-		return true;
+		// `GetFile` &#x3084; `GetFolder` &#x306E;&#x30D7;&#x30ED;&#x30D1;&#x30C6;&#x30A3; `.Name` &#x3067;&#x540D;&#x524D;&#x3092;&#x5909;&#x66F4;&#x3057;&#x305F;&#x5834;&#x5408;&#x3001;
+		// &#x4F8B;&#x3048;&#x3070;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3092;&#x5927;&#x6587;&#x5B57;&#x304B;&#x3089;&#x5C0F;&#x6587;&#x5B57;&#x306B;&#x5909;&#x66F4;&#x3059;&#x308B;&#x3068;
+		// `Scripting.FileSystemObject` &#x306E;&#x4ED5;&#x69D8;&#x306B;&#x3088;&#x308A;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;
+		// &#x305D;&#x306E;&#x305F;&#x3081; `MoveFile`, `MoveFolder` &#x3092;&#x4F7F;&#x7528;&#x3059;&#x308B;
+		try {
+			// getAbsolutePath &#x3067;&#x53D6;&#x5F97;&#x3059;&#x308B;&#x3068;&#x540C;&#x4E00;&#x540D;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x304C;&#x6B63;&#x3057;&#x304F;&#x53D6;&#x5F97;&#x3067;&#x304D;&#x306A;&#x3044;&#x306E;&#x3067;
+			// &#x76F4;&#x63A5;&#x4F5C;&#x6210;&#x3059;&#x308B;
+			const dst = this.getParent() + &quot;\\&quot; + new SFile(file_obj).getName();
+			if(this.isFile()) {
+				this.fso.MoveFile(this.getAbsolutePath(), dst);
+			}
+			else if(this.isDirectory()) {
+				this.fso.MoveFolder(this.getAbsolutePath(), dst);
+			}
+			this.pathname = new SFile(dst).getAbsolutePath();
+			return true;
+		}
+		catch (e) {
+			console.log(e);
+			return false;
+		}
 	}
 
 	/**
@@ -255,7 +289,9 @@ export default class SFile {
 
 	/**
 	 * &#x89AA;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x7D76;&#x5BFE;&#x30D1;&#x30B9;
-	 * URL&#x306A;&#x3089;&#x6700;&#x5F8C;&#x306B;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3092;&#x3064;&#x3051;&#x3066;&#x8FD4;&#x3059;
+	 * - &#x901A;&#x5E38;&#x306E;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306E;&#x5834;&#x5408;&#x306F;&#x3001;&#x6700;&#x5F8C;&#x306E;&#x300C;`/`&#x300D;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x308B;
+	 * - URL&#x306A;&#x3089;&#x6700;&#x5F8C;&#x306B;&#x30B9;&#x30E9;&#x30C3;&#x30B7;&#x30E5;&#x3092;&#x3064;&#x3051;&#x3066;&#x8FD4;&#x3059;
+	 * 
 	 * @returns {string} 
 	 */
 	getParent() {
@@ -1329,39 +1365,75 @@ export default class SFile {
 
 	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
-	 * &#x95A2;&#x6570;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30D5;&#x30EB;&#x30D1;&#x30B9;&#x304C;&#x5F15;&#x6570;&#x306B;&#x6E21;&#x3055;&#x308C;&#x307E;&#x3059;
-	 * @param {string|SFile|function(string, string): boolean} file_obj
-	 * @returns {SFile|null}
+	 * - &#x95A2;&#x6570;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30D5;&#x30EB;&#x30D1;&#x30B9;&#x304C;&#x5F15;&#x6570;&#x306B;&#x6E21;&#x3055;&#x308C;&#x307E;&#x3059;
+	 * 
+	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @param {boolean} [is_all_file=false] true&#x3067;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8907;&#x6570;&#x898B;&#x3064;&#x3051;&#x3066;&#x914D;&#x5217;&#x3067;&#x8FD4;&#x3059;
+	 * @returns {SFile|SFile[]|null}
 	 */
-	searchFile(file_obj) {
-		let target_file = null;
+	searchFile(file_obj, is_all_file) {
+		const is_all_file_ = is_all_file !== undefined ? is_all_file : false;
+
 		/**
-		 * @type {function(string, string): boolean}
+		 * @type {function(SFile): boolean}
 		 * @private
 		 */
 		let isTarget;
 		if(typeof file_obj !== &quot;function&quot;) {
-			const file = new SFile(file_obj);
-			const buffer = file.getName();
-			isTarget = function(name, fullpath) {
-				return name === buffer;
-			};
+			if(System.typeOf(file_obj) === &quot;regexp&quot;) {
+				/**
+				 * @type {RegExp}
+				 */
+				// @ts-ignore
+				const reg = file_obj;
+				isTarget = function(file) {
+					const result = reg.exec(file.getAbsolutePath());
+					return result !== null;
+				};
+			}
+			else {
+				// @ts-ignore
+				const file = new SFile(file_obj);
+				const buffer = file.getName();
+				isTarget = function(file) {
+					return file.getName() === buffer;
+				};
+			}
 		}
 		else {
 			isTarget = file_obj;
 		}
 		/**
+		 * @type {SFile}
+		 */
+		let target_file = null;
+		/**
+		 * @type {SFile[]}
+		 */
+		let target_files = [];
+		/**
 		 * @type {function(SFile): boolean}
 		 */
 		const func = function(file) {
-			if(isTarget(file.getName(), file.getAbsolutePath())) {
-				target_file = file;
-				return false;
+			if(isTarget(file)) {
+				if(is_all_file_) {
+					target_files.push(file);
+					return true;
+				}
+				else {
+					target_file = file;
+					return false;
+				}
 			}
 			return true;
 		};
 		this.each(func);
-		return target_file;
+		if(is_all_file_) {
+			return target_files;
+		}
+		else {
+			return target_file;
+		}
 	}
 
 	/**
@@ -1523,7 +1595,6 @@ export default class SFile {
 				}
 				extract_file = allfile[0];
 			}
-			const command = &quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;;
 			const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;);
 			if(result.exit_code !== 0) {
 				if(temp_folder) {

@@ -1180,13 +1180,21 @@ declare class SFile {
     copy(file_obj: string | SFile): boolean;
     /**
      * ファイルの移動
-     * @param {string|SFile} file_obj
+     * - 移動後の `this` は、移動後のファイルを指す
+     * - `this` がファイルの場合、ディレクトリを選択すると、ディレクトリ内へファイルを移動させます
+     * - `this` がファイルの場合、ファイルを選択すると、ディレクトリの移動かつファイル名を変更します
+     * - `this` がディレクトリの場合、指定したディレクトリへファイルを移動させるため、ディレクトリ名の変更は行えません
+     *
+     * @param {string|SFile} file_obj - 移動先のファイル名及びディレクトリ
      * @returns {boolean}
      */
     move(file_obj: string | SFile): boolean;
     /**
      * ファイル名を変更
-     * @param {string|SFile} file_obj
+     * - 変更後の `this` は、変更後のファイルを指す
+     * - 引数はフルパスを渡した場合でもファイル名のみ使用する
+     *
+     * @param {string|SFile} file_obj 変更後のファイル名
      * @returns {boolean}
      */
     renameTo(file_obj: string | SFile): boolean;
@@ -1202,7 +1210,9 @@ declare class SFile {
     getName(): string;
     /**
      * 親フォルダの絶対パス
-     * URLなら最後にスラッシュをつけて返す
+     * - 通常のフォルダの場合は、最後の「`/`」は除去される
+     * - URLなら最後にスラッシュをつけて返す
+     *
      * @returns {string}
      */
     getParent(): string;
@@ -1393,11 +1403,13 @@ declare class SFile {
     getAllFiles(): SFile[];
     /**
      * 指定した条件にあうファイルを探す
-     * 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
-     * @param {string|SFile|function(string, string): boolean} file_obj
-     * @returns {SFile|null}
+     * - 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
+     *
+     * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+     * @param {boolean} [is_all_file=false] trueで指定した場合は条件に合うファイルを複数見つけて配列で返す
+     * @returns {SFile|SFile[]|null}
      */
-    searchFile(file_obj: string | SFile | ((...params: any[]) => any)): SFile | null;
+    searchFile(file_obj: string | SFile | RegExp | ((...params: any[]) => any), is_all_file?: boolean): SFile | SFile[] | null;
     /**
      * 圧縮する
      * - 圧縮後のファイル名の拡張子で圧縮したい形式を指定する
@@ -1634,6 +1646,14 @@ declare class System {
      * @returns {any}
      */
     static createByteArrayFromNumberArray(number_array: number[], offset?: number): any;
+    /**
+     * データの型を小文字の英字で返す
+     * - 配列であれば `array`、正規表現であれば `regexp` などを返します
+     *
+     * @param {any} x
+     * @returns {string}
+     */
+    static typeOf(x: any): string;
 }
 
 /**

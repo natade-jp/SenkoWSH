@@ -1308,6 +1308,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/system.js~system.typeof",
+    "class/src/senko/System.js~System.html#static-method-typeOf",
+    "src/senko/System.js~System.typeOf",
+    "method"
+  ],
+  [
     "src/senko/system.js~systemexecresult",
     "typedef/index.html#static-typedef-SystemExecResult",
     "src/senko/System.js~SystemExecResult",

@@ -600,6 +600,17 @@ export default class System {
 		return byte_array;
 	}
 
+	/**
+	 * データの型を小文字の英字で返す
+	 * - 配列であれば `array`、正規表現であれば `regexp` などを返します
+	 * 
+	 * @param {any} x
+	 * @returns {string}
+	 */
+	static typeOf(x) {
+		return Object.prototype.toString.call(x).slice(8, -1).toLowerCase();
+	}
+
 }
 
 
