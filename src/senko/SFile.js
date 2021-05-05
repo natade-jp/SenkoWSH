@@ -36,7 +36,8 @@ export default class SFile {
 			// \を/に置き換える
 			this.pathname = pathname.replace(/\\/g, "/" );
 		}
-		else if(pathname instanceof SFile) {
+		// (pathname instanceof SFile) が反応しない場合があるので以下を利用
+		else if((pathname instanceof Object) && ("getAbsolutePath" in pathname)) {
 			this.pathname = pathname.getAbsolutePath();
 		}
 		else {

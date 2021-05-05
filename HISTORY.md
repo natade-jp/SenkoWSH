@@ -1,5 +1,11 @@
 # History
 
+## SenkoWSH v4.1.1
+### 更新点
+- `SFile` の入力引数に `SFile` 型を入力するとエラーが発生する場合があったのを回避
+
+(コンストラクタで入れた `SFile` 型の入力引数を `instanceof` 判定すると `false` となり謎のエラーが発生する場合があったのを修正)
+
 ## SenkoWSH v4.1.0
 ### 更新点
 - `SFile.prototype.getTextFile` でWeb上のファイルを開いた時のエラー処理を強化

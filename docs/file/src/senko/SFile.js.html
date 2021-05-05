@@ -98,7 +98,8 @@ export default class SFile {
 			// \&#x3092;/&#x306B;&#x7F6E;&#x304D;&#x63DB;&#x3048;&#x308B;
 			this.pathname = pathname.replace(/\\/g, &quot;/&quot; );
 		}
-		else if(pathname instanceof SFile) {
+		// (pathname instanceof SFile) &#x304C;&#x53CD;&#x5FDC;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x304C;&#x3042;&#x308B;&#x306E;&#x3067;&#x4EE5;&#x4E0B;&#x3092;&#x5229;&#x7528;
+		else if((pathname instanceof Object) &amp;&amp; (&quot;getAbsolutePath&quot; in pathname)) {
 			this.pathname = pathname.getAbsolutePath();
 		}
 		else {
@@ -1522,6 +1523,7 @@ export default class SFile {
 				}
 				extract_file = allfile[0];
 			}
+			const command = &quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;;
 			const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;);
 			if(result.exit_code !== 0) {
 				if(temp_folder) {
