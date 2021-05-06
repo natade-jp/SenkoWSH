@@ -1,5 +1,13 @@
 # History
 
+## SenkoWSH v5.0.0
+### 更新点
+- `SFile` 内のコメントのリファクタリング
+- `SFile.prototype.getTextFile` のエラー処理を強化、`Shift_JIS` を指定した場合は `OpenTextFile` ではなく `ADODB.Stream` を使用するように動作変更
+- `SFile.prototype.setTextFile` のエラー処理を強化、`Shift_JIS` を指定した場合でエンコードに失敗した場合にエラーが発生する問題を修正。
+- `SFile.prototype.getBinaryFile` で異常時の戻り値は `if` 文で簡単に判定できるように `null` へ変更
+- `v4.2.0` にて `SFile.prototype.searchFile` に複数ファイル検索機能を付けましたが、これを `SFile.prototype.searchFiles` という名前で別メソッドへ変更
+
 ## SenkoWSH v4.2.0
 ### 更新点
 - 変数の型名を取得する `System.typeOf` を追加

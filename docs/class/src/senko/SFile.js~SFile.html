@@ -619,7 +619,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html#instance-method-getBinaryFile">getBinaryFile</a></span></span><span class="code" data-ice="signature">(offset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html#instance-method-getBinaryFile">getBinaryFile</a></span></span><span class="code" data-ice="signature">(offset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
@@ -627,6 +627,7 @@
         
         <div data-ice="description"><p>&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30CD;&#x30C3;&#x30C8;&#x4E0A;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x3068;&#x3057;&#x3066;&#x958B;&#x304F;</p>
 <ul>
+<li>&#x958B;&#x3051;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code> &#x3092;&#x8FD4;&#x3059;</li>
 <li>&#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;0.5 sec/MB</li>
 <li>&#x5DE8;&#x5927;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x4E00;&#x90E8;&#x3092;&#x8ABF;&#x3079;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x4F4D;&#x7F6E;&#x3068;&#x30B5;&#x30A4;&#x30BA;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x65B9;&#x304C;&#x3088;&#x3044;</li>
 </ul>
@@ -896,7 +897,8 @@
         
         <div data-ice="description"><p>&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30CD;&#x30C3;&#x30C8;&#x4E0A;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3068;&#x3057;&#x3066;&#x958B;&#x304F;</p>
 <ul>
-<li>&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x306F; <code>\n</code> &#x306B;&#x7D71;&#x4E00;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+<li>&#x958B;&#x3051;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code> &#x3092;&#x8FD4;&#x3059;</li>
+<li>&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x306F; <code>\n</code> &#x306B;&#x7D71;&#x4E00;&#x3055;&#x308C;&#x308B;</li>
 </ul>
 </div>
       </div>
@@ -1161,7 +1163,7 @@
         <div data-ice="description"><p>&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x4F5C;&#x6210;</p>
 <ul>
 <li>&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306F;1&#x3064;&#x306E;&#x307F;&#x6307;&#x5B9A;&#x53EF;&#x80FD;</li>
-<li>&#x3059;&#x3067;&#x306B;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x30A8;&#x30E9;&#x30FC;&#x3092;&#x8FD4;&#x3059;&#x3002;</li>
+<li>&#x3059;&#x3067;&#x306B;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x30A8;&#x30E9;&#x30FC;&#x3092;&#x8FD4;&#x3059;</li>
 </ul>
 </div>
       </div>
@@ -1344,7 +1346,7 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html#instance-method-searchFile">searchFile</a></span></span><span class="code" data-ice="signature">(file_obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>, is_all_file: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span><span>[]</span></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html#instance-method-searchFile">searchFile</a></span></span><span class="code" data-ice="signature">(file_obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>): <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
@@ -1352,7 +1354,41 @@
         
         <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;</p>
 <ul>
-<li>&#x95A2;&#x6570;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30D5;&#x30EB;&#x30D1;&#x30B9;&#x304C;&#x5F15;&#x6570;&#x306B;&#x6E21;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+<li><code>this</code> &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
+<li>&#x898B;&#x3064;&#x304B;&#x3063;&#x305F;&#x3089;&#x63A2;&#x7D22;&#x3092;&#x4E2D;&#x6B62;&#x3057;&#x307E;&#x3059;</li>
+<li>&#x898B;&#x3064;&#x304B;&#x3089;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code> &#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
+</ul>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/senko/SFile.js~SFile.html#instance-method-searchFiles">searchFiles</a></span></span><span class="code" data-ice="signature">(file_obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>): <span><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span><span>[]</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;</p>
+<ul>
+<li><code>this</code> &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x4E00;&#x89A7;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
 </ul>
 </div>
       </div>
@@ -1384,6 +1420,7 @@
         
         <div data-ice="description"><p>&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;</p>
 <ul>
+<li>&#x4FDD;&#x5B58;&#x3067;&#x304D;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306F; <code>false</code> &#x3092;&#x8FD4;&#x3059;</li>
 <li>&#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;1.0 sec/MB</li>
 </ul>
 </div>
@@ -1502,6 +1539,10 @@
         
         
         <div data-ice="description"><p>&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;</p>
+<ul>
+<li>&#x4FDD;&#x5B58;&#x3067;&#x304D;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306F; <code>false</code> &#x3092;&#x8FD4;&#x3059;</li>
+<li>&#x5909;&#x63DB;&#x5148;&#x306E;&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x6587;&#x5B57;&#x306F;&#x3001;<code>&quot;?&quot;</code>&#x306B;&#x5909;&#x63DB;&#x3055;&#x308C;&#x308B;</li>
+</ul>
 </div>
       </div>
     </td>
@@ -1589,7 +1630,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1387">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1423">source</a></span></span>
     </span>
   </h3>
 
@@ -1675,7 +1716,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1180">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1176">source</a></span></span>
     </span>
   </h3>
 
@@ -1731,7 +1772,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1488">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1524">source</a></span></span>
     </span>
   </h3>
 
@@ -1816,7 +1857,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1574">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1610">source</a></span></span>
     </span>
   </h3>
 
@@ -1878,7 +1919,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1191">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1187">source</a></span></span>
     </span>
   </h3>
 
@@ -1934,7 +1975,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1558">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1594">source</a></span></span>
     </span>
   </h3>
 
@@ -2013,7 +2054,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1200">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1196">source</a></span></span>
     </span>
   </h3>
 
@@ -2344,7 +2385,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1212">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1208">source</a></span></span>
     </span>
   </h3>
 
@@ -2530,7 +2571,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1288">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1284">source</a></span></span>
     </span>
   </h3>
 
@@ -2582,11 +2623,11 @@
     
     
     
-    <span class="code" data-ice="name">getBinaryFile</span><span class="code" data-ice="signature">(offset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></span>
+    <span class="code" data-ice="name">getBinaryFile</span><span class="code" data-ice="signature">(offset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>): <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber940">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber935">source</a></span></span>
     </span>
   </h3>
 
@@ -2595,6 +2636,7 @@
   
   <div data-ice="description"><p>&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30CD;&#x30C3;&#x30C8;&#x4E0A;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x3068;&#x3057;&#x3066;&#x958B;&#x304F;</p>
 <ul>
+<li>&#x958B;&#x3051;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code> &#x3092;&#x8FD4;&#x3059;</li>
 <li>&#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;0.5 sec/MB</li>
 <li>&#x5DE8;&#x5927;&#x306A;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x4E00;&#x90E8;&#x3092;&#x8ABF;&#x3079;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x4F4D;&#x7F6E;&#x3068;&#x30B5;&#x30A4;&#x30BA;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x65B9;&#x304C;&#x3088;&#x3044;</li>
 </ul>
@@ -2634,7 +2676,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span></td>
+          <td class="return-type code" data-ice="returnType"><span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span><span>[]</span></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
           
         </tr>
       </tbody>
@@ -2782,7 +2824,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1148">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1144">source</a></span></span>
     </span>
   </h3>
 
@@ -3141,7 +3183,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber718">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber721">source</a></span></span>
     </span>
   </h3>
 
@@ -3150,7 +3192,8 @@
   
   <div data-ice="description"><p>&#x30ED;&#x30FC;&#x30AB;&#x30EB;&#x3001;&#x30A4;&#x30F3;&#x30BF;&#x30FC;&#x30CD;&#x30C3;&#x30C8;&#x4E0A;&#x306E;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3068;&#x3057;&#x3066;&#x958B;&#x304F;</p>
 <ul>
-<li>&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x306F; <code>\n</code> &#x306B;&#x7D71;&#x4E00;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+<li>&#x958B;&#x3051;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code> &#x3092;&#x8FD4;&#x3059;</li>
+<li>&#x6539;&#x884C;&#x30B3;&#x30FC;&#x30C9;&#x306F; <code>\n</code> &#x306B;&#x7D71;&#x4E00;&#x3055;&#x308C;&#x308B;</li>
 </ul>
 </div>
 
@@ -3183,8 +3226,7 @@
       <tbody>
         <tr>
           <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>&#x5931;&#x6557;&#x6642;&#x306F; null</p>
-</td>
+          
         </tr>
       </tbody>
     </table>
@@ -3667,7 +3709,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber620">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber621">source</a></span></span>
     </span>
   </h3>
 
@@ -3677,7 +3719,7 @@
   <div data-ice="description"><p>&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x3092;&#x4F5C;&#x6210;</p>
 <ul>
 <li>&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x306F;1&#x3064;&#x306E;&#x307F;&#x6307;&#x5B9A;&#x53EF;&#x80FD;</li>
-<li>&#x3059;&#x3067;&#x306B;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x30A8;&#x30E9;&#x30FC;&#x3092;&#x8FD4;&#x3059;&#x3002;</li>
+<li>&#x3059;&#x3067;&#x306B;&#x30D5;&#x30A9;&#x30EB;&#x30C0;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x30A8;&#x30E9;&#x30FC;&#x3092;&#x8FD4;&#x3059;</li>
 </ul>
 </div>
 
@@ -3727,7 +3769,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber652">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber654">source</a></span></span>
     </span>
   </h3>
 
@@ -4017,7 +4059,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber674">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber676">source</a></span></span>
     </span>
   </h3>
 
@@ -4095,11 +4137,11 @@
     
     
     
-    <span class="code" data-ice="name">searchFile</span><span class="code" data-ice="signature">(file_obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>, is_all_file: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span><span>[]</span></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
+    <span class="code" data-ice="name">searchFile</span><span class="code" data-ice="signature">(file_obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>): <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1312">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1310">source</a></span></span>
     </span>
   </h3>
 
@@ -4108,7 +4150,9 @@
   
   <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;</p>
 <ul>
-<li>&#x95A2;&#x6570;&#x3092;&#x6307;&#x5B9A;&#x3059;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x540D;&#x3068;&#x30D5;&#x30EB;&#x30D1;&#x30B9;&#x304C;&#x5F15;&#x6570;&#x306B;&#x6E21;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+<li><code>this</code> &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
+<li>&#x898B;&#x3064;&#x304B;&#x3063;&#x305F;&#x3089;&#x63A2;&#x7D22;&#x3092;&#x4E2D;&#x6B62;&#x3057;&#x307E;&#x3059;</li>
+<li>&#x898B;&#x3064;&#x304B;&#x3089;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; <code>null</code> &#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
 </ul>
 </div>
 
@@ -4128,13 +4172,80 @@
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" class="code" data-depth="0">is_all_file</td>
-      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li>
-<li>default: false</li></ul></td>
-      <td data-ice="description"><p>true&#x3067;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8907;&#x6570;&#x898B;&#x3064;&#x3051;&#x3066;&#x914D;&#x5217;&#x3067;&#x8FD4;&#x3059;</p>
-</td>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type code" data-ice="returnType"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-searchFiles">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">searchFiles</span><span class="code" data-ice="signature">(file_obj: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>): <span><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1365">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;</p>
+<ul>
+<li><code>this</code> &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x4E00;&#x89A7;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
+</ul>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">file_obj</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></span> | <span><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></span><span>(prm1: <span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span>)</span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
     </tr>
 </tbody>
   </table>
@@ -4146,7 +4257,7 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span> | <span><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span><span>[]</span></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+          <td class="return-type code" data-ice="returnType"><span><span><a href="class/src/senko/SFile.js~SFile.html">SFile</a></span><span>[]</span></span></td>
           
         </tr>
       </tbody>
@@ -4182,7 +4293,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1073">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber1069">source</a></span></span>
     </span>
   </h3>
 
@@ -4191,6 +4302,7 @@
   
   <div data-ice="description"><p>&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;</p>
 <ul>
+<li>&#x4FDD;&#x5B58;&#x3067;&#x304D;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306F; <code>false</code> &#x3092;&#x8FD4;&#x3059;</li>
 <li>&#x53C2;&#x8003;&#x901F;&#x5EA6;&#xFF1A;1.0 sec/MB</li>
 </ul>
 </div>
@@ -4494,7 +4606,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber857">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber859">source</a></span></span>
     </span>
   </h3>
 
@@ -4502,6 +4614,10 @@
   
   
   <div data-ice="description"><p>&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4FDD;&#x5B58;</p>
+<ul>
+<li>&#x4FDD;&#x5B58;&#x3067;&#x304D;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;&#x306F; <code>false</code> &#x3092;&#x8FD4;&#x3059;</li>
+<li>&#x5909;&#x63DB;&#x5148;&#x306E;&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x6587;&#x5B57;&#x306F;&#x3001;<code>&quot;?&quot;</code>&#x306B;&#x5909;&#x63DB;&#x3055;&#x308C;&#x308B;</li>
+</ul>
 </div>
 
   
@@ -4646,7 +4762,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber691">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/SFile.js.html#lineNumber693">source</a></span></span>
     </span>
   </h3>
 

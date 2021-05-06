@@ -394,7 +394,7 @@ export default class SFile {
 	}
 	
 	/**
-	 *隠しファイルかどうかを設定する
+	 * 隠しファイルかどうかを設定する
 	 * @param {boolean} is_hidden
 	 * @param {boolean} [is_allfiles=false]
 	 * @returns {boolean}
@@ -614,7 +614,8 @@ export default class SFile {
 	/**
 	 * フォルダを作成
 	 * - フォルダは1つのみ指定可能
-	 * - すでにフォルダがある場合はエラーを返す。
+	 * - すでにフォルダがある場合はエラーを返す
+	 * 
 	 * @returns {boolean}
 	 */
 	mkdir() {
@@ -647,6 +648,7 @@ export default class SFile {
 	 * フォルダを作成
 	 * - 作成したいフォルダを続けて記載が可能
 	 * - フォルダがない場合はフォルダを作成していく
+	 * 
 	 * @returns {boolean}
 	 */
 	mkdirs() {
@@ -710,10 +712,11 @@ export default class SFile {
 
 	/**
 	 * ローカル、インターネット上のファイルをテキストとして開く
-	 * - 改行コードは `\n` に統一されます
+	 * - 開けない場合は `null` を返す
+	 * - 改行コードは `\n` に統一される
 	 * 
 	 * @param {string} [charset="_autodetect_all"] - 文字コード
-	 * @returns {string} 失敗時は null
+	 * @returns {string}
 	 */
 	getTextFile(charset) {
 		const icharset = charset !== undefined ? charset : "_autodetect_all";
@@ -740,7 +743,7 @@ export default class SFile {
 			}
 		}
 		else {
-			const is_fso = /shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset);
+			const is_fso = /unicode|utf-16le/i.test(icharset);
 			if(is_fso) {
 				// Scripting.FileSystemObject で開く
 				// 入出力モード = 読取専用モード
@@ -749,25 +752,16 @@ export default class SFile {
 				// ファイルの新規作成 = 新規作成しない
 				const option = false;
 				// 文字のエンコード
-				const TristateFalse			= 0;	// ASCII(Shift-JIS)
-				const TristateTrue			= -1;	// Unicode(UTF-16)
-				const TristateUseDefault	= -2;	// システムの規定値
-				let tristate = 0;
-				if(/ascii/i.test(icharset)) {
-					// ASCII
-					tristate = TristateFalse;
+				const TristateTrue = -1; // Unicode(UTF-16LE)
+				const tristate = TristateTrue;
+				try {
+					const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
+					text = open_file.ReadAll();
+					open_file.Close();
 				}
-				else if(/shift_jis|sjis/i.test(icharset)) {
-					// システムのデフォルト(日本語のOSだと仮定)
-					tristate = TristateUseDefault;
+				catch (e) {
+					console.log(e);
 				}
-				else {
-					// utf-16le
-					tristate = TristateTrue;
-				}
-				const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
-				text = open_file.ReadAll();
-				open_file.Close();
 			}
 			else {
 				// 自由な文字エンコードで開く（速度は遅い）
@@ -775,66 +769,71 @@ export default class SFile {
 				// HKEY_CLASSES_ROOT\MIME\Database\Charset
 				const adTypeText = 2;
 				const adReadAll = -1;
-				const stream = new ActiveXObject("ADODB.Stream");
-				stream.type = adTypeText;
-				stream.charset = icharset;
-				stream.open();
-				stream.loadFromFile(this.pathname);
-				text = stream.readText(adReadAll);
-				stream.close();
-				// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する
-				if((icharset === "_autodetect_all")||(icharset === "_autodetect")) {
-					let newcharset = "";
-					// 1文字以上のとき
-					if(text.length > 1) {
-						// utf-16le
-						if(text.charCodeAt(0) === 0xfeff) {
-							// 通常は、このルートはBOM付きutf-16leのときに通るが、
-							// BOM付きutf-8でも通る場合がなぜかある。（後述）
-							newcharset = "unicode";
+				try {
+					const stream = new ActiveXObject("ADODB.Stream");
+					stream.type = adTypeText;
+					stream.charset = icharset;
+					stream.open();
+					stream.loadFromFile(this.pathname);
+					text = stream.readText(adReadAll);
+					stream.close();
+					// 文字コードが自動取得の場合、BOMまで読み込んでしまうのを防止する
+					if((icharset === "_autodetect_all")||(icharset === "_autodetect")) {
+						let newcharset = "";
+						// 1文字以上のとき
+						if(text.length > 1) {
+							// utf-16le
+							if(text.charCodeAt(0) === 0xfeff) {
+								// 通常は、このルートはBOM付きutf-16leのときに通るが、
+								// BOM付きutf-8でも通る場合がなぜかある。（後述）
+								newcharset = "unicode";
+							}
+							// utf-16be
+							else if(text.charCodeAt(0) === 0xfffe) {
+								newcharset = "unicodeFFFE";
+							}
 						}
-						// utf-16be
-						else if(text.charCodeAt(0) === 0xfffe) {
-							newcharset = "unicodeFFFE";
+						// 2文字以上のとき
+						if(text.length > 2) {
+							// BOM付きutf-8でなぜかこの文字がくっつく場合がある。
+							if(	(text.charCodeAt(0) === 0x30fb) &&
+								(text.charCodeAt(1) === 0xff7f)) {
+								newcharset = "utf-8";
+							}
+						}
+						// 3文字以上のとき
+						if(text.length > 3) {
+							// utf-8
+							if(	(text.charCodeAt(0) === 0xef) &&
+								(text.charCodeAt(1) === 0xbb) &&
+								(text.charCodeAt(2) === 0xbf)) {
+								newcharset = "utf-8";
+							}
+						}
+						// 上判定でBOM付きが分かった場合、正しい文字コードで取得する
+						if(newcharset !== "") {
+							const stream = new ActiveXObject("ADODB.Stream");
+							stream.type = adTypeText;
+							stream.charset = newcharset;
+							stream.open();
+							stream.loadFromFile(this.pathname);
+							text = stream.readText(adReadAll);
+							stream.close();
+						}
+						// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処
+						if((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {
+							const stream = new ActiveXObject("ADODB.Stream");
+							stream.type = adTypeText;
+							stream.charset = "utf-8";
+							stream.open();
+							stream.loadFromFile(this.pathname);
+							text = stream.readText(adReadAll);
+							stream.close();
 						}
 					}
-					// 2文字以上のとき
-					if(text.length > 2) {
-						// BOM付きutf-8でなぜかこの文字がくっつく場合がある。
-						if(	(text.charCodeAt(0) === 0x30fb) &&
-							(text.charCodeAt(1) === 0xff7f)) {
-							newcharset = "utf-8";
-						}
-					}
-					// 3文字以上のとき
-					if(text.length > 3) {
-						// utf-8
-						if(	(text.charCodeAt(0) === 0xef) &&
-							(text.charCodeAt(1) === 0xbb) &&
-							(text.charCodeAt(2) === 0xbf)) {
-							newcharset = "utf-8";
-						}
-					}
-					// 上判定でBOM付きが分かった場合、正しい文字コードで取得する
-					if(newcharset !== "") {
-						const stream = new ActiveXObject("ADODB.Stream");
-						stream.type = adTypeText;
-						stream.charset = newcharset;
-						stream.open();
-						stream.loadFromFile(this.pathname);
-						text = stream.readText(adReadAll);
-						stream.close();
-					}
-					// BOM付きutf-8 でも BOM付きutf-16le と判定した場合の対処
-					if((text.length > 1) && (text.charCodeAt(0) === 0xbbef)) {
-						const stream = new ActiveXObject("ADODB.Stream");
-						stream.type = adTypeText;
-						stream.charset = "utf-8";
-						stream.open();
-						stream.loadFromFile(this.pathname);
-						text = stream.readText(adReadAll);
-						stream.close();
-					}
+				}
+				catch (e) {
+					console.log(e);
 				}
 			}
 		}
@@ -848,6 +847,9 @@ export default class SFile {
 
 	/**
 	 * テキストファイルを保存
+	 * - 保存できなかった場合は `false` を返す
+	 * - 変換先の文字コードに存在しない文字は、`"?"`に変換される
+	 * 
 	 * @param {string} text
 	 * @param {string} [charset="utf-8"] - 文字コード
 	 * @param {string} [newline="\n"] - 改行コード
@@ -861,7 +863,7 @@ export default class SFile {
 		const icharset = charset !== undefined ? charset : "utf-8";
 		const inewline = newline !== undefined ? newline : "\n";
 		const iissetBOM = issetBOM !== undefined ? issetBOM : true; //utf-8のみ有効 BOMありかなし
-		const is_fso = /shift_jis|sjis|ascii|unicode|utf-16le/i.test(icharset);
+		const is_fso = /unicode|utf-16le/i.test(icharset);
 		if(is_fso) {
 			// Scripting.FileSystemObject で書き込む
 			// 入出力モード = 上書きモード
@@ -870,25 +872,17 @@ export default class SFile {
 			// ファイルの新規作成 = 作成
 			const option = true;
 			// 文字のエンコード
-			const TristateFalse			= 0;	// ASCII(Shift-JIS)
-			const TristateTrue			= -1;	// Unicode(UTF-16)
-			const TristateUseDefault	= -2;	// システムの規定値
-			let tristate = 0;
-			if(/ascii/i.test(icharset)) {
-				// ASCII
-				tristate = TristateFalse;
+			const TristateTrue = -1; // Unicode(UTF-16LE)
+			const tristate = TristateTrue;
+			try {
+				const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
+				open_file.Write(text.replace(/\r\n?|\n/g, inewline));
+				open_file.Close();
 			}
-			else if(/shift_jis|sjis/i.test(icharset)) {
-				// システムのデフォルト(日本語のOSだと仮定)
-				tristate = TristateUseDefault;
+			catch (e) {
+				console.log(e);
+				return false;
 			}
-			else {
-				// utf-16le
-				tristate = TristateTrue;
-			}
-			const open_file = this.fso.OpenTextFile(this.pathname, mode, option, tristate );
-			open_file.Write(text.replace(/\r\n?|\n/g, inewline));
-			open_file.Close();
 		}
 		else {
 			// ADODB.Streamで書き込む
@@ -930,12 +924,13 @@ export default class SFile {
 
 	/**
 	 * ローカル、インターネット上のファイルをバイナリとして開く
+	 * - 開けない場合は `null` を返す
 	 * - 参考速度：0.5 sec/MB
 	 * - 巨大なファイルの一部を調べる場合は、位置とサイズを指定した方がよい
 	 * 
 	 * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
 	 * @param {number} [size] - サイズ（※ 指定すると速度が低下する）
-	 * @returns {number[]}
+	 * @returns {number[]|null}
 	 */
 	getBinaryFile(offset, size) {
 		if(/^htt/.test(this.pathname)) {
@@ -954,12 +949,12 @@ export default class SFile {
 				}
 				else {
 					console.log("HTTP status codes " + http.status);
-					return [];
+					return null;
 				}
 			}
 			catch (e) {
 				console.log(e);
-				return [];
+				return null;
 			}
 			return System.createNumberArrayFromByteArray(byte_array);
 		}
@@ -1023,7 +1018,7 @@ export default class SFile {
 			}
 			catch (e) {
 				console.log(e);
-				return [];
+				return null;
 			}
 		}
 		else {
@@ -1031,12 +1026,12 @@ export default class SFile {
 				const filesize = this.length();
 				if(filesize === -1) {
 					console.log("filesize error");
-					return [];
+					return null;
 				}
 				// 位置を指定している場合
 				if(offset < 0 || filesize <= offset) {
 					console.log("offset error");
-					return [];
+					return null;
 				}
 				const ioffset = offset;
 				let isize = size !== undefined ? size : filesize - ioffset;
@@ -1057,13 +1052,14 @@ export default class SFile {
 			}
 			catch (e) {
 				console.log(e);
-				return [];
+				return null;
 			}
 		}
 	}
 
 	/**
 	 * バイナリファイルを保存
+	 * - 保存できなかった場合は `false` を返す
 	 * - 参考速度：1.0 sec/MB
 	 * 
 	 * @param {number[]} array_
@@ -1303,15 +1299,15 @@ export default class SFile {
 
 	/**
 	 * 指定した条件にあうファイルを探す
-	 * - 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
+	 * - `this` のディレクトリ配下で条件に合ったファイルを返します
+	 * - 見つかったら探索を中止します
+	 * - 見つからない場合は `null` を返します
 	 * 
 	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
-	 * @param {boolean} [is_all_file=false] trueで指定した場合は条件に合うファイルを複数見つけて配列で返す
-	 * @returns {SFile|SFile[]|null}
+	 * 
+	 * @returns {SFile|null}
 	 */
-	searchFile(file_obj, is_all_file) {
-		const is_all_file_ = is_all_file !== undefined ? is_all_file : false;
-
+	searchFile(file_obj) {
 		/**
 		 * @type {function(SFile): boolean}
 		 * @private
@@ -1346,6 +1342,57 @@ export default class SFile {
 		 */
 		let target_file = null;
 		/**
+		 * @type {function(SFile): boolean}
+		 */
+		const func = function(file) {
+			if(isTarget(file)) {
+				target_file = file;
+				return false;
+			}
+			return true;
+		};
+		this.each(func);
+		return target_file;
+	}
+
+	/**
+	 * 指定した条件にあうファイルを探す
+	 * - `this` のディレクトリ配下で条件に合ったファイル一覧を返します
+	 * 
+	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @returns {SFile[]}
+	 */
+	 searchFiles(file_obj) {
+		/**
+		 * @type {function(SFile): boolean}
+		 * @private
+		 */
+		let isTarget;
+		if(typeof file_obj !== "function") {
+			if(System.typeOf(file_obj) === "regexp") {
+				/**
+				 * @type {RegExp}
+				 */
+				// @ts-ignore
+				const reg = file_obj;
+				isTarget = function(file) {
+					const result = reg.exec(file.getAbsolutePath());
+					return result !== null;
+				};
+			}
+			else {
+				// @ts-ignore
+				const file = new SFile(file_obj);
+				const buffer = file.getName();
+				isTarget = function(file) {
+					return file.getName() === buffer;
+				};
+			}
+		}
+		else {
+			isTarget = file_obj;
+		}
+		/**
 		 * @type {SFile[]}
 		 */
 		let target_files = [];
@@ -1354,24 +1401,13 @@ export default class SFile {
 		 */
 		const func = function(file) {
 			if(isTarget(file)) {
-				if(is_all_file_) {
-					target_files.push(file);
-					return true;
-				}
-				else {
-					target_file = file;
-					return false;
-				}
+				target_files.push(file);
+				return true;
 			}
 			return true;
 		};
 		this.each(func);
-		if(is_all_file_) {
-			return target_files;
-		}
-		else {
-			return target_file;
-		}
+		return target_files;
 	}
 
 	/**

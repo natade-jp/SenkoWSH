@@ -1259,7 +1259,7 @@ declare class SFile {
      */
     isHidden(): boolean;
     /**
-     *隠しファイルかどうかを設定する
+     * 隠しファイルかどうかを設定する
      * @param {boolean} is_hidden
      * @param {boolean} [is_allfiles=false]
      * @returns {boolean}
@@ -1309,7 +1309,8 @@ declare class SFile {
     /**
      * フォルダを作成
      * - フォルダは1つのみ指定可能
-     * - すでにフォルダがある場合はエラーを返す。
+     * - すでにフォルダがある場合はエラーを返す
+     *
      * @returns {boolean}
      */
     mkdir(): boolean;
@@ -1317,6 +1318,7 @@ declare class SFile {
      * フォルダを作成
      * - 作成したいフォルダを続けて記載が可能
      * - フォルダがない場合はフォルダを作成していく
+     *
      * @returns {boolean}
      */
     mkdirs(): boolean;
@@ -1335,14 +1337,18 @@ declare class SFile {
     writeLine(text: string): boolean;
     /**
      * ローカル、インターネット上のファイルをテキストとして開く
-     * - 改行コードは `\n` に統一されます
+     * - 開けない場合は `null` を返す
+     * - 改行コードは `\n` に統一される
      *
      * @param {string} [charset="_autodetect_all"] - 文字コード
-     * @returns {string} 失敗時は null
+     * @returns {string}
      */
     getTextFile(charset?: string): string;
     /**
      * テキストファイルを保存
+     * - 保存できなかった場合は `false` を返す
+     * - 変換先の文字コードに存在しない文字は、`"?"`に変換される
+     *
      * @param {string} text
      * @param {string} [charset="utf-8"] - 文字コード
      * @param {string} [newline="\n"] - 改行コード
@@ -1352,16 +1358,18 @@ declare class SFile {
     setTextFile(text: string, charset?: string, newline?: string, issetBOM?: boolean): boolean;
     /**
      * ローカル、インターネット上のファイルをバイナリとして開く
+     * - 開けない場合は `null` を返す
      * - 参考速度：0.5 sec/MB
      * - 巨大なファイルの一部を調べる場合は、位置とサイズを指定した方がよい
      *
      * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
      * @param {number} [size] - サイズ（※ 指定すると速度が低下する）
-     * @returns {number[]}
+     * @returns {number[]|null}
      */
-    getBinaryFile(offset?: number, size?: number): number[];
+    getBinaryFile(offset?: number, size?: number): number[] | null;
     /**
      * バイナリファイルを保存
+     * - 保存できなかった場合は `false` を返す
      * - 参考速度：1.0 sec/MB
      *
      * @param {number[]} array_
@@ -1403,13 +1411,23 @@ declare class SFile {
     getAllFiles(): SFile[];
     /**
      * 指定した条件にあうファイルを探す
-     * - 関数を指定する場合は、ファイル名とフルパスが引数に渡されます
+     * - `this` のディレクトリ配下で条件に合ったファイルを返します
+     * - 見つかったら探索を中止します
+     * - 見つからない場合は `null` を返します
      *
      * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
-     * @param {boolean} [is_all_file=false] trueで指定した場合は条件に合うファイルを複数見つけて配列で返す
-     * @returns {SFile|SFile[]|null}
+     *
+     * @returns {SFile|null}
      */
-    searchFile(file_obj: string | SFile | RegExp | ((...params: any[]) => any), is_all_file?: boolean): SFile | SFile[] | null;
+    searchFile(file_obj: string | SFile | RegExp | ((...params: any[]) => any)): SFile | null;
+    /**
+     * 指定した条件にあうファイルを探す
+     * - `this` のディレクトリ配下で条件に合ったファイル一覧を返します
+     *
+     * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+     * @returns {SFile[]}
+     */
+    searchFiles(file_obj: string | SFile | RegExp | ((...params: any[]) => any)): SFile[];
     /**
      * 圧縮する
      * - 圧縮後のファイル名の拡張子で圧縮したい形式を指定する

@@ -1044,6 +1044,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile#searchfiles",
+    "class/src/senko/SFile.js~SFile.html#instance-method-searchFiles",
+    "src/senko/SFile.js~SFile#searchFiles",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#setbinaryfile",
     "class/src/senko/SFile.js~SFile.html#instance-method-setBinaryFile",
     "src/senko/SFile.js~SFile#setBinaryFile",
