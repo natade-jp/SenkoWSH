@@ -11,7 +11,7 @@
 - `Dialog.popupMessage` の戻り値を `Dialog.POPUP_RETURN` 内へ移動
 - `StringComparator.DEFAULT` と `StringComparator.NATURAL` の入力引数を `string` から `any` 型へ改善
 - `console.log` など文字列出力メソッドにて配列型、オブジェクト型を渡した場合、内部データを表示するように変更
-- `ExtendsObject` と `ExtendsArray` 内の `toString` が既に定義されており不要なので削除
+- `ExtendsObject` と `ExtendsArray` 内の `toString` が既に定義されており不要なので削除し、`ExtendsObject.js` を削除
 
 ## SenkoWSH v5.0.0
 ### 更新点

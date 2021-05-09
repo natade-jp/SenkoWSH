@@ -470,13 +470,6 @@ declare class ExtendsArray {
 }
 
 /**
- * ES3相当のJScirptのObject拡張用クラス
- * - ES3 に機能拡張する予定でしたが for in の動作に支障が出るため拡張なしとする
- */
-declare class ExtendsObject {
-}
-
-/**
  * ES3相当のJScirptのString拡張用クラス
  * - String.prototypeに拡張します
  */

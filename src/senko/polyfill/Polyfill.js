@@ -9,7 +9,6 @@
  */
 
 import typeExtendsArray from "./ExtendsArray.js";
-import typeExtendsObject from "./ExtendsObject.js";
 import typeExtendsString from "./ExtendsString.js";
 
 /**
@@ -47,14 +46,6 @@ if(!("JSON" in globalThis)) {
 ExtendsArray = typeExtendsArray;
 
 /**
- * @type {typeof typeExtendsObject}
- * @private
- */
-// @ts-ignore
-// eslint-disable-next-line no-undef
-ExtendsObject = typeExtendsObject;
-
-/**
  * @type {typeof typeExtendsString}
  * @private
  */
@@ -86,7 +77,6 @@ const extendClass = function(original, extension) {
 };
 
 extendClass(Array, typeExtendsArray);
-extendClass(Object, typeExtendsObject);
 extendClass(String, typeExtendsString);
 
 /**
