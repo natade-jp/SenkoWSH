@@ -1489,8 +1489,9 @@ export default class SFile {
 				const name = compress_file.getName();
 				const tar_file = temp_folder + "\\" + name.substr(0, name.length - ".tar.gz".length ) + ".tar";
 				for(let i = 0; i < file_list.length; i++) {
-					const result = System.exec("\"" + tool_path + "\" a \"" + tar_file + "\" \"" + file_list[i] + "\"");
-					if(result.exit_code !== 0) {
+					const command = "\"" + tool_path + "\" a \"" + tar_file + "\" \"" + file_list[i] + "\"";
+					const result = System.run(command, System.AppWinStype.Hide, true);
+					if(result) {
 						temp_folder.remove();
 						return false;
 					}
@@ -1500,8 +1501,9 @@ export default class SFile {
 			// 上書き保存
 			compress_file.remove(true);
 			for(let i = 0; i < file_list.length; i++) {
-				const result = System.exec("\"" + tool_path + "\" a \"" + compress_file + "\" \"" + file_list[i] + "\"");
-				if(result.exit_code !== 0) {
+				const command = "\"" + tool_path + "\" a \"" + compress_file + "\" \"" + file_list[i] + "\"";
+				const result = System.run(command, System.AppWinStype.Hide, true);
+				if(result) {
 					if(temp_folder) {
 						temp_folder.remove();
 					}
@@ -1561,8 +1563,9 @@ export default class SFile {
 			if(comp_type === "targz") {
 				temp_folder = SFile.createTempFile();
 				temp_folder.mkdirs();
-				const result = System.exec("\"" + tool_path + "\" x -y -o\"" + temp_folder + "\\\" \"" + extract_file + "\"");
-				if(result.exit_code !== 0) {
+				const command = "\"" + tool_path + "\" x -y -o\"" + temp_folder + "\\\" \"" + extract_file + "\"";
+				const result = System.run(command, System.AppWinStype.Hide, true);
+				if(result) {
 					return false;
 				}
 				// 中身は1つのtarファイルのみしか想定していない
@@ -1573,8 +1576,9 @@ export default class SFile {
 				}
 				extract_file = allfile[0];
 			}
-			const result = System.exec("\"" + tool_path + "\" x -y -o\"" + extract_dir + "\\\" \"" + extract_file + "\"");
-			if(result.exit_code !== 0) {
+			const command = "\"" + tool_path + "\" x -y -o\"" + extract_dir + "\\\" \"" + extract_file + "\"";
+			const result = System.run(command, System.AppWinStype.Hide, true);
+			if(result) {
 				if(temp_folder) {
 					temp_folder.remove();
 				}

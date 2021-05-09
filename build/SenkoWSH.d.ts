@@ -1504,7 +1504,8 @@ declare class System {
      */
     static beep(frequency_hz: number, time_sec: number): void;
     /**
-     * 指定したコマンドを別プロセスとして実行する
+     * 指定したコマンドを別プロセスとして非同期／同期実行する
+     * - 第3引数で `true` を指定しないと、非同期コマンドとなります
      * - 例外発生時の戻り値は `1` となります
      *
      * @param {string} command - コマンド
@@ -1574,17 +1575,21 @@ declare class System {
     static initializeCurrentDirectory(): void;
     /**
      * BatchScript を実行する
+     * - 実行結果の最終行が空白の場合は除去されます
+     * - 実行時にスクリプトの最後が改行で終わっていない場合は自動で改行を付けます
+     * - `Unicode`, `UTF-16LE` は未対応となります
      *
      * @param {string} source
-     * @param {string} [charset="shift_jis"] - 文字コード
-     * @returns {SystemExecResult|null}
+     * @param {string} [charset="shift_jis"] - 文字コード (`shift_jis`, `utf-8` など)
+     * @returns {string|null} 実行結果
      */
-    static BatchScript(source: string, charset?: string): SystemExecResult | null;
+    static BatchScript(source: string, charset?: string): string | null;
     /**
      * PowerShell を実行する
+     * - 実行結果の最終行が空白の場合は除去されます
      *
      * @param {string} source
-     * @returns {string}
+     * @returns {string} 実行結果
      */
     static PowerShell(source: string): string;
     /**

@@ -25,7 +25,9 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
 /**
- * 文字列へ変換します。
+ * 文字列へ変換します
+ * - 配列やオブジェクトの場合は、中身も展開する
+ * 
  * @param {any} data 
  * @private
  */
@@ -44,11 +46,23 @@ const toString = function(data) {
 		const error_message	= e.message ? e.message : "エラーが発生しました。";
 		return Format.textf("%s(%s) %s", error_name, error_number, error_message);
 	}
-	if(type === "string") {
-		return data;
-	}
-	if((type === "array") || (type === "object")) {
+	else if(type === "array") {
 		return JSON.stringify(data);
+	}
+	else if(type === "object") {
+		// Object.prototype と内容が一致しているかを確認
+		// 一致していたら JSON.stringify で展開する
+		const object_prototype = Object.prototype;
+		let is_object = true;
+		for(const key in data) {
+			if(!(key in object_prototype)) {
+				is_object = false;
+				break;
+			}
+		}
+		if(is_object) {
+			return JSON.stringify(data);
+		}
 	}
 	return data.toString();
 };
@@ -163,7 +177,8 @@ export default class System {
 	}
 
 	/**
-	 * 指定したコマンドを別プロセスとして実行する
+	 * 指定したコマンドを別プロセスとして非同期／同期実行する
+	 * - 第3引数で `true` を指定しないと、非同期コマンドとなります
 	 * - 例外発生時の戻り値は `1` となります
 	 * 
 	 * @param {string} command - コマンド
@@ -351,50 +366,83 @@ export default class System {
 
 	/**
 	 * BatchScript を実行する
+	 * - 実行結果の最終行が空白の場合は除去されます
+	 * - 実行時にスクリプトの最後が改行で終わっていない場合は自動で改行を付けます
+	 * - `Unicode`, `UTF-16LE` は未対応となります
 	 * 
 	 * @param {string} source
-	 * @param {string} [charset="shift_jis"] - 文字コード
-	 * @returns {SystemExecResult|null}
+	 * @param {string} [charset="shift_jis"] - 文字コード (`shift_jis`, `utf-8` など)
+	 * @returns {string|null} 実行結果
 	 */
 	static BatchScript(source, charset) {
-		const icharset = charset !== undefined ? charset.toLowerCase() : "shift_jis";
-		const is_ansi = /shift_jis|sjis|ascii|ansi/i.test(icharset);
-		const is_utf16 = /unicode|utf-16le/i.test(icharset);
-		const is_line = !/\n/.test(source);
+		const icharset = charset !== undefined ? charset.toLowerCase().trim() : "shift_jis";
+		const is_ansi = /^(shift_jis|sjis|ascii|ansi)$/.test(icharset);
+		const is_utf8 = /^utf-8$/.test(icharset);
 
-		// 改行がない場合はコマンドモードで実行する
-		if(is_line) {
-			// コマンドモードで実行する
-			const cmd_base = is_utf16 ? "cmd /u /d /c" : "cmd /d /c";
-			// コマンドモードで実行するため、特定の文字をエスケープさせる
-			const command = cmd_base + " " + source;
-			const exec = System.exec(command);
-			return exec;
+		/**
+		 * @types {number}
+		 */
+		let chcp = 0;
+		if(is_ansi) {
+			chcp = 932;
+		}
+		else if(is_utf8) {
+			chcp = 65001;
 		}
 		else {
-			const file = new SFile(SFile.createTempFile().getAbsolutePath() + ".bat");
-			let cs;
-			cs = is_ansi ? "shift_jis" : "";
-			cs = is_utf16 ? "utf-16le" : cs;
-			cs = cs === "" ? icharset : cs;
-			const ret = file.setTextFile(source, cs, "\r\n");
-			if(ret === false) {
-				console.log(cs);
-				return null;
-			}
-			const cmd_base = is_utf16 ? "cmd /u /d /c" : "cmd /d /c";
-			const command = cmd_base + " \"" + file + "\"";
-			const exec = System.exec(command);
-			file.remove();
-			return exec;
+			console.log("error : charset " + charset);
+			return null;
 		}
+
+		// 実行時にスクリプトの最後が改行で終わっていない場合は自動で改行を付ける
+		const soure_text = /\r\n?$/.test(source) ? source : source + "\n";
+
+		const temp_folder = SFile.createTempFile();
+		temp_folder.mkdirs();
+
+		// UTF-8 や Shift_JIS は直接実行できないので chcp 用のスクリプトを挟ませる
+		const temp_starter = new SFile(temp_folder.getAbsolutePath() + "//" + "start.bat");
+		const temp_script  = new SFile(temp_folder.getAbsolutePath() + "//" + "script.bat");
+		const output_txt  = new SFile(temp_folder.getAbsolutePath() + "//" + "output.txt");
+
+		/**
+		 * chcp 変更用のスクリプト
+		 * @type {string[]}
+		 */
+		const starter_scrpt = [];
+		starter_scrpt.push("chcp " + chcp);
+		starter_scrpt.push("@echo off");
+		starter_scrpt.push("call \"" + temp_script + "\" > \"" + output_txt + "\"");
+		starter_scrpt.push("");
+		
+		// 途中から文字コードが変わることを想定するため BOM を付けない
+		temp_starter.setTextFile(starter_scrpt.join("\n"), icharset, "\r\n", false);
+		// コードポイント変更後のため BOM を付ける
+		temp_script.setTextFile(soure_text, icharset, "\r\n", true);
+
+		// UTF-16LE かどうかで実行時のコマンドが変わる
+		const cmd_base = "cmd /q /d /c";
+		const command = cmd_base + " \"" + temp_starter + "\"";
+
+		// 実行
+		const ret = System.run(command, System.AppWinStype.Hide, true);
+		if(ret) {
+			console.log("System.run " + command);
+			temp_folder.remove();
+			return null;
+		}
+
+		const return_txt = output_txt.getTextFile(icharset);
+		temp_folder.remove();
+		return return_txt.replace(/\r?\n$/, "");
 	}
 
 	/**
 	 * PowerShell を実行する
+	 * - 実行結果の最終行が空白の場合は除去されます
 	 * 
 	 * @param {string} source
-	 * @returns {string}
+	 * @returns {string} 実行結果
 	 */
 	static PowerShell(source) {
 		// 改行がない場合はコマンドモードで実行する
@@ -407,7 +455,6 @@ export default class System {
 			if(exec.exit_code !== 0) {
 				console.log(exec.exit_code);
 			}
-			// 最終行を除去してなるべく1行で返す
 			return exec.out.replace(/\r?\n$/, "");
 		}
 		else {
@@ -422,7 +469,7 @@ export default class System {
 			if(exec.exit_code !== 0) {
 				console.log(exec.exit_code);
 			}
-			return exec.out;
+			return exec.out.replace(/\r?\n$/, "");
 		}
 	}
 
