@@ -43,6 +43,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenFileOption">OpenFileOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageButton">typePopupMessageButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageDefaultButton">typePopupMessageDefaultButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageIcon">typePopupMessageIcon</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageOption">typePopupMessageOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageReturn">typePopupMessageReturn</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventFCodes">MouseEventFCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventOption">MouseEventOption</a></span></span></li>
@@ -52,21 +57,21 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typeAppWinStyle">typeAppWinStyle</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko-polyfill">senko/polyfill</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 </ul>
 </div>
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import System from &apos;<span><a href="file/src/senko/System.js.html#lineNumber67">senkowsh/src/senko/System.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import System from &apos;<span><a href="file/src/senko/System.js.html#lineNumber86">senkowsh/src/senko/System.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/senko/System.js.html#lineNumber67">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/senko/System.js.html#lineNumber86">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -125,13 +130,18 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-BatchScript">BatchScript</a></span></span><span class="code" data-ice="signature">(source: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, charset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-BatchScript">BatchScript</a></span></span><span class="code" data-ice="signature">(source: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, charset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
         </p>
       </div>
       <div>
         
         
         <div data-ice="description"><p>BatchScript &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x6700;&#x7D42;&#x884C;&#x304C;&#x7A7A;&#x767D;&#x306E;&#x5834;&#x5408;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+<li>&#x5B9F;&#x884C;&#x6642;&#x306B;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x306E;&#x6700;&#x5F8C;&#x304C;&#x6539;&#x884C;&#x3067;&#x7D42;&#x308F;&#x3063;&#x3066;&#x3044;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x81EA;&#x52D5;&#x3067;&#x6539;&#x884C;&#x3092;&#x4ED8;&#x3051;&#x307E;&#x3059;</li>
+<li><code>Unicode</code>, <code>UTF-16LE</code> &#x306F;&#x672A;&#x5BFE;&#x5FDC;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+</ul>
 </div>
       </div>
     </td>
@@ -161,6 +171,9 @@
         
         
         <div data-ice="description"><p>PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x6700;&#x7D42;&#x884C;&#x304C;&#x7A7A;&#x767D;&#x306E;&#x5834;&#x5408;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+</ul>
 </div>
       </div>
     </td>
@@ -406,6 +419,9 @@
         
         
         <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5B50;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x4F8B;&#x5916;&#x767A;&#x751F;&#x6642;&#x306E;&#x623B;&#x308A;&#x5024;&#x306F; <code>exit_code = 1</code> &#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+</ul>
 </div>
       </div>
     </td>
@@ -834,13 +850,17 @@
           
           
           
-          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-run">run</a></span></span><span class="code" data-ice="signature">(command: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, style: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, is_wait: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span>*</span></span>
+          <span class="code" data-ice="name"><span><a href="class/src/senko/System.js~System.html#static-method-run">run</a></span></span><span class="code" data-ice="signature">(command: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, style: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, is_wait: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+        <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x975E;&#x540C;&#x671F;&#xFF0F;&#x540C;&#x671F;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x7B2C;3&#x5F15;&#x6570;&#x3067; <code>true</code> &#x3092;&#x6307;&#x5B9A;&#x3057;&#x306A;&#x3044;&#x3068;&#x3001;&#x975E;&#x540C;&#x671F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+<li>&#x4F8B;&#x5916;&#x767A;&#x751F;&#x6642;&#x306E;&#x623B;&#x308A;&#x5024;&#x306F; <code>1</code> &#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+</ul>
 </div>
       </div>
     </td>
@@ -987,7 +1007,9 @@
         
         <div data-ice="description"><p>&#x30C7;&#x30FC;&#x30BF;&#x306E;&#x578B;&#x3092;&#x5C0F;&#x6587;&#x5B57;&#x306E;&#x82F1;&#x5B57;&#x3067;&#x8FD4;&#x3059;</p>
 <ul>
-<li>&#x914D;&#x5217;&#x3067;&#x3042;&#x308C;&#x3070; <code>array</code>&#x3001;&#x6B63;&#x898F;&#x8868;&#x73FE;&#x3067;&#x3042;&#x308C;&#x3070; <code>regexp</code> &#x306A;&#x3069;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
+<li>&#x914D;&#x5217; : <code>array</code></li>
+<li>&#x6B63;&#x898F;&#x8868;&#x73FE; : <code>regexp</code></li>
+<li>&#x4F8B;&#x5916;&#x30A8;&#x30E9;&#x30FC; : <code>error</code> &#x306A;&#x3069;</li>
 </ul>
 </div>
       </div>
@@ -1017,11 +1039,11 @@
     
     
     
-    <span class="code" data-ice="name">BatchScript</span><span class="code" data-ice="signature">(source: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, charset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
+    <span class="code" data-ice="name">BatchScript</span><span class="code" data-ice="signature">(source: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, charset: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber330">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber377">source</a></span></span>
     </span>
   </h3>
 
@@ -1029,6 +1051,11 @@
   
   
   <div data-ice="description"><p>BatchScript &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x6700;&#x7D42;&#x884C;&#x304C;&#x7A7A;&#x767D;&#x306E;&#x5834;&#x5408;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+<li>&#x5B9F;&#x884C;&#x6642;&#x306B;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x306E;&#x6700;&#x5F8C;&#x304C;&#x6539;&#x884C;&#x3067;&#x7D42;&#x308F;&#x3063;&#x3066;&#x3044;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x81EA;&#x52D5;&#x3067;&#x6539;&#x884C;&#x3092;&#x4ED8;&#x3051;&#x307E;&#x3059;</li>
+<li><code>Unicode</code>, <code>UTF-16LE</code> &#x306F;&#x672A;&#x5BFE;&#x5FDC;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+</ul>
 </div>
 
   
@@ -1051,8 +1078,8 @@
       <td data-ice="name" class="code" data-depth="0">charset</td>
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
-<li>default: &quot;ansi&quot;</li></ul></td>
-      <td data-ice="description"><p>&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;</p>
+<li>default: &quot;shift_jis&quot;</li></ul></td>
+      <td data-ice="description"><p>&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9; (<code>shift_jis</code>, <code>utf-8</code> &#x306A;&#x3069;)</p>
 </td>
     </tr>
 </tbody>
@@ -1065,8 +1092,9 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
-          
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>&#x5B9F;&#x884C;&#x7D50;&#x679C;</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -1101,7 +1129,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber370">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber447">source</a></span></span>
     </span>
   </h3>
 
@@ -1109,6 +1137,9 @@
   
   
   <div data-ice="description"><p>PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x6700;&#x7D42;&#x884C;&#x304C;&#x7A7A;&#x767D;&#x306E;&#x5834;&#x5408;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x307E;&#x3059;</li>
+</ul>
 </div>
 
   
@@ -1138,7 +1169,8 @@
       <tbody>
         <tr>
           <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-          
+          <td class="return-desc" data-ice="returnDescription"><p>&#x5B9F;&#x884C;&#x7D50;&#x679C;</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -1173,7 +1205,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber412">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber488">source</a></span></span>
     </span>
   </h3>
 
@@ -1266,7 +1298,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber152">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber171">source</a></span></span>
     </span>
   </h3>
 
@@ -1334,7 +1366,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber570">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber646">source</a></span></span>
     </span>
   </h3>
 
@@ -1417,7 +1449,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber511">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber587">source</a></span></span>
     </span>
   </h3>
 
@@ -1476,7 +1508,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber536">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber612">source</a></span></span>
     </span>
   </h3>
 
@@ -1551,7 +1583,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber470">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber546">source</a></span></span>
     </span>
   </h3>
 
@@ -1610,7 +1642,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber125">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber144">source</a></span></span>
     </span>
   </h3>
 
@@ -1666,7 +1698,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber180">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber213">source</a></span></span>
     </span>
   </h3>
 
@@ -1674,6 +1706,9 @@
   
   
   <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5B50;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x4F8B;&#x5916;&#x767A;&#x751F;&#x6642;&#x306E;&#x623B;&#x308A;&#x5024;&#x306F; <code>exit_code = 1</code> &#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+</ul>
 </div>
 
   
@@ -1738,7 +1773,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber225">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber269">source</a></span></span>
     </span>
   </h3>
 
@@ -1799,7 +1834,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber248">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber292">source</a></span></span>
     </span>
   </h3>
 
@@ -1843,7 +1878,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber217">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber261">source</a></span></span>
     </span>
   </h3>
 
@@ -1904,7 +1939,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber280">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber324">source</a></span></span>
     </span>
   </h3>
 
@@ -1960,7 +1995,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber440">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber516">source</a></span></span>
     </span>
   </h3>
 
@@ -2016,7 +2051,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber301">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber345">source</a></span></span>
     </span>
   </h3>
 
@@ -2072,7 +2107,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber269">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber313">source</a></span></span>
     </span>
   </h3>
 
@@ -2145,7 +2180,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber310">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber354">source</a></span></span>
     </span>
   </h3>
 
@@ -2201,7 +2236,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber318">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber362">source</a></span></span>
     </span>
   </h3>
 
@@ -2245,7 +2280,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber209">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber253">source</a></span></span>
     </span>
   </h3>
 
@@ -2317,7 +2352,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber73">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber92">source</a></span></span>
     </span>
   </h3>
 
@@ -2377,7 +2412,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber102">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber121">source</a></span></span>
     </span>
   </h3>
 
@@ -2444,7 +2479,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber87">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber106">source</a></span></span>
     </span>
   </h3>
 
@@ -2504,7 +2539,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber117">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber136">source</a></span></span>
     </span>
   </h3>
 
@@ -2556,18 +2591,22 @@
     
     
     
-    <span class="code" data-ice="name">run</span><span class="code" data-ice="signature">(command: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, style: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, is_wait: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span>*</span></span>
+    <span class="code" data-ice="name">run</span><span class="code" data-ice="signature">(command: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>, style: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span>, is_wait: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber166">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber190">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+  <div data-ice="description"><p>&#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x975E;&#x540C;&#x671F;&#xFF0F;&#x540C;&#x671F;&#x5B9F;&#x884C;&#x3059;&#x308B;</p>
+<ul>
+<li>&#x7B2C;3&#x5F15;&#x6570;&#x3067; <code>true</code> &#x3092;&#x6307;&#x5B9A;&#x3057;&#x306A;&#x3044;&#x3068;&#x3001;&#x975E;&#x540C;&#x671F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+<li>&#x4F8B;&#x5916;&#x767A;&#x751F;&#x6642;&#x306E;&#x623B;&#x308A;&#x5024;&#x306F; <code>1</code> &#x3068;&#x306A;&#x308A;&#x307E;&#x3059;</li>
+</ul>
 </div>
 
   
@@ -2592,7 +2631,7 @@
       <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li>
 <li>default: 1</li></ul></td>
-      <td data-ice="description"><p>&#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;</p>
+      <td data-ice="description"><p>&#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3; (<code>System.AppWinStype</code> &#x5185;&#x306E;&#x5024;)</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
@@ -2613,8 +2652,9 @@
     <table>
       <tbody>
         <tr>
-          <td class="return-type code" data-ice="returnType"><span>*</span></td>
-          
+          <td class="return-type code" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>&#x901A;&#x5E38; <code>0</code> &#x3067;&#x6B63;&#x5E38;&#x7D42;&#x4E86;</p>
+</td>
         </tr>
       </tbody>
     </table>
@@ -2649,7 +2689,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber453">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber529">source</a></span></span>
     </span>
   </h3>
 
@@ -2709,7 +2749,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber292">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber336">source</a></span></span>
     </span>
   </h3>
 
@@ -2769,7 +2809,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber134">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber153">source</a></span></span>
     </span>
   </h3>
 
@@ -2830,7 +2870,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber141">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber160">source</a></span></span>
     </span>
   </h3>
 
@@ -2874,7 +2914,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber610">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/senko/System.js.html#lineNumber688">source</a></span></span>
     </span>
   </h3>
 
@@ -2883,7 +2923,9 @@
   
   <div data-ice="description"><p>&#x30C7;&#x30FC;&#x30BF;&#x306E;&#x578B;&#x3092;&#x5C0F;&#x6587;&#x5B57;&#x306E;&#x82F1;&#x5B57;&#x3067;&#x8FD4;&#x3059;</p>
 <ul>
-<li>&#x914D;&#x5217;&#x3067;&#x3042;&#x308C;&#x3070; <code>array</code>&#x3001;&#x6B63;&#x898F;&#x8868;&#x73FE;&#x3067;&#x3042;&#x308C;&#x3070; <code>regexp</code> &#x306A;&#x3069;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;</li>
+<li>&#x914D;&#x5217; : <code>array</code></li>
+<li>&#x6B63;&#x898F;&#x8868;&#x73FE; : <code>regexp</code></li>
+<li>&#x4F8B;&#x5916;&#x30A8;&#x30E9;&#x30FC; : <code>error</code> &#x306A;&#x3069;</li>
 </ul>
 </div>
 

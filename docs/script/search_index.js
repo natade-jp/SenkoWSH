@@ -18,12 +18,6 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
-    "senkowsh/src/senko/polyfill/extendsobject.js~extendsobject",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html",
-    "<span>ExtendsObject</span> <span class=\"search-result-import-path\">senkowsh/src/senko/polyfill/ExtendsObject.js</span>",
-    "class"
-  ],
-  [
     "senkowsh/src/senko/polyfill/extendsstring.js~extendsstring",
     "class/src/senko/polyfill/ExtendsString.js~ExtendsString.html",
     "<span>ExtendsString</span> <span class=\"search-result-import-path\">senkowsh/src/senko/polyfill/ExtendsString.js</span>",
@@ -666,6 +660,36 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
+    "src/senko/dialog.js~typepopupmessagebutton",
+    "typedef/index.html#static-typedef-typePopupMessageButton",
+    "src/senko/Dialog.js~typePopupMessageButton",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~typepopupmessagedefaultbutton",
+    "typedef/index.html#static-typedef-typePopupMessageDefaultButton",
+    "src/senko/Dialog.js~typePopupMessageDefaultButton",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~typepopupmessageicon",
+    "typedef/index.html#static-typedef-typePopupMessageIcon",
+    "src/senko/Dialog.js~typePopupMessageIcon",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~typepopupmessageoption",
+    "typedef/index.html#static-typedef-typePopupMessageOption",
+    "src/senko/Dialog.js~typePopupMessageOption",
+    "typedef"
+  ],
+  [
+    "src/senko/dialog.js~typepopupmessagereturn",
+    "typedef/index.html#static-typedef-typePopupMessageReturn",
+    "src/senko/Dialog.js~typePopupMessageReturn",
+    "typedef"
+  ],
+  [
     "src/senko/format.js",
     "file/src/senko/Format.js.html",
     "src/senko/Format.js",
@@ -747,12 +771,6 @@ window.esdocSearchIndex = [
     "src/senko/robot.js~robot.getpid",
     "class/src/senko/Robot.js~Robot.html#static-method-getPID",
     "src/senko/Robot.js~Robot.getPID",
-    "method"
-  ],
-  [
-    "src/senko/robot.js~robot.getvk",
-    "class/src/senko/Robot.js~Robot.html#static-method-getVK",
-    "src/senko/Robot.js~Robot.getVK",
     "method"
   ],
   [
@@ -1038,18 +1056,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/sfile.js~sfile#searchfile",
-    "class/src/senko/SFile.js~SFile.html#instance-method-searchFile",
-    "src/senko/SFile.js~SFile#searchFile",
-    "method"
-  ],
-  [
-    "src/senko/sfile.js~sfile#searchfiles",
-    "class/src/senko/SFile.js~SFile.html#instance-method-searchFiles",
-    "src/senko/SFile.js~SFile#searchFiles",
-    "method"
-  ],
-  [
     "src/senko/sfile.js~sfile#setbinaryfile",
     "class/src/senko/SFile.js~SFile.html#instance-method-setBinaryFile",
     "src/senko/SFile.js~SFile#setBinaryFile",
@@ -1107,6 +1113,18 @@ window.esdocSearchIndex = [
     "src/senko/sfile.js~sfile.extract",
     "class/src/senko/SFile.js~SFile.html#static-method-extract",
     "src/senko/SFile.js~SFile.extract",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile.findfile",
+    "class/src/senko/SFile.js~SFile.html#static-method-findFile",
+    "src/senko/SFile.js~SFile.findFile",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile.findfiles",
+    "class/src/senko/SFile.js~SFile.html#static-method-findFiles",
+    "src/senko/SFile.js~SFile.findFiles",
     "method"
   ],
   [
@@ -1326,6 +1344,12 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
+    "src/senko/system.js~typeappwinstyle",
+    "typedef/index.html#static-typedef-typeAppWinStyle",
+    "src/senko/System.js~typeAppWinStyle",
+    "typedef"
+  ],
+  [
     "src/senko/polyfill/extendsarray.js",
     "file/src/senko/polyfill/ExtendsArray.js.html",
     "src/senko/polyfill/ExtendsArray.js",
@@ -1335,24 +1359,6 @@ window.esdocSearchIndex = [
     "src/senko/polyfill/extendsarray.js~extendsarray.sort",
     "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-sort",
     "src/senko/polyfill/ExtendsArray.js~ExtendsArray.sort",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsarray.js~extendsarray.tostring",
-    "class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html#static-method-toString",
-    "src/senko/polyfill/ExtendsArray.js~ExtendsArray.toString",
-    "method"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js",
-    "file/src/senko/polyfill/ExtendsObject.js.html",
-    "src/senko/polyfill/ExtendsObject.js",
-    "file"
-  ],
-  [
-    "src/senko/polyfill/extendsobject.js~extendsobject.tostring",
-    "class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html#static-method-toString",
-    "src/senko/polyfill/ExtendsObject.js~ExtendsObject.toString",
     "method"
   ],
   [

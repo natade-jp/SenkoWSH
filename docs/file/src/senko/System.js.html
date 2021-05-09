@@ -43,6 +43,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenFileOption">OpenFileOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageButton">typePopupMessageButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageDefaultButton">typePopupMessageDefaultButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageIcon">typePopupMessageIcon</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageOption">typePopupMessageOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageReturn">typePopupMessageReturn</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventFCodes">MouseEventFCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventOption">MouseEventOption</a></span></span></li>
@@ -52,8 +57,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typeAppWinStyle">typeAppWinStyle</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko-polyfill">senko/polyfill</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 </ul>
 </div>
@@ -87,7 +92,9 @@ const is_wscript = /wscript\.exe$/i.test(WSH.FullName);
 const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
 
 /**
- * &#x6587;&#x5B57;&#x5217;&#x3078;&#x5909;&#x63DB;&#x3057;&#x307E;&#x3059;&#x3002;
+ * &#x6587;&#x5B57;&#x5217;&#x3078;&#x5909;&#x63DB;&#x3057;&#x307E;&#x3059;
+ * - &#x914D;&#x5217;&#x3084;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x306E;&#x5834;&#x5408;&#x306F;&#x3001;&#x4E2D;&#x8EAB;&#x3082;&#x5C55;&#x958B;&#x3059;&#x308B;
+ * 
  * @param {any} data 
  * @private
  */
@@ -98,17 +105,34 @@ const toString = function(data) {
 	else if(data === undefined) {
 		return &quot;[undefined]&quot;;
 	}
-	const string_data = data.toString();
-	if(string_data === &quot;[object Error]&quot;) {
+	const type = System.typeOf(data);
+	if(type === &quot;error&quot;) {
 		const e = data;
 		const error_name	= e.name ? e.name : &quot;Error&quot;;
 		const error_number	= e.number ? Format.textf(&quot;0x%08X&quot;, e.number) : &quot;0x00000000&quot;;
 		const error_message	= e.message ? e.message : &quot;&#x30A8;&#x30E9;&#x30FC;&#x304C;&#x767A;&#x751F;&#x3057;&#x307E;&#x3057;&#x305F;&#x3002;&quot;;
 		return Format.textf(&quot;%s(%s) %s&quot;, error_name, error_number, error_message);
 	}
-	return string_data;
+	else if(type === &quot;array&quot;) {
+		return JSON.stringify(data);
+	}
+	else if(type === &quot;object&quot;) {
+		// Object.prototype &#x3068;&#x5185;&#x5BB9;&#x304C;&#x4E00;&#x81F4;&#x3057;&#x3066;&#x3044;&#x308B;&#x304B;&#x3092;&#x78BA;&#x8A8D;
+		// &#x4E00;&#x81F4;&#x3057;&#x3066;&#x3044;&#x305F;&#x3089; JSON.stringify &#x3067;&#x5C55;&#x958B;&#x3059;&#x308B;
+		const object_prototype = Object.prototype;
+		let is_object = true;
+		for(const key in data) {
+			if(!(key in object_prototype)) {
+				is_object = false;
+				break;
+			}
+		}
+		if(is_object) {
+			return JSON.stringify(data);
+		}
+	}
+	return data.toString();
 };
-
 
 /**
  * &#x5B9F;&#x884C;&#x7D50;&#x679C;
@@ -220,28 +244,53 @@ export default class System {
 	}
 
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5225;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x975E;&#x540C;&#x671F;&#xFF0F;&#x540C;&#x671F;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * - &#x7B2C;3&#x5F15;&#x6570;&#x3067; `true` &#x3092;&#x6307;&#x5B9A;&#x3057;&#x306A;&#x3044;&#x3068;&#x3001;&#x975E;&#x540C;&#x671F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;
+	 * - &#x4F8B;&#x5916;&#x767A;&#x751F;&#x6642;&#x306E;&#x623B;&#x308A;&#x5024;&#x306F; `1` &#x3068;&#x306A;&#x308A;&#x307E;&#x3059;
+	 * 
 	 * @param {string} command - &#x30B3;&#x30DE;&#x30F3;&#x30C9;
-	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;
+	 * @param {number} [style=1] - &#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3; (`System.AppWinStype` &#x5185;&#x306E;&#x5024;)
 	 * @param {boolean} [is_wait=false] - &#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x304C;&#x7D42;&#x4E86;&#x3059;&#x308B;&#x307E;&#x3067;&#x5F85;&#x3064;
+	 * @return {number} &#x901A;&#x5E38; `0` &#x3067;&#x6B63;&#x5E38;&#x7D42;&#x4E86;
+	 * 
 	 */
 	static run(command, style, is_wait) {
-		const NormalFocus = 1;
-		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const intWindowStyle = style !== undefined ? style : System.AppWinStype.NormalFocus;
 		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
 		const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
-		// @ts-ignore
-		return shell.Run(command, intWindowStyle, bWaitOnReturn);
+		var ret = 0;
+		try {
+			// @ts-ignore
+			ret = shell.Run(command, intWindowStyle, bWaitOnReturn);
+		}
+		catch(e) {
+			console.log(e);
+			return 1;
+		}
+		return ret;
 	}
 
 	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x3092;&#x5B50;&#x30D7;&#x30ED;&#x30BB;&#x30B9;&#x3068;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * - &#x4F8B;&#x5916;&#x767A;&#x751F;&#x6642;&#x306E;&#x623B;&#x308A;&#x5024;&#x306F; `exit_code = 1` &#x3068;&#x306A;&#x308A;&#x307E;&#x3059;
+	 * 
 	 * @param {string} command 
 	 * @returns {SystemExecResult}
 	 */
 	static exec(command) {
 		const shell = WScript.CreateObject(&quot;WScript.Shell&quot;);
-		const exec = shell.Exec(command);
+		let exec = null;
+		try {
+			exec = shell.Exec(command);
+		}
+		catch(e) {
+			console.log(e);
+			return {
+				exit_code : 1,
+				out : e.toString(),
+				error : e.toString()
+			};
+		}
 		const stdin = exec.StdIn;
 		const stdout = exec.StdOut;
 		const stderr = exec.StdErr;
@@ -384,50 +433,83 @@ export default class System {
 
 	/**
 	 * BatchScript &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * - &#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x6700;&#x7D42;&#x884C;&#x304C;&#x7A7A;&#x767D;&#x306E;&#x5834;&#x5408;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x307E;&#x3059;
+	 * - &#x5B9F;&#x884C;&#x6642;&#x306B;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x306E;&#x6700;&#x5F8C;&#x304C;&#x6539;&#x884C;&#x3067;&#x7D42;&#x308F;&#x3063;&#x3066;&#x3044;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x81EA;&#x52D5;&#x3067;&#x6539;&#x884C;&#x3092;&#x4ED8;&#x3051;&#x307E;&#x3059;
+	 * - `Unicode`, `UTF-16LE` &#x306F;&#x672A;&#x5BFE;&#x5FDC;&#x3068;&#x306A;&#x308A;&#x307E;&#x3059;
 	 * 
 	 * @param {string} source
-	 * @param {string} [charset=&quot;ansi&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
-	 * @returns {SystemExecResult|null}
+	 * @param {string} [charset=&quot;shift_jis&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9; (`shift_jis`, `utf-8` &#x306A;&#x3069;)
+	 * @returns {string|null} &#x5B9F;&#x884C;&#x7D50;&#x679C;
 	 */
 	static BatchScript(source, charset) {
-		const icharset = charset !== undefined ? charset.toLowerCase() : &quot;ansi&quot;;
-		const is_ansi = /shift_jis|sjis|ascii|ansi/i.test(icharset);
-		const is_utf16 = /unicode|utf-16le/i.test(icharset);
-		const is_line = !/\n/.test(source);
+		const icharset = charset !== undefined ? charset.toLowerCase().trim() : &quot;shift_jis&quot;;
+		const is_ansi = /^(shift_jis|sjis|ascii|ansi)$/.test(icharset);
+		const is_utf8 = /^utf-8$/.test(icharset);
 
-		// &#x6539;&#x884C;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
-		if(is_line) {
-			// &#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
-			const cmd_base = is_utf16 ? &quot;cmd /u /d /c&quot; : &quot;cmd /d /c&quot;;
-			// &#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;&#x305F;&#x3081;&#x3001;&#x7279;&#x5B9A;&#x306E;&#x6587;&#x5B57;&#x3092;&#x30A8;&#x30B9;&#x30B1;&#x30FC;&#x30D7;&#x3055;&#x305B;&#x308B;
-			const command = cmd_base + &quot; &quot; + source;
-			const exec = System.exec(command);
-			return exec;
+		/**
+		 * @types {number}
+		 */
+		let chcp = 0;
+		if(is_ansi) {
+			chcp = 932;
+		}
+		else if(is_utf8) {
+			chcp = 65001;
 		}
 		else {
-			const file = new SFile(SFile.createTempFile().getAbsolutePath() + &quot;.bat&quot;);
-			let cs;
-			cs = is_ansi ? &quot;shift_jis&quot; : &quot;&quot;;
-			cs = is_utf16 ? &quot;shift_jis&quot; : cs;
-			cs = cs === &quot;&quot; ? icharset : cs;
-			const ret = file.setTextFile(source, cs, &quot;\r\n&quot;);
-			if(ret === false) {
-				console.log(cs);
-				return null;
-			}
-			const cmd_base = is_utf16 ? &quot;cmd /u /d /c&quot; : &quot;cmd /d /c&quot;;
-			const command = cmd_base + &quot; \&quot;&quot; + file + &quot;\&quot;&quot;;
-			const exec = System.exec(command);
-			file.remove();
-			return exec;
+			console.log(&quot;error : charset &quot; + charset);
+			return null;
 		}
+
+		// &#x5B9F;&#x884C;&#x6642;&#x306B;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x306E;&#x6700;&#x5F8C;&#x304C;&#x6539;&#x884C;&#x3067;&#x7D42;&#x308F;&#x3063;&#x3066;&#x3044;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x81EA;&#x52D5;&#x3067;&#x6539;&#x884C;&#x3092;&#x4ED8;&#x3051;&#x308B;
+		const soure_text = /\r\n?$/.test(source) ? source : source + &quot;\n&quot;;
+
+		const temp_folder = SFile.createTempFile();
+		temp_folder.mkdirs();
+
+		// UTF-8 &#x3084; Shift_JIS &#x306F;&#x76F4;&#x63A5;&#x5B9F;&#x884C;&#x3067;&#x304D;&#x306A;&#x3044;&#x306E;&#x3067; chcp &#x7528;&#x306E;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x3092;&#x631F;&#x307E;&#x305B;&#x308B;
+		const temp_starter = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;start.bat&quot;);
+		const temp_script  = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;script.bat&quot;);
+		const output_txt  = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;output.txt&quot;);
+
+		/**
+		 * chcp &#x5909;&#x66F4;&#x7528;&#x306E;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;
+		 * @type {string[]}
+		 */
+		const starter_scrpt = [];
+		starter_scrpt.push(&quot;chcp &quot; + chcp);
+		starter_scrpt.push(&quot;@echo off&quot;);
+		starter_scrpt.push(&quot;call \&quot;&quot; + temp_script + &quot;\&quot; &gt; \&quot;&quot; + output_txt + &quot;\&quot;&quot;);
+		starter_scrpt.push(&quot;&quot;);
+		
+		// &#x9014;&#x4E2D;&#x304B;&#x3089;&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x5909;&#x308F;&#x308B;&#x3053;&#x3068;&#x3092;&#x60F3;&#x5B9A;&#x3059;&#x308B;&#x305F;&#x3081; BOM &#x3092;&#x4ED8;&#x3051;&#x306A;&#x3044;
+		temp_starter.setTextFile(starter_scrpt.join(&quot;\n&quot;), icharset, &quot;\r\n&quot;, false);
+		// &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x5909;&#x66F4;&#x5F8C;&#x306E;&#x305F;&#x3081; BOM &#x3092;&#x4ED8;&#x3051;&#x308B;
+		temp_script.setTextFile(soure_text, icharset, &quot;\r\n&quot;, true);
+
+		// UTF-16LE &#x304B;&#x3069;&#x3046;&#x304B;&#x3067;&#x5B9F;&#x884C;&#x6642;&#x306E;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x304C;&#x5909;&#x308F;&#x308B;
+		const cmd_base = &quot;cmd /q /d /c&quot;;
+		const command = cmd_base + &quot; \&quot;&quot; + temp_starter + &quot;\&quot;&quot;;
+
+		// &#x5B9F;&#x884C;
+		const ret = System.run(command, System.AppWinStype.Hide, true);
+		if(ret) {
+			console.log(&quot;System.run &quot; + command);
+			temp_folder.remove();
+			return null;
+		}
+
+		const return_txt = output_txt.getTextFile(icharset);
+		temp_folder.remove();
+		return return_txt.replace(/\r?\n$/, &quot;&quot;);
 	}
 
 	/**
 	 * PowerShell &#x3092;&#x5B9F;&#x884C;&#x3059;&#x308B;
+	 * - &#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x6700;&#x7D42;&#x884C;&#x304C;&#x7A7A;&#x767D;&#x306E;&#x5834;&#x5408;&#x306F;&#x9664;&#x53BB;&#x3055;&#x308C;&#x307E;&#x3059;
 	 * 
 	 * @param {string} source
-	 * @returns {string}
+	 * @returns {string} &#x5B9F;&#x884C;&#x7D50;&#x679C;
 	 */
 	static PowerShell(source) {
 		// &#x6539;&#x884C;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
@@ -440,7 +522,6 @@ export default class System {
 			if(exec.exit_code !== 0) {
 				console.log(exec.exit_code);
 			}
-			// &#x6700;&#x7D42;&#x884C;&#x3092;&#x9664;&#x53BB;&#x3057;&#x3066;&#x306A;&#x308B;&#x3079;&#x304F;1&#x884C;&#x3067;&#x8FD4;&#x3059;
 			return exec.out.replace(/\r?\n$/, &quot;&quot;);
 		}
 		else {
@@ -455,7 +536,7 @@ export default class System {
 			if(exec.exit_code !== 0) {
 				console.log(exec.exit_code);
 			}
-			return exec.out;
+			return exec.out.replace(/\r?\n$/, &quot;&quot;);
 		}
 	}
 
@@ -664,7 +745,9 @@ export default class System {
 
 	/**
 	 * &#x30C7;&#x30FC;&#x30BF;&#x306E;&#x578B;&#x3092;&#x5C0F;&#x6587;&#x5B57;&#x306E;&#x82F1;&#x5B57;&#x3067;&#x8FD4;&#x3059;
-	 * - &#x914D;&#x5217;&#x3067;&#x3042;&#x308C;&#x3070; `array`&#x3001;&#x6B63;&#x898F;&#x8868;&#x73FE;&#x3067;&#x3042;&#x308C;&#x3070; `regexp` &#x306A;&#x3069;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
+	 * - &#x914D;&#x5217; : `array`
+	 * - &#x6B63;&#x898F;&#x8868;&#x73FE; : `regexp`
+	 * - &#x4F8B;&#x5916;&#x30A8;&#x30E9;&#x30FC; : `error` &#x306A;&#x3069;
 	 * 
 	 * @param {any} x
 	 * @returns {string}
@@ -675,7 +758,29 @@ export default class System {
 
 }
 
+/**
+ * `System.run` &#x306E;&#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x7528;&#x306E;&#x30B3;&#x30FC;&#x30C9;
+ * @typedef {Object} typeAppWinStyle
+ * @property {number} Hide
+ * @property {number} NormalFocus
+ * @property {number} MinimizedFocus
+ * @property {number} MaximizedFocus
+ * @property {number} NormalNoFocus
+ * @property {number} MinimizedNoFocus
+ */
 
+/**
+ * `System.run` &#x306E;&#x8D77;&#x52D5;&#x30AA;&#x30D7;&#x30B7;&#x30E7;&#x30F3;&#x7528;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x4E00;&#x89A7;
+ * @type {typeAppWinStyle}
+ */
+System.AppWinStype = {
+	Hide				:0,
+	NormalFocus			:1,
+	MinimizedFocus		:2,
+	MaximizedFocus		:3,
+	NormalNoFocus		:4,
+	MinimizedNoFocus	:6
+};
 </code></pre>
 
 </div>

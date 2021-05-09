@@ -43,6 +43,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenFileOption">OpenFileOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageButton">typePopupMessageButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageDefaultButton">typePopupMessageDefaultButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageIcon">typePopupMessageIcon</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageOption">typePopupMessageOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageReturn">typePopupMessageReturn</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventFCodes">MouseEventFCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventOption">MouseEventOption</a></span></span></li>
@@ -52,8 +57,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typeAppWinStyle">typeAppWinStyle</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko-polyfill">senko/polyfill</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 </ul>
 </div>
@@ -1361,27 +1366,29 @@ export default class SFile {
 
 	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
-	 * - `this` &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
+	 * - `from` &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
 	 * - &#x898B;&#x3064;&#x304B;&#x3063;&#x305F;&#x3089;&#x63A2;&#x7D22;&#x3092;&#x4E2D;&#x6B62;&#x3057;&#x307E;&#x3059;
 	 * - &#x898B;&#x3064;&#x304B;&#x3089;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; `null` &#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
 	 * 
-	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @param {string|SFile} from
+	 * @param {string|SFile|RegExp|function(SFile): boolean} target
 	 * 
 	 * @returns {SFile|null}
 	 */
-	searchFile(file_obj) {
+	 static findFile(from, target) {
+		const from_dirctrory = new SFile(from);
 		/**
 		 * @type {function(SFile): boolean}
 		 * @private
 		 */
 		let isTarget;
-		if(typeof file_obj !== &quot;function&quot;) {
-			if(System.typeOf(file_obj) === &quot;regexp&quot;) {
+		if(typeof target !== &quot;function&quot;) {
+			if(System.typeOf(target) === &quot;regexp&quot;) {
 				/**
 				 * @type {RegExp}
 				 */
 				// @ts-ignore
-				const reg = file_obj;
+				const reg = target;
 				isTarget = function(file) {
 					const result = reg.exec(file.getAbsolutePath());
 					return result !== null;
@@ -1389,7 +1396,7 @@ export default class SFile {
 			}
 			else {
 				// @ts-ignore
-				const file = new SFile(file_obj);
+				const file = new SFile(target);
 				const buffer = file.getName();
 				isTarget = function(file) {
 					return file.getName() === buffer;
@@ -1397,7 +1404,7 @@ export default class SFile {
 			}
 		}
 		else {
-			isTarget = file_obj;
+			isTarget = target;
 		}
 		/**
 		 * @type {SFile}
@@ -1413,30 +1420,32 @@ export default class SFile {
 			}
 			return true;
 		};
-		this.each(func);
+		from_dirctrory.each(func);
 		return target_file;
 	}
 
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
-	 * - `this` &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x4E00;&#x89A7;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6761;&#x4EF6;&#x306B;&#x3042;&#x3046;&#x5168;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x63A2;&#x3059;
+	 * - `from` &#x306E;&#x30C7;&#x30A3;&#x30EC;&#x30AF;&#x30C8;&#x30EA;&#x914D;&#x4E0B;&#x3067;&#x6761;&#x4EF6;&#x306B;&#x5408;&#x3063;&#x305F;&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x4E00;&#x89A7;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
 	 * 
-	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @param {string|SFile} from
+	 * @param {string|SFile|RegExp|function(SFile): boolean} target
 	 * @returns {SFile[]}
 	 */
-	 searchFiles(file_obj) {
+	static findFiles(from, target) {
+		const from_dirctrory = new SFile(from);
 		/**
 		 * @type {function(SFile): boolean}
 		 * @private
 		 */
 		let isTarget;
-		if(typeof file_obj !== &quot;function&quot;) {
-			if(System.typeOf(file_obj) === &quot;regexp&quot;) {
+		if(typeof target !== &quot;function&quot;) {
+			if(System.typeOf(target) === &quot;regexp&quot;) {
 				/**
 				 * @type {RegExp}
 				 */
 				// @ts-ignore
-				const reg = file_obj;
+				const reg = target;
 				isTarget = function(file) {
 					const result = reg.exec(file.getAbsolutePath());
 					return result !== null;
@@ -1444,7 +1453,7 @@ export default class SFile {
 			}
 			else {
 				// @ts-ignore
-				const file = new SFile(file_obj);
+				const file = new SFile(target);
 				const buffer = file.getName();
 				isTarget = function(file) {
 					return file.getName() === buffer;
@@ -1452,7 +1461,7 @@ export default class SFile {
 			}
 		}
 		else {
-			isTarget = file_obj;
+			isTarget = target;
 		}
 		/**
 		 * @type {SFile[]}
@@ -1468,7 +1477,7 @@ export default class SFile {
 			}
 			return true;
 		};
-		this.each(func);
+		from_dirctrory.each(func);
 		return target_files;
 	}
 
@@ -1547,8 +1556,9 @@ export default class SFile {
 				const name = compress_file.getName();
 				const tar_file = temp_folder + &quot;\\&quot; + name.substr(0, name.length - &quot;.tar.gz&quot;.length ) + &quot;.tar&quot;;
 				for(let i = 0; i &lt; file_list.length; i++) {
-					const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; a \&quot;&quot; + tar_file + &quot;\&quot; \&quot;&quot; + file_list[i] + &quot;\&quot;&quot;);
-					if(result.exit_code !== 0) {
+					const command = &quot;\&quot;&quot; + tool_path + &quot;\&quot; a \&quot;&quot; + tar_file + &quot;\&quot; \&quot;&quot; + file_list[i] + &quot;\&quot;&quot;;
+					const result = System.run(command, System.AppWinStype.Hide, true);
+					if(result) {
 						temp_folder.remove();
 						return false;
 					}
@@ -1558,8 +1568,9 @@ export default class SFile {
 			// &#x4E0A;&#x66F8;&#x304D;&#x4FDD;&#x5B58;
 			compress_file.remove(true);
 			for(let i = 0; i &lt; file_list.length; i++) {
-				const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; a \&quot;&quot; + compress_file + &quot;\&quot; \&quot;&quot; + file_list[i] + &quot;\&quot;&quot;);
-				if(result.exit_code !== 0) {
+				const command = &quot;\&quot;&quot; + tool_path + &quot;\&quot; a \&quot;&quot; + compress_file + &quot;\&quot; \&quot;&quot; + file_list[i] + &quot;\&quot;&quot;;
+				const result = System.run(command, System.AppWinStype.Hide, true);
+				if(result) {
 					if(temp_folder) {
 						temp_folder.remove();
 					}
@@ -1619,8 +1630,9 @@ export default class SFile {
 			if(comp_type === &quot;targz&quot;) {
 				temp_folder = SFile.createTempFile();
 				temp_folder.mkdirs();
-				const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + temp_folder + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;);
-				if(result.exit_code !== 0) {
+				const command = &quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + temp_folder + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;;
+				const result = System.run(command, System.AppWinStype.Hide, true);
+				if(result) {
 					return false;
 				}
 				// &#x4E2D;&#x8EAB;&#x306F;1&#x3064;&#x306E;tar&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x306E;&#x307F;&#x3057;&#x304B;&#x60F3;&#x5B9A;&#x3057;&#x3066;&#x3044;&#x306A;&#x3044;
@@ -1631,8 +1643,9 @@ export default class SFile {
 				}
 				extract_file = allfile[0];
 			}
-			const result = System.exec(&quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;);
-			if(result.exit_code !== 0) {
+			const command = &quot;\&quot;&quot; + tool_path + &quot;\&quot; x -y -o\&quot;&quot; + extract_dir + &quot;\\\&quot; \&quot;&quot; + extract_file + &quot;\&quot;&quot;;
+			const result = System.run(command, System.AppWinStype.Hide, true);
+			if(result) {
 				if(temp_folder) {
 					temp_folder.remove();
 				}

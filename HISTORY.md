@@ -1,6 +1,6 @@
 # History
 
-## SenkoWSH v6.0.0b
+## SenkoWSH v6.0.0
 ### 更新点
 - `SFile.prototype.searchFile`, `SFile.prototype.searchFiles` の英単語が誤っていたため削除しました
 - `SFile.findFile`, `SFile.findFiles` を追加しました。第一引数にフォルダを入力します

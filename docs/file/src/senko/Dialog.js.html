@@ -43,6 +43,11 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-OpenFileOption">OpenFileOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-PopupOption">PopupOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SaveAsOption">SaveAsOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageButton">typePopupMessageButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageDefaultButton">typePopupMessageDefaultButton</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageIcon">typePopupMessageIcon</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageOption">typePopupMessageOption</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typePopupMessageReturn">typePopupMessageReturn</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-KeyEventOption">KeyEventOption</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventFCodes">MouseEventFCodes</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MouseEventOption">MouseEventOption</a></span></span></li>
@@ -52,8 +57,8 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotPosition">WSHRobotPosition</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WSHRobotRect">WSHRobotRect</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-SystemExecResult">SystemExecResult</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-typeAppWinStyle">typeAppWinStyle</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#senko-polyfill">senko/polyfill</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsArray.js~ExtendsArray.html">ExtendsArray</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsObject.js~ExtendsObject.html">ExtendsObject</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/senko/polyfill/ExtendsString.js~ExtendsString.html">ExtendsString</a></span></span></li>
 </ul>
 </div>
@@ -79,7 +84,7 @@ import SFile from &quot;./SFile&quot;;
  * @typedef {Object} PopupOption
  * @property {number} [secondstowait=0] &#x30BF;&#x30A4;&#x30E0;&#x30A2;&#x30A6;&#x30C8;&#x6642;&#x9593;(`0`&#x3067;&#x7121;&#x52B9;)
  * @property {string} [caption=&quot;&quot;] &#x30BF;&#x30A4;&#x30C8;&#x30EB;&#x30D0;&#x30FC;
- * @property {number} [type=0] `Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3` &#x306A;&#x3069;
+ * @property {number} [type=0] `Dialog.POPUP_OPTION_TYPE` &#x3092;&#x7D44;&#x307F;&#x5408;&#x308F;&#x305B;&#x3066;&#x4F7F;&#x7528;&#x3059;&#x308B;
  */
 
 /**
@@ -114,9 +119,12 @@ export default class Dialog {
 	
 	/**
 	 * &#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;&#x3092;&#x8868;&#x793A;&#x3059;&#x308B;
+	 * - &#x5F15;&#x6570;&#x306E; `PopupOption` &#x306E; `type` &#x306B;&#x306F; `Dialog.POPUP_OPTION_TYPE` &#x3092;&#x7D44;&#x307F;&#x5408;&#x308F;&#x305B;&#x3066;&#x4F7F;&#x7528;&#x3067;&#x304D;&#x307E;&#x3059;
+	 * - &#x623B;&#x308A;&#x5024;&#x306F; `Dialog.POPUP_RETURN` &#x306E;&#x3069;&#x308C;&#x304B;&#x306E;&#x5024;&#x304C;&#x8FD4;&#x308A;&#x307E;&#x3059;
+	 * 
 	 * @param {string} text 
 	 * @param {PopupOption} [option]
-	 * @returns {number}
+	 * @returns {number} `Dialog.POPUP_RETURN`
 	 */
 	static popupMessage(text, option) {
 		const secondstowait = option &amp;&amp; option.secondstowait ? option.secondstowait : 0;
@@ -213,136 +221,97 @@ export default class Dialog {
 }
 
 /**
- * &#x300C;OK&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
- * @type {number}
+ * &#x30E1;&#x30C3;&#x30BB;&#x30FC;&#x30B8;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @typedef {Object} typePopupMessageButton
+ * @property {number} MB_OK &#x300C;OK&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @property {number} MB_OKCANCEL &#x300C;OK&#x300D;&#x3001;&#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @property {number} MB_ABORTRETRYIGNORE &#x300C;&#x4E2D;&#x6B62;&#x300D;&#x3001;&#x300C;&#x518D;&#x8A66;&#x884C;&#x300D;&#x3001;&#x300C;&#x7121;&#x8996;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @property {number} MB_YESNOCANCEL &#x300C;&#x306F;&#x3044;&#x300D;&#x3001;&#x300C;&#x3044;&#x3044;&#x3048;&#x300D;&#x3001;&#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @property {number} MB_YESNO &#x300C;&#x306F;&#x3044;&#x300D;&#x3001;&#x300C;&#x3044;&#x3044;&#x3048;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @property {number} MB_RETRYCANCEL &#x300C;&#x518D;&#x8A66;&#x884C;&#x300D;&#x3001;&#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
  */
-Dialog.MB_OK				=  0;
 
 /**
- * &#x300C;OK&#x300D;&#x3001;&#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
- * @type {number}
+ * &#x30E1;&#x30C3;&#x30BB;&#x30FC;&#x30B8;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;
+ * @typedef {Object} typePopupMessageIcon
+ * @property {number} MB_ICONSTOP &#x4E2D;&#x6B62;&#x300C;Stop&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
+ * @property {number} MB_ICONQUESTION &#x8CEA;&#x554F;&#x300C;?&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
+ * @property {number} MB_ICONWARNING &#x8B66;&#x544A;&#x300C;!&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
+ * @property {number} MB_ICONINFORMATION &#x60C5;&#x5831;&#x300C;i&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
  */
-Dialog.MB_OKCANCEL			=  1;
 
 /**
- * &#x300C;&#x4E2D;&#x6B62;&#x300D;&#x3001;&#x300C;&#x518D;&#x8A66;&#x884C;&#x300D;&#x3001;&#x300C;&#x7121;&#x8996;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
- * @type {number}
+ * &#x30E1;&#x30C3;&#x30BB;&#x30FC;&#x30B8;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;
+ * @typedef {Object} typePopupMessageDefaultButton
+ * @property {number} MB_DEFBUTTON1 &#x300C;&#x30DC;&#x30BF;&#x30F3;1&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} MB_DEFBUTTON2 &#x300C;&#x30DC;&#x30BF;&#x30F3;2&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} MB_DEFBUTTON3 &#x300C;&#x30DC;&#x30BF;&#x30F3;3&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} MB_DEFBUTTON4 &#x300C;&#x30DC;&#x30BF;&#x30F3;4&#x300D;&#x3092;&#x9078;&#x629E;
  */
-Dialog.MB_ABORTRETRYIGNORE	=  2;
 
 /**
- * &#x300C;&#x306F;&#x3044;&#x300D;&#x3001;&#x300C;&#x3044;&#x3044;&#x3048;&#x300D;&#x3001;&#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
- * @type {number}
+ * &#x30E1;&#x30C3;&#x30BB;&#x30FC;&#x30B8;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;
+ * @typedef {Object} typePopupMessageOption
+ * @property {typePopupMessageButton} BUTTON &#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
+ * @property {typePopupMessageIcon} ICON &#x30A2;&#x30A4;&#x30B3;&#x30F3;
+ * @property {typePopupMessageDefaultButton} DEFAULT_BUTTON &#x30DC;&#x30BF;&#x30F3;&#x306E;&#x30C7;&#x30D5;&#x30A9;&#x30EB;&#x30C8;
  */
-Dialog.MB_YESNOCANCEL		=  3;
 
 /**
- * &#x300C;&#x306F;&#x3044;&#x300D;&#x3001;&#x300C;&#x3044;&#x3044;&#x3048;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
- * @type {number}
+ * `Dialog.popupMessage` &#x5F15;&#x6570;&#x7528;&#x306E;&#x5B9A;&#x6570;
+ * @type {typePopupMessageOption}
  */
-Dialog.MB_YESNO				=  4;
+Dialog.POPUP_OPTION_TYPE = {
+	BUTTON : {
+		MB_OK				:  0,
+		MB_OKCANCEL			:  1,
+		MB_ABORTRETRYIGNORE	:  2,
+		MB_YESNOCANCEL		:  3,
+		MB_YESNO			:  4,
+		MB_RETRYCANCEL		:  5
+	},
+	ICON : {
+		MB_ICONSTOP			: 16,
+		MB_ICONQUESTION		: 32,
+		MB_ICONWARNING		: 48,
+		MB_ICONINFORMATION	: 64
+	},
+	DEFAULT_BUTTON : {
+		MB_DEFBUTTON1	: 0x0000,
+		MB_DEFBUTTON2	: 0x0100,
+		MB_DEFBUTTON3	: 0x0200,
+		MB_DEFBUTTON4	: 0x0300
+	}
+};
 
 /**
- * &#x300C;&#x518D;&#x8A66;&#x884C;&#x300D;&#x3001;&#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x306E;&#x30DC;&#x30BF;&#x30F3;&#x914D;&#x7F6E;
- * @type {number}
+ * &#x30E1;&#x30C3;&#x30BB;&#x30FC;&#x30B8;&#x30DC;&#x30C3;&#x30AF;&#x30B9;&#x306E;&#x623B;&#x308A;&#x5024;
+ * @typedef {Object} typePopupMessageReturn
+ * @property {number} IDTIMEOUT &#x30BF;&#x30A4;&#x30E0;&#x30A2;&#x30A6;&#x30C8;&#x304C;&#x767A;&#x751F;
+ * @property {number} IDOK &#x300C;OK&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} IDCANCEL &#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} IDABORT &#x300C;&#x4E2D;&#x6B62;&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} IDRETRY &#x300C;&#x518D;&#x8A66;&#x884C;&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} IDIGNORE &#x300C;&#x7121;&#x8996;&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} IDYES &#x300C;&#x306F;&#x3044;&#x300D;&#x3092;&#x9078;&#x629E;
+ * @property {number} IDNO &#x300C;&#x3044;&#x3044;&#x3048;&#x300D;&#x3092;&#x9078;&#x629E;
  */
-Dialog.MB_RETRYCANCEL		=  5;
 
 /**
- * &#x4E2D;&#x6B62;&#x300C;Stop&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
- * @type {number}
+ * `Dialog.popupMessage` &#x306E;&#x623B;&#x308A;&#x5024;&#x7528;&#x306E;&#x5B9A;&#x6570;
+ * @type {typePopupMessageReturn}
  */
-Dialog.MB_ICONSTOP			= 16;
+Dialog.POPUP_RETURN = {
+	IDTIMEOUT		: -1,
+	IDOK			: 1,
+	IDCANCEL		: 2,
+	IDABORT			: 3,
+	IDRETRY			: 4,
+	IDIGNORE		: 5,
+	IDYES			: 6,
+	IDNO			: 7
+};
 
-/**
- * &#x8CEA;&#x554F;&#x300C;?&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
- * @type {number}
- */
-Dialog.MB_ICONQUESTION		= 32;
-
-/**
- * &#x8B66;&#x544A;&#x300C;!&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
- * @type {number}
- */
-Dialog.MB_ICONWARNING		= 48;
-
-/**
- * &#x60C5;&#x5831;&#x300C;i&#x300D;&#x306E;&#x30A2;&#x30A4;&#x30B3;&#x30F3;&#x306E;&#x30C0;&#x30A4;&#x30A2;&#x30ED;&#x30B0;
- * @type {number}
- */
-Dialog.MB_ICONINFORMATION	= 64;
-
-/**
- * &#x300C;&#x30DC;&#x30BF;&#x30F3;1&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.MB_DEFBUTTON1	= 0x0000;
-
-/**
- * &#x300C;&#x30DC;&#x30BF;&#x30F3;2&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.MB_DEFBUTTON2	= 0x0100;
-
-/**
- * &#x300C;&#x30DC;&#x30BF;&#x30F3;3&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.MB_DEFBUTTON3	= 0x0200;
-
-/**
- * &#x300C;&#x30DC;&#x30BF;&#x30F3;4&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.MB_DEFBUTTON4	= 0x0300;
-
-/**
- * &#x30BF;&#x30A4;&#x30E0;&#x30A2;&#x30A6;&#x30C8;&#x304C;&#x767A;&#x751F;
- * @type {number}
- */
-Dialog.IDTIMEOUT		= -1;
-
-/**
- * &#x300C;OK&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDOK				= 1;
-
-/**
- * &#x300C;&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDCANCEL			= 2;
-
-/**
- * &#x300C;&#x4E2D;&#x6B62;&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDABORT			= 3;
-
-/**
- * &#x300C;&#x518D;&#x8A66;&#x884C;&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDRETRY			= 4;
-
-/**
- * &#x300C;&#x7121;&#x8996;&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDIGNORE			= 5;
-
-/**
- * &#x300C;&#x306F;&#x3044;&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDYES			= 6;
-
-/**
- * &#x300C;&#x3044;&#x3044;&#x3048;&#x300D;&#x3092;&#x9078;&#x629E;
- * @type {number}
- */
-Dialog.IDNO				= 7;
 </code></pre>
 
 </div>
