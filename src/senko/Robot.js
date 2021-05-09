@@ -209,184 +209,6 @@ import System from "./System.js";
  */
 
 /**
- * 仮想キーコード一覧
- * @type {VirtualKeyCodes}
- */
-const VK_DATA = {
-	VK_LBUTTON	:{code:0x01},
-	VK_RBUTTON	:{code:0x02},
-	VK_CANCEL	:{code:0x03},
-	VK_MBUTTON	:{code:0x04},
-	VK_XBUTTON1	:{code:0x05},
-	VK_XBUTTON2	:{code:0x06},
-	VK_BACK	:{code:0x08},
-	VK_TAB	:{code:0x09},
-	VK_CLEAR	:{code:0x0C},
-	VK_RETURN	:{code:0x0D},
-	VK_SHIFT	:{code:0x10},
-	VK_CONTROL	:{code:0x11},
-	VK_MENU	:{code:0x12},
-	VK_PAUSE	:{code:0x13},
-	VK_CAPITAL	:{code:0x14},
-	VK_KANA	:{code:0x15},
-	VK_HANGEUL	:{code:0x15},
-	VK_HANGUL	:{code:0x15},
-	VK_JUNJA	:{code:0x17},
-	VK_FINAL	:{code:0x18},
-	VK_HANJA	:{code:0x19},
-	VK_KANJI	:{code:0x19},
-	VK_ESCAPE	:{code:0x1B},
-	VK_CONVERT	:{code:0x1C},
-	VK_NONCONVERT	:{code:0x1D},
-	VK_ACCEPT	:{code:0x1E},
-	VK_MODECHANGE	:{code:0x1F},
-	VK_SPACE	:{code:0x20},
-	VK_PRIOR	:{code:0x21},
-	VK_NEXT	:{code:0x22},
-	VK_END	:{code:0x23},
-	VK_HOME	:{code:0x24},
-	VK_LEFT	:{code:0x25},
-	VK_UP	:{code:0x26},
-	VK_RIGHT	:{code:0x27},
-	VK_DOWN	:{code:0x28},
-	VK_SELECT	:{code:0x29},
-	VK_PRINT	:{code:0x2A},
-	VK_EXECUTE	:{code:0x2B},
-	VK_SNAPSHOT	:{code:0x2C},
-	VK_INSERT	:{code:0x2D},
-	VK_DELETE	:{code:0x2E},
-	VK_HELP	:{code:0x2F},
-	VK_0	:{code:0x30},
-	VK_1	:{code:0x31},
-	VK_2	:{code:0x32},
-	VK_3	:{code:0x33},
-	VK_4	:{code:0x34},
-	VK_5	:{code:0x35},
-	VK_6	:{code:0x36},
-	VK_7	:{code:0x37},
-	VK_8	:{code:0x38},
-	VK_9	:{code:0x39},
-	VK_A	:{code:0x41},
-	VK_B	:{code:0x42},
-	VK_C	:{code:0x43},
-	VK_D	:{code:0x44},
-	VK_E	:{code:0x45},
-	VK_F	:{code:0x46},
-	VK_G	:{code:0x47},
-	VK_H	:{code:0x48},
-	VK_I	:{code:0x49},
-	VK_J	:{code:0x4A},
-	VK_K	:{code:0x4B},
-	VK_L	:{code:0x4C},
-	VK_M	:{code:0x4D},
-	VK_N	:{code:0x4E},
-	VK_O	:{code:0x4F},
-	VK_P	:{code:0x50},
-	VK_Q	:{code:0x51},
-	VK_R	:{code:0x52},
-	VK_S	:{code:0x53},
-	VK_T	:{code:0x54},
-	VK_U	:{code:0x55},
-	VK_V	:{code:0x56},
-	VK_W	:{code:0x57},
-	VK_X	:{code:0x58},
-	VK_Y	:{code:0x59},
-	VK_Z	:{code:0x5A},
-	VK_LWIN	:{code:0x5B},
-	VK_RWIN	:{code:0x5C},
-	VK_APPS	:{code:0x5D},
-	VK_SLEEP	:{code:0x5F},
-	VK_NUMPAD0	:{code:0x60},
-	VK_NUMPAD1	:{code:0x61},
-	VK_NUMPAD2	:{code:0x62},
-	VK_NUMPAD3	:{code:0x63},
-	VK_NUMPAD4	:{code:0x64},
-	VK_NUMPAD5	:{code:0x65},
-	VK_NUMPAD6	:{code:0x66},
-	VK_NUMPAD7	:{code:0x67},
-	VK_NUMPAD8	:{code:0x68},
-	VK_NUMPAD9	:{code:0x69},
-	VK_MULTIPLY	:{code:0x6A},
-	VK_ADD	:{code:0x6B},
-	VK_SEPARATOR	:{code:0x6C},
-	VK_SUBTRACT	:{code:0x6D},
-	VK_DECIMAL	:{code:0x6E},
-	VK_DIVIDE	:{code:0x6F},
-	VK_F1	:{code:0x70},
-	VK_F2	:{code:0x71},
-	VK_F3	:{code:0x72},
-	VK_F4	:{code:0x73},
-	VK_F5	:{code:0x74},
-	VK_F6	:{code:0x75},
-	VK_F7	:{code:0x76},
-	VK_F8	:{code:0x77},
-	VK_F9	:{code:0x78},
-	VK_F10	:{code:0x79},
-	VK_F11	:{code:0x7A},
-	VK_F12	:{code:0x7B},
-	VK_F13	:{code:0x7C},
-	VK_F14	:{code:0x7D},
-	VK_F15	:{code:0x7E},
-	VK_F16	:{code:0x7F},
-	VK_F17	:{code:0x80},
-	VK_F18	:{code:0x81},
-	VK_F19	:{code:0x82},
-	VK_F20	:{code:0x83},
-	VK_F21	:{code:0x84},
-	VK_F22	:{code:0x85},
-	VK_F23	:{code:0x86},
-	VK_F24	:{code:0x87},
-	VK_NUMLOCK	:{code:0x90},
-	VK_SCROLL	:{code:0x91},
-	VK_LSHIFT	:{code:0xA0},
-	VK_RSHIFT	:{code:0xA1},
-	VK_LCONTROL	:{code:0xA2},
-	VK_RCONTROL	:{code:0xA3},
-	VK_LMENU	:{code:0xA4},
-	VK_RMENU	:{code:0xA5},
-	VK_BROWSER_BACK	:{code:0xA6},
-	VK_BROWSER_FORWARD	:{code:0xA7},
-	VK_BROWSER_REFRESH	:{code:0xA8},
-	VK_BROWSER_STOP	:{code:0xA9},
-	VK_BROWSER_SEARCH	:{code:0xAA},
-	VK_BROWSER_FAVORITES	:{code:0xAB},
-	VK_BROWSER_HOME	:{code:0xAC},
-	VK_VOLUME_MUTE	:{code:0xAD},
-	VK_VOLUME_DOWN	:{code:0xAE},
-	VK_VOLUME_UP	:{code:0xAF},
-	VK_MEDIA_NEXT_TRACK	:{code:0xB0},
-	VK_MEDIA_PREV_TRACK	:{code:0xB1},
-	VK_MEDIA_STOP	:{code:0xB2},
-	VK_MEDIA_PLAY_PAUSE	:{code:0xB3},
-	VK_LAUNCH_MAIL	:{code:0xB4},
-	VK_LAUNCH_MEDIA_SELECT	:{code:0xB5},
-	VK_LAUNCH_APP1	:{code:0xB6},
-	VK_LAUNCH_APP2	:{code:0xB7},
-	VK_OEM_1	:{code:0xBA},
-	VK_OEM_PLUS	:{code:0xBB},
-	VK_OEM_COMMA	:{code:0xBC},
-	VK_OEM_MINUS	:{code:0xBD},
-	VK_OEM_PERIOD	:{code:0xBE},
-	VK_OEM_2	:{code:0xBF},
-	VK_OEM_3	:{code:0xC0},
-	VK_OEM_4	:{code:0xDB},
-	VK_OEM_5	:{code:0xDC},
-	VK_OEM_6	:{code:0xDD},
-	VK_OEM_7	:{code:0xDE},
-	VK_OEM_8	:{code:0xDF},
-	VK_PROCESSKEY	:{code:0xE5},
-	VK_ATTN	:{code:0xF6},
-	VK_CRSEL	:{code:0xF7},
-	VK_EXSEL	:{code:0xF8},
-	VK_EREOF	:{code:0xF9},
-	VK_PLAY	:{code:0xFA},
-	VK_ZOOM	:{code:0xFB},
-	VK_NONAME	:{code:0xFC},
-	VK_PA1	:{code:0xFD},
-	VK_OEM_CLEAR	:{code:0xFE}
-};
-
-/**
  * マウスイベント用コード
  * @typedef {Object} MouseEventFCodes
  * @property {number} MOUSEEVENTF_ABSOLUTE
@@ -427,9 +249,9 @@ const MOUSEEVENTF_DATA = {
  * @property {boolean} [is_not_pushed=false] 押さない
  * @property {boolean} [is_not_released=false] 離さない
  * @property {number} [push_time_sec=0] 押下時間
- * @property {boolean} [is_pressed_shift=false]
- * @property {boolean} [is_pressed_alt=false]
- * @property {boolean} [is_pressed_ctrl=false]
+ * @property {boolean} [is_pressed_shift=false] `+ Shift`
+ * @property {boolean} [is_pressed_alt=false] `+ Alt`
+ * @property {boolean} [is_pressed_ctrl=false] `+ Ctrl`
  */
 
 /**
@@ -455,24 +277,27 @@ export default class Robot {
 	
 	/**
 	 * キーを入力する
-	 * @param {VirtualKeyCode} vkcode - キーコード（利用可能なコードは、Robot.getVK() で取得可能）
+	 * - キーコードは定数クラス `Robot.VK` を使用ください
+	 * 
+	 * @param {VirtualKeyCode} vkcode - キーコード
 	 * @param {KeyEventOption} [option] - オプション
 	 */
 	static setKeyEvent(vkcode, option) {
 		const KEYEVENTF_KEYUP = 2;
 		const count_max = (option && option.count_max) ? option.count_max: 1;
+		const VK = Robot.VK;
 		let time_ms = (option && option.push_time_sec) ? ((option.push_time_sec * 1000) | 0 ): 0;
 		time_ms = Math.max(time_ms , 1); // 1以上にする
 		let code = "for ($i=0; $i -lt " + count_max + "; $i++){";
 		{
 			if(option && option.is_pressed_shift) {
-				code += "$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, 0, 0);";
+				code += "$api::keybd_event(" + VK.VK_SHIFT.code + ", 0, 0, 0);";
 			}
 			if(option && option.is_pressed_alt) {
-				code += "$api::keybd_event(" + VK_DATA.VK_MENU.code + ", 0, 0, 0);";
+				code += "$api::keybd_event(" + VK.VK_MENU.code + ", 0, 0, 0);";
 			}
 			if(option && option.is_pressed_ctrl) {
-				code += "$api::keybd_event(" + VK_DATA.VK_CONTROL.code + ", 0, 0, 0);";
+				code += "$api::keybd_event(" + VK.VK_CONTROL.code + ", 0, 0, 0);";
 			}
 			if(!option || !option.is_not_pushed) {
 				code += "$api::keybd_event(" + vkcode.code + ", 0, 0, 0);";
@@ -486,13 +311,13 @@ export default class Robot {
 				code += "$api::keybd_event(" + vkcode.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
 			}
 			if(option && option.is_pressed_ctrl) {
-				code += "$api::keybd_event(" + VK_DATA.VK_CONTROL.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
+				code += "$api::keybd_event(" + VK.VK_CONTROL.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
 			}
 			if(option && option.is_pressed_alt) {
-				code += "$api::keybd_event(" + VK_DATA.VK_MENU.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
+				code += "$api::keybd_event(" + VK.VK_MENU.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
 			}
 			if(option && option.is_pressed_shift) {
-				code += "$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
+				code += "$api::keybd_event(" + VK.VK_SHIFT.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);";
 			}
 		}
 		code += "}";
@@ -519,16 +344,9 @@ export default class Robot {
 	}
 	
 	/**
-	 * 仮想キーコードの一覧を取得します
-	 * @returns {VirtualKeyCodes} 
-	 */
-	static getVK() {
-		return VK_DATA;
-	}
-
-	/**
 	 * マウスのクリックを行う
-	 * @param {string} type - "LEFT", "RIGHT", "CLICK", "DOUBLE_CLICK"といった文字列
+	 * 
+	 * @param {string} type - `"LEFT"`, `"RIGHT"`, `"CLICK"`, `"DOUBLE_CLICK"` といった文字列
 	 * @param {KeyEventOption} [option] - オプション
 	 */
 	static setMouseEvent(type, option) {
@@ -831,9 +649,188 @@ export default class Robot {
 	 * @param {number} pid 
 	 */
 	static terminateProcess(pid) {
-		return System.run("taskkill /PID " + pid, 0, true);
+		return System.run("taskkill /PID " + pid, System.AppWinStype.Hide, true);
 	}
 
 }
+
+/**
+ * 仮想キーコード一覧
+ * @type {VirtualKeyCodes}
+ */
+Robot.VK = {
+	VK_LBUTTON	:{code:0x01},
+	VK_RBUTTON	:{code:0x02},
+	VK_CANCEL	:{code:0x03},
+	VK_MBUTTON	:{code:0x04},
+	VK_XBUTTON1	:{code:0x05},
+	VK_XBUTTON2	:{code:0x06},
+	VK_BACK	:{code:0x08},
+	VK_TAB	:{code:0x09},
+	VK_CLEAR	:{code:0x0C},
+	VK_RETURN	:{code:0x0D},
+	VK_SHIFT	:{code:0x10},
+	VK_CONTROL	:{code:0x11},
+	VK_MENU	:{code:0x12},
+	VK_PAUSE	:{code:0x13},
+	VK_CAPITAL	:{code:0x14},
+	VK_KANA	:{code:0x15},
+	VK_HANGEUL	:{code:0x15},
+	VK_HANGUL	:{code:0x15},
+	VK_JUNJA	:{code:0x17},
+	VK_FINAL	:{code:0x18},
+	VK_HANJA	:{code:0x19},
+	VK_KANJI	:{code:0x19},
+	VK_ESCAPE	:{code:0x1B},
+	VK_CONVERT	:{code:0x1C},
+	VK_NONCONVERT	:{code:0x1D},
+	VK_ACCEPT	:{code:0x1E},
+	VK_MODECHANGE	:{code:0x1F},
+	VK_SPACE	:{code:0x20},
+	VK_PRIOR	:{code:0x21},
+	VK_NEXT	:{code:0x22},
+	VK_END	:{code:0x23},
+	VK_HOME	:{code:0x24},
+	VK_LEFT	:{code:0x25},
+	VK_UP	:{code:0x26},
+	VK_RIGHT	:{code:0x27},
+	VK_DOWN	:{code:0x28},
+	VK_SELECT	:{code:0x29},
+	VK_PRINT	:{code:0x2A},
+	VK_EXECUTE	:{code:0x2B},
+	VK_SNAPSHOT	:{code:0x2C},
+	VK_INSERT	:{code:0x2D},
+	VK_DELETE	:{code:0x2E},
+	VK_HELP	:{code:0x2F},
+	VK_0	:{code:0x30},
+	VK_1	:{code:0x31},
+	VK_2	:{code:0x32},
+	VK_3	:{code:0x33},
+	VK_4	:{code:0x34},
+	VK_5	:{code:0x35},
+	VK_6	:{code:0x36},
+	VK_7	:{code:0x37},
+	VK_8	:{code:0x38},
+	VK_9	:{code:0x39},
+	VK_A	:{code:0x41},
+	VK_B	:{code:0x42},
+	VK_C	:{code:0x43},
+	VK_D	:{code:0x44},
+	VK_E	:{code:0x45},
+	VK_F	:{code:0x46},
+	VK_G	:{code:0x47},
+	VK_H	:{code:0x48},
+	VK_I	:{code:0x49},
+	VK_J	:{code:0x4A},
+	VK_K	:{code:0x4B},
+	VK_L	:{code:0x4C},
+	VK_M	:{code:0x4D},
+	VK_N	:{code:0x4E},
+	VK_O	:{code:0x4F},
+	VK_P	:{code:0x50},
+	VK_Q	:{code:0x51},
+	VK_R	:{code:0x52},
+	VK_S	:{code:0x53},
+	VK_T	:{code:0x54},
+	VK_U	:{code:0x55},
+	VK_V	:{code:0x56},
+	VK_W	:{code:0x57},
+	VK_X	:{code:0x58},
+	VK_Y	:{code:0x59},
+	VK_Z	:{code:0x5A},
+	VK_LWIN	:{code:0x5B},
+	VK_RWIN	:{code:0x5C},
+	VK_APPS	:{code:0x5D},
+	VK_SLEEP	:{code:0x5F},
+	VK_NUMPAD0	:{code:0x60},
+	VK_NUMPAD1	:{code:0x61},
+	VK_NUMPAD2	:{code:0x62},
+	VK_NUMPAD3	:{code:0x63},
+	VK_NUMPAD4	:{code:0x64},
+	VK_NUMPAD5	:{code:0x65},
+	VK_NUMPAD6	:{code:0x66},
+	VK_NUMPAD7	:{code:0x67},
+	VK_NUMPAD8	:{code:0x68},
+	VK_NUMPAD9	:{code:0x69},
+	VK_MULTIPLY	:{code:0x6A},
+	VK_ADD	:{code:0x6B},
+	VK_SEPARATOR	:{code:0x6C},
+	VK_SUBTRACT	:{code:0x6D},
+	VK_DECIMAL	:{code:0x6E},
+	VK_DIVIDE	:{code:0x6F},
+	VK_F1	:{code:0x70},
+	VK_F2	:{code:0x71},
+	VK_F3	:{code:0x72},
+	VK_F4	:{code:0x73},
+	VK_F5	:{code:0x74},
+	VK_F6	:{code:0x75},
+	VK_F7	:{code:0x76},
+	VK_F8	:{code:0x77},
+	VK_F9	:{code:0x78},
+	VK_F10	:{code:0x79},
+	VK_F11	:{code:0x7A},
+	VK_F12	:{code:0x7B},
+	VK_F13	:{code:0x7C},
+	VK_F14	:{code:0x7D},
+	VK_F15	:{code:0x7E},
+	VK_F16	:{code:0x7F},
+	VK_F17	:{code:0x80},
+	VK_F18	:{code:0x81},
+	VK_F19	:{code:0x82},
+	VK_F20	:{code:0x83},
+	VK_F21	:{code:0x84},
+	VK_F22	:{code:0x85},
+	VK_F23	:{code:0x86},
+	VK_F24	:{code:0x87},
+	VK_NUMLOCK	:{code:0x90},
+	VK_SCROLL	:{code:0x91},
+	VK_LSHIFT	:{code:0xA0},
+	VK_RSHIFT	:{code:0xA1},
+	VK_LCONTROL	:{code:0xA2},
+	VK_RCONTROL	:{code:0xA3},
+	VK_LMENU	:{code:0xA4},
+	VK_RMENU	:{code:0xA5},
+	VK_BROWSER_BACK	:{code:0xA6},
+	VK_BROWSER_FORWARD	:{code:0xA7},
+	VK_BROWSER_REFRESH	:{code:0xA8},
+	VK_BROWSER_STOP	:{code:0xA9},
+	VK_BROWSER_SEARCH	:{code:0xAA},
+	VK_BROWSER_FAVORITES	:{code:0xAB},
+	VK_BROWSER_HOME	:{code:0xAC},
+	VK_VOLUME_MUTE	:{code:0xAD},
+	VK_VOLUME_DOWN	:{code:0xAE},
+	VK_VOLUME_UP	:{code:0xAF},
+	VK_MEDIA_NEXT_TRACK	:{code:0xB0},
+	VK_MEDIA_PREV_TRACK	:{code:0xB1},
+	VK_MEDIA_STOP	:{code:0xB2},
+	VK_MEDIA_PLAY_PAUSE	:{code:0xB3},
+	VK_LAUNCH_MAIL	:{code:0xB4},
+	VK_LAUNCH_MEDIA_SELECT	:{code:0xB5},
+	VK_LAUNCH_APP1	:{code:0xB6},
+	VK_LAUNCH_APP2	:{code:0xB7},
+	VK_OEM_1	:{code:0xBA},
+	VK_OEM_PLUS	:{code:0xBB},
+	VK_OEM_COMMA	:{code:0xBC},
+	VK_OEM_MINUS	:{code:0xBD},
+	VK_OEM_PERIOD	:{code:0xBE},
+	VK_OEM_2	:{code:0xBF},
+	VK_OEM_3	:{code:0xC0},
+	VK_OEM_4	:{code:0xDB},
+	VK_OEM_5	:{code:0xDC},
+	VK_OEM_6	:{code:0xDD},
+	VK_OEM_7	:{code:0xDE},
+	VK_OEM_8	:{code:0xDF},
+	VK_PROCESSKEY	:{code:0xE5},
+	VK_ATTN	:{code:0xF6},
+	VK_CRSEL	:{code:0xF7},
+	VK_EXSEL	:{code:0xF8},
+	VK_EREOF	:{code:0xF9},
+	VK_PLAY	:{code:0xFA},
+	VK_ZOOM	:{code:0xFB},
+	VK_NONAME	:{code:0xFC},
+	VK_PA1	:{code:0xFD},
+	VK_OEM_CLEAR	:{code:0xFE}
+};
+
 
 

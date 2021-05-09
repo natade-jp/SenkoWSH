@@ -36,17 +36,22 @@ const toString = function(data) {
 	else if(data === undefined) {
 		return "[undefined]";
 	}
-	const string_data = data.toString();
-	if(string_data === "[object Error]") {
+	const type = System.typeOf(data);
+	if(type === "error") {
 		const e = data;
 		const error_name	= e.name ? e.name : "Error";
 		const error_number	= e.number ? Format.textf("0x%08X", e.number) : "0x00000000";
 		const error_message	= e.message ? e.message : "エラーが発生しました。";
 		return Format.textf("%s(%s) %s", error_name, error_number, error_message);
 	}
-	return string_data;
+	if(type === "string") {
+		return data;
+	}
+	if((type === "array") || (type === "object")) {
+		return JSON.stringify(data);
+	}
+	return data.toString();
 };
-
 
 /**
  * 実行結果
@@ -159,27 +164,51 @@ export default class System {
 
 	/**
 	 * 指定したコマンドを別プロセスとして実行する
+	 * - 例外発生時の戻り値は `1` となります
+	 * 
 	 * @param {string} command - コマンド
-	 * @param {number} [style=1] - 起動オプション
+	 * @param {number} [style=1] - 起動オプション (`System.AppWinStype` 内の値)
 	 * @param {boolean} [is_wait=false] - プロセスが終了するまで待つ
+	 * @return {number} 通常 `0` で正常終了
+	 * 
 	 */
 	static run(command, style, is_wait) {
-		const NormalFocus = 1;
-		const intWindowStyle = style !== undefined ? style : NormalFocus;
+		const intWindowStyle = style !== undefined ? style : System.AppWinStype.NormalFocus;
 		const bWaitOnReturn = is_wait !== undefined ? is_wait : false;
 		const shell = WScript.CreateObject("WScript.Shell");
-		// @ts-ignore
-		return shell.Run(command, intWindowStyle, bWaitOnReturn);
+		var ret = 0;
+		try {
+			// @ts-ignore
+			ret = shell.Run(command, intWindowStyle, bWaitOnReturn);
+		}
+		catch(e) {
+			console.log(e);
+			return 1;
+		}
+		return ret;
 	}
 
 	/**
 	 * 指定したコマンドを子プロセスとして実行する
+	 * - 例外発生時の戻り値は `exit_code = 1` となります
+	 * 
 	 * @param {string} command 
 	 * @returns {SystemExecResult}
 	 */
 	static exec(command) {
 		const shell = WScript.CreateObject("WScript.Shell");
-		const exec = shell.Exec(command);
+		let exec = null;
+		try {
+			exec = shell.Exec(command);
+		}
+		catch(e) {
+			console.log(e);
+			return {
+				exit_code : 1,
+				out : e.toString(),
+				error : e.toString()
+			};
+		}
 		const stdin = exec.StdIn;
 		const stdout = exec.StdOut;
 		const stderr = exec.StdErr;
@@ -324,11 +353,11 @@ export default class System {
 	 * BatchScript を実行する
 	 * 
 	 * @param {string} source
-	 * @param {string} [charset="ansi"] - 文字コード
+	 * @param {string} [charset="shift_jis"] - 文字コード
 	 * @returns {SystemExecResult|null}
 	 */
 	static BatchScript(source, charset) {
-		const icharset = charset !== undefined ? charset.toLowerCase() : "ansi";
+		const icharset = charset !== undefined ? charset.toLowerCase() : "shift_jis";
 		const is_ansi = /shift_jis|sjis|ascii|ansi/i.test(icharset);
 		const is_utf16 = /unicode|utf-16le/i.test(icharset);
 		const is_line = !/\n/.test(source);
@@ -346,7 +375,7 @@ export default class System {
 			const file = new SFile(SFile.createTempFile().getAbsolutePath() + ".bat");
 			let cs;
 			cs = is_ansi ? "shift_jis" : "";
-			cs = is_utf16 ? "shift_jis" : cs;
+			cs = is_utf16 ? "utf-16le" : cs;
 			cs = cs === "" ? icharset : cs;
 			const ret = file.setTextFile(source, cs, "\r\n");
 			if(ret === false) {
@@ -602,7 +631,9 @@ export default class System {
 
 	/**
 	 * データの型を小文字の英字で返す
-	 * - 配列であれば `array`、正規表現であれば `regexp` などを返します
+	 * - 配列 : `array`
+	 * - 正規表現 : `regexp`
+	 * - 例外エラー : `error` など
 	 * 
 	 * @param {any} x
 	 * @returns {string}
@@ -613,4 +644,26 @@ export default class System {
 
 }
 
+/**
+ * `System.run` の起動オプション用のコード
+ * @typedef {Object} typeAppWinStyle
+ * @property {number} Hide
+ * @property {number} NormalFocus
+ * @property {number} MinimizedFocus
+ * @property {number} MaximizedFocus
+ * @property {number} NormalNoFocus
+ * @property {number} MinimizedNoFocus
+ */
 
+/**
+ * `System.run` の起動オプション用のコード一覧
+ * @type {typeAppWinStyle}
+ */
+System.AppWinStype = {
+	Hide				:0,
+	NormalFocus			:1,
+	MinimizedFocus		:2,
+	MaximizedFocus		:3,
+	NormalNoFocus		:4,
+	MinimizedNoFocus	:6
+};

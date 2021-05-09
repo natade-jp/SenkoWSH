@@ -14,35 +14,4 @@
  */
 export default class ExtendsObject {
 
-	/**
-	 * 文字列化
-	 * @param {any} obj
-	 * @returns {string}
-	 */
-	static toString(obj) {
-		/**
-		 * 名前の配列
-		 * @param {Object} obj
-		 * @returns {string[]}
-		 */
-		const keys = function(obj) {
-			const data = [];
-			for(const key in obj) {
-				data.push(key);
-			}
-			return data;
-		}
-		const length = keys(obj).length;
-		let output = "";
-		let i = 0;
-		for(const key in obj) {
-			output += key + "=>" + obj[key];
-			i++;
-			if(i !== length) {
-				output += "\n";
-			}
-		}
-		return output;
-	}
-
 }

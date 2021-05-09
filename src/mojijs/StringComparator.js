@@ -219,8 +219,9 @@ export default class StringComparator {
 
 	/**
 	 * 2つの文字列を比較する
-	 * @param {String} a - 比較元
-	 * @param {String} b - 比較先
+	 * 
+	 * @param {any} a - 比較元
+	 * @param {any} b - 比較先
 	 * @returns {number} Compare結果
 	 */
 	static DEFAULT(a, b) {
@@ -235,19 +236,19 @@ export default class StringComparator {
 
 	/**
 	 * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
-	 * @param {String} a - 比較元
-	 * @param {String} b - 比較先
+	 * - 入力引数は文字列化して比較します
+	 * 
+	 * @param {any} a - 比較元
+	 * @param {any} b - 比較先
 	 * @returns {number} Compare結果
 	 */
 	static NATURAL(a, b) {
-		if((typeof a === typeof b) && (typeof a === "string")) {
-			const a_str = Unicode.toUTF16Array(StringComparator.toNormalizeString(a));
-			const b_str = Unicode.toUTF16Array(StringComparator.toNormalizeString(b));
-			return StringComparator.compareText(a_str, b_str);
+		if((a.toString === undefined) || (b.toString === undefined)) {
+			return 0;
 		}
-		else {
-			return StringComparator.DEFAULT(a, b);
-		}
+		const a_str = Unicode.toUTF16Array(StringComparator.toNormalizeString(a.toString()));
+		const b_str = Unicode.toUTF16Array(StringComparator.toNormalizeString(b.toString()));
+		return StringComparator.compareText(a_str, b_str);
 	}
 
 }

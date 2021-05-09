@@ -1299,27 +1299,29 @@ export default class SFile {
 
 	/**
 	 * 指定した条件にあうファイルを探す
-	 * - `this` のディレクトリ配下で条件に合ったファイルを返します
+	 * - `from` のディレクトリ配下で条件に合ったファイルを返します
 	 * - 見つかったら探索を中止します
 	 * - 見つからない場合は `null` を返します
 	 * 
-	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @param {string|SFile} from
+	 * @param {string|SFile|RegExp|function(SFile): boolean} target
 	 * 
 	 * @returns {SFile|null}
 	 */
-	searchFile(file_obj) {
+	 static findFile(from, target) {
+		const from_dirctrory = new SFile(from);
 		/**
 		 * @type {function(SFile): boolean}
 		 * @private
 		 */
 		let isTarget;
-		if(typeof file_obj !== "function") {
-			if(System.typeOf(file_obj) === "regexp") {
+		if(typeof target !== "function") {
+			if(System.typeOf(target) === "regexp") {
 				/**
 				 * @type {RegExp}
 				 */
 				// @ts-ignore
-				const reg = file_obj;
+				const reg = target;
 				isTarget = function(file) {
 					const result = reg.exec(file.getAbsolutePath());
 					return result !== null;
@@ -1327,7 +1329,7 @@ export default class SFile {
 			}
 			else {
 				// @ts-ignore
-				const file = new SFile(file_obj);
+				const file = new SFile(target);
 				const buffer = file.getName();
 				isTarget = function(file) {
 					return file.getName() === buffer;
@@ -1335,7 +1337,7 @@ export default class SFile {
 			}
 		}
 		else {
-			isTarget = file_obj;
+			isTarget = target;
 		}
 		/**
 		 * @type {SFile}
@@ -1351,30 +1353,32 @@ export default class SFile {
 			}
 			return true;
 		};
-		this.each(func);
+		from_dirctrory.each(func);
 		return target_file;
 	}
 
 	/**
-	 * 指定した条件にあうファイルを探す
-	 * - `this` のディレクトリ配下で条件に合ったファイル一覧を返します
+	 * 指定した条件にあう全ファイルを探す
+	 * - `from` のディレクトリ配下で条件に合ったファイル一覧を返します
 	 * 
-	 * @param {string|SFile|RegExp|function(SFile): boolean} file_obj
+	 * @param {string|SFile} from
+	 * @param {string|SFile|RegExp|function(SFile): boolean} target
 	 * @returns {SFile[]}
 	 */
-	 searchFiles(file_obj) {
+	static findFiles(from, target) {
+		const from_dirctrory = new SFile(from);
 		/**
 		 * @type {function(SFile): boolean}
 		 * @private
 		 */
 		let isTarget;
-		if(typeof file_obj !== "function") {
-			if(System.typeOf(file_obj) === "regexp") {
+		if(typeof target !== "function") {
+			if(System.typeOf(target) === "regexp") {
 				/**
 				 * @type {RegExp}
 				 */
 				// @ts-ignore
-				const reg = file_obj;
+				const reg = target;
 				isTarget = function(file) {
 					const result = reg.exec(file.getAbsolutePath());
 					return result !== null;
@@ -1382,7 +1386,7 @@ export default class SFile {
 			}
 			else {
 				// @ts-ignore
-				const file = new SFile(file_obj);
+				const file = new SFile(target);
 				const buffer = file.getName();
 				isTarget = function(file) {
 					return file.getName() === buffer;
@@ -1390,7 +1394,7 @@ export default class SFile {
 			}
 		}
 		else {
-			isTarget = file_obj;
+			isTarget = target;
 		}
 		/**
 		 * @type {SFile[]}
@@ -1406,7 +1410,7 @@ export default class SFile {
 			}
 			return true;
 		};
-		this.each(func);
+		from_dirctrory.each(func);
 		return target_files;
 	}
 

@@ -35,7 +35,11 @@ export default class Unicode {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromUTF32Array(utf32) {
-		return ExtendsString.fromCodePoint(utf32);
+		const text = [];
+		for(let i = 0;i < utf32.length;i++) {
+			text[text.length] = String.fromCodePoint(utf32[i]);
+		}
+		return(text.join(""));
 	}
 
 	/**

@@ -17,7 +17,7 @@ import SFile from "./SFile";
  * @typedef {Object} PopupOption
  * @property {number} [secondstowait=0] タイムアウト時間(`0`で無効)
  * @property {string} [caption=""] タイトルバー
- * @property {number} [type=0] `Dialog.MB_YESNOCANCEL | Dialog.MB_DEFBUTTON3` など
+ * @property {number} [type=0] `Dialog.POPUP_OPTION_TYPE` を組み合わせて使用する
  */
 
 /**
@@ -52,9 +52,12 @@ export default class Dialog {
 	
 	/**
 	 * ダイアログを表示する
+	 * - 引数の `PopupOption` の `type` には `Dialog.POPUP_OPTION_TYPE` を組み合わせて使用できます
+	 * - 戻り値は `Dialog.POPUP_RETURN` のどれかの値が返ります
+	 * 
 	 * @param {string} text 
 	 * @param {PopupOption} [option]
-	 * @returns {number}
+	 * @returns {number} `Dialog.POPUP_RETURN`
 	 */
 	static popupMessage(text, option) {
 		const secondstowait = option && option.secondstowait ? option.secondstowait : 0;
@@ -151,133 +154,94 @@ export default class Dialog {
 }
 
 /**
- * 「OK」のボタン配置
- * @type {number}
+ * メッセージボックスのボタン配置
+ * @typedef {Object} typePopupMessageButton
+ * @property {number} MB_OK 「OK」のボタン配置
+ * @property {number} MB_OKCANCEL 「OK」、「キャンセル」のボタン配置
+ * @property {number} MB_ABORTRETRYIGNORE 「中止」、「再試行」、「無視」のボタン配置
+ * @property {number} MB_YESNOCANCEL 「はい」、「いいえ」、「キャンセル」のボタン配置
+ * @property {number} MB_YESNO 「はい」、「いいえ」のボタン配置
+ * @property {number} MB_RETRYCANCEL 「再試行」、「キャンセル」のボタン配置
  */
-Dialog.MB_OK				=  0;
 
 /**
- * 「OK」、「キャンセル」のボタン配置
- * @type {number}
+ * メッセージボックスのアイコン
+ * @typedef {Object} typePopupMessageIcon
+ * @property {number} MB_ICONSTOP 中止「Stop」のアイコンのダイアログ
+ * @property {number} MB_ICONQUESTION 質問「?」のアイコンのダイアログ
+ * @property {number} MB_ICONWARNING 警告「!」のアイコンのダイアログ
+ * @property {number} MB_ICONINFORMATION 情報「i」のアイコンのダイアログ
  */
-Dialog.MB_OKCANCEL			=  1;
 
 /**
- * 「中止」、「再試行」、「無視」のボタン配置
- * @type {number}
+ * メッセージボックスのボタンのデフォルト
+ * @typedef {Object} typePopupMessageDefaultButton
+ * @property {number} MB_DEFBUTTON1 「ボタン1」を選択
+ * @property {number} MB_DEFBUTTON2 「ボタン2」を選択
+ * @property {number} MB_DEFBUTTON3 「ボタン3」を選択
+ * @property {number} MB_DEFBUTTON4 「ボタン4」を選択
  */
-Dialog.MB_ABORTRETRYIGNORE	=  2;
 
 /**
- * 「はい」、「いいえ」、「キャンセル」のボタン配置
- * @type {number}
+ * メッセージボックスのボタンのデフォルト
+ * @typedef {Object} typePopupMessageOption
+ * @property {typePopupMessageButton} BUTTON ボタン配置
+ * @property {typePopupMessageIcon} ICON アイコン
+ * @property {typePopupMessageDefaultButton} DEFAULT_BUTTON ボタンのデフォルト
  */
-Dialog.MB_YESNOCANCEL		=  3;
 
 /**
- * 「はい」、「いいえ」のボタン配置
- * @type {number}
+ * `Dialog.popupMessage` 引数用の定数
+ * @type {typePopupMessageOption}
  */
-Dialog.MB_YESNO				=  4;
+Dialog.POPUP_OPTION_TYPE = {
+	BUTTON : {
+		MB_OK				:  0,
+		MB_OKCANCEL			:  1,
+		MB_ABORTRETRYIGNORE	:  2,
+		MB_YESNOCANCEL		:  3,
+		MB_YESNO			:  4,
+		MB_RETRYCANCEL		:  5
+	},
+	ICON : {
+		MB_ICONSTOP			: 16,
+		MB_ICONQUESTION		: 32,
+		MB_ICONWARNING		: 48,
+		MB_ICONINFORMATION	: 64
+	},
+	DEFAULT_BUTTON : {
+		MB_DEFBUTTON1	: 0x0000,
+		MB_DEFBUTTON2	: 0x0100,
+		MB_DEFBUTTON3	: 0x0200,
+		MB_DEFBUTTON4	: 0x0300
+	}
+};
 
 /**
- * 「再試行」、「キャンセル」のボタン配置
- * @type {number}
+ * メッセージボックスの戻り値
+ * @typedef {Object} typePopupMessageReturn
+ * @property {number} IDTIMEOUT タイムアウトが発生
+ * @property {number} IDOK 「OK」を選択
+ * @property {number} IDCANCEL 「キャンセル」を選択
+ * @property {number} IDABORT 「中止」を選択
+ * @property {number} IDRETRY 「再試行」を選択
+ * @property {number} IDIGNORE 「無視」を選択
+ * @property {number} IDYES 「はい」を選択
+ * @property {number} IDNO 「いいえ」を選択
  */
-Dialog.MB_RETRYCANCEL		=  5;
 
 /**
- * 中止「Stop」のアイコンのダイアログ
- * @type {number}
+ * `Dialog.popupMessage` の戻り値用の定数
+ * @type {typePopupMessageReturn}
  */
-Dialog.MB_ICONSTOP			= 16;
+Dialog.POPUP_RETURN = {
+	IDTIMEOUT		: -1,
+	IDOK			: 1,
+	IDCANCEL		: 2,
+	IDABORT			: 3,
+	IDRETRY			: 4,
+	IDIGNORE		: 5,
+	IDYES			: 6,
+	IDNO			: 7
+};
 
-/**
- * 質問「?」のアイコンのダイアログ
- * @type {number}
- */
-Dialog.MB_ICONQUESTION		= 32;
-
-/**
- * 警告「!」のアイコンのダイアログ
- * @type {number}
- */
-Dialog.MB_ICONWARNING		= 48;
-
-/**
- * 情報「i」のアイコンのダイアログ
- * @type {number}
- */
-Dialog.MB_ICONINFORMATION	= 64;
-
-/**
- * 「ボタン1」を選択
- * @type {number}
- */
-Dialog.MB_DEFBUTTON1	= 0x0000;
-
-/**
- * 「ボタン2」を選択
- * @type {number}
- */
-Dialog.MB_DEFBUTTON2	= 0x0100;
-
-/**
- * 「ボタン3」を選択
- * @type {number}
- */
-Dialog.MB_DEFBUTTON3	= 0x0200;
-
-/**
- * 「ボタン4」を選択
- * @type {number}
- */
-Dialog.MB_DEFBUTTON4	= 0x0300;
-
-/**
- * タイムアウトが発生
- * @type {number}
- */
-Dialog.IDTIMEOUT		= -1;
-
-/**
- * 「OK」を選択
- * @type {number}
- */
-Dialog.IDOK				= 1;
-
-/**
- * 「キャンセル」を選択
- * @type {number}
- */
-Dialog.IDCANCEL			= 2;
-
-/**
- * 「中止」を選択
- * @type {number}
- */
-Dialog.IDABORT			= 3;
-
-/**
- * 「再試行」を選択
- * @type {number}
- */
-Dialog.IDRETRY			= 4;
-
-/**
- * 「無視」を選択
- * @type {number}
- */
-Dialog.IDIGNORE			= 5;
-
-/**
- * 「はい」を選択
- * @type {number}
- */
-Dialog.IDYES			= 6;
-
-/**
- * 「いいえ」を選択
- * @type {number}
- */
-Dialog.IDNO				= 7;

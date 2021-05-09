@@ -86,12 +86,4 @@ export default class ExtendsArray {
 		return array;
 	}
 
-	/**
-	 * @param {any[]} array
-	 * @returns {string}
-	 */
-	static toString(array) {
-		return array.join(", ");
-	}
-
 }

@@ -12,9 +12,6 @@
 		"StringComparator": false,
 		"Format": false,
 		"Robot": false,
-		"ExtendsArray": false,
-		"ExtendsObject": false,
-		"ExtendsString": false,
 		"System": false
 	},
 	"extends": "eslint:recommended",

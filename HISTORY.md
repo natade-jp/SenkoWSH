@@ -1,5 +1,18 @@
 # History
 
+## SenkoWSH v6.0.0b
+### 更新点
+- `SFile.prototype.searchFile`, `SFile.prototype.searchFiles` の英単語が誤っていたため削除しました
+- `SFile.findFile`, `SFile.findFiles` を追加しました。第一引数にフォルダを入力します
+- `Robot.getVK()` を `Robot.VK` へ変更
+- `System.exec` のエラー処理を強化
+- `System.run` のエラー処理を強化、引数用 `System.AppWinStype` 定数を追加、戻り値について`doc`コメントを記載
+- `Dialog.popupMessage` の一部の引数の定数を `Dialog.POPUP_OPTION_TYPE` 内へ移動
+- `Dialog.popupMessage` の戻り値を `Dialog.POPUP_RETURN` 内へ移動
+- `StringComparator.DEFAULT` と `StringComparator.NATURAL` の入力引数を `string` から `any` 型へ改善
+- `console.log` など文字列出力メソッドにて配列型、オブジェクト型を渡した場合、内部データを表示するように変更
+- `ExtendsObject` と `ExtendsArray` 内の `toString` が既に定義されており不要なので削除
+
 ## SenkoWSH v5.0.0
 ### 更新点
 - `SFile` 内のコメントのリファクタリング
