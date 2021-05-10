@@ -1,5 +1,9 @@
 # History
 
+## SenkoWSH v7.1.0
+### 更新点
+- `System.WindowsAPI` を `System.callWindowsAPI` のように一般的な名前を変更
+
 ## SenkoWSH v7.0.0
 ### 更新点
 - `System.BatchScript` を `System.execBatchScript` のように一般的な名前を変更

@@ -1604,7 +1604,7 @@ declare class System {
      * @param {string} exec_text - 実行コマンド
      * @returns {string}
      */
-    static WindowsAPI(dll_name: string, function_text: string, exec_text: string): string;
+    static callWindowsAPI(dll_name: string, function_text: string, exec_text: string): string;
     /**
      * クリップボードからテキストを取得する
      * @returns {string}

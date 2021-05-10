@@ -236,7 +236,7 @@ export default class System {
 	 * @param {number} time_sec - &#x9CF4;&#x3089;&#x3059;&#x79D2;&#x6570;
 	 */
 	static beep(frequency_hz, time_sec) {
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			&quot;kernel32.dll&quot;,
 			&quot;bool Beep(uint dwFreq, uint dwDuration)&quot;,
 			&quot;$api::Beep(&quot; + (frequency_hz | 0) + &quot;, &quot; + ((time_sec * 1000) | 0) + &quot;);&quot;
@@ -552,9 +552,9 @@ export default class System {
 	 * @param {string} exec_text - &#x5B9F;&#x884C;&#x30B3;&#x30DE;&#x30F3;&#x30C9;
 	 * @returns {string}
 	 */
-	static WindowsAPI(dll_name, function_text, exec_text) {
+	static callWindowsAPI(dll_name, function_text, exec_text) {
 		// &#x5229;&#x7528;&#x4F8B;
-		// System.WindowsAPI(
+		// System.callWindowsAPI(
 		// 	&quot;user32.dll&quot;,
 		// 	&quot;int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)&quot;,
 		// 	&quot;$api::MessageBox(0, \&quot;&#x30C6;&#x30AD;&#x30B9;&#x30C8;\&quot;, \&quot;&#x30AD;&#x30E3;&#x30D7;&#x30B7;&#x30E7;&#x30F3;\&quot;, 0);&quot;

@@ -1158,15 +1158,15 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/senko/system.js~system.windowsapi",
-    "class/src/senko/System.js~System.html#static-method-WindowsAPI",
-    "src/senko/System.js~System.WindowsAPI",
-    "method"
-  ],
-  [
     "src/senko/system.js~system.beep",
     "class/src/senko/System.js~System.html#static-method-beep",
     "src/senko/System.js~System.beep",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.callwindowsapi",
+    "class/src/senko/System.js~System.html#static-method-callWindowsAPI",
+    "src/senko/System.js~System.callWindowsAPI",
     "method"
   ],
   [

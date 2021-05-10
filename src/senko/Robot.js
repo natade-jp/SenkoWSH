@@ -336,7 +336,7 @@ export default class Robot {
 				$api::keybd_event(" + VK_DATA.VK_SHIFT.code + ", 0, " + KEYEVENTF_KEYUP + ", 0);
 			}
 		*/
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			"user32.dll",
 			"void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo)",
 			code
@@ -396,7 +396,7 @@ export default class Robot {
 				$api::mouse_event(" + released_code + ", 0, 0, 0, 0);
 			}
 		*/
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			"user32.dll",
 			"void mouse_event(long dwFlags, long dx, long dy, long cButtons, long dwExtraInfo)",
 			code
@@ -435,7 +435,7 @@ export default class Robot {
 			void SetCursorPos(int X, int Y)
 			$api::SetCursorPos(" + position.x + ", " + position.y + ");
 		*/
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			"user32.dll",
 			"void SetCursorPos(int X, int Y)",
 			"$api::SetCursorPos(" + position.x + ", " + position.y + ");"
@@ -469,7 +469,7 @@ export default class Robot {
 			IntPtr FindWindow(IntPtr lpClassName, string lpWindowName)
 			$api::FindWindow(*,*);
 		*/
-		return parseFloat(System.WindowsAPI( "user32.dll", function_text, command));
+		return parseFloat(System.callWindowsAPI( "user32.dll", function_text, command));
 	}
 
 	/**
@@ -495,7 +495,7 @@ export default class Robot {
 			$null = $api::GetClassName(" + handle + ", $buff, 256);
 			$($buff.ToString());
 		 */
-		return System.WindowsAPI(
+		return System.callWindowsAPI(
 			"user32.dll",
 			"IntPtr GetClassName(IntPtr hWnd, System.Text.StringBuilder text, int count)",
 			"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetClassName(" + handle + ", $buff, 256);$($buff.ToString());"
@@ -525,7 +525,7 @@ export default class Robot {
 			$null = $api::GetWindowText(" + handle + ", $buff, 256);
 			$($buff.ToString());
 		 */
-		return System.WindowsAPI(
+		return System.callWindowsAPI(
 			"user32.dll",
 			"IntPtr GetWindowText(IntPtr hWnd, System.Text.StringBuilder text, int count)",
 			"$buff = New-Object System.Text.StringBuilder 256;$null = $api::GetWindowText(" + handle + ", $buff, 256);$($buff.ToString());"
@@ -582,7 +582,7 @@ export default class Robot {
 			bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)
 			$api::MoveWindow(" + handle + " , " + (rect.x|0) + ", " + (rect.y|0) + ", " + (rect.width|0) + ", " + (rect.height|0) + ", 1 );
 		 */
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			"user32.dll",
 			"bool MoveWindow(IntPtr hWnd, int x, int y, int nWidth, int nHeight, int bRepaint)",
 			"$api::MoveWindow(" + handle + " , " + (rect.x|0) + ", " + (rect.y|0) + ", " + (rect.width|0) + ", " + (rect.height|0) + ", 1 );"
@@ -599,7 +599,7 @@ export default class Robot {
 			IntPtr GetForegroundWindow()
 			$api::GetForegroundWindow();
 		*/
-		return parseFloat(System.WindowsAPI(
+		return parseFloat(System.callWindowsAPI(
 			"user32.dll",
 			"IntPtr GetForegroundWindow()",
 			"$api::GetForegroundWindow();"
@@ -617,7 +617,7 @@ export default class Robot {
 			bool SetForegroundWindow(IntPtr hWnd)
 			$api::SetForegroundWindow(" + handle + ");
 		*/
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			"user32.dll",
 			"bool SetForegroundWindow(IntPtr hWnd)",
 			"$api::SetForegroundWindow(" + handle + ");"
@@ -637,7 +637,7 @@ export default class Robot {
 			$null = $api::GetWindowThreadProcessId(" + handle + ", [ref] $getpid);
 			$getpid;
 		 */
-		return parseFloat(System.WindowsAPI(
+		return parseFloat(System.callWindowsAPI(
 			"user32.dll",
 			"IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int ProcessId)",
 			"$getpid = 0;$null = $api::GetWindowThreadProcessId(" + handle + ", [ref] $getpid);$getpid;"

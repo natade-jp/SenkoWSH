@@ -169,7 +169,7 @@ export default class System {
 	 * @param {number} time_sec - 鳴らす秒数
 	 */
 	static beep(frequency_hz, time_sec) {
-		System.WindowsAPI(
+		System.callWindowsAPI(
 			"kernel32.dll",
 			"bool Beep(uint dwFreq, uint dwDuration)",
 			"$api::Beep(" + (frequency_hz | 0) + ", " + ((time_sec * 1000) | 0) + ");"
@@ -485,9 +485,9 @@ export default class System {
 	 * @param {string} exec_text - 実行コマンド
 	 * @returns {string}
 	 */
-	static WindowsAPI(dll_name, function_text, exec_text) {
+	static callWindowsAPI(dll_name, function_text, exec_text) {
 		// 利用例
-		// System.WindowsAPI(
+		// System.callWindowsAPI(
 		// 	"user32.dll",
 		// 	"int MessageBox(IntPtr hWnd, string lpText, string lpCaption, UInt32 uType)",
 		// 	"$api::MessageBox(0, \"テキスト\", \"キャプション\", 0);"
