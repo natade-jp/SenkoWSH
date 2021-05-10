@@ -900,12 +900,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/sfile.js~sfile#getbinaryfile",
-    "class/src/senko/SFile.js~SFile.html#instance-method-getBinaryFile",
-    "src/senko/SFile.js~SFile#getBinaryFile",
-    "method"
-  ],
-  [
     "src/senko/sfile.js~sfile#getextensionname",
     "class/src/senko/SFile.js~SFile.html#instance-method-getExtensionName",
     "src/senko/SFile.js~SFile#getExtensionName",
@@ -951,12 +945,6 @@ window.esdocSearchIndex = [
     "src/senko/sfile.js~sfile#getsubfolders",
     "class/src/senko/SFile.js~SFile.html#instance-method-getSubFolders",
     "src/senko/SFile.js~SFile#getSubFolders",
-    "method"
-  ],
-  [
-    "src/senko/sfile.js~sfile#gettextfile",
-    "class/src/senko/SFile.js~SFile.html#instance-method-getTextFile",
-    "src/senko/SFile.js~SFile#getTextFile",
     "method"
   ],
   [
@@ -1038,6 +1026,18 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/senko/sfile.js~sfile#readbinary",
+    "class/src/senko/SFile.js~SFile.html#instance-method-readBinary",
+    "src/senko/SFile.js~SFile#readBinary",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile#readstring",
+    "class/src/senko/SFile.js~SFile.html#instance-method-readString",
+    "src/senko/SFile.js~SFile#readString",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#remove",
     "class/src/senko/SFile.js~SFile.html#instance-method-remove",
     "src/senko/SFile.js~SFile#remove",
@@ -1053,12 +1053,6 @@ window.esdocSearchIndex = [
     "src/senko/sfile.js~sfile#run",
     "class/src/senko/SFile.js~SFile.html#instance-method-run",
     "src/senko/SFile.js~SFile#run",
-    "method"
-  ],
-  [
-    "src/senko/sfile.js~sfile#setbinaryfile",
-    "class/src/senko/SFile.js~SFile.html#instance-method-setBinaryFile",
-    "src/senko/SFile.js~SFile#setBinaryFile",
     "method"
   ],
   [
@@ -1080,21 +1074,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/senko/sfile.js~sfile#settextfile",
-    "class/src/senko/SFile.js~SFile.html#instance-method-setTextFile",
-    "src/senko/SFile.js~SFile#setTextFile",
-    "method"
-  ],
-  [
     "src/senko/sfile.js~sfile#tostring",
     "class/src/senko/SFile.js~SFile.html#instance-method-toString",
     "src/senko/SFile.js~SFile#toString",
     "method"
   ],
   [
+    "src/senko/sfile.js~sfile#writebinary",
+    "class/src/senko/SFile.js~SFile.html#instance-method-writeBinary",
+    "src/senko/SFile.js~SFile#writeBinary",
+    "method"
+  ],
+  [
     "src/senko/sfile.js~sfile#writeline",
     "class/src/senko/SFile.js~SFile.html#instance-method-writeLine",
     "src/senko/SFile.js~SFile#writeLine",
+    "method"
+  ],
+  [
+    "src/senko/sfile.js~sfile#writestring",
+    "class/src/senko/SFile.js~SFile.html#instance-method-writeString",
+    "src/senko/SFile.js~SFile#writeString",
     "method"
   ],
   [
@@ -1158,18 +1158,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/senko/system.js~system.batchscript",
-    "class/src/senko/System.js~System.html#static-method-BatchScript",
-    "src/senko/System.js~System.BatchScript",
-    "method"
-  ],
-  [
-    "src/senko/system.js~system.powershell",
-    "class/src/senko/System.js~System.html#static-method-PowerShell",
-    "src/senko/System.js~System.PowerShell",
-    "method"
-  ],
-  [
     "src/senko/system.js~system.windowsapi",
     "class/src/senko/System.js~System.html#static-method-WindowsAPI",
     "src/senko/System.js~System.WindowsAPI",
@@ -1215,6 +1203,18 @@ window.esdocSearchIndex = [
     "src/senko/system.js~system.exec",
     "class/src/senko/System.js~System.html#static-method-exec",
     "src/senko/System.js~System.exec",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.execbatchscript",
+    "class/src/senko/System.js~System.html#static-method-execBatchScript",
+    "src/senko/System.js~System.execBatchScript",
+    "method"
+  ],
+  [
+    "src/senko/system.js~system.execpowershell",
+    "class/src/senko/System.js~System.html#static-method-execPowerShell",
+    "src/senko/System.js~System.execPowerShell",
     "method"
   ],
   [

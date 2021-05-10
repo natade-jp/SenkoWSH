@@ -374,7 +374,7 @@ export default class System {
 	 * @param {string} [charset="shift_jis"] - 文字コード (`shift_jis`, `utf-8` など)
 	 * @returns {string|null} 実行結果
 	 */
-	static BatchScript(source, charset) {
+	static execBatchScript(source, charset) {
 		const icharset = charset !== undefined ? charset.toLowerCase().trim() : "shift_jis";
 		const is_ansi = /^(shift_jis|sjis|ascii|ansi)$/.test(icharset);
 		const is_utf8 = /^utf-8$/.test(icharset);
@@ -416,9 +416,9 @@ export default class System {
 		starter_scrpt.push("");
 		
 		// 途中から文字コードが変わることを想定するため BOM を付けない
-		temp_starter.setTextFile(starter_scrpt.join("\n"), icharset, "\r\n", false);
+		temp_starter.writeString(starter_scrpt.join("\n"), icharset, "\r\n", false);
 		// コードポイント変更後のため BOM を付ける
-		temp_script.setTextFile(soure_text, icharset, "\r\n", true);
+		temp_script.writeString(soure_text, icharset, "\r\n", true);
 
 		// UTF-16LE かどうかで実行時のコマンドが変わる
 		const cmd_base = "cmd /q /d /c";
@@ -432,7 +432,7 @@ export default class System {
 			return null;
 		}
 
-		const return_txt = output_txt.getTextFile(icharset);
+		const return_txt = output_txt.readString(icharset);
 		temp_folder.remove();
 		return return_txt.replace(/\r?\n$/, "");
 	}
@@ -444,7 +444,7 @@ export default class System {
 	 * @param {string} source
 	 * @returns {string} 実行結果
 	 */
-	static PowerShell(source) {
+	static execPowerShell(source) {
 		// 改行がない場合はコマンドモードで実行する
 		if(!/\n/.test(source)) {
 			// スレッドセーフモードでコマンドモードで実行する
@@ -459,7 +459,7 @@ export default class System {
 		}
 		else {
 			const file = new SFile(SFile.createTempFile().getAbsolutePath() + ".ps1");
-			file.setTextFile(source, "utf-16le", "\r\n");
+			file.writeString(source, "utf-16le", "\r\n");
 			// 本システムでスクリプトの実行が無効になっている可能性があるため一時的に実行ポリシーを変更して実行する
 			// ※変更しないと「ParentContainsErrorRecordException」が発生する場合がある
 			const powershell_base = "powershell -NoProfile -ExecutionPolicy Unrestricted";
@@ -506,7 +506,7 @@ export default class System {
 		// eslint-disable-next-line quotes
 		const api_base = `$api = Add-Type -Name "api" -MemberDefinition "[DllImport(""` + dll_name + `"")] public extern static ` + function_text + `;" -PassThru;`;
 		const command = api_base + " " + exec_text;
-		return System.PowerShell(command);
+		return System.execPowerShell(command);
 	}
 
 	/**
@@ -519,7 +519,7 @@ export default class System {
 			[System.Windows.Forms.Clipboard]::GetText();
 		*/
 		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();";
-		return System.PowerShell(command);
+		return System.execPowerShell(command);
 	}
 
 	/**
@@ -534,7 +534,7 @@ export default class System {
 		const command = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\"" + text + "\", 1);";
 		// PowerShell 5.0以降
 		// command = "Set-Clipboard \"これでもコピー可能\"";
-		System.PowerShell(command);
+		System.execPowerShell(command);
 	}
 
 	/**

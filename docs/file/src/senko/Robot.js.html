@@ -483,7 +483,7 @@ export default class Robot {
 		*/
 		// eslint-disable-next-line quotes
 		const command = &apos;[void] [System.Reflection.Assembly]::LoadWithPartialName(&quot;System.Windows.Forms&quot;);$X = [System.Windows.Forms.Cursor]::Position.X;$Y = [System.Windows.Forms.Cursor]::Position.Y;&quot;$X,$Y&quot;&apos;;
-		const text = System.PowerShell(command);
+		const text = System.execPowerShell(command);
 		const pos_data = text.split(&quot;,&quot;);
 		const x = parseFloat(pos_data[0]) | 0;
 		const y = parseFloat(pos_data[1]) | 0;
@@ -620,7 +620,7 @@ export default class Robot {
 		*/
 		// eslint-disable-next-line quotes
 		const command = `Add-Type -TypeDefinition &quot;using System; using System.Runtime.InteropServices; public struct RECT { public int Left; public int Top; public int Right; public int Bottom; } public class API { [DllImport(&quot;&quot;user32.dll&quot;&quot;)] public extern static bool GetWindowRect(IntPtr hWnd, out RECT lpRect); public static RECT getrect(IntPtr hwnd) { RECT rect = new RECT(); GetWindowRect(hwnd, out rect); return rect; } }&quot;;  $rect = [API]::getrect(` + handle + `); &quot;$($rect.Left),$($rect.Top),$($rect.Right),$($rect.Bottom)&quot;`;
-		const rect = System.PowerShell(command);
+		const rect = System.execPowerShell(command);
 		const rect_data = rect.split(&quot;,&quot;);
 		if(rect_data.length !== 4) {
 			return null;

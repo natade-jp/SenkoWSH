@@ -1,5 +1,12 @@
 # History
 
+## SenkoWSH v7.0.0
+### 更新点
+- `System.BatchScript` を `System.execBatchScript` のように一般的な名前を変更
+- `System.PowerShell` を `System.execPowerShell` のように一般的な名前を変更
+- `SFile` の `getTextFile`, `setTextFile` をそれぞれ `readString`, `writeString` のように一般的な名前へ変更
+- `SFile` の `getBinaryFile`, `setBinaryFile` をそれぞれ `readBinary`, `writeBinary` のように一般的な名前へ変更
+
 ## SenkoWSH v6.0.0
 ### 更新点
 - `SFile.prototype.searchFile`, `SFile.prototype.searchFiles` の英単語が誤っていたため削除しました

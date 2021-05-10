@@ -785,7 +785,7 @@ export default class SFile {
 	 * @param {string} [charset=&quot;_autodetect_all&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;
 	 * @returns {string}
 	 */
-	getTextFile(charset) {
+	readString(charset) {
 		const icharset = charset !== undefined ? charset : &quot;_autodetect_all&quot;;
 		const inewline = &quot;\n&quot;; //javascript&#x4E0A;&#x3067;&#x306E;&#x6539;&#x884C;
 		let text = null;
@@ -923,7 +923,7 @@ export default class SFile {
 	 * @param {boolean} [issetBOM=true] - BOM&#x306E;&#x6709;&#x7121;(`utf-8`&#x306E;&#x307F;&#x6709;&#x52B9; )
 	 * @returns {boolean}
 	 */
-	setTextFile(text, charset, newline, issetBOM) {
+	writeString(text, charset, newline, issetBOM) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
@@ -999,7 +999,7 @@ export default class SFile {
 	 * @param {number} [size] - &#x30B5;&#x30A4;&#x30BA;&#xFF08;&#x203B; &#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x901F;&#x5EA6;&#x304C;&#x4F4E;&#x4E0B;&#x3059;&#x308B;&#xFF09;
 	 * @returns {number[]|null}
 	 */
-	getBinaryFile(offset, size) {
+	readBinary(offset, size) {
 		if(/^htt/.test(this.pathname)) {
 			const http = System.createXMLHttpRequest();
 			if(http === null) {
@@ -1133,7 +1133,7 @@ export default class SFile {
 	 * @param {number} [offset] - &#x4F4D;&#x7F6E;&#xFF08;&#x203B; &#x6307;&#x5B9A;&#x3059;&#x308B;&#x3068;&#x901F;&#x5EA6;&#x304C;&#x4F4E;&#x4E0B;&#x3059;&#x308B;&#xFF09;
 	 * @returns {boolean}
 	 */
-	setBinaryFile(array_, offset) {
+	writeBinary(array_, offset) {
 		if(this.is_http) {
 			throw &quot;IllegalMethod&quot;;
 		}
@@ -1525,7 +1525,7 @@ export default class SFile {
 				const shell = new ActiveXObject(&quot;Shell.Application&quot;);
 				const fso = new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);
 				// ZIP&#x30D5;&#x30A1;&#x30A4;&#x30EB;&#x3092;&#x4F5C;&#x6210;
-				compress_file.setBinaryFile([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				compress_file.writeBinary([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
 				const zip = shell.NameSpace(compress_file.getAbsolutePath());
 				// 1&#x3064;&#x305A;&#x3064;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x5165;&#x308C;&#x3066;&#x3044;&#x304F;
 				for(let i = 0; i &lt; file_list.length; i++) {

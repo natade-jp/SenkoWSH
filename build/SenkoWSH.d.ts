@@ -1313,7 +1313,7 @@ declare class SFile {
      * @param {string} [charset="_autodetect_all"] - 文字コード
      * @returns {string}
      */
-    getTextFile(charset?: string): string;
+    readString(charset?: string): string;
     /**
      * テキストファイルを保存
      * - 保存できなかった場合は `false` を返す
@@ -1325,7 +1325,7 @@ declare class SFile {
      * @param {boolean} [issetBOM=true] - BOMの有無(`utf-8`のみ有効 )
      * @returns {boolean}
      */
-    setTextFile(text: string, charset?: string, newline?: string, issetBOM?: boolean): boolean;
+    writeString(text: string, charset?: string, newline?: string, issetBOM?: boolean): boolean;
     /**
      * ローカル、インターネット上のファイルをバイナリとして開く
      * - 開けない場合は `null` を返す
@@ -1336,7 +1336,7 @@ declare class SFile {
      * @param {number} [size] - サイズ（※ 指定すると速度が低下する）
      * @returns {number[]|null}
      */
-    getBinaryFile(offset?: number, size?: number): number[] | null;
+    readBinary(offset?: number, size?: number): number[] | null;
     /**
      * バイナリファイルを保存
      * - 保存できなかった場合は `false` を返す
@@ -1346,7 +1346,7 @@ declare class SFile {
      * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
      * @returns {boolean}
      */
-    setBinaryFile(array_: number[], offset?: number): boolean;
+    writeBinary(array_: number[], offset?: number): boolean;
     /**
      * ファイルのハッシュ値を計算する
      * @param {string} [algorithm="MD5"] - アルゴリズム
@@ -1583,7 +1583,7 @@ declare class System {
      * @param {string} [charset="shift_jis"] - 文字コード (`shift_jis`, `utf-8` など)
      * @returns {string|null} 実行結果
      */
-    static BatchScript(source: string, charset?: string): string | null;
+    static execBatchScript(source: string, charset?: string): string | null;
     /**
      * PowerShell を実行する
      * - 実行結果の最終行が空白の場合は除去されます
@@ -1591,7 +1591,7 @@ declare class System {
      * @param {string} source
      * @returns {string} 実行結果
      */
-    static PowerShell(source: string): string;
+    static execPowerShell(source: string): string;
     /**
      * WindowsAPI を実行する
      *

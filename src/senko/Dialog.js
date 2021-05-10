@@ -85,7 +85,7 @@ export default class Dialog {
 				$dialog.FileName;
 			}
 		*/
-		const select_text = System.PowerShell(command).trim();
+		const select_text = System.execPowerShell(command).trim();
 		if(select_text !== "") {
 			return new SFile(select_text);
 		}
@@ -142,7 +142,7 @@ export default class Dialog {
 				$dialog.FileName;
 			}
 		*/
-		const select_text = System.PowerShell(command).trim();
+		const select_text = System.execPowerShell(command).trim();
 		if(select_text !== "") {
 			return new SFile(select_text);
 		}

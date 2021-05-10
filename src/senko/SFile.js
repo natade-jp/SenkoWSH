@@ -718,7 +718,7 @@ export default class SFile {
 	 * @param {string} [charset="_autodetect_all"] - 文字コード
 	 * @returns {string}
 	 */
-	getTextFile(charset) {
+	readString(charset) {
 		const icharset = charset !== undefined ? charset : "_autodetect_all";
 		const inewline = "\n"; //javascript上での改行
 		let text = null;
@@ -856,7 +856,7 @@ export default class SFile {
 	 * @param {boolean} [issetBOM=true] - BOMの有無(`utf-8`のみ有効 )
 	 * @returns {boolean}
 	 */
-	setTextFile(text, charset, newline, issetBOM) {
+	writeString(text, charset, newline, issetBOM) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
@@ -932,7 +932,7 @@ export default class SFile {
 	 * @param {number} [size] - サイズ（※ 指定すると速度が低下する）
 	 * @returns {number[]|null}
 	 */
-	getBinaryFile(offset, size) {
+	readBinary(offset, size) {
 		if(/^htt/.test(this.pathname)) {
 			const http = System.createXMLHttpRequest();
 			if(http === null) {
@@ -1066,7 +1066,7 @@ export default class SFile {
 	 * @param {number} [offset] - 位置（※ 指定すると速度が低下する）
 	 * @returns {boolean}
 	 */
-	setBinaryFile(array_, offset) {
+	writeBinary(array_, offset) {
 		if(this.is_http) {
 			throw "IllegalMethod";
 		}
@@ -1458,7 +1458,7 @@ export default class SFile {
 				const shell = new ActiveXObject("Shell.Application");
 				const fso = new ActiveXObject("Scripting.FileSystemObject");
 				// ZIPファイルを作成
-				compress_file.setBinaryFile([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
+				compress_file.writeBinary([0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
 				const zip = shell.NameSpace(compress_file.getAbsolutePath());
 				// 1つずつデータを入れていく
 				for(let i = 0; i < file_list.length; i++) {

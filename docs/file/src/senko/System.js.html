@@ -441,7 +441,7 @@ export default class System {
 	 * @param {string} [charset=&quot;shift_jis&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9; (`shift_jis`, `utf-8` &#x306A;&#x3069;)
 	 * @returns {string|null} &#x5B9F;&#x884C;&#x7D50;&#x679C;
 	 */
-	static BatchScript(source, charset) {
+	static execBatchScript(source, charset) {
 		const icharset = charset !== undefined ? charset.toLowerCase().trim() : &quot;shift_jis&quot;;
 		const is_ansi = /^(shift_jis|sjis|ascii|ansi)$/.test(icharset);
 		const is_utf8 = /^utf-8$/.test(icharset);
@@ -483,9 +483,9 @@ export default class System {
 		starter_scrpt.push(&quot;&quot;);
 		
 		// &#x9014;&#x4E2D;&#x304B;&#x3089;&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x5909;&#x308F;&#x308B;&#x3053;&#x3068;&#x3092;&#x60F3;&#x5B9A;&#x3059;&#x308B;&#x305F;&#x3081; BOM &#x3092;&#x4ED8;&#x3051;&#x306A;&#x3044;
-		temp_starter.setTextFile(starter_scrpt.join(&quot;\n&quot;), icharset, &quot;\r\n&quot;, false);
+		temp_starter.writeString(starter_scrpt.join(&quot;\n&quot;), icharset, &quot;\r\n&quot;, false);
 		// &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x5909;&#x66F4;&#x5F8C;&#x306E;&#x305F;&#x3081; BOM &#x3092;&#x4ED8;&#x3051;&#x308B;
-		temp_script.setTextFile(soure_text, icharset, &quot;\r\n&quot;, true);
+		temp_script.writeString(soure_text, icharset, &quot;\r\n&quot;, true);
 
 		// UTF-16LE &#x304B;&#x3069;&#x3046;&#x304B;&#x3067;&#x5B9F;&#x884C;&#x6642;&#x306E;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x304C;&#x5909;&#x308F;&#x308B;
 		const cmd_base = &quot;cmd /q /d /c&quot;;
@@ -499,7 +499,7 @@ export default class System {
 			return null;
 		}
 
-		const return_txt = output_txt.getTextFile(icharset);
+		const return_txt = output_txt.readString(icharset);
 		temp_folder.remove();
 		return return_txt.replace(/\r?\n$/, &quot;&quot;);
 	}
@@ -511,7 +511,7 @@ export default class System {
 	 * @param {string} source
 	 * @returns {string} &#x5B9F;&#x884C;&#x7D50;&#x679C;
 	 */
-	static PowerShell(source) {
+	static execPowerShell(source) {
 		// &#x6539;&#x884C;&#x304C;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
 		if(!/\n/.test(source)) {
 			// &#x30B9;&#x30EC;&#x30C3;&#x30C9;&#x30BB;&#x30FC;&#x30D5;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x30B3;&#x30DE;&#x30F3;&#x30C9;&#x30E2;&#x30FC;&#x30C9;&#x3067;&#x5B9F;&#x884C;&#x3059;&#x308B;
@@ -526,7 +526,7 @@ export default class System {
 		}
 		else {
 			const file = new SFile(SFile.createTempFile().getAbsolutePath() + &quot;.ps1&quot;);
-			file.setTextFile(source, &quot;utf-16le&quot;, &quot;\r\n&quot;);
+			file.writeString(source, &quot;utf-16le&quot;, &quot;\r\n&quot;);
 			// &#x672C;&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x3067;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x306E;&#x5B9F;&#x884C;&#x304C;&#x7121;&#x52B9;&#x306B;&#x306A;&#x3063;&#x3066;&#x3044;&#x308B;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x3042;&#x308B;&#x305F;&#x3081;&#x4E00;&#x6642;&#x7684;&#x306B;&#x5B9F;&#x884C;&#x30DD;&#x30EA;&#x30B7;&#x30FC;&#x3092;&#x5909;&#x66F4;&#x3057;&#x3066;&#x5B9F;&#x884C;&#x3059;&#x308B;
 			// &#x203B;&#x5909;&#x66F4;&#x3057;&#x306A;&#x3044;&#x3068;&#x300C;ParentContainsErrorRecordException&#x300D;&#x304C;&#x767A;&#x751F;&#x3059;&#x308B;&#x5834;&#x5408;&#x304C;&#x3042;&#x308B;
 			const powershell_base = &quot;powershell -NoProfile -ExecutionPolicy Unrestricted&quot;;
@@ -573,7 +573,7 @@ export default class System {
 		// eslint-disable-next-line quotes
 		const api_base = `$api = Add-Type -Name &quot;api&quot; -MemberDefinition &quot;[DllImport(&quot;&quot;` + dll_name + `&quot;&quot;)] public extern static ` + function_text + `;&quot; -PassThru;`;
 		const command = api_base + &quot; &quot; + exec_text;
-		return System.PowerShell(command);
+		return System.execPowerShell(command);
 	}
 
 	/**
@@ -586,7 +586,7 @@ export default class System {
 			[System.Windows.Forms.Clipboard]::GetText();
 		*/
 		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::GetText();&quot;;
-		return System.PowerShell(command);
+		return System.execPowerShell(command);
 	}
 
 	/**
@@ -601,7 +601,7 @@ export default class System {
 		const command = &quot;Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Clipboard]::SetText(\&quot;&quot; + text + &quot;\&quot;, 1);&quot;;
 		// PowerShell 5.0&#x4EE5;&#x964D;
 		// command = &quot;Set-Clipboard \&quot;&#x3053;&#x308C;&#x3067;&#x3082;&#x30B3;&#x30D4;&#x30FC;&#x53EF;&#x80FD;\&quot;&quot;;
-		System.PowerShell(command);
+		System.execPowerShell(command);
 	}
 
 	/**
