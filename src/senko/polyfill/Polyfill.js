@@ -112,7 +112,7 @@ export default class Polyfill {
 		if(!Number.isInteger) {
 			Number.isInteger = function(x) {
 				// @ts-ignore
-				return isFinite(x) && ((x | 0) === x);
+				return isFinite(x) && Math.trunc(x) === x;
 			};
 		}
 		if(!Number.isNaN) {
@@ -143,6 +143,13 @@ export default class Polyfill {
 		}
 		if(!Number.parseInt) {
 			Number.parseInt = parseInt;
+		}
+		if(!Number.isSafeInteger) {
+			// @ts-ignore
+			Number.isSafeInteger = function(x) {
+				// @ts-ignore
+				return Number.isInteger(x) && Math.abs(x) <= Number.MAX_SAFE_INTEGER;
+			};
 		}
 		if(!Array.isArray) {
 			// @ts-ignore

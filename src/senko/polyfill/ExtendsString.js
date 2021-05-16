@@ -33,7 +33,7 @@ export default class ExtendsString {
 	 * @returns {string}
 	 */
 	static trim(text) {
-		return text.replace(/^\s+|\s+$/g, "");
+		return text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
 	}
 
 	/**

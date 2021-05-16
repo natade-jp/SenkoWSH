@@ -100,7 +100,7 @@ export default class ExtendsString {
 	 * @returns {string}
 	 */
 	static trim(text) {
-		return text.replace(/^\s+|\s+$/g, &quot;&quot;);
+		return text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, &quot;&quot;);
 	}
 
 	/**

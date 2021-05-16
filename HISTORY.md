@@ -1,5 +1,12 @@
 # History
 
+## SenkoWSH v7.2.0
+### 更新点
+- ビルド日で`getDate()`で取得する必要があったのを`getDay()`を使用してしまっていたのを修正
+- `String.prototype.trim` を `MDN Web Docs` で決められている仕様へ変更
+- `Number.isInteger` で巨大な整数を判断できない場合があったのを修正
+- `Number.isSafeInteger` を追加
+
 ## SenkoWSH v7.1.0
 ### 更新点
 - `System.WindowsAPI` を `System.callWindowsAPI` のように一般的な名前を変更

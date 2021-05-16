@@ -179,7 +179,7 @@ export default class Polyfill {
 		if(!Number.isInteger) {
 			Number.isInteger = function(x) {
 				// @ts-ignore
-				return isFinite(x) &amp;&amp; ((x | 0) === x);
+				return isFinite(x) &amp;&amp; Math.trunc(x) === x;
 			};
 		}
 		if(!Number.isNaN) {
@@ -210,6 +210,13 @@ export default class Polyfill {
 		}
 		if(!Number.parseInt) {
 			Number.parseInt = parseInt;
+		}
+		if(!Number.isSafeInteger) {
+			// @ts-ignore
+			Number.isSafeInteger = function(x) {
+				// @ts-ignore
+				return Number.isInteger(x) &amp;&amp; Math.abs(x) &lt;= Number.MAX_SAFE_INTEGER;
+			};
 		}
 		if(!Array.isArray) {
 			// @ts-ignore
