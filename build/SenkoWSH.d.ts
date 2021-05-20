@@ -1651,12 +1651,23 @@ declare class System {
      * データの型を小文字の英字で返す
      * - 配列 : `array`
      * - 正規表現 : `regexp`
-     * - 例外エラー : `error` など
+     * - 例外エラー : `error`
+     * - 関数 : `function`
+     * - クラス : `object` など
      *
      * @param {any} x
      * @returns {string}
      */
     static typeOf(x: any): string;
+    /**
+     * 指定した値が `NativeCode` かを判定します
+     * - JavaScript エンジンが用意している関数など : `true`
+     * - その他 : `false`
+     *
+     * @param {any} x
+     * @returns {boolean}
+     */
+    static isNativeCode(x: any): boolean;
     /**
      * `System.run` の起動オプション用のコード一覧
      * @type {typeAppWinStyle}

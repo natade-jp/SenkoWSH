@@ -117,17 +117,7 @@ const toString = function(data) {
 		return JSON.stringify(data);
 	}
 	else if(type === &quot;object&quot;) {
-		// Object.prototype &#x3068;&#x5185;&#x5BB9;&#x304C;&#x4E00;&#x81F4;&#x3057;&#x3066;&#x3044;&#x308B;&#x304B;&#x3092;&#x78BA;&#x8A8D;
-		// &#x4E00;&#x81F4;&#x3057;&#x3066;&#x3044;&#x305F;&#x3089; JSON.stringify &#x3067;&#x5C55;&#x958B;&#x3059;&#x308B;
-		const object_prototype = Object.prototype;
-		let is_object = true;
-		for(const key in data) {
-			if(!(key in object_prototype)) {
-				is_object = false;
-				break;
-			}
-		}
-		if(is_object) {
+		if(data.toString &amp;&amp; System.isNativeCode(data.toString)) {
 			return JSON.stringify(data);
 		}
 	}
@@ -747,7 +737,9 @@ export default class System {
 	 * &#x30C7;&#x30FC;&#x30BF;&#x306E;&#x578B;&#x3092;&#x5C0F;&#x6587;&#x5B57;&#x306E;&#x82F1;&#x5B57;&#x3067;&#x8FD4;&#x3059;
 	 * - &#x914D;&#x5217; : `array`
 	 * - &#x6B63;&#x898F;&#x8868;&#x73FE; : `regexp`
-	 * - &#x4F8B;&#x5916;&#x30A8;&#x30E9;&#x30FC; : `error` &#x306A;&#x3069;
+	 * - &#x4F8B;&#x5916;&#x30A8;&#x30E9;&#x30FC; : `error`
+	 * - &#x95A2;&#x6570; : `function`
+	 * - &#x30AF;&#x30E9;&#x30B9; : `object` &#x306A;&#x3069;
 	 * 
 	 * @param {any} x
 	 * @returns {string}
@@ -755,6 +747,23 @@ export default class System {
 	static typeOf(x) {
 		return Object.prototype.toString.call(x).slice(8, -1).toLowerCase();
 	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x5024;&#x304C; `NativeCode` &#x304B;&#x3092;&#x5224;&#x5B9A;&#x3057;&#x307E;&#x3059;
+	 * - JavaScript &#x30A8;&#x30F3;&#x30B8;&#x30F3;&#x304C;&#x7528;&#x610F;&#x3057;&#x3066;&#x3044;&#x308B;&#x95A2;&#x6570;&#x306A;&#x3069; : `true`
+	 * - &#x305D;&#x306E;&#x4ED6; : `false`
+	 * 
+	 * @param {any} x
+	 * @returns {boolean}
+	 */
+	static isNativeCode(x) {
+		// &#x4EE5;&#x4E0B;&#x306E;&#x3088;&#x3046;&#x306A;&#x5F62;&#x5F0F;&#x5316;&#x3092;&#x8ABF;&#x3079;&#x308B;
+		// function xxxxx() {
+    	//		[native code]
+		// }
+		return /^[^{]+{\s*\[native code\]\s*}\s*$/.test(x.toString());
+	}
+
 
 }
 

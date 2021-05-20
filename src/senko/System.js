@@ -50,17 +50,7 @@ const toString = function(data) {
 		return JSON.stringify(data);
 	}
 	else if(type === "object") {
-		// Object.prototype と内容が一致しているかを確認
-		// 一致していたら JSON.stringify で展開する
-		const object_prototype = Object.prototype;
-		let is_object = true;
-		for(const key in data) {
-			if(!(key in object_prototype)) {
-				is_object = false;
-				break;
-			}
-		}
-		if(is_object) {
+		if(data.toString && System.isNativeCode(data.toString)) {
 			return JSON.stringify(data);
 		}
 	}
@@ -680,7 +670,9 @@ export default class System {
 	 * データの型を小文字の英字で返す
 	 * - 配列 : `array`
 	 * - 正規表現 : `regexp`
-	 * - 例外エラー : `error` など
+	 * - 例外エラー : `error`
+	 * - 関数 : `function`
+	 * - クラス : `object` など
 	 * 
 	 * @param {any} x
 	 * @returns {string}
@@ -688,6 +680,23 @@ export default class System {
 	static typeOf(x) {
 		return Object.prototype.toString.call(x).slice(8, -1).toLowerCase();
 	}
+
+	/**
+	 * 指定した値が `NativeCode` かを判定します
+	 * - JavaScript エンジンが用意している関数など : `true`
+	 * - その他 : `false`
+	 * 
+	 * @param {any} x
+	 * @returns {boolean}
+	 */
+	static isNativeCode(x) {
+		// 以下のような形式化を調べる
+		// function xxxxx() {
+    	//		[native code]
+		// }
+		return /^[^{]+{\s*\[native code\]\s*}\s*$/.test(x.toString());
+	}
+
 
 }
 

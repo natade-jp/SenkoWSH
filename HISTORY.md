@@ -1,5 +1,10 @@
 # History
 
+## SenkoWSH v7.3.0
+### 更新点
+- `console.log` にオブジェクトを入れた場合は、展開して表示するように変更
+- システムコードか判定できる `System.isNativeCode` を追加
+
 ## SenkoWSH v7.2.0
 ### 更新点
 - ビルド日で`getDate()`で取得する必要があったのを`getDay()`を使用してしまっていたのを修正

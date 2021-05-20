@@ -1278,6 +1278,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/senko/system.js~system.isnativecode",
+    "class/src/senko/System.js~System.html#static-method-isNativeCode",
+    "src/senko/System.js~System.isNativeCode",
+    "method"
+  ],
+  [
     "src/senko/system.js~system.print",
     "class/src/senko/System.js~System.html#static-method-print",
     "src/senko/System.js~System.print",
