@@ -672,12 +672,22 @@ export default class System {
 	 * - 正規表現 : `regexp`
 	 * - 例外エラー : `error`
 	 * - 関数 : `function`
-	 * - クラス : `object` など
+	 * - クラス : `object`
+	 * - undefined : `undefined`
+	 * - null : `null` など
 	 * 
 	 * @param {any} x
 	 * @returns {string}
 	 */
 	static typeOf(x) {
+		// null, undefined は ES3 だと [object Object] になり、
+		// "[object Null]", "[object Undefined]" とならないため、個別に確認する
+		if(x === null) {
+			return "null";
+		}
+		if(x === undefined) {
+			return "undefined";
+		}
 		return Object.prototype.toString.call(x).slice(8, -1).toLowerCase();
 	}
 

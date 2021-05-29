@@ -1653,7 +1653,9 @@ declare class System {
      * - 正規表現 : `regexp`
      * - 例外エラー : `error`
      * - 関数 : `function`
-     * - クラス : `object` など
+     * - クラス : `object`
+     * - undefined : `undefined`
+     * - null : `null` など
      *
      * @param {any} x
      * @returns {string}

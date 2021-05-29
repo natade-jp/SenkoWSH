@@ -1,5 +1,11 @@
 # History
 
+## SenkoWSH v7.4.0
+### 更新点
+- `JSON.stringify` で `undefind` と `null` がES3の仕様で `Object` 判定になってしまっていたのを修正
+- `Polyfill` で `Math` 系の定義を追加
+- `Polyfill` で `Array.prototype.splice` の仕様を一般的な仕様へ変更
+
 ## SenkoWSH v7.3.0
 ### 更新点
 - `console.log` にオブジェクトを入れた場合は、展開して表示するように変更

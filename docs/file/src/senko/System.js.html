@@ -739,12 +739,22 @@ export default class System {
 	 * - &#x6B63;&#x898F;&#x8868;&#x73FE; : `regexp`
 	 * - &#x4F8B;&#x5916;&#x30A8;&#x30E9;&#x30FC; : `error`
 	 * - &#x95A2;&#x6570; : `function`
-	 * - &#x30AF;&#x30E9;&#x30B9; : `object` &#x306A;&#x3069;
+	 * - &#x30AF;&#x30E9;&#x30B9; : `object`
+	 * - undefined : `undefined`
+	 * - null : `null` &#x306A;&#x3069;
 	 * 
 	 * @param {any} x
 	 * @returns {string}
 	 */
 	static typeOf(x) {
+		// null, undefined &#x306F; ES3 &#x3060;&#x3068; [object Object] &#x306B;&#x306A;&#x308A;&#x3001;
+		// &quot;[object Null]&quot;, &quot;[object Undefined]&quot; &#x3068;&#x306A;&#x3089;&#x306A;&#x3044;&#x305F;&#x3081;&#x3001;&#x500B;&#x5225;&#x306B;&#x78BA;&#x8A8D;&#x3059;&#x308B;
+		if(x === null) {
+			return &quot;null&quot;;
+		}
+		if(x === undefined) {
+			return &quot;undefined&quot;;
+		}
 		return Object.prototype.toString.call(x).slice(8, -1).toLowerCase();
 	}
 
