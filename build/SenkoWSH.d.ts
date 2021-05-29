@@ -1443,9 +1443,9 @@ declare class SFile {
 /**
  * 実行結果
  * @typedef {Object} SystemExecResult
- * @property {string} out
- * @property {string} error
- * @property {number} exit_code
+ * @property {string} out 実行結果のテキスト
+ * @property {string} error エラー発生時のテキスト
+ * @property {number} exit_code 終了コード
  */
 declare type SystemExecResult = {
     out: string;
@@ -1581,9 +1581,9 @@ declare class System {
      *
      * @param {string} source
      * @param {string} [charset="shift_jis"] - 文字コード (`shift_jis`, `utf-8` など)
-     * @returns {string|null} 実行結果
+     * @returns {SystemExecResult|null} 実行結果
      */
-    static execBatchScript(source: string, charset?: string): string | null;
+    static execBatchScript(source: string, charset?: string): SystemExecResult | null;
     /**
      * PowerShell を実行する
      * - 実行結果の最終行が空白の場合は除去されます

@@ -96,6 +96,7 @@ const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
  * - &#x914D;&#x5217;&#x3084;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;&#x306E;&#x5834;&#x5408;&#x306F;&#x3001;&#x4E2D;&#x8EAB;&#x3082;&#x5C55;&#x958B;&#x3059;&#x308B;
  * 
  * @param {any} data 
+ * @returns {string}
  * @private
  */
 const toString = function(data) {
@@ -121,15 +122,22 @@ const toString = function(data) {
 			return JSON.stringify(data);
 		}
 	}
-	return data.toString();
+	let output_string;
+	try {
+		output_string = data.toString();
+	}
+	catch(e) {
+		output_string = toString(e);
+	}
+	return output_string;
 };
 
 /**
  * &#x5B9F;&#x884C;&#x7D50;&#x679C;
  * @typedef {Object} SystemExecResult
- * @property {string} out
- * @property {string} error
- * @property {number} exit_code
+ * @property {string} out &#x5B9F;&#x884C;&#x7D50;&#x679C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+ * @property {string} error &#x30A8;&#x30E9;&#x30FC;&#x767A;&#x751F;&#x6642;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+ * @property {number} exit_code &#x7D42;&#x4E86;&#x30B3;&#x30FC;&#x30C9;
  */
 
 /**
@@ -429,7 +437,7 @@ export default class System {
 	 * 
 	 * @param {string} source
 	 * @param {string} [charset=&quot;shift_jis&quot;] - &#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9; (`shift_jis`, `utf-8` &#x306A;&#x3069;)
-	 * @returns {string|null} &#x5B9F;&#x884C;&#x7D50;&#x679C;
+	 * @returns {SystemExecResult|null} &#x5B9F;&#x884C;&#x7D50;&#x679C;
 	 */
 	static execBatchScript(source, charset) {
 		const icharset = charset !== undefined ? charset.toLowerCase().trim() : &quot;shift_jis&quot;;
@@ -483,15 +491,15 @@ export default class System {
 
 		// &#x5B9F;&#x884C;
 		const ret = System.run(command, System.AppWinStype.Hide, true);
-		if(ret) {
-			console.log(&quot;System.run &quot; + command);
-			temp_folder.remove();
-			return null;
-		}
-
-		const return_txt = output_txt.readString(icharset);
+		const text = output_txt.isFile() ? (output_txt.readString(icharset).replace(/\r?\n$/, &quot;&quot;)) : &quot;&quot;;
 		temp_folder.remove();
-		return return_txt.replace(/\r?\n$/, &quot;&quot;);
+
+		// &#x30A8;&#x30E9;&#x30FC;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;error &#x306E;&#x65B9;&#x306B;&#x51FA;&#x529B;&#x7D50;&#x679C;&#x3092;&#x5165;&#x308C;&#x308B;
+		return {
+			out : text,
+			error : ret ? text : &quot;&quot;,
+			exit_code : ret
+		}
 	}
 
 	/**

@@ -1,5 +1,10 @@
 # History
 
+## SenkoWSH v7.5.0
+### 更新点
+- `System.execBatchScript` の実行結果を単純な文字列から、より詳細なデータ `SystemExecResult` で返すように変更
+- `console.log` の内部で `toString()` でエラーが発生した場合は、エラー内容を出力するように変更
+
 ## SenkoWSH v7.4.0
 ### 更新点
 - `JSON.stringify` で `undefind` と `null` がES3の仕様で `Object` 判定になってしまっていたのを修正

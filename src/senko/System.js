@@ -29,6 +29,7 @@ const is_cscript = /cscript\.exe$/i.test(WSH.FullName);
  * - 配列やオブジェクトの場合は、中身も展開する
  * 
  * @param {any} data 
+ * @returns {string}
  * @private
  */
 const toString = function(data) {
@@ -54,15 +55,22 @@ const toString = function(data) {
 			return JSON.stringify(data);
 		}
 	}
-	return data.toString();
+	let output_string;
+	try {
+		output_string = data.toString();
+	}
+	catch(e) {
+		output_string = toString(e);
+	}
+	return output_string;
 };
 
 /**
  * 実行結果
  * @typedef {Object} SystemExecResult
- * @property {string} out
- * @property {string} error
- * @property {number} exit_code
+ * @property {string} out 実行結果のテキスト
+ * @property {string} error エラー発生時のテキスト
+ * @property {number} exit_code 終了コード
  */
 
 /**
@@ -362,7 +370,7 @@ export default class System {
 	 * 
 	 * @param {string} source
 	 * @param {string} [charset="shift_jis"] - 文字コード (`shift_jis`, `utf-8` など)
-	 * @returns {string|null} 実行結果
+	 * @returns {SystemExecResult|null} 実行結果
 	 */
 	static execBatchScript(source, charset) {
 		const icharset = charset !== undefined ? charset.toLowerCase().trim() : "shift_jis";
@@ -416,15 +424,15 @@ export default class System {
 
 		// 実行
 		const ret = System.run(command, System.AppWinStype.Hide, true);
-		if(ret) {
-			console.log("System.run " + command);
-			temp_folder.remove();
-			return null;
-		}
-
-		const return_txt = output_txt.readString(icharset);
+		const text = output_txt.isFile() ? (output_txt.readString(icharset).replace(/\r?\n$/, "")) : "";
 		temp_folder.remove();
-		return return_txt.replace(/\r?\n$/, "");
+
+		// エラーコードがある場合は、error の方に出力結果を入れる
+		return {
+			out : text,
+			error : ret ? text : "",
+			exit_code : ret
+		}
 	}
 
 	/**
