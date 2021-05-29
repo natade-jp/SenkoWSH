@@ -468,7 +468,8 @@ export default class System {
 		// UTF-8 &#x3084; Shift_JIS &#x306F;&#x76F4;&#x63A5;&#x5B9F;&#x884C;&#x3067;&#x304D;&#x306A;&#x3044;&#x306E;&#x3067; chcp &#x7528;&#x306E;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;&#x3092;&#x631F;&#x307E;&#x305B;&#x308B;
 		const temp_starter = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;start.bat&quot;);
 		const temp_script  = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;script.bat&quot;);
-		const output_txt  = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;output.txt&quot;);
+		const output_std_txt  = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;output_std.txt&quot;);
+		const output_err_txt  = new SFile(temp_folder.getAbsolutePath() + &quot;//&quot; + &quot;output_err.txt&quot;);
 
 		/**
 		 * chcp &#x5909;&#x66F4;&#x7528;&#x306E;&#x30B9;&#x30AF;&#x30EA;&#x30D7;&#x30C8;
@@ -477,7 +478,7 @@ export default class System {
 		const starter_scrpt = [];
 		starter_scrpt.push(&quot;chcp &quot; + chcp);
 		starter_scrpt.push(&quot;@echo off&quot;);
-		starter_scrpt.push(&quot;call \&quot;&quot; + temp_script + &quot;\&quot; &gt; \&quot;&quot; + output_txt + &quot;\&quot;&quot;);
+		starter_scrpt.push(&quot;call \&quot;&quot; + temp_script + &quot;\&quot; 1&gt; \&quot;&quot; + output_std_txt + &quot;\&quot; 2&gt; \&quot;&quot; + output_err_txt + &quot;\&quot;&quot;);
 		starter_scrpt.push(&quot;&quot;);
 		
 		// &#x9014;&#x4E2D;&#x304B;&#x3089;&#x6587;&#x5B57;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x5909;&#x308F;&#x308B;&#x3053;&#x3068;&#x3092;&#x60F3;&#x5B9A;&#x3059;&#x308B;&#x305F;&#x3081; BOM &#x3092;&#x4ED8;&#x3051;&#x306A;&#x3044;
@@ -490,15 +491,16 @@ export default class System {
 		const command = cmd_base + &quot; \&quot;&quot; + temp_starter + &quot;\&quot;&quot;;
 
 		// &#x5B9F;&#x884C;
-		const ret = System.run(command, System.AppWinStype.Hide, true);
-		const text = output_txt.isFile() ? (output_txt.readString(icharset).replace(/\r?\n$/, &quot;&quot;)) : &quot;&quot;;
+		const exit_code = System.run(command, System.AppWinStype.Hide, true);
+		const out = output_std_txt.isFile() ? (output_std_txt.readString(icharset).replace(/\r?\n$/, &quot;&quot;)) : &quot;&quot;;
+		const error = output_err_txt.isFile() ? (output_err_txt.readString(icharset).replace(/\r?\n$/, &quot;&quot;)) : &quot;&quot;;
 		temp_folder.remove();
 
 		// &#x30A8;&#x30E9;&#x30FC;&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F;&#x3001;error &#x306E;&#x65B9;&#x306B;&#x51FA;&#x529B;&#x7D50;&#x679C;&#x3092;&#x5165;&#x308C;&#x308B;
 		return {
-			out : text,
-			error : ret ? text : &quot;&quot;,
-			exit_code : ret
+			out : out,
+			error : error,
+			exit_code : exit_code
 		}
 	}
 

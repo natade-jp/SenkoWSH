@@ -1,5 +1,9 @@
 # History
 
+## SenkoWSH v7.5.1
+### 更新点
+- `System.execBatchScript` の標準エラーが正しく取得できていなかった問題を修正
+
 ## SenkoWSH v7.5.0
 ### 更新点
 - `System.execBatchScript` の実行結果を単純な文字列から、より詳細なデータ `SystemExecResult` で返すように変更

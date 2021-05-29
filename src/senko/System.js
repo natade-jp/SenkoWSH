@@ -401,7 +401,8 @@ export default class System {
 		// UTF-8 や Shift_JIS は直接実行できないので chcp 用のスクリプトを挟ませる
 		const temp_starter = new SFile(temp_folder.getAbsolutePath() + "//" + "start.bat");
 		const temp_script  = new SFile(temp_folder.getAbsolutePath() + "//" + "script.bat");
-		const output_txt  = new SFile(temp_folder.getAbsolutePath() + "//" + "output.txt");
+		const output_std_txt  = new SFile(temp_folder.getAbsolutePath() + "//" + "output_std.txt");
+		const output_err_txt  = new SFile(temp_folder.getAbsolutePath() + "//" + "output_err.txt");
 
 		/**
 		 * chcp 変更用のスクリプト
@@ -410,7 +411,7 @@ export default class System {
 		const starter_scrpt = [];
 		starter_scrpt.push("chcp " + chcp);
 		starter_scrpt.push("@echo off");
-		starter_scrpt.push("call \"" + temp_script + "\" > \"" + output_txt + "\"");
+		starter_scrpt.push("call \"" + temp_script + "\" 1> \"" + output_std_txt + "\" 2> \"" + output_err_txt + "\"");
 		starter_scrpt.push("");
 		
 		// 途中から文字コードが変わることを想定するため BOM を付けない
@@ -423,15 +424,16 @@ export default class System {
 		const command = cmd_base + " \"" + temp_starter + "\"";
 
 		// 実行
-		const ret = System.run(command, System.AppWinStype.Hide, true);
-		const text = output_txt.isFile() ? (output_txt.readString(icharset).replace(/\r?\n$/, "")) : "";
+		const exit_code = System.run(command, System.AppWinStype.Hide, true);
+		const out = output_std_txt.isFile() ? (output_std_txt.readString(icharset).replace(/\r?\n$/, "")) : "";
+		const error = output_err_txt.isFile() ? (output_err_txt.readString(icharset).replace(/\r?\n$/, "")) : "";
 		temp_folder.remove();
 
 		// エラーコードがある場合は、error の方に出力結果を入れる
 		return {
-			out : text,
-			error : ret ? text : "",
-			exit_code : ret
+			out : out,
+			error : error,
+			exit_code : exit_code
 		}
 	}
 
